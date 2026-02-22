@@ -165,7 +165,7 @@
         ];
 
         // ----------------------------------------------------
-        // সেফ গ্লাসমরফিজম এবং রেস্পন্সিভ ইউআই ক্লাস (GPU ফ্রেন্ডলি)
+        // সেফ গ্লাসমরফিজম এবং রেস্পন্সিভ ইউআই ক্লাস
         // ----------------------------------------------------
         const uiCard = "bg-white/5 dark:bg-white/5 backdrop-blur-xl border border-white/10 rounded-2xl sm:rounded-3xl shadow-[0_8px_32px_0_rgba(0,0,0,0.3)] relative overflow-hidden transition-all duration-300 w-full";
         const uiInput = "w-full bg-white/10 dark:bg-black/20 backdrop-blur-md border border-white/10 rounded-xl sm:rounded-2xl px-3 sm:px-4 py-3 sm:py-3.5 text-sm text-gray-900 dark:text-white placeholder-gray-400 outline-none focus:ring-2 focus:ring-cyan-500/60 focus:border-transparent transition-all font-medium shadow-inner";
@@ -263,7 +263,7 @@
           const [showNotifications, setShowNotifications] = useState(false);
           const [notifications, setNotifications] = useState([]);
           
-          // কাস্টম টোস্ট স্টেট (সুন্দর অ্যানিমেশন সহ)
+          // কাস্টম টোস্ট স্টেট
           const [toastData, setToastData] = useState({ show: false, msg: '', id: 0 });
 
           const [authMethod, setAuthMethod] = useState('login');
@@ -447,11 +447,12 @@
             });
           };
 
-          // কাস্টম অ্যানিমেটেড নোটিফিকেশন ফাংশন
+          // কাস্টম অ্যানিমেটেড নোটিফিকেশন ফাংশন (FIXED BUG)
           const triggerToast = (msg) => {
-              setToastData({ show: true, msg, id: Date.now() });
+              const currentId = Date.now();
+              setToastData({ show: true, msg, id: currentId });
               setTimeout(() => {
-                  setToastData(prev => prev.id === toastData.id ? { ...prev, show: false } : prev);
+                  setToastData(prev => prev.id === currentId ? { ...prev, show: false } : prev);
               }, 3500);
           };
 
@@ -614,7 +615,8 @@
                 </div>
               )}
 
-              <main className="max-w-7xl mx-auto px-4 md:px-6 lg:px-8 mt-6 sm:mt-10 relative z-10 w-full flex-grow flex flex-col md:flex-row gap-6 sm:gap-8">
+              {/* লেআউট ফিক্স: flex-row ব্যবহার করে সাইডবার সবসময় বামে রাখা হয়েছে */}
+              <main className="max-w-7xl mx-auto px-2 sm:px-4 md:px-6 lg:px-8 mt-4 sm:mt-10 relative z-10 w-full flex-grow flex flex-row items-start gap-2 sm:gap-6">
                 {user.role === 'admin' ? (
                   <AdminDashboard 
                     inventory={inventory} orders={allOrders} deposits={deposits}
@@ -857,30 +859,31 @@
                 </div>
               )}
 
-              {/* Sidebar Navigation */}
-              <div className="w-full md:w-64 shrink-0 mb-4 md:mb-0">
-                <div className={uiCard + " p-3 flex flex-row md:flex-col gap-2 overflow-x-auto md:overflow-visible scrollbar-hide"}>
+              {/* Sidebar Navigation: বামপাশের ফিক্সড সাইডবার */}
+              <div className="w-[72px] sm:w-20 md:w-64 shrink-0 sticky top-20 z-20">
+                <div className={uiCard + " p-2 md:p-3 flex flex-col gap-2 h-max"}>
                   {TABS.map(tab => {
                     const active = activeTab === tab.id;
                     return (
                     <button 
                       key={tab.id} onClick={() => setActiveTab(tab.id)} 
-                      className={`btn-animate px-4 py-3 sm:py-3.5 text-xs sm:text-sm font-bold whitespace-nowrap rounded-xl transition-all duration-300 flex items-center gap-3 border w-full text-left ${active ? 'bg-white/20 border-white/30 text-white shadow-[0_0_15px_rgba(255,255,255,0.1)]' : 'bg-transparent border-transparent text-gray-400 hover:bg-white/10 hover:text-white'}`}
+                      className={`btn-animate p-2 md:px-4 md:py-3.5 text-xs sm:text-sm font-bold rounded-xl transition-all duration-300 flex flex-col md:flex-row items-center md:justify-start justify-center gap-1.5 md:gap-3 border w-full text-center md:text-left ${active ? 'bg-white/20 border-white/30 text-white shadow-[0_0_15px_rgba(255,255,255,0.1)]' : 'bg-transparent border-transparent text-gray-400 hover:bg-white/10 hover:text-white'}`}
                     >
-                      <tab.icon className={`w-5 h-5 shrink-0 ${active ? 'text-cyan-400' : ''}`} /> 
+                      <tab.icon className={`w-5 h-5 sm:w-6 sm:h-6 shrink-0 ${active ? 'text-cyan-400' : ''}`} /> 
                       <span className="hidden md:block">{tab.label}</span>
-                      <span className="md:hidden">{tab.label}</span>
+                      <span className="md:hidden text-[9px] leading-tight font-medium tracking-tight break-words">{tab.label}</span>
                     </button>
                   )})}
                   
-                  {/* Mobile Logout (Visible only on small screens inside tabs for easier access) */}
-                  <button onClick={handleLogout} className="btn-animate md:hidden px-4 py-3 text-xs sm:text-sm font-bold whitespace-nowrap rounded-xl transition-all duration-300 flex items-center gap-3 border bg-rose-500/10 border-rose-500/20 text-rose-400">
-                      <LogOut className="w-5 h-5 shrink-0" /> Logout
+                  {/* Mobile Logout (শুধুমাত্র ছোট স্ক্রিনে দেখাবে) */}
+                  <button onClick={handleLogout} className="btn-animate p-2 text-xs font-bold rounded-xl transition-all duration-300 flex flex-col items-center justify-center gap-1.5 border w-full text-center bg-rose-500/10 border-rose-500/20 text-rose-400 md:hidden mt-2">
+                      <LogOut className="w-5 h-5 shrink-0" /> 
+                      <span className="text-[9px] leading-tight font-medium">Logout</span>
                   </button>
                 </div>
               </div>
 
-              {/* Main Content Area */}
+              {/* Main Content Area: flex-grow এবং min-w-0 ব্যবহারের ফলে কোনো লেখা কেটে যাবে না */}
               <div className="flex-grow w-full min-w-0">
                 {activeTab === 'store' && (
                   <div className="space-y-6 sm:space-y-8 animate-fade-in-up w-full">
@@ -1535,22 +1538,21 @@
                 </div>
               )}
 
-              {/* Sidebar Navigation */}
-              <div className="w-full md:w-64 shrink-0 mb-4 md:mb-0">
-                <div className={uiCard + " p-3 flex flex-row md:flex-col gap-2 overflow-x-auto md:overflow-visible scrollbar-hide"}>
+              {/* Sidebar Navigation: বামপাশের ফিক্সড সাইডবার */}
+              <div className="w-[72px] sm:w-20 md:w-64 shrink-0 sticky top-20 z-20">
+                <div className={uiCard + " p-2 md:p-3 flex flex-col gap-2 h-max"}>
                   {ADMIN_TABS.map(tab => {
                     const active = activeTab === tab.id;
                     return (
                     <button 
                       key={tab.id} onClick={() => setActiveTab(tab.id)} 
-                      className={`btn-animate px-4 py-3 sm:py-3.5 text-xs sm:text-sm font-bold whitespace-nowrap rounded-xl transition-all duration-300 flex items-center justify-between border w-full text-left ${active ? 'bg-white/20 border-white/30 text-white shadow-[0_0_15px_rgba(255,255,255,0.1)]' : 'bg-transparent border-transparent text-gray-400 hover:bg-white/10 hover:text-white'}`}
+                      className={`btn-animate p-2 md:px-4 md:py-3.5 text-xs sm:text-sm font-bold rounded-xl transition-all duration-300 flex flex-col md:flex-row items-center md:justify-start justify-center gap-1.5 md:gap-3 border w-full text-center md:text-left relative ${active ? 'bg-white/20 border-white/30 text-white shadow-[0_0_15px_rgba(255,255,255,0.1)]' : 'bg-transparent border-transparent text-gray-400 hover:bg-white/10 hover:text-white'}`}
                     >
-                      <div className="flex items-center gap-3">
-                        <tab.icon className={`w-5 h-5 shrink-0 ${active ? 'text-cyan-400' : ''}`} /> 
-                        <span className="hidden md:block">{tab.label}</span>
-                        <span className="md:hidden">{tab.label}</span>
-                      </div>
-                      <div className="flex items-center gap-2">
+                      <tab.icon className={`w-5 h-5 sm:w-6 sm:h-6 shrink-0 ${active ? 'text-cyan-400' : ''}`} /> 
+                      <span className="hidden md:block">{tab.label}</span>
+                      <span className="md:hidden text-[9px] leading-tight font-medium tracking-tight break-words">{tab.label}</span>
+                      
+                      <div className="absolute top-1 right-1 flex items-center gap-1">
                         {(tab.id === 'deposits' && pendingDeposits.length > 0) && <span className="w-2 h-2 bg-rose-500 rounded-full animate-pulse shadow-[0_0_8px_rgba(244,63,94,0.8)]"></span>}
                         {(tab.id === 'support' && pendingTickets.length > 0) && <span className="w-2 h-2 bg-cyan-500 rounded-full animate-pulse shadow-[0_0_8px_rgba(6,182,212,0.8)]"></span>}
                       </div>
@@ -1558,8 +1560,9 @@
                   )})}
                   
                   {/* Mobile Logout */}
-                  <button onClick={() => auth.signOut()} className="btn-animate md:hidden px-4 py-3 text-xs sm:text-sm font-bold whitespace-nowrap rounded-xl transition-all duration-300 flex items-center gap-3 border bg-rose-500/10 border-rose-500/20 text-rose-400">
-                      <LogOut className="w-5 h-5 shrink-0" /> Logout
+                  <button onClick={() => auth.signOut()} className="btn-animate p-2 text-xs font-bold rounded-xl transition-all duration-300 flex flex-col items-center justify-center gap-1.5 border bg-rose-500/10 border-rose-500/20 text-rose-400 md:hidden mt-2">
+                      <LogOut className="w-5 h-5 shrink-0" />
+                      <span className="text-[9px] leading-tight font-medium">Logout</span>
                   </button>
                 </div>
               </div>
