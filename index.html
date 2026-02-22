@@ -1,0 +1,1875 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>VoiceStore Premium</title>
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+      tailwind.config = {
+        darkMode: 'class',
+        theme: {
+          extend: {
+            fontFamily: {
+              sans: ['Inter', 'system-ui', 'sans-serif'],
+            },
+            animation: {
+              'fade-in-up': 'fadeInUp 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards',
+              'blob': 'blob 10s infinite alternate',
+              'pop-in': 'popIn 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards',
+              'slide-down': 'slideDown 0.4s ease-out forwards',
+            },
+            keyframes: {
+              fadeInUp: {
+                '0%': { opacity: '0', transform: 'translateY(20px)' },
+                '100%': { opacity: '1', transform: 'translateY(0)' },
+              },
+              blob: {
+                '0%': { transform: 'translate(0px, 0px) scale(1)' },
+                '33%': { transform: 'translate(30px, -50px) scale(1.1)' },
+                '66%': { transform: 'translate(-20px, 20px) scale(0.9)' },
+                '100%': { transform: 'translate(0px, 0px) scale(1)' },
+              },
+              popIn: {
+                '0%': { opacity: '0', transform: 'scale(0.8) translateY(10px)' },
+                '100%': { opacity: '1', transform: 'scale(1) translateY(0)' },
+              },
+              slideDown: {
+                '0%': { opacity: '0', transform: 'translate(-50%, -20px)' },
+                '100%': { opacity: '1', transform: 'translate(-50%, 0)' },
+              }
+            }
+          }
+        }
+      }
+    </script>
+    
+    <!-- Google Fonts: Inter -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    
+    <!-- Import Maps for React and Lucide -->
+    <script type="importmap">
+      {
+        "imports": {
+          "react": "https://esm.sh/react@18.2.0",
+          "react-dom/client": "https://esm.sh/react-dom@18.2.0/client",
+          "lucide-react": "https://esm.sh/lucide-react@0.344.0?external=react"
+        }
+      }
+    </script>
+    
+    <!-- Babel -->
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+
+    <style>
+        /* স্ক্রলবার লুকানোর জন্য */
+        .scrollbar-hide::-webkit-scrollbar { display: none; }
+        .scrollbar-hide { -ms-overflow-style: none; scrollbar-width: none; }
+        
+        body {
+            transition: background-color 0.3s ease, color 0.3s ease;
+            -webkit-user-select: none; -moz-user-select: none; -ms-user-select: none; user-select: none;
+            font-family: 'Inter', sans-serif;
+            background-color: #020617; /* ডিপ ডার্ক থিম */
+            overflow-x: hidden;
+        }
+        
+        input, textarea, pre {
+            -webkit-user-select: text; -moz-user-select: text; -ms-user-select: text; user-select: text;
+        }
+        
+        /* প্রিমিয়াম ব্যাকগ্রাউন্ড প্যাটার্ন */
+        .bg-grid-pattern {
+            background-size: 40px 40px;
+            background-image: linear-gradient(to right, rgba(255, 255, 255, 0.03) 1px, transparent 1px),
+                              linear-gradient(to bottom, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
+        }
+        
+        /* টেক্সট গ্রেডিয়েন্ট */
+        .text-gradient-primary {
+            background-clip: text; -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+            background-image: linear-gradient(to right, #22d3ee, #3b82f6);
+        }
+
+        /* বাটন ক্লিক অ্যানিমেশন */
+        .btn-animate {
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .btn-animate:active {
+            transform: scale(0.92);
+            filter: brightness(1.2);
+        }
+    </style>
+
+    <!-- বেসিক হ্যাকিং প্রতিরোধ স্ক্রিপ্ট -->
+    <script>
+        document.addEventListener('contextmenu', event => event.preventDefault());
+        document.onkeydown = function(e) {
+            if(e.keyCode == 123) return false; 
+            if(e.ctrlKey && e.shiftKey && e.keyCode == 'I'.charCodeAt(0)) return false; 
+            if(e.ctrlKey && e.shiftKey && e.keyCode == 'C'.charCodeAt(0)) return false; 
+            if(e.ctrlKey && e.shiftKey && e.keyCode == 'J'.charCodeAt(0)) return false; 
+            if(e.ctrlKey && e.keyCode == 'U'.charCodeAt(0)) return false; 
+        };
+    </script>
+</head>
+<body class="text-gray-900 dark:text-gray-100 antialiased dark">
+    <div id="root"></div>
+
+    <script type="text/babel" data-type="module">
+        import React, { useState, useEffect } from 'react';
+        import { createRoot } from 'react-dom/client';
+
+        import { 
+            ShoppingCart, LogOut, Package, Users, DollarSign, Settings, Plus, Trash2, CheckCircle, 
+            X, Upload, Wallet, CreditCard, Clock, Copy, ArrowRight, ShieldCheck, Bell, User as UserIcon, 
+            Activity, Gift, BarChart, Eye, EyeOff, Lock, Search, Megaphone, Award, Zap, Headset, 
+            Star, AlertTriangle, MessageSquare, Smartphone, Mail, KeyRound, Key, ShieldAlert, ChevronRight,
+            Sun, Moon, ExternalLink, Menu, HelpCircle, History, TrendingUp, Sparkles, Building
+        } from 'lucide-react';
+
+        // ফায়ারবেস ইম্পোর্ট
+        import { initializeApp } from 'https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js';
+        import { getAuth, signInWithCustomToken, signInAnonymously, onAuthStateChanged, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, sendEmailVerification, sendPasswordResetEmail, updateEmail, updatePassword } from 'https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js';
+        import { getFirestore, collection, doc, setDoc, getDoc, onSnapshot, updateDoc, deleteDoc, query } from 'https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js';
+        import { initializeAppCheck, ReCaptchaV3Provider } from 'https://www.gstatic.com/firebasejs/11.6.1/firebase-app-check.js';
+
+        const firebaseConfig = {
+          apiKey: "AIzaSyAzHV1ZFm30K5xUzkAFYn4wuZUdxYdtgzo",
+          authDomain: "profit-pulse-ca8b1.firebaseapp.com",
+          projectId: "profit-pulse-ca8b1",
+          storageBucket: "profit-pulse-ca8b1.firebasestorage.app",
+          messagingSenderId: "422601280147",
+          appId: "1:422601280147:web:904ade1f967d4515179b66",
+          measurementId: "G-B19EDC36RD"
+        };
+        
+        const app = initializeApp(firebaseConfig);
+        const appCheck = initializeAppCheck(app, {
+          provider: new ReCaptchaV3Provider('6LeKN3MsAAAAAKu1QGQUM4a9zK1aFGBlUw4tcvTR'),
+          isTokenAutoRefreshEnabled: true
+        });
+
+        const auth = getAuth(app);
+        const db = getFirestore(app);
+        const appId = typeof window.__app_id !== 'undefined' ? window.__app_id : 'voice-store-real';
+
+        // প্রোডাক্স লিস্ট
+        const PRODUCT_CATEGORIES = [
+          { id: 'new', name: 'New Google Voice', description: 'Fresh account with recovery email. Ideal for personal use.', price: 5.00, icon: Package, color: 'text-cyan-400' },
+          { id: 'old', name: 'Old Google Voice', description: 'Aged and highly trusted account (2012-2020).', price: 15.00, icon: Sparkles, color: 'text-rose-400' },
+          { id: 'textplus', name: 'TextPlus Account', description: 'Verified USA TextPlus account for unlimited texting.', price: 2.50, icon: Smartphone, color: 'text-amber-400' },
+          { id: 'gv_bulk', name: 'Bulk Google Voice (10x)', description: 'Wholesale package of 10 fresh Google Voice accounts.', price: 45.00, icon: Users, color: 'text-violet-400' }
+        ];
+
+        // ----------------------------------------------------
+        // সেফ গ্লাসমরফিজম এবং রেস্পন্সিভ ইউআই ক্লাস (GPU ফ্রেন্ডলি)
+        // ----------------------------------------------------
+        const uiCard = "bg-white/5 dark:bg-white/5 backdrop-blur-xl border border-white/10 rounded-2xl sm:rounded-3xl shadow-[0_8px_32px_0_rgba(0,0,0,0.3)] relative overflow-hidden transition-all duration-300 w-full";
+        const uiInput = "w-full bg-white/10 dark:bg-black/20 backdrop-blur-md border border-white/10 rounded-xl sm:rounded-2xl px-3 sm:px-4 py-3 sm:py-3.5 text-sm text-gray-900 dark:text-white placeholder-gray-400 outline-none focus:ring-2 focus:ring-cyan-500/60 focus:border-transparent transition-all font-medium shadow-inner";
+        const uiBtnPrimary = "btn-animate w-full bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-white font-bold py-3 sm:py-3.5 px-4 sm:px-6 rounded-xl sm:rounded-2xl shadow-[0_4px_20px_rgba(6,182,212,0.4)] hover:shadow-[0_8px_25px_rgba(6,182,212,0.6)] disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 border border-white/20";
+        const uiBtnSecondary = "btn-animate w-full bg-white/10 dark:bg-white/5 backdrop-blur-md border border-white/10 hover:bg-white/20 text-white font-bold py-3 sm:py-3.5 px-4 sm:px-6 rounded-xl sm:rounded-2xl disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 shadow-lg";
+        const uiBtnAction = "btn-animate bg-white/10 hover:bg-white/20 backdrop-blur-md text-white font-bold py-2 px-3 sm:px-4 rounded-lg sm:rounded-xl text-xs flex items-center gap-1.5 shadow-lg border border-white/10 disabled:opacity-50";
+        const uiInnerPanel = "bg-white/5 dark:bg-black/30 backdrop-blur-md border border-white/10 rounded-xl sm:rounded-2xl p-3 sm:p-4 shadow-inner w-full";
+
+        const TIERS = [
+            { threshold: 0, name: 'Bronze', next: 20, color: 'text-orange-400', bg: 'bg-orange-500/10 border-orange-500/30', icon: Award },
+            { threshold: 20, name: 'Silver', next: 50, color: 'text-slate-300', bg: 'bg-slate-500/10 border-slate-500/30', icon: Award },
+            { threshold: 50, name: 'Gold', next: 100, color: 'text-yellow-400', bg: 'bg-yellow-500/10 border-yellow-500/30', icon: Award },
+            { threshold: 100, name: 'VIP Status', next: 100, color: 'text-amber-400', bg: 'bg-amber-500/20 border-amber-500/40', icon: Zap }
+        ];
+
+        const getTier = (spent) => {
+          if(spent >= 100) return TIERS[3];
+          if(spent >= 50) return TIERS[2];
+          if(spent >= 20) return TIERS[1];
+          return TIERS[0];
+        };
+
+        // ফোন এবং স্টেট হাইড করার ফাংশন
+        const getPreviewInfo = (raw) => {
+            const parts = String(raw).split(/[:|,;\t\n]/);
+            let phone = "Hidden";
+            let state = "US";
+
+            const match = String(raw).match(/(?:\+1|1)?\s*\(?(\d{3})\)?[-.\s]?\d{3}[-.\s]?(\d{4})/);
+            if (match) {
+                phone = match[1] + "****" + match[2].slice(-3);
+            }
+
+            parts.forEach(p => {
+                const clean = p.trim().replace(/[^a-zA-Z]/g, '');
+                if (clean.length === 2 && clean === clean.toUpperCase() && !['US', 'UK', 'ID', 'OK', 'NO'].includes(clean)) {
+                    state = clean;
+                }
+            });
+
+            return { phone, state };
+        };
+
+        // সেফ এবং রেস্পন্সিভ অ্যানিমেটেড ব্যাকগ্রাউন্ড (GPU ক্র্যাশ রোধ করতে)
+        const PremiumBackground = () => (
+          <div className="fixed inset-0 z-[-1] overflow-hidden bg-[#020617] pointer-events-none">
+             <div className="absolute inset-0 bg-grid-pattern opacity-20"></div>
+             <div className="absolute top-[-10%] left-[-10%] w-[300px] sm:w-[500px] h-[300px] sm:h-[500px] rounded-full bg-cyan-600/20 blur-3xl animate-blob"></div>
+             <div className="absolute top-[20%] right-[-10%] w-[350px] sm:w-[600px] h-[350px] sm:h-[600px] rounded-full bg-fuchsia-600/20 blur-3xl animate-blob" style={{animationDelay: '2s'}}></div>
+             <div className="absolute bottom-[-20%] left-[10%] w-[400px] sm:w-[700px] h-[400px] sm:h-[700px] rounded-full bg-violet-600/20 blur-3xl animate-blob" style={{animationDelay: '4s'}}></div>
+             <div className="absolute bottom-[10%] right-[20%] w-[250px] sm:w-[400px] h-[250px] sm:h-[400px] rounded-full bg-amber-500/10 blur-3xl animate-blob" style={{animationDelay: '6s'}}></div>
+          </div>
+        );
+
+        const SplashScreen = () => (
+          <div className="fixed inset-0 z-[100] flex flex-col items-center justify-center bg-[#020617]/90 backdrop-blur-2xl transition-opacity duration-500 w-full h-full p-4">
+             <div className="absolute inset-0 bg-grid-pattern opacity-20"></div>
+             <div className="absolute top-[30%] left-[20%] w-[300px] h-[300px] rounded-full bg-cyan-500/20 blur-3xl animate-blob"></div>
+             <div className="absolute bottom-[20%] right-[20%] w-[300px] h-[300px] rounded-full bg-fuchsia-500/20 blur-3xl animate-blob" style={{animationDelay: '2s'}}></div>
+             
+             <div className="relative z-10 flex flex-col items-center animate-fade-in-up w-full px-4">
+                <div className="w-24 h-24 sm:w-28 sm:h-28 bg-white/10 backdrop-blur-xl border border-white/20 rounded-[2rem] sm:rounded-[2.5rem] flex items-center justify-center mb-6 shadow-[0_8px_32px_0_rgba(31,38,135,0.37)] animate-bounce" style={{animationDuration: '2.5s'}}>
+                   <Lock className="w-12 h-12 sm:w-14 sm:h-14 text-cyan-400" strokeWidth={2.5} />
+                </div>
+                <h1 className="text-5xl sm:text-6xl font-black text-white tracking-tight mb-2 text-center text-gradient-primary w-full break-words">VoiceStore</h1>
+                <p className="text-gray-300 font-bold tracking-[0.2em] sm:tracking-[0.3em] uppercase text-xs sm:text-sm text-center w-full">Premium Edition</p>
+                <div className="mt-10 sm:mt-12 flex gap-3">
+                   <div className="w-2.5 h-2.5 sm:w-3 sm:h-3 rounded-full bg-cyan-400 animate-bounce" style={{animationDelay: '0ms'}}></div>
+                   <div className="w-2.5 h-2.5 sm:w-3 sm:h-3 rounded-full bg-fuchsia-400 animate-bounce" style={{animationDelay: '150ms'}}></div>
+                   <div className="w-2.5 h-2.5 sm:w-3 sm:h-3 rounded-full bg-amber-400 animate-bounce" style={{animationDelay: '300ms'}}></div>
+                </div>
+             </div>
+          </div>
+        );
+
+        function App() {
+          const [showSplash, setShowSplash] = useState(true);
+          const [authUser, setAuthUser] = useState(null);
+          const [user, setUser] = useState(null); 
+          const [isDarkMode, setIsDarkMode] = useState(true); 
+          
+          const [usersDB, setUsersDB] = useState({});
+          const [inventory, setInventory] = useState({ new: [], old: [], textplus: [], gv_bulk: [] });
+          const [allOrders, setAllOrders] = useState([]);
+          const [deposits, setDeposits] = useState([]);
+          const [purchases, setPurchases] = useState([]);
+          const [tickets, setTickets] = useState([]);
+          const [promoSettings, setPromoSettings] = useState({ code: '', discount: 0, isActive: false });
+          const [globalNotice, setGlobalNotice] = useState('');
+          const [featureSettings, setFeatureSettings] = useState({ dailyReward: false, referral: false });
+          const [categories, setCategories] = useState(PRODUCT_CATEGORIES);
+          
+          const [cart, setCart] = useState([]);
+          const [showCart, setShowCart] = useState(false);
+          const [showNotifications, setShowNotifications] = useState(false);
+          const [notifications, setNotifications] = useState([]);
+          
+          // কাস্টম টোস্ট স্টেট (সুন্দর অ্যানিমেশন সহ)
+          const [toastData, setToastData] = useState({ show: false, msg: '', id: 0 });
+
+          const [authMethod, setAuthMethod] = useState('login');
+          const [authError, setAuthError] = useState('');
+          const [authSuccessMsg, setAuthSuccessMsg] = useState('');
+          const [emailInput, setEmailInput] = useState('');
+          const [passwordInput, setPasswordInput] = useState('');
+          const [isLoadingAuth, setIsLoadingAuth] = useState(false);
+
+          useEffect(() => {
+            document.documentElement.classList.add('dark');
+            const timer = setTimeout(() => setShowSplash(false), 2500);
+            return () => clearTimeout(timer);
+          }, []);
+
+          useEffect(() => {
+            const initAuth = async () => {
+              if (typeof window.__initial_auth_token !== 'undefined' && window.__initial_auth_token) {
+                try {
+                  await signInWithCustomToken(auth, window.__initial_auth_token);
+                } catch (e) {
+                   try { await signInAnonymously(auth); } catch (err) {}
+                }
+              } else {
+                 try {
+                     const currentUser = auth.currentUser;
+                     if (!currentUser) await signInAnonymously(auth);
+                 } catch (e) {}
+              }
+            };
+            initAuth();
+          }, []);
+
+          useEffect(() => {
+            const unsubscribe = onAuthStateChanged(auth, async (firebaseUser) => {
+              if (firebaseUser && firebaseUser.email && !firebaseUser.isAnonymous) {
+                 let currentAdminEmail = 'mdmunnachowdhury0003817@gmail.com';
+                 try {
+                     const adminDocRef = doc(db, 'artifacts', appId, 'public', 'data', 'Store_Settings', 'AdminConfig');
+                     const adminDoc = await getDoc(adminDocRef);
+                     if (adminDoc.exists()) {
+                        currentAdminEmail = adminDoc.data().adminEmail || currentAdminEmail;
+                     } else {
+                        await setDoc(adminDocRef, { adminEmail: currentAdminEmail }, { merge: true });
+                     }
+                 } catch (err) {}
+
+                 if (firebaseUser.email.toLowerCase() === currentAdminEmail.toLowerCase()) {
+                    setUser({ email: firebaseUser.email, role: 'admin' });
+                 } else if (firebaseUser.emailVerified) {
+                    setUser({ email: firebaseUser.email, role: 'customer' });
+                 } else {
+                    setUser(null);
+                 }
+              } else {
+                 setUser(null);
+              }
+              setAuthUser(firebaseUser);
+            });
+            return () => unsubscribe();
+          }, []);
+
+          useEffect(() => {
+            if (!authUser) return; 
+            const errLog = (e) => { if (e.code !== 'permission-denied') console.error("Sync Error:", e); };
+            const unsubs = [];
+            
+            unsubs.push(onSnapshot(doc(db, 'artifacts', appId, 'public', 'data', 'Store_Inventory', 'Stock'), (snap) => { if (snap.exists()) setInventory(snap.data()); }, errLog));
+            unsubs.push(onSnapshot(doc(db, 'artifacts', appId, 'public', 'data', 'Store_Settings', 'PromoCode'), (snap) => { if (snap.exists()) setPromoSettings(snap.data()); }, errLog));
+            unsubs.push(onSnapshot(doc(db, 'artifacts', appId, 'public', 'data', 'Store_Settings', 'Notice'), (snap) => { if (snap.exists()) setGlobalNotice(snap.data().text); }, errLog));
+            unsubs.push(onSnapshot(doc(db, 'artifacts', appId, 'public', 'data', 'Store_Settings', 'Features'), (snap) => { if (snap.exists()) setFeatureSettings(snap.data()); }, errLog));
+            unsubs.push(onSnapshot(doc(db, 'artifacts', appId, 'public', 'data', 'Store_Settings', 'Products'), (snap) => { if (snap.exists() && snap.data().list) { const fetchedProducts = snap.data().list; const mergedCategories = fetchedProducts.map(fetchedItem => { const originalItem = PRODUCT_CATEGORIES.find(p => p.id === fetchedItem.id); return { ...fetchedItem, icon: originalItem ? originalItem.icon : Package }; }); setCategories(mergedCategories); } }, errLog));
+
+            if (user) {
+                unsubs.push(onSnapshot(collection(db, 'artifacts', appId, 'public', 'data', 'Store_Users'), (snap) => {
+                  const u = {}; snap.forEach(d => u[d.id] = d.data()); setUsersDB(u);
+                }, errLog));
+                unsubs.push(onSnapshot(collection(db, 'artifacts', appId, 'public', 'data', 'Store_Orders'), (snap) => {
+                  const o = []; snap.forEach(d => o.push({ id: d.id, ...d.data() })); setAllOrders(o.sort((a,b) => new Date(b.date) - new Date(a.date)));
+                }, errLog));
+                unsubs.push(onSnapshot(collection(db, 'artifacts', appId, 'public', 'data', 'Store_Deposits'), (snap) => {
+                  const dep = []; snap.forEach(d => dep.push({ id: d.id, ...d.data() })); setDeposits(dep.sort((a,b) => new Date(b.date) - new Date(a.date)));
+                }, errLog));
+                unsubs.push(onSnapshot(collection(db, 'artifacts', appId, 'public', 'data', 'Store_Purchases'), (snap) => {
+                  const p = []; snap.forEach(d => p.push({ id: d.id, ...d.data() })); setPurchases(p.sort((a,b) => new Date(b.date) - new Date(a.date)));
+                }, errLog));
+                unsubs.push(onSnapshot(collection(db, 'artifacts', appId, 'public', 'data', 'Store_Tickets'), (snap) => {
+                  const t = []; snap.forEach(d => t.push({ id: d.id, ...d.data() })); setTickets(t.sort((a,b) => new Date(b.date) - new Date(a.date)));
+                }, errLog));
+            }
+            return () => unsubs.forEach(unsub => unsub());
+          }, [authUser, user]);
+
+          const finalizeLogin = async (identifier, role, password = '') => {
+            if (role === 'admin') return; 
+            try {
+              const userRef = doc(db, 'artifacts', appId, 'public', 'data', 'Store_Users', identifier);
+              const snap = await getDoc(userRef);
+              if (!snap.exists()) {
+                await setDoc(userRef, { password: password, balance: 0, totalSpent: 0, joined: new Date().toISOString(), lastBonusDate: '' });
+              }
+            } catch (err) {}
+          };
+
+          const handleForgotPassword = async () => {
+            if (!emailInput.trim()) {
+              setAuthError('Enter your email to receive a password reset link.'); return;
+            }
+            setIsLoadingAuth(true);
+            try {
+              await sendPasswordResetEmail(auth, emailInput.trim());
+              setAuthError(''); setAuthSuccessMsg('Password reset link sent! Check your inbox.');
+            } catch (error) { setAuthError(error.message); } 
+            finally { setIsLoadingAuth(false); }
+          };
+
+          const handleAuthSubmit = async (e) => {
+            e.preventDefault();
+            setAuthError(''); setAuthSuccessMsg(''); setIsLoadingAuth(true);
+
+            let email = emailInput.trim();
+            let pwd = passwordInput.trim();
+
+            if (!email || !pwd) { setAuthError('Please fill in all fields.'); setIsLoadingAuth(false); return; }
+
+            if (authMethod === 'admin') {
+              const adminDocRef = doc(db, 'artifacts', appId, 'public', 'data', 'Store_Settings', 'AdminConfig');
+              let currentAdminEmail = 'mdmunnachowdhury0003817@gmail.com'; 
+              try {
+                  const adminDoc = await getDoc(adminDocRef);
+                  if (adminDoc.exists()) { currentAdminEmail = adminDoc.data().adminEmail || currentAdminEmail; }
+              } catch (e) {}
+
+              if (email.toLowerCase() !== currentAdminEmail.toLowerCase()) {
+                  setAuthError('Access Denied: Unauthorized Admin email.'); setIsLoadingAuth(false); return;
+              }
+
+              try {
+                  await signInWithEmailAndPassword(auth, email, pwd);
+                  setAuthSuccessMsg('Admin Login successful!');
+              } catch (error) {
+                  if (error.code === 'auth/user-not-found' || error.code === 'auth/invalid-credential') {
+                      try {
+                          await createUserWithEmailAndPassword(auth, email, pwd);
+                          setAuthSuccessMsg('Admin Account Initialized!');
+                      } catch (createErr) { setAuthError(createErr.message); }
+                  } else { setAuthError('Login failed: ' + error.message); }
+              }
+              setIsLoadingAuth(false); return;
+            }
+
+            try {
+              if (authMethod === 'signup') {
+                const userCredential = await createUserWithEmailAndPassword(auth, email, pwd);
+                await sendEmailVerification(userCredential.user);
+                await finalizeLogin(userCredential.user.email, 'customer', pwd);
+                await auth.signOut(); 
+                setAuthSuccessMsg('Registration successful! Check your email to verify your account.');
+                setAuthMethod('login'); 
+              } else if (authMethod === 'login') {
+                const userCredential = await signInWithEmailAndPassword(auth, email, pwd);
+                if (!userCredential.user.emailVerified) {
+                   await auth.signOut();
+                   setAuthError('Email not verified. Please check your inbox.');
+                   setIsLoadingAuth(false); return;
+                }
+                await finalizeLogin(userCredential.user.email, 'customer');
+                setAuthSuccessMsg('Welcome back!');
+              }
+            } catch (error) {
+              if (error.code === 'auth/email-already-in-use') setAuthError('Email is already registered. Please log in.');
+              else if (error.code === 'auth/invalid-credential' || error.code === 'auth/user-not-found' || error.code === 'auth/wrong-password') setAuthError('Invalid credentials. Please try again.');
+              else if (error.code === 'auth/weak-password') setAuthError('Password must be at least 6 characters.');
+              else setAuthError('Authentication failed: ' + error.message);
+            } finally { setIsLoadingAuth(false); }
+          };
+
+          const handleLogout = () => {
+            signOut(auth).then(() => {
+              setUser(null); setCart([]); setShowCart(false); setEmailInput(''); setPasswordInput('');
+            });
+          };
+
+          // কাস্টম অ্যানিমেটেড নোটিফিকেশন ফাংশন
+          const triggerToast = (msg) => {
+              setToastData({ show: true, msg, id: Date.now() });
+              setTimeout(() => {
+                  setToastData(prev => prev.id === toastData.id ? { ...prev, show: false } : prev);
+              }, 3500);
+          };
+
+          const addNotification = (title, text) => {
+            setNotifications(prev => [{ id: Date.now(), title, text, time: 'Just now' }, ...prev].slice(0, 5));
+          };
+
+          if (showSplash) {
+              return <SplashScreen />;
+          }
+
+          if (!user) {
+            return (
+              <div className="min-h-screen flex items-center justify-center p-4 relative font-sans w-full">
+                <PremiumBackground />
+
+                <div className="w-full max-w-[420px] animate-fade-in-up px-2 sm:px-0">
+                  <div className="flex flex-col items-center justify-center mb-10">
+                    <div onDoubleClick={() => {setAuthMethod(authMethod === 'admin' ? 'login' : 'admin'); setAuthError(''); setAuthSuccessMsg('');}} className="w-20 h-20 rounded-3xl bg-white/10 backdrop-blur-xl border border-white/20 flex items-center justify-center mb-5 shadow-[0_8px_32px_0_rgba(31,38,135,0.37)] select-none btn-animate">
+                      <Lock className="w-10 h-10 text-cyan-400" strokeWidth={2.5} />
+                    </div>
+                    <h2 className="text-3xl font-black tracking-tight text-white text-center text-gradient-primary">VoiceStore</h2>
+                    <p className="text-gray-300 text-xs mt-2 font-bold tracking-[0.2em] uppercase text-center">Secure Authentication</p>
+                  </div>
+
+                  <div className={uiCard + " p-6 sm:p-8"}>
+                    {authMethod !== 'admin' && (
+                      <div className="flex bg-black/30 backdrop-blur-md p-1.5 rounded-2xl mb-8 border border-white/10 shadow-inner">
+                         <button type="button" onClick={() => { setAuthMethod('login'); setAuthError(''); setAuthSuccessMsg(''); }} className={`btn-animate flex-1 flex items-center justify-center py-2.5 rounded-xl text-sm font-bold transition-all duration-300 ${authMethod === 'login' ? 'bg-white/20 text-white shadow-lg border border-white/20' : 'text-gray-400 hover:text-white hover:bg-white/5'}`}>Log In</button>
+                         <button type="button" onClick={() => { setAuthMethod('signup'); setAuthError(''); setAuthSuccessMsg(''); }} className={`btn-animate flex-1 flex items-center justify-center py-2.5 rounded-xl text-sm font-bold transition-all duration-300 ${authMethod === 'signup' ? 'bg-white/20 text-white shadow-lg border border-white/20' : 'text-gray-400 hover:text-white hover:bg-white/5'}`}>Sign Up</button>
+                      </div>
+                    )}
+                    
+                    {authMethod === 'admin' && (
+                       <div className="text-center mb-8 pb-4 border-b border-white/10">
+                         <span className="text-xs font-black text-rose-400 tracking-widest uppercase flex items-center justify-center gap-1.5"><ShieldAlert className="w-4 h-4"/> Admin Access</span>
+                       </div>
+                    )}
+                    
+                    <form onSubmit={handleAuthSubmit} className="space-y-5">
+                      {authError && <div className="bg-rose-500/20 backdrop-blur-md border border-rose-500/30 text-rose-200 p-4 rounded-xl text-sm font-bold flex gap-3 items-start"><AlertTriangle className="w-5 h-5 flex-shrink-0 mt-0.5 text-rose-400"/> <span>{authError}</span></div>}
+                      {authSuccessMsg && <div className="bg-emerald-500/20 backdrop-blur-md border border-emerald-500/30 text-emerald-200 p-4 rounded-xl text-sm font-bold flex gap-3 items-start"><CheckCircle className="w-5 h-5 flex-shrink-0 mt-0.5 text-emerald-400"/> <span>{authSuccessMsg}</span></div>}
+                      
+                      <div className="space-y-2">
+                        <label className="text-xs font-bold text-gray-300 uppercase tracking-wider ml-1">
+                          {authMethod === 'admin' ? 'Admin Email' : 'Email Address'}
+                        </label>
+                        <input type="email" value={emailInput} onChange={(e)=>setEmailInput(e.target.value)} placeholder="name@example.com" required className={uiInput} />
+                      </div>
+
+                      <div className="space-y-2">
+                        <div className="flex justify-between items-center px-1">
+                           <label className="text-xs font-bold text-gray-300 uppercase tracking-wider">Password</label>
+                           {(authMethod === 'login' || authMethod === 'admin') && (
+                               <button type="button" onClick={handleForgotPassword} className="text-xs font-bold text-cyan-400 hover:text-cyan-300 transition-colors">Forgot password?</button>
+                           )}
+                        </div>
+                        <input type="password" value={passwordInput} onChange={(e)=>setPasswordInput(e.target.value)} placeholder="••••••••" required className={uiInput} />
+                      </div>
+                      
+                      <div className="pt-4">
+                        <button type="submit" disabled={isLoadingAuth} className={uiBtnPrimary}>
+                          {isLoadingAuth ? 'Processing...' : authMethod === 'signup' ? 'Create Account' : authMethod === 'login' ? 'Sign In' : 'Admin Login'}
+                          {!isLoadingAuth && <ArrowRight className="w-5 h-5" />}
+                        </button>
+                      </div>
+                    </form>
+                  </div>
+                </div>
+              </div>
+            );
+          }
+
+          const currentUserBalance = user.role === 'customer' ? (usersDB[user.email]?.balance || 0) : 0;
+          const currentUserTier = user.role === 'customer' ? getTier(usersDB[user.email]?.totalSpent || 0) : null;
+
+          return (
+            <div className="min-h-screen w-full relative overflow-x-hidden font-sans pb-24 flex flex-col">
+              <PremiumBackground />
+              
+              {/* ফ্লোটিং টোস্ট অ্যানিমেশন */}
+              {toastData.show && (
+                <div className="fixed top-10 left-1/2 -translate-x-1/2 z-[200] animate-slide-down w-[90%] sm:w-auto max-w-sm">
+                  <div className="bg-black/60 backdrop-blur-3xl border border-white/20 p-4 sm:px-6 sm:py-4 rounded-2xl shadow-[0_10px_40px_rgba(6,182,212,0.3)] flex items-center gap-4 w-full">
+                    <div className="w-8 h-8 sm:w-10 sm:h-10 bg-gradient-to-br from-cyan-400 to-blue-500 rounded-full flex items-center justify-center shrink-0 shadow-inner">
+                      <CheckCircle className="w-5 h-5 sm:w-6 sm:h-6 text-white" />
+                    </div>
+                    <span className="text-white font-bold text-sm sm:text-base tracking-wide flex-grow">{toastData.msg}</span>
+                  </div>
+                </div>
+              )}
+
+              {/* Premium Top Navigation Glass */}
+              <header className="sticky top-0 z-40 w-full bg-white/5 dark:bg-black/20 backdrop-blur-3xl border-b border-white/10 transition-colors shadow-sm">
+                <div className="max-w-7xl mx-auto px-4 md:px-6 lg:px-8 h-16 sm:h-20 flex items-center justify-between w-full">
+                  <div className="flex items-center gap-3 sm:gap-4 flex-shrink-0">
+                    <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-xl bg-white/10 backdrop-blur-xl border border-white/20 flex items-center justify-center shadow-lg">
+                      <Lock className="w-4 h-4 sm:w-5 sm:h-5 text-cyan-400" strokeWidth={2.5}/>
+                    </div>
+                    <span className="text-lg sm:text-xl font-black tracking-tight text-white hidden sm:block">VoiceStore</span>
+                  </div>
+                  
+                  <div className="flex items-center gap-3 sm:gap-4 md:gap-6 flex-shrink-0">
+                    <div className="hidden md:flex flex-col text-right mr-2">
+                      <span className="text-sm font-bold text-white">{(user?.email || '').split('@')[0]}</span>
+                      <span className="text-[10px] text-emerald-400 font-black uppercase flex items-center justify-end gap-1.5 mt-0.5"><span className="w-2 h-2 bg-emerald-400 rounded-full animate-pulse shadow-[0_0_8px_rgba(52,211,153,0.8)]"></span> Online</span>
+                    </div>
+
+                    {user.role === 'customer' && (
+                      <div className="flex items-center gap-2 sm:gap-3">
+                        <div className="bg-white/10 backdrop-blur-xl border border-white/20 px-3 sm:px-4 py-1.5 sm:py-2 rounded-xl sm:rounded-2xl flex items-center gap-1.5 sm:gap-2 shadow-lg">
+                          <Wallet className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-cyan-400" />
+                          <span className="font-black text-xs sm:text-sm text-white">${Number(currentUserBalance || 0).toFixed(2)}</span>
+                        </div>
+                        <button onClick={() => setShowCart(true)} className="btn-animate relative p-2 sm:p-2.5 bg-white/10 backdrop-blur-xl border border-white/20 text-white rounded-xl sm:rounded-2xl hover:bg-white/20 shadow-lg">
+                          <ShoppingCart className="w-4 h-4 sm:w-5 sm:h-5" />
+                          {cart.length > 0 && <span className="absolute -top-1.5 -right-1.5 sm:-top-2 sm:-right-2 bg-gradient-to-r from-rose-500 to-pink-500 text-white text-[9px] sm:text-[10px] w-4 h-4 sm:w-5 sm:h-5 flex items-center justify-center rounded-full font-bold border border-white/20 shadow-md">{cart.length}</span>}
+                        </button>
+                      </div>
+                    )}
+
+                    <div className="h-6 sm:h-8 w-[1px] bg-white/10 mx-0.5 sm:mx-1"></div>
+
+                    <button onClick={() => setShowNotifications(!showNotifications)} className="btn-animate relative p-2 sm:p-2.5 bg-white/5 hover:bg-white/10 backdrop-blur-xl border border-transparent hover:border-white/10 rounded-xl sm:rounded-2xl text-gray-300 hover:text-white transition-all">
+                      <Bell className="w-4 h-4 sm:w-5 sm:h-5" />
+                      {notifications.length > 0 && <span className="absolute top-1.5 right-1.5 sm:top-2 sm:right-2 w-2 h-2 sm:w-2.5 sm:h-2.5 bg-rose-500 rounded-full border-2 border-[#020617]"></span>}
+                      {showNotifications && (
+                        <div className={uiCard + " absolute right-0 top-full mt-4 w-72 sm:w-80 p-4 sm:p-5 z-50 animate-fade-in-up cursor-default"}>
+                          <div className="flex justify-between items-center mb-4 pb-3 border-b border-white/10">
+                            <span className="text-sm sm:text-base font-bold text-white">Notifications</span>
+                            <button onClick={(e) => {e.stopPropagation(); setNotifications([]);}} className="btn-animate text-xs text-cyan-400 hover:text-cyan-300 font-bold bg-cyan-500/10 px-3 py-1 rounded-lg">Clear All</button>
+                          </div>
+                          <div className="space-y-3 max-h-72 overflow-y-auto scrollbar-hide pr-1">
+                            {notifications.length === 0 ? <p className="text-sm text-gray-400 text-center py-6 font-medium">You have no new notifications.</p> : notifications.map(n => (
+                              <div key={n.id} className={uiInnerPanel}>
+                                <p className="text-xs sm:text-sm font-bold text-white flex items-center gap-2"><Sparkles className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-cyan-400"/> {n.title}</p>
+                                <p className="text-[10px] sm:text-xs text-gray-300 mt-1.5 font-medium leading-relaxed">{n.text}</p>
+                              </div>
+                            ))}
+                          </div>
+                        </div>
+                      )}
+                    </button>
+
+                    <button onClick={handleLogout} className="btn-animate p-2 sm:p-2.5 bg-rose-500/10 hover:bg-rose-500/20 text-rose-400 border border-rose-500/20 rounded-xl sm:rounded-2xl shadow-lg hidden sm:block">
+                      <LogOut className="w-4 h-4 sm:w-5 sm:h-5" />
+                    </button>
+                  </div>
+                </div>
+              </header>
+
+              {globalNotice && (
+                <div className="bg-gradient-to-r from-violet-600/90 via-fuchsia-600/90 to-cyan-600/90 backdrop-blur-xl text-white px-4 py-2 sm:py-2.5 flex items-center justify-center gap-3 overflow-hidden shadow-lg relative z-30 border-b border-white/10 w-full">
+                  <Megaphone className="w-4 h-4 flex-shrink-0 animate-pulse" />
+                  <div className="marquee-container overflow-hidden max-w-7xl mx-auto w-full text-[10px] sm:text-xs font-bold tracking-widest uppercase">
+                    <div className="animate-marquee whitespace-nowrap">
+                      {globalNotice} &nbsp;&bull;&nbsp; {globalNotice} &nbsp;&bull;&nbsp; {globalNotice}
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              <main className="max-w-7xl mx-auto px-4 md:px-6 lg:px-8 mt-6 sm:mt-10 relative z-10 w-full flex-grow flex flex-col md:flex-row gap-6 sm:gap-8">
+                {user.role === 'admin' ? (
+                  <AdminDashboard 
+                    inventory={inventory} orders={allOrders} deposits={deposits}
+                    categories={categories} usersDB={usersDB}
+                    triggerToast={triggerToast} db={db} appId={appId}
+                    promoSettings={promoSettings} globalNotice={globalNotice}
+                    tickets={tickets} featureSettings={featureSettings}
+                    auth={auth} user={user} uiCard={uiCard} uiInput={uiInput} uiBtnPrimary={uiBtnPrimary} uiBtnSecondary={uiBtnSecondary} uiBtnAction={uiBtnAction} uiInnerPanel={uiInnerPanel}
+                  />
+                ) : (
+                  <CustomerDashboard 
+                    user={user} balance={currentUserBalance} inventory={inventory} 
+                    categories={categories} cart={cart} setCart={setCart} 
+                    purchases={purchases.filter(p => p.customer === user.email)}
+                    usersDB={usersDB} deposits={deposits} tier={currentUserTier}
+                    triggerToast={triggerToast} addNotification={addNotification} db={db} appId={appId}
+                    promoSettings={promoSettings} allOrders={allOrders}
+                    tickets={tickets.filter(t => t.email === user.email)}
+                    featureSettings={featureSettings} uiCard={uiCard} uiInput={uiInput} uiBtnPrimary={uiBtnPrimary} uiBtnSecondary={uiBtnSecondary} uiBtnAction={uiBtnAction} uiInnerPanel={uiInnerPanel} TIERS={TIERS}
+                    handleLogout={handleLogout}
+                  />
+                )}
+              </main>
+
+              {showCart && user.role === 'customer' && (
+                <CartModal 
+                  cart={cart} setCart={setCart} setShowCart={setShowCart} 
+                  inventory={inventory} user={user} balance={currentUserBalance}
+                  usersDB={usersDB} addNotification={addNotification} triggerToast={triggerToast} db={db} appId={appId}
+                  promoSettings={promoSettings} uiCard={uiCard} uiInput={uiInput} uiBtnPrimary={uiBtnPrimary} uiInnerPanel={uiInnerPanel}
+                />
+              )}
+
+              <style dangerouslySetInnerHTML={{__html: `
+                @keyframes marquee { 0% { transform: translateX(100%); } 100% { transform: translateX(-100%); } }
+                .animate-marquee { display: inline-block; animation: marquee 30s linear infinite; }
+              `}} />
+            </div>
+          );
+        }
+
+        // ==========================================
+        // CUSTOMER DASHBOARD
+        // ==========================================
+        function CustomerDashboard({ user, balance, inventory, categories, cart, setCart, purchases, usersDB, deposits, tier, triggerToast, addNotification, db, appId, promoSettings, allOrders, tickets, featureSettings, uiCard, uiInput, uiBtnPrimary, uiBtnSecondary, uiBtnAction, uiInnerPanel, TIERS, handleLogout }) {
+          const [activeTab, setActiveTab] = useState('store');
+          const [searchQuery, setSearchQuery] = useState('');
+          const [ticketSubject, setTicketSubject] = useState('');
+          const [ticketMessage, setTicketMessage] = useState('');
+          const [autoPay, setAutoPay] = useState({ active: false, amount: 0, time: 900, checking: false, invoiceId: '' });
+          const TRON_ADDRESS = 'TELRyMwDmdKzBRb7Uaw3zNvphrc8V3D5Mj';
+          const [previewStockModal, setPreviewStockModal] = useState({ show: false, categoryId: null, name: '' });
+
+          const addToCart = (category) => {
+            const stockAvailable = inventory[category.id] ? inventory[category.id].length : 0;
+            const currentlyInCart = cart.filter(item => item.id === category.id).length;
+            if (currentlyInCart >= stockAvailable) {
+              triggerToast('Stock Limit Reached!');
+              return;
+            }
+            setCart([...cart, category]);
+            triggerToast(`${category.name} added to cart.`);
+          };
+
+          const copyToClipboard = (text) => {
+            navigator.clipboard.writeText(text).then(() => {
+                triggerToast('Copied to clipboard.');
+            }).catch(() => {
+                const textArea = document.createElement("textarea");
+                textArea.value = text;
+                document.body.appendChild(textArea);
+                textArea.select();
+                document.execCommand('copy');
+                document.body.removeChild(textArea);
+                triggerToast('Copied to clipboard.');
+            });
+          };
+
+          const startAutoDeposit = async (e) => {
+              e.preventDefault();
+              const baseAmount = parseFloat(e.target.amount.value);
+              if (baseAmount < 1) {
+                  triggerToast('Minimum deposit is $1.00'); return;
+              }
+              
+              const uniqueCents = (Math.floor(Math.random() * 99) + 1) / 100; 
+              const finalAmount = +(baseAmount + uniqueCents).toFixed(2);
+              const newInvoiceId = 'DEP-' + Date.now();
+              
+              try {
+                  await setDoc(doc(db, 'artifacts', appId, 'public', 'data', 'Store_Deposits', newInvoiceId), { 
+                      email: user.email, 
+                      amount: finalAmount, 
+                      method: 'USDT TRC20 (Auto)', 
+                      status: 'Awaiting Payment', 
+                      date: new Date().toISOString(),
+                      txId: 'Pending'
+                  });
+
+                  setAutoPay({ active: true, amount: finalAmount, time: 900, checking: true, invoiceId: newInvoiceId });
+                  triggerToast(`Please send exactly $${finalAmount}`);
+              } catch (err) {
+                  console.error(err);
+                  triggerToast("Request failed: " + err.message);
+              }
+          };
+
+          React.useEffect(() => {
+              let interval;
+              if (autoPay.active && autoPay.checking && autoPay.time > 0) {
+                  interval = setInterval(async () => {
+                      try {
+                          const response = await fetch('https://voice-store-api.vercel.app/api/verify', {
+                              method: 'POST',
+                              headers: { 'Content-Type': 'application/json' },
+                              body: JSON.stringify({ invoiceId: autoPay.invoiceId, email: user.email, amount: autoPay.amount })
+                          });
+                          const result = await response.json();
+                          if (result.success) {
+                              setAutoPay(prev => ({...prev, checking: false})); 
+                              triggerToast(`Success! $${autoPay.amount} auto-credited.`);
+                              setAutoPay({ active: false, amount: 0, time: 0, checking: false, invoiceId: '' });
+                              addNotification('Deposit Successful', `$${autoPay.amount} added to your wallet.`);
+                          }
+                      } catch (err) {}
+                  }, 12000); 
+              }
+
+              const timer = setInterval(() => {
+                  if (autoPay.active && autoPay.time > 0) {
+                      setAutoPay(prev => ({ ...prev, time: prev.time - 1 }));
+                  } else if (autoPay.active && autoPay.time <= 0 && autoPay.checking) {
+                      try { updateDoc(doc(db, 'artifacts', appId, 'public', 'data', 'Store_Deposits', autoPay.invoiceId), { status: 'Expired' }); } catch (e) {}
+                      setAutoPay({ active: false, amount: 0, time: 0, checking: false, invoiceId: '' });
+                      triggerToast('Payment window expired.');
+                  }
+              }, 1000);
+
+              return () => { clearInterval(interval); clearInterval(timer); };
+          }, [autoPay, db, appId, user.email, addNotification]);
+
+          const claimDailyBonus = async () => {
+            const today = new Date().toISOString().split('T')[0];
+            const userInfo = usersDB[user.email];
+            if (userInfo?.lastBonusDate === today) {
+              triggerToast('Bonus already claimed today.');
+              return;
+            }
+            try {
+              const userRef = doc(db, 'artifacts', appId, 'public', 'data', 'Store_Users', user.email);
+              await updateDoc(userRef, { balance: (userInfo?.balance || 0) + 0.50, lastBonusDate: today });
+              triggerToast('$0.50 daily reward credited.');
+              addNotification('Daily Reward', 'Funds added to wallet.');
+            } catch(err) { triggerToast('Failed to claim reward.'); }
+          };
+
+          const submitTicket = async (e) => {
+            e.preventDefault();
+            if (!ticketSubject.trim() || !ticketMessage.trim()) return;
+            try {
+              const ticketId = 'TCK-' + Date.now();
+              await setDoc(doc(db, 'artifacts', appId, 'public', 'data', 'Store_Tickets', ticketId), {
+                email: user.email, subject: ticketSubject, message: ticketMessage, status: 'Open', date: new Date().toISOString()
+              });
+              setTicketSubject(''); setTicketMessage('');
+              triggerToast('Support ticket created.');
+            } catch(err) { triggerToast('Submission error.'); }
+          };
+
+          const reportAccount = async (accId) => {
+            try {
+              const ticketId = 'REP-' + Date.now();
+              await setDoc(doc(db, 'artifacts', appId, 'public', 'data', 'Store_Tickets', ticketId), {
+                email: user.email, subject: `Reported Account: ${accId}`, message: `Issue reported with account ID: ${accId}.`, status: 'Open', date: new Date().toISOString()
+              });
+              triggerToast('Report forwarded to admin.');
+            } catch(err) { triggerToast('Error submitting report.'); }
+          };
+
+          const userDeposits = deposits.filter(d => d.email === user.email);
+          const userOrders = allOrders.filter(o => o.customer === user.email);
+          const userInfo = usersDB[user.email];
+          const filteredCategories = categories.filter(c => c.name.toLowerCase().includes(searchQuery.toLowerCase()));
+          const recentActivity = allOrders.slice(0, 5);
+          const referralCode = `REF-${(user?.email || '').split('@')[0].toUpperCase()}`;
+
+          // Unified History
+          const unifiedHistory = [
+              ...userDeposits.map(d => ({ id: d.id, type: 'Deposit', amount: d.amount, date: d.date, status: d.status, method: d.method })),
+              ...userOrders.map(o => ({ id: o.id, type: 'Purchase', amount: o.total, date: o.date, status: o.status, method: 'Store Balance' }))
+          ].sort((a,b) => new Date(b.date) - new Date(a.date));
+
+          const FAQ_ITEMS = [
+              { q: "How long does Auto Deposit take?", a: "USDT TRC20 deposits are usually credited within 1-3 minutes after blockchain confirmation." },
+              { q: "What if the account I bought is invalid?", a: "Please click 'Report Issue' in the 'My Vault' tab. Our team will verify and provide a replacement or refund to your balance." },
+              { q: "Can I withdraw my balance?", a: "Store balances are non-withdrawable and can only be used to purchase digital assets on this platform." }
+          ];
+
+          const TABS = [
+            { id: 'store', label: 'Marketplace', icon: ShoppingCart },
+            { id: 'add_funds', label: 'Deposit', icon: Wallet },
+            { id: 'my_accounts', label: 'My Vault', icon: Package },
+            { id: 'history', label: 'History', icon: History },
+            { id: 'profile', label: 'Profile', icon: UserIcon },
+            { id: 'support', label: 'Support', icon: HelpCircle }
+          ];
+
+          return (
+            <>
+              {previewStockModal.show && (
+                <div className="fixed inset-0 z-[110] flex items-center justify-center p-4 bg-black/60 backdrop-blur-md transition-all duration-300">
+                  <div className={uiCard + " w-full max-w-md p-5 sm:p-6 max-h-[80vh] flex flex-col"}>
+                    <div className="flex justify-between items-center mb-5 border-b border-white/10 pb-4">
+                        <h3 className="font-black text-lg sm:text-xl text-white flex items-center gap-2">
+                           <Eye className="w-5 h-5 text-cyan-400" /> Live Stock Preview
+                        </h3>
+                        <button onClick={() => setPreviewStockModal({show: false, categoryId: null, name: ''})} className="btn-animate p-2 bg-white/10 hover:bg-white/20 backdrop-blur-md rounded-full text-white transition-colors">
+                           <X className="w-5 h-5" />
+                        </button>
+                    </div>
+                    <div className="overflow-y-auto pr-1 sm:pr-2 space-y-3 scrollbar-hide">
+                        {(!inventory[previewStockModal.categoryId] || inventory[previewStockModal.categoryId].length === 0) ? (
+                            <p className="text-center text-sm text-gray-400 font-bold py-10">No stock currently available.</p>
+                        ) : (
+                            inventory[previewStockModal.categoryId].map((acc, i) => {
+                                const info = getPreviewInfo(acc);
+                                return (
+                                   <div key={i} className={uiInnerPanel + " flex justify-between items-center bg-white/5 hover:bg-white/10 transition-colors"}>
+                                      <div className="flex items-center gap-3 sm:gap-4">
+                                         <span className="bg-cyan-500/20 text-cyan-300 font-black px-2 sm:px-2.5 py-1 rounded-lg text-[10px] sm:text-xs uppercase border border-cyan-500/30 shadow-inner">{info.state}</span>
+                                         <span className="font-mono text-xs sm:text-sm text-gray-200 font-bold tracking-wide">{info.phone}</span>
+                                      </div>
+                                      <span className="text-[8px] sm:text-[10px] text-emerald-300 bg-emerald-500/20 border border-emerald-500/30 px-1.5 sm:px-2 py-1 rounded-md uppercase font-black tracking-widest shadow-sm">Ready</span>
+                                   </div>
+                                )
+                            })
+                        )}
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {/* Sidebar Navigation */}
+              <div className="w-full md:w-64 shrink-0 mb-4 md:mb-0">
+                <div className={uiCard + " p-3 flex flex-row md:flex-col gap-2 overflow-x-auto md:overflow-visible scrollbar-hide"}>
+                  {TABS.map(tab => {
+                    const active = activeTab === tab.id;
+                    return (
+                    <button 
+                      key={tab.id} onClick={() => setActiveTab(tab.id)} 
+                      className={`btn-animate px-4 py-3 sm:py-3.5 text-xs sm:text-sm font-bold whitespace-nowrap rounded-xl transition-all duration-300 flex items-center gap-3 border w-full text-left ${active ? 'bg-white/20 border-white/30 text-white shadow-[0_0_15px_rgba(255,255,255,0.1)]' : 'bg-transparent border-transparent text-gray-400 hover:bg-white/10 hover:text-white'}`}
+                    >
+                      <tab.icon className={`w-5 h-5 shrink-0 ${active ? 'text-cyan-400' : ''}`} /> 
+                      <span className="hidden md:block">{tab.label}</span>
+                      <span className="md:hidden">{tab.label}</span>
+                    </button>
+                  )})}
+                  
+                  {/* Mobile Logout (Visible only on small screens inside tabs for easier access) */}
+                  <button onClick={handleLogout} className="btn-animate md:hidden px-4 py-3 text-xs sm:text-sm font-bold whitespace-nowrap rounded-xl transition-all duration-300 flex items-center gap-3 border bg-rose-500/10 border-rose-500/20 text-rose-400">
+                      <LogOut className="w-5 h-5 shrink-0" /> Logout
+                  </button>
+                </div>
+              </div>
+
+              {/* Main Content Area */}
+              <div className="flex-grow w-full min-w-0">
+                {activeTab === 'store' && (
+                  <div className="space-y-6 sm:space-y-8 animate-fade-in-up w-full">
+                    <div className="flex flex-col xl:flex-row justify-between items-start xl:items-center gap-4 w-full">
+                      <div className="w-full xl:w-auto">
+                        <h1 className="text-2xl sm:text-3xl font-black text-white tracking-tight">Marketplace</h1>
+                        <p className="text-gray-400 text-xs sm:text-sm mt-1 font-medium">High-quality verified digital assets.</p>
+                        {promoSettings?.isActive && promoSettings?.code && (
+                          <div className="mt-3 sm:mt-4 inline-flex items-center gap-2 bg-gradient-to-r from-fuchsia-600/30 to-purple-600/30 backdrop-blur-md border border-fuchsia-500/40 px-3 sm:px-4 py-1.5 sm:py-2 rounded-xl text-[10px] sm:text-xs font-bold text-fuchsia-200 shadow-[0_0_15px_rgba(192,38,211,0.2)]">
+                            <Gift className="w-3.5 h-3.5 sm:w-4 sm:h-4"/> Global Promo: <span className="bg-black/40 px-1.5 sm:px-2 py-0.5 sm:py-1 rounded-lg border border-white/10 tracking-widest">{promoSettings.code}</span> for {promoSettings.discount}% off
+                          </div>
+                        )}
+                      </div>
+                      <div className="w-full xl:w-80">
+                         <div className="relative flex items-center w-full">
+                           <Search className="w-4 h-4 sm:w-5 sm:h-5 text-gray-400 absolute left-4" />
+                           <input type="text" placeholder="Search inventory..." value={searchQuery} onChange={(e)=>setSearchQuery(e.target.value)} className={uiInput + " pl-10 sm:pl-12 py-3 sm:py-4 rounded-xl sm:rounded-2xl w-full"} />
+                         </div>
+                      </div>
+                    </div>
+
+                    <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 sm:gap-8 w-full">
+                      {/* Products Grid */}
+                      <div className="lg:col-span-2 grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6 w-full">
+                        {filteredCategories.map((product) => {
+                          const stock = inventory[product.id] ? inventory[product.id].length : 0;
+                          const Icon = product.icon;
+                          return (
+                            <div key={product.id} className={uiCard + " p-5 sm:p-6 flex flex-col group hover:-translate-y-1 hover:shadow-[0_15px_40px_rgba(0,0,0,0.4)] border-white/10 hover:border-white/30"}>
+                              {stock === 0 && <div className="absolute inset-0 bg-black/50 z-20 flex items-center justify-center backdrop-blur-sm"><span className="bg-white/20 backdrop-blur-xl border border-white/30 text-white px-3 sm:px-4 py-1.5 sm:py-2 rounded-xl text-xs sm:text-sm font-black uppercase tracking-widest shadow-2xl">Out of Stock</span></div>}
+                              
+                              <div className="flex justify-between items-start mb-4 sm:mb-5">
+                                <div className={`bg-white/10 backdrop-blur-md p-3 sm:p-3.5 rounded-xl sm:rounded-2xl border border-white/10 shadow-inner group-hover:scale-110 transition-transform`}>{Icon && <Icon className={`w-5 h-5 sm:w-6 sm:h-6 ${product.color}`} />}</div>
+                                <div className="bg-white/10 backdrop-blur-md border border-white/20 px-2.5 sm:px-3 py-1 sm:py-1.5 rounded-xl flex items-center gap-1 text-white text-sm sm:text-base font-black shadow-lg">
+                                  ${Number(product.price).toFixed(2)}
+                                </div>
+                              </div>
+                              
+                              <h3 className="text-base sm:text-lg font-black text-white mb-1.5 sm:mb-2 break-words">{product.name}</h3>
+                              <p className="text-gray-400 text-xs sm:text-sm leading-relaxed mb-6 sm:mb-8 flex-grow font-medium break-words">{product.description}</p>
+                              
+                              <div className="flex justify-between items-center mt-auto pt-4 sm:pt-5 border-t border-white/10 w-full">
+                                <div className="flex flex-col">
+                                  <span className="text-[9px] sm:text-[10px] text-gray-500 font-black uppercase tracking-widest mb-0.5 sm:mb-1">Available</span>
+                                  <div className="flex items-center gap-2 sm:gap-3">
+                                      <span className={`text-sm sm:text-base font-black ${stock > 5 ? 'text-white' : 'text-rose-400'}`}>{stock} pcs</span>
+                                      {stock > 0 && (
+                                          <button onClick={() => setPreviewStockModal({show: true, categoryId: product.id, name: product.name})} className="btn-animate text-[9px] sm:text-[10px] bg-white/10 border border-white/20 text-cyan-300 px-1.5 sm:px-2 py-0.5 sm:py-1 rounded-lg font-bold hover:bg-white/20 flex items-center gap-1 sm:gap-1.5 transition-colors shadow-sm">
+                                             <Eye className="w-3 h-3 sm:w-3.5 sm:h-3.5"/> Preview
+                                          </button>
+                                      )}
+                                  </div>
+                                </div>
+                                <button onClick={() => addToCart(product)} disabled={stock === 0} className={uiBtnPrimary + " !w-auto !py-2 sm:!py-2.5 !px-4 sm:!px-5 text-xs sm:text-sm rounded-xl"}>
+                                  Add <Plus className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
+                                </button>
+                              </div>
+                            </div>
+                          );
+                        })}
+                        {filteredCategories.length === 0 && <div className="col-span-full py-20 text-center text-gray-500 font-bold w-full"><Search className="w-10 h-10 sm:w-12 sm:h-12 mx-auto mb-4 opacity-30"/>No products match your search.</div>}
+                      </div>
+
+                      {/* Sidebar: Activity */}
+                      <div className="lg:col-span-1 w-full">
+                         <div className={uiCard + " p-5 sm:p-6 h-full flex flex-col bg-black/20"}>
+                            <h3 className="font-black text-white mb-4 sm:mb-5 flex items-center gap-2 text-sm sm:text-base pb-3 border-b border-white/10"><TrendingUp className="w-4 h-4 sm:w-5 sm:h-5 text-cyan-400"/> Live Activity</h3>
+                            <div className="space-y-3 sm:space-y-4 overflow-y-auto flex-grow scrollbar-hide pr-1">
+                              {recentActivity.map((act, i) => (
+                                <div key={i} className="bg-white/5 rounded-xl sm:rounded-2xl p-3 sm:p-4 border border-white/10 relative overflow-hidden group hover:bg-white/10 transition-colors">
+                                  <div className="absolute top-0 left-0 w-1 h-full bg-cyan-500"></div>
+                                  <p className="text-xs sm:text-sm text-gray-300 font-medium ml-2 break-words">
+                                    <span className="font-black text-white">{(act.customer || 'User').split('@')[0]}***</span> bought <span className="font-black text-emerald-400">${Number(act.total || 0).toFixed(2)}</span>
+                                  </p>
+                                  <p className="text-[9px] sm:text-xs text-gray-500 mt-1.5 sm:mt-2 font-bold ml-2 flex items-center gap-1 sm:gap-1.5"><Clock className="w-2.5 h-2.5 sm:w-3 sm:h-3"/> {new Date(act.date).toLocaleTimeString()}</p>
+                                </div>
+                              ))}
+                              {recentActivity.length === 0 && <p className="text-xs sm:text-sm text-gray-500 text-center py-10 font-bold">No recent activity.</p>}
+                            </div>
+                         </div>
+                      </div>
+                    </div>
+                  </div>
+                )}
+
+                {activeTab === 'add_funds' && (
+                  <div className="animate-fade-in-up grid grid-cols-1 lg:grid-cols-2 gap-6 sm:gap-8 w-full">
+                    <div className="space-y-6 sm:space-y-8 w-full">
+                      {/* Bank Transfer Option */}
+                      <div className={uiCard + " p-5 sm:p-8"}>
+                        <h3 className="text-base sm:text-lg font-black text-white mb-4 sm:mb-5 flex items-center gap-2 pb-2 sm:pb-3 border-b border-white/10">
+                          <Building className="w-5 h-5 sm:w-6 sm:h-6 text-fuchsia-400"/> Bank Transfer
+                        </h3>
+                        <div className="bg-black/30 backdrop-blur-xl border border-white/10 p-4 sm:p-5 rounded-xl sm:rounded-2xl mb-4 sm:mb-6 text-sm sm:text-base space-y-2 sm:space-y-3 shadow-inner w-full">
+                          <div className="flex justify-between items-center border-b border-white/5 pb-2"><span className="text-gray-400 font-bold">Bank</span> <span className="font-black text-white">Parallex</span></div>
+                          <div className="flex justify-between items-center border-b border-white/5 pb-2 pt-1"><span className="text-gray-400 font-bold">Name</span> <span className="font-black text-white text-right">Samuel Osita Emmanuel</span></div>
+                          <div className="flex justify-between items-center pt-1"><span className="text-gray-400 font-bold">A/C Number</span> <span className="font-mono text-fuchsia-400 font-black text-base sm:text-lg">1120927346</span></div>
+                        </div>
+                        <button onClick={() => copyToClipboard('1120927346')} className={uiBtnSecondary + " mb-3"}><Copy className="w-4 h-4 sm:w-5 sm:h-5" /> Copy A/C Number</button>
+                        <p className="text-[10px] sm:text-xs text-gray-400 text-center font-bold">Requires manual approval post-submission. Open a ticket.</p>
+                      </div>
+
+                      <div className={uiCard + " p-5 sm:p-8"}>
+                        <h3 className="text-base sm:text-lg font-black text-white mb-4 sm:mb-5 flex items-center gap-2 pb-2 sm:pb-3 border-b border-white/10"><Wallet className="w-5 h-5 sm:w-6 sm:h-6 text-emerald-400"/> Crypto (USDT TRC20)</h3>
+                        <div className="bg-black/30 backdrop-blur-xl border border-white/10 p-4 sm:p-5 rounded-xl sm:rounded-2xl mb-4 sm:mb-6 shadow-inner w-full overflow-hidden">
+                          <p className="font-mono text-sm sm:text-base font-bold text-gray-200 break-all text-center select-all tracking-wide">{TRON_ADDRESS}</p>
+                        </div>
+                        <button onClick={() => copyToClipboard(TRON_ADDRESS)} className={uiBtnSecondary}><Copy className="w-4 h-4 sm:w-5 sm:h-5" /> Copy Address</button>
+                      </div>
+
+                      <div className={uiCard + " p-5 sm:p-8"}>
+                        <h3 className="text-base sm:text-lg font-black text-white mb-4 sm:mb-5 flex items-center gap-2 pb-2 sm:pb-3 border-b border-white/10">
+                          <DollarSign className="w-5 h-5 sm:w-6 sm:h-6 text-yellow-400"/> Binance Pay
+                        </h3>
+                        <div className="bg-black/30 backdrop-blur-xl border border-white/10 p-4 sm:p-5 rounded-xl sm:rounded-2xl mb-4 sm:mb-6 text-sm sm:text-base space-y-2 sm:space-y-3 shadow-inner w-full">
+                          <div className="flex justify-between items-center border-b border-white/5 pb-2"><span className="text-gray-400 font-bold">Name</span> <span className="font-black text-white">__CrYpTo-BoT_</span></div>
+                          <div className="flex justify-between items-center pt-1"><span className="text-gray-400 font-bold">Binance ID</span> <span className="font-mono text-yellow-400 font-black text-base sm:text-lg">406439321</span></div>
+                        </div>
+                        <button onClick={() => copyToClipboard('406439321')} className={uiBtnSecondary + " mb-3"}><Copy className="w-4 h-4 sm:w-5 sm:h-5" /> Copy ID</button>
+                        <p className="text-[10px] sm:text-xs text-gray-400 text-center font-bold">Requires manual approval post-submission. Open a ticket.</p>
+                      </div>
+                    </div>
+
+                    <div className="space-y-6 sm:space-y-8 w-full">
+                      <div className={uiCard + " p-5 sm:p-8 border-cyan-500/30 shadow-[0_0_30px_rgba(6,182,212,0.15)] h-fit sticky top-24"}>
+                        <h2 className="text-lg sm:text-xl font-black mb-2 text-white flex items-center gap-2">
+                           <Zap className="w-5 h-5 sm:w-6 sm:h-6 text-cyan-400"/> Auto Deposit Engine
+                        </h2>
+                        
+                        {!autoPay.active ? (
+                            <div className="mt-4 sm:mt-6">
+                              <p className="text-xs sm:text-sm text-gray-300 mb-5 sm:mb-6 font-medium leading-relaxed">Enter your desired amount. Our system will generate a unique payment invoice for automated 1-minute detection.</p>
+                              <form onSubmit={startAutoDeposit} className="space-y-4 sm:space-y-5 w-full">
+                                <div>
+                                  <label className="block text-[10px] sm:text-xs font-bold text-gray-300 mb-1.5 sm:mb-2 uppercase tracking-wider">Deposit Amount (USD)</label>
+                                  <div className="relative">
+                                     <DollarSign className="w-4 h-4 sm:w-5 sm:h-5 text-gray-400 absolute left-3 sm:left-4 top-3.5 sm:top-4" />
+                                     <input type="number" step="1" min="1" name="amount" required placeholder="10" className={uiInput + " pl-10 sm:pl-12 text-base sm:text-lg font-black h-12 sm:h-14"} />
+                                  </div>
+                                </div>
+                                <button type="submit" className={uiBtnPrimary + " h-12 sm:h-14 text-sm sm:text-lg"}>Generate Auto-Invoice</button>
+                              </form>
+                            </div>
+                        ) : (
+                            <div className="bg-black/30 backdrop-blur-xl border border-cyan-500/40 p-5 sm:p-8 rounded-2xl text-center space-y-4 sm:space-y-6 relative overflow-hidden mt-4 sm:mt-6 shadow-inner w-full">
+                                <div className="absolute top-0 left-0 w-full h-1.5 bg-gray-800">
+                                    <div className="h-full bg-cyan-400 transition-all duration-1000" style={{ width: `${(autoPay.time / 900) * 100}%` }}></div>
+                                </div>
+                                
+                                <p className="text-xs sm:text-sm font-bold text-white flex items-center justify-center gap-2 sm:gap-2.5">
+                                    <span className="w-2 h-2 sm:w-2.5 sm:h-2.5 bg-cyan-400 rounded-full animate-pulse shadow-[0_0_10px_rgba(34,211,238,0.8)]"></span> Listening to Blockchain...
+                                </p>
+                                
+                                <div className="text-4xl sm:text-5xl font-black text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-blue-400 tracking-tight drop-shadow-sm">
+                                    ${autoPay.amount.toFixed(2)}
+                                </div>
+                                
+                                <div className="bg-rose-500/10 backdrop-blur-md p-3 sm:p-4 rounded-xl border border-rose-500/30 shadow-sm text-left">
+                                   <p className="text-[10px] sm:text-xs text-rose-400 font-black mb-1 sm:mb-1.5 uppercase tracking-wider flex items-center gap-1"><AlertTriangle className="w-3 h-3 sm:w-3.5 sm:h-3.5"/> Critical Instruction</p>
+                                   <p className="text-xs sm:text-sm text-gray-200 font-medium leading-relaxed">
+                                       You MUST send exactly <span className="font-black text-white border-b border-rose-400">${autoPay.amount.toFixed(2)}</span> to our USDT TRC20 address. Different amounts will <span className="text-rose-400 font-bold">fail to auto-credit</span>.
+                                   </p>
+                                </div>
+                                
+                                <div className="flex justify-between items-center pt-3 sm:pt-4 border-t border-white/10 w-full">
+                                    <p className="text-xs sm:text-sm font-mono text-gray-300 font-bold flex items-center gap-1.5 sm:gap-2">
+                                        <Clock className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-gray-400"/> {Math.floor(autoPay.time / 60)}:{(autoPay.time % 60).toString().padStart(2, '0')}
+                                    </p>
+                                    <button onClick={() => setAutoPay({active: false, amount: 0, time: 0, checking: false, invoiceId: ''})} className="btn-animate text-[10px] sm:text-xs text-white hover:text-rose-200 font-bold px-3 sm:px-4 py-1.5 sm:py-2 bg-rose-600/80 hover:bg-rose-700/90 rounded-lg sm:rounded-xl transition-colors shadow-lg">Cancel Invoice</button>
+                                </div>
+                            </div>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                )}
+
+                {activeTab === 'history' && (
+                  <div className="animate-fade-in-up w-full">
+                    <div className={uiCard + " p-5 sm:p-6 min-h-[500px]"}>
+                      <h2 className="text-xl sm:text-2xl font-black text-white mb-5 sm:mb-6 flex items-center gap-2 sm:gap-3 pb-3 sm:pb-4 border-b border-white/10"><History className="w-5 h-5 sm:w-6 sm:h-6 text-cyan-400"/> Transaction Ledger</h2>
+                      
+                      {unifiedHistory.length === 0 ? (
+                        <div className="text-center py-20 sm:py-32 text-gray-500 flex flex-col items-center">
+                          <Activity className="w-12 h-12 sm:w-16 sm:h-16 mb-3 sm:mb-4 opacity-20" />
+                          <p className="text-sm sm:text-base font-bold">No transactions found.</p>
+                        </div>
+                      ) : (
+                        <div className="space-y-3 sm:space-y-4 w-full">
+                          {unifiedHistory.map((item, idx) => {
+                              const isDeposit = item.type === 'Deposit';
+                              return (
+                                  <div key={idx} className="bg-white/5 backdrop-blur-md border border-white/10 p-4 sm:p-5 rounded-xl sm:rounded-2xl flex flex-col sm:flex-row sm:items-center justify-between gap-3 sm:gap-4 hover:bg-white/10 transition-colors w-full">
+                                      <div className="flex items-center gap-3 sm:gap-4">
+                                          <div className={`w-10 h-10 sm:w-12 sm:h-12 rounded-lg sm:rounded-xl flex items-center justify-center shadow-inner border shrink-0 ${isDeposit ? 'bg-emerald-500/20 border-emerald-500/30 text-emerald-400' : 'bg-rose-500/20 border-rose-500/30 text-rose-400'}`}>
+                                              {isDeposit ? <Wallet className="w-5 h-5 sm:w-6 sm:h-6"/> : <ShoppingCart className="w-5 h-5 sm:w-6 sm:h-6"/>}
+                                          </div>
+                                          <div className="overflow-hidden">
+                                              <p className="text-sm sm:text-base font-black text-white">{item.type}</p>
+                                              <p className="text-[10px] sm:text-xs text-gray-400 font-mono mt-0.5 sm:mt-1 truncate">{item.id}</p>
+                                              <p className="text-[10px] sm:text-xs text-gray-500 font-bold mt-0.5">{item.date ? new Date(item.date).toLocaleString() : ''}</p>
+                                          </div>
+                                      </div>
+                                      <div className="flex sm:flex-col items-center sm:items-end justify-between sm:justify-center w-full sm:w-auto mt-2 sm:mt-0 pt-2 sm:pt-0 border-t border-white/5 sm:border-0">
+                                          <p className={`text-lg sm:text-xl font-black ${isDeposit ? 'text-emerald-400' : 'text-white'}`}>
+                                              {isDeposit ? '+' : '-'}${Number(item.amount || 0).toFixed(2)}
+                                          </p>
+                                          <span className={`text-[9px] sm:text-[10px] font-bold mt-0 sm:mt-1 px-2 sm:px-2.5 py-0.5 sm:py-1 rounded-md sm:rounded-lg uppercase tracking-wider border ${
+                                              String(item.status || '').includes('Approved') || String(item.status || '').includes('Completed') ? 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20' : 
+                                              String(item.status || '').includes('Pending') || String(item.status || '').includes('Verifying') ? 'bg-amber-500/10 text-amber-400 border-amber-500/20' : 
+                                              'bg-rose-500/10 text-rose-400 border-rose-500/20'
+                                          }`}>
+                                              {item.status}
+                                          </span>
+                                      </div>
+                                  </div>
+                              );
+                          })}
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                )}
+
+                {activeTab === 'my_accounts' && (
+                  <div className="animate-fade-in-up w-full">
+                    <div className={uiCard + " p-5 sm:p-6 min-h-[500px]"}>
+                      <h2 className="text-xl sm:text-2xl font-black text-white mb-5 sm:mb-6 flex items-center gap-2 sm:gap-3 pb-3 sm:pb-4 border-b border-white/10"><Package className="w-5 h-5 sm:w-6 h-6 text-fuchsia-400"/> My Vault</h2>
+                      {purchases.length === 0 ? (
+                        <div className="text-center py-20 sm:py-32 text-gray-500 flex flex-col items-center font-bold">
+                          <Lock className="w-12 h-12 sm:w-16 sm:h-16 mb-3 sm:mb-4 opacity-20" />
+                          <p className="text-sm sm:text-base">Your secure vault is currently empty.</p>
+                        </div>
+                      ) : (
+                        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6 w-full">
+                          {purchases.map((acc, idx) => (
+                            <div key={idx} className={uiInnerPanel + " flex flex-col w-full relative group hover:border-white/30 transition-colors"}>
+                              <div className="flex justify-between items-start mb-3 sm:mb-4">
+                                 <span className="text-xs sm:text-sm font-black text-white flex items-center gap-1.5 sm:gap-2 break-words max-w-[70%]"><Sparkles className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-cyan-400 shrink-0"/> {acc.type}</span>
+                                 <span className="text-[9px] sm:text-[10px] text-gray-400 font-bold bg-black/40 px-1.5 sm:px-2 py-0.5 sm:py-1 rounded-md shrink-0">{acc.date ? new Date(acc.date).toLocaleDateString() : ''}</span>
+                              </div>
+                              <div className="w-full bg-black/40 backdrop-blur-md p-3 sm:p-4 rounded-xl border border-white/10 mb-4 sm:mb-5 shadow-inner overflow-x-auto">
+                                <pre className="font-mono text-xs sm:text-sm text-emerald-400 whitespace-pre-wrap break-words font-bold">{String(acc.data || '')}</pre>
+                              </div>
+                              <div className="flex justify-end gap-2 sm:gap-3 mt-auto">
+                                 <button onClick={() => reportAccount(acc.id)} className="btn-animate text-[10px] sm:text-[11px] text-gray-400 hover:text-rose-400 font-bold px-2 sm:px-3 py-1.5 sm:py-2 transition-colors">Report Issue</button>
+                                 <button onClick={() => copyToClipboard(String(acc.data || ''))} className={uiBtnPrimary + " !w-auto !py-1.5 sm:!py-2 !px-3 sm:!px-4 !rounded-lg !text-[10px] sm:!text-xs"}><Copy className="w-3 h-3 sm:w-3.5 sm:h-3.5"/> Copy Data</button>
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                )}
+
+                {activeTab === 'profile' && (
+                  <div className="animate-fade-in-up grid grid-cols-1 xl:grid-cols-3 gap-6 sm:gap-8 w-full">
+                    <div className={uiCard + " p-6 sm:p-8 text-center xl:col-span-1 h-fit flex flex-col items-center"}>
+                      <div className="w-20 h-20 sm:w-24 sm:h-24 bg-gradient-to-br from-cyan-500/20 to-blue-500/20 backdrop-blur-xl rounded-[1.5rem] sm:rounded-[2rem] flex items-center justify-center mb-4 sm:mb-5 border border-cyan-500/30 shadow-lg">
+                        <UserIcon className="w-8 h-8 sm:w-10 sm:h-10 text-cyan-400" strokeWidth={2.5}/>
+                      </div>
+                      <h2 className="text-base sm:text-lg font-black text-white mb-1 truncate w-full" title={user.email}>{user.email}</h2>
+                      <p className="text-[10px] sm:text-xs text-gray-400 font-bold mb-6 sm:mb-8">Joined {userInfo?.joined ? new Date(userInfo.joined).toLocaleDateString() : 'N/A'}</p>
+                      
+                      <div className="w-full text-left mb-2 flex justify-between items-end">
+                          <span className="text-[10px] sm:text-xs font-bold text-gray-400 uppercase tracking-wider">Level</span>
+                          <span className={`text-xs sm:text-sm font-black ${tier?.color || 'text-gray-400'} flex items-center gap-1`}>
+                              {tier && tier.icon && <tier.icon className="w-3 h-3 sm:w-3.5 sm:h-3.5"/>}
+                              {tier?.name || 'Loading'}
+                          </span>
+                      </div>
+                      
+                      {tier && tier.next && (
+                          <div className="w-full bg-black/40 rounded-full h-1.5 sm:h-2 mb-2 border border-white/5 overflow-hidden">
+                              <div className="bg-gradient-to-r from-cyan-400 to-blue-500 h-full rounded-full" style={{width: `${Math.min(100, ((userInfo?.totalSpent || 0) / tier.next) * 100)}%`}}></div>
+                          </div>
+                      )}
+                      {tier && tier.next ? (
+                          <p className="text-[9px] sm:text-[10px] text-gray-500 font-bold w-full text-left mb-4 sm:mb-6">Spend ${Number(tier.next - (userInfo?.totalSpent || 0)).toFixed(2)} more to level up.</p>
+                      ) : (
+                          <p className="text-[9px] sm:text-[10px] text-amber-400 font-bold w-full text-center mb-4 sm:mb-6">Max Level Achieved!</p>
+                      )}
+                    </div>
+
+                    <div className="xl:col-span-2 space-y-6 sm:space-y-8 w-full">
+                      <div className="grid grid-cols-2 gap-4 sm:gap-6 w-full">
+                        <div className={uiCard + " p-5 sm:p-8 flex flex-col justify-center items-center text-center"}>
+                          <p className="text-gray-400 text-[10px] sm:text-xs font-bold mb-1.5 sm:mb-2 uppercase tracking-widest break-words w-full">Lifetime Spent</p>
+                          <p className="text-2xl sm:text-4xl font-black text-white">${Number(userInfo?.totalSpent || 0).toFixed(2)}</p>
+                        </div>
+                        <div className={uiCard + " p-5 sm:p-8 flex flex-col justify-center items-center text-center border-emerald-500/20 bg-emerald-500/5"}>
+                          <p className="text-emerald-500/80 text-[10px] sm:text-xs font-bold mb-1.5 sm:mb-2 uppercase tracking-widest break-words w-full">Current Balance</p>
+                          <p className="text-2xl sm:text-4xl font-black text-emerald-400">${Number(balance || 0).toFixed(2)}</p>
+                        </div>
+                      </div>
+
+                      {featureSettings?.dailyReward && (
+                        <div className={uiCard + " p-5 sm:p-6 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 sm:gap-5 bg-gradient-to-r from-amber-500/10 to-orange-500/10 border-amber-500/30"}>
+                           <div className="w-full sm:w-auto">
+                             <h3 className="text-sm sm:text-base font-black text-white flex items-center gap-1.5 sm:gap-2 mb-1 sm:mb-1.5"><Star className="w-4 h-4 sm:w-5 sm:h-5 text-yellow-400"/> Daily Reward Check-in</h3>
+                             <p className="text-xs sm:text-sm text-gray-300 font-medium">Claim your free <span className="font-bold text-amber-400">$0.50</span> wallet bonus every 24 hours.</p>
+                           </div>
+                           <button onClick={claimDailyBonus} className="btn-animate bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-400 hover:to-orange-400 text-white px-5 sm:px-6 py-2.5 sm:py-3 rounded-lg sm:rounded-xl text-xs sm:text-sm font-black transition-all w-full sm:w-auto shadow-[0_0_20px_rgba(245,158,11,0.4)]">Claim Bonus</button>
+                        </div>
+                      )}
+
+                      {featureSettings?.referral && (
+                        <div className={uiCard + " p-5 sm:p-6"}>
+                           <h3 className="text-sm sm:text-base font-black text-white mb-1.5 sm:mb-2 flex items-center gap-1.5 sm:gap-2"><Users className="w-4 h-4 sm:w-5 sm:h-5 text-fuchsia-400"/> Affiliate Program</h3>
+                           <p className="text-xs sm:text-sm text-gray-300 font-medium mb-4 sm:mb-5">Share your unique code with friends to earn deposit bonuses.</p>
+                           <div className="bg-black/40 backdrop-blur-md border border-white/10 rounded-lg sm:rounded-xl p-2 sm:p-2.5 flex justify-between items-center shadow-inner w-full">
+                             <span className="font-mono text-sm sm:text-base font-black text-transparent bg-clip-text bg-gradient-to-r from-fuchsia-400 to-purple-400 px-2 sm:px-4 break-all">{referralCode}</span>
+                             <button onClick={() => copyToClipboard(referralCode)} className="btn-animate bg-white/10 hover:bg-white/20 p-2 sm:p-2.5 rounded-md sm:rounded-lg transition-colors text-white border border-white/10 shadow-sm shrink-0"><Copy className="w-3.5 h-3.5 sm:w-4 sm:h-4"/></button>
+                           </div>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                )}
+
+                {activeTab === 'support' && (
+                  <div className="animate-fade-in-up grid grid-cols-1 lg:grid-cols-2 gap-6 sm:gap-8 w-full">
+                    <div className="space-y-6 sm:space-y-8 w-full">
+                        <div className={uiCard + " p-5 sm:p-8 h-fit"}>
+                          <h2 className="text-lg sm:text-xl font-black text-white mb-2 flex items-center gap-2 pb-3 sm:pb-4 border-b border-white/10"><Headset className="w-5 h-5 sm:w-6 sm:h-6 text-cyan-400"/> Open a Ticket</h2>
+                          <p className="text-xs sm:text-sm text-gray-400 font-medium mb-5 sm:mb-6 mt-3 sm:mt-4">Experiencing issues? Describe it below and our team will assist you shortly.</p>
+                          <form onSubmit={submitTicket} className="space-y-4 sm:space-y-5 w-full">
+                            <div>
+                              <label className="block text-[10px] sm:text-xs font-bold text-gray-300 mb-1.5 sm:mb-2 uppercase tracking-wider">Subject</label>
+                              <input type="text" value={ticketSubject} onChange={e => setTicketSubject(e.target.value)} required placeholder="Brief issue title" className={uiInput} />
+                            </div>
+                            <div>
+                              <label className="block text-[10px] sm:text-xs font-bold text-gray-300 mb-1.5 sm:mb-2 uppercase tracking-wider">Details</label>
+                              <textarea value={ticketMessage} onChange={e => setTicketMessage(e.target.value)} required placeholder="Provide full context..." rows="4" className={uiInput + " resize-none"} />
+                            </div>
+                            <button type="submit" className={uiBtnPrimary}>Submit Request</button>
+                          </form>
+                        </div>
+
+                        {/* FAQ */}
+                        <div className={uiCard + " p-5 sm:p-6 h-fit w-full"}>
+                           <h2 className="text-base sm:text-lg font-black text-white mb-3 sm:mb-4 flex items-center gap-2"><HelpCircle className="w-4 h-4 sm:w-5 sm:h-5 text-amber-400"/> Quick FAQ</h2>
+                           <div className="space-y-2.5 sm:space-y-3">
+                              {FAQ_ITEMS.map((faq, i) => (
+                                  <div key={i} className="bg-white/5 border border-white/10 rounded-lg sm:rounded-xl p-3 sm:p-4 w-full">
+                                      <p className="font-bold text-white text-xs sm:text-sm mb-1 sm:mb-1.5 leading-snug">{faq.q}</p>
+                                      <p className="text-[10px] sm:text-xs text-gray-400 leading-relaxed font-medium">{faq.a}</p>
+                                  </div>
+                              ))}
+                           </div>
+                        </div>
+                    </div>
+
+                    <div className={uiCard + " p-5 sm:p-6 flex flex-col w-full"}>
+                       <h3 className="text-base sm:text-lg font-black text-white mb-4 sm:mb-5 pb-3 sm:pb-4 border-b border-white/10">Active Tickets</h3>
+                       <div className="space-y-3 sm:space-y-4 overflow-y-auto scrollbar-hide pr-1 sm:pr-2">
+                         {tickets.length === 0 ? <p className="text-center text-gray-500 font-bold py-16 sm:py-20 text-xs sm:text-sm">You have no active support tickets.</p> : tickets.map(t => (
+                           <div key={t.id} className={uiInnerPanel + " border-white/20 w-full"}>
+                             <div className="flex justify-between items-start mb-2 sm:mb-3">
+                               <h4 className="font-black text-white text-sm sm:text-base break-words w-[70%]">{t.subject}</h4>
+                               <span className={`text-[8px] sm:text-[10px] px-2 sm:px-2.5 py-0.5 sm:py-1 rounded-md font-black uppercase tracking-wider border shrink-0 ${t.status === 'Open' ? 'bg-amber-500/20 text-amber-400 border-amber-500/30 shadow-[0_0_10px_rgba(251,191,36,0.2)]' : 'bg-emerald-500/20 text-emerald-400 border-emerald-500/30'}`}>{t.status}</span>
+                             </div>
+                             <div className="bg-black/20 p-2 sm:p-3 rounded-lg border border-white/5 mb-2 sm:mb-3 w-full">
+                               <p className="text-xs sm:text-sm text-gray-300 font-medium leading-relaxed break-words">{t.message}</p>
+                             </div>
+                             <p className="text-[9px] sm:text-[10px] text-gray-500 font-bold flex items-center gap-1 sm:gap-1.5"><Clock className="w-2.5 h-2.5 sm:w-3 sm:h-3"/> {t.date ? new Date(t.date).toLocaleString() : ''}</p>
+                           </div>
+                         ))}
+                       </div>
+                    </div>
+                  </div>
+                )}
+              </div>
+            </>
+          );
+        }
+
+        // ==========================================
+        // CART MODAL
+        // ==========================================
+        function CartModal({ cart, setCart, setShowCart, inventory, user, balance, usersDB, triggerToast, addNotification, db, appId, promoSettings, uiCard, uiInput, uiBtnPrimary, uiInnerPanel }) {
+          const [error, setError] = useState('');
+          const [promoCode, setPromoCode] = useState('');
+          const [discount, setDiscount] = useState(0); 
+          const [isProcessing, setIsProcessing] = useState(false);
+
+          const subtotal = cart.reduce((sum, item) => sum + Number(item.price || 0), 0);
+          const total = subtotal * (1 - discount);
+          const canAfford = balance >= total;
+
+          const handleApplyPromo = () => {
+            if (promoSettings?.isActive && promoSettings?.code && promoCode.toUpperCase() === String(promoSettings.code || '').toUpperCase()) { 
+              setDiscount(Number(promoSettings.discount || 0) / 100); 
+              setError(''); 
+              triggerToast('Promo applied successfully!');
+            } else { 
+              setDiscount(0); 
+              setError('Invalid promo code.'); 
+            }
+          };
+
+          const handleCheckout = async () => {
+            if (!canAfford) { setError('Insufficient balance.'); return; }
+            setIsProcessing(true);
+
+            try {
+              const userRef = doc(db, 'artifacts', appId, 'public', 'data', 'Store_Users', user.email);
+              const currentSpent = Number(usersDB[user.email]?.totalSpent || 0);
+              const currentBalance = Number(usersDB[user.email]?.balance || 0);
+              await updateDoc(userRef, { balance: currentBalance - total, totalSpent: currentSpent + total });
+
+              let tempInventory = { ...inventory };
+              let deliveredAccounts = [];
+
+              cart.forEach(item => {
+                if (tempInventory[item.id] && tempInventory[item.id].length > 0) {
+                  const accountData = tempInventory[item.id].shift(); 
+                  deliveredAccounts.push({ type: item.name, data: String(accountData) });
+                }
+              });
+
+              const invRef = doc(db, 'artifacts', appId, 'public', 'data', 'Store_Inventory', 'Stock');
+              await updateDoc(invRef, tempInventory);
+              
+              const orderId = 'ORD-' + Date.now();
+              await setDoc(doc(db, 'artifacts', appId, 'public', 'data', 'Store_Orders', orderId), {
+                customer: user.email, total, status: 'Completed', date: new Date().toISOString()
+              });
+
+              for (const acc of deliveredAccounts) {
+                const purId = 'PUR-' + Date.now() + '-' + Math.random().toString(36).substr(2, 5);
+                await setDoc(doc(db, 'artifacts', appId, 'public', 'data', 'Store_Purchases', purId), {
+                  customer: user.email, type: acc.type, data: acc.data, date: new Date().toISOString()
+                });
+              }
+
+              setCart([]); setShowCart(false);
+              triggerToast('Purchase Completed Successfully!');
+              addNotification('Purchase Complete', `Acquired ${cart.length} assets.`);
+            } catch (err) { setError('Checkout failed. Try again.'); } 
+            finally { setIsProcessing(false); }
+          };
+
+          return (
+            <div className="fixed inset-0 z-[100] flex items-end sm:items-center justify-center p-0 sm:p-4 bg-black/70 backdrop-blur-md transition-all duration-300 w-full h-full">
+              <div className={"bg-slate-900/80 backdrop-blur-3xl w-full max-w-md p-5 sm:p-6 sm:rounded-3xl rounded-t-[2.5rem] shadow-[0_0_50px_rgba(0,0,0,0.5)] border border-white/20 animate-fade-in-up max-h-[90vh] flex flex-col"}>
+                <div className="flex justify-between items-center mb-5 sm:mb-6 pb-3 sm:pb-4 border-b border-white/10 shrink-0">
+                  <h2 className="text-xl sm:text-2xl font-black text-white flex items-center gap-2"><ShoppingCart className="w-5 h-5 sm:w-6 sm:h-6 text-cyan-400"/> Checkout</h2>
+                  <button onClick={() => setShowCart(false)} className="btn-animate p-1.5 sm:p-2 bg-white/10 hover:bg-white/20 rounded-full text-white transition-colors backdrop-blur-md"><X className="w-4 h-4 sm:w-5 sm:h-5" /></button>
+                </div>
+
+                {cart.length === 0 ? (
+                  <div className="text-center py-10 sm:py-12 text-gray-500 font-bold flex-grow flex flex-col justify-center items-center"><ShoppingCart className="w-12 h-12 sm:w-16 sm:h-16 mx-auto mb-3 sm:mb-4 opacity-20" /><p className="text-sm sm:text-base">Cart is empty</p></div>
+                ) : (
+                  <div className="flex flex-col flex-grow overflow-hidden w-full">
+                    <div className={uiInnerPanel + " mb-4 sm:mb-5 flex justify-between items-center bg-black/40 shrink-0"}>
+                      <span className="text-gray-400 text-[10px] sm:text-xs font-bold uppercase tracking-wider">Wallet Balance</span>
+                      <span className="font-black text-emerald-400 text-lg sm:text-xl">${Number(balance || 0).toFixed(2)}</span>
+                    </div>
+                    
+                    <div className="space-y-2.5 sm:space-y-3 mb-5 sm:mb-6 overflow-y-auto flex-grow scrollbar-hide pr-1 w-full">
+                      {cart.map((item, idx) => (
+                        <div key={idx} className="flex justify-between items-center bg-white/5 p-2.5 sm:p-3 rounded-lg sm:rounded-xl border border-white/10 w-full">
+                          <p className="text-xs sm:text-sm font-bold text-white truncate mr-2">{item.name}</p>
+                          <p className="text-sm sm:text-base font-black text-cyan-400 shrink-0">${Number(item.price || 0).toFixed(2)}</p>
+                        </div>
+                      ))}
+                    </div>
+                    
+                    <div className="mb-5 sm:mb-6 flex gap-2 sm:gap-3 shrink-0 w-full">
+                      <div className="relative flex-grow">
+                        <input type="text" placeholder="Promo code" value={promoCode} onChange={e => setPromoCode(e.target.value)} className={uiInput + " py-2.5 sm:py-3 text-xs sm:text-sm uppercase h-full w-full"} />
+                      </div>
+                      <button onClick={handleApplyPromo} className="btn-animate bg-gray-900/80 backdrop-blur-sm hover:bg-black text-white px-4 sm:px-5 rounded-xl text-xs sm:text-sm font-bold transition-colors border border-white/10 shrink-0">Apply</button>
+                    </div>
+
+                    <div className="border-t border-white/20 pt-4 sm:pt-5 mb-6 sm:mb-8 space-y-2 sm:space-y-3 shrink-0 w-full">
+                      <div className="flex justify-between text-xs sm:text-sm text-gray-300 font-medium w-full"><span>Subtotal</span><span className="font-bold">${Number(subtotal || 0).toFixed(2)}</span></div>
+                      {discount > 0 && <div className="flex justify-between text-xs sm:text-sm text-fuchsia-400 font-bold w-full"><span>Discount ({promoSettings?.discount}%)</span><span>-${Number(subtotal * discount || 0).toFixed(2)}</span></div>}
+                      <div className="flex justify-between text-xl sm:text-2xl font-black text-white pt-2 sm:pt-3 border-t border-white/10 w-full"><span>Total</span><span className={canAfford ? 'text-white' : 'text-rose-400'}>${Number(total || 0).toFixed(2)}</span></div>
+                    </div>
+
+                    {error && <p className="text-rose-400 text-xs sm:text-sm text-center mb-4 sm:mb-5 font-bold bg-rose-500/10 p-2 rounded-lg shrink-0 w-full">{error}</p>}
+
+                    <button onClick={handleCheckout} disabled={!canAfford || isProcessing} className={uiBtnPrimary + " h-12 sm:h-14 text-sm sm:text-lg shrink-0 w-full"}>
+                      {isProcessing ? 'Processing Transaction...' : 'Confirm & Pay Securely'}
+                    </button>
+                  </div>
+                )}
+              </div>
+            </div>
+          );
+        }
+
+        // ==========================================
+        // ADMIN DASHBOARD
+        // ==========================================
+        function AdminDashboard({ inventory, orders, deposits, categories, usersDB, db, appId, promoSettings, globalNotice, tickets, featureSettings, auth, user, uiCard, uiInput, uiBtnPrimary, uiBtnSecondary, uiBtnAction, uiInnerPanel, triggerToast }) {
+          const [activeTab, setActiveTab] = useState('inventory');
+          const [uploadCategory, setUploadCategory] = useState('new');
+          const [uploadText, setUploadText] = useState('');
+
+          const [promoInput, setPromoInput] = useState('');
+          const [discountInput, setDiscountInput] = useState(0);
+          const [promoActive, setPromoActive] = useState(false);
+          const [noticeInput, setNoticeInput] = useState('');
+          
+          const [dailyRewardActive, setDailyRewardActive] = useState(false);
+          const [referralActive, setReferralActive] = useState(false);
+
+          const [balanceModal, setBalanceModal] = useState({ show: false, email: '', action: 'add', amount: '' });
+          
+          const [newAdminEmail, setNewAdminEmail] = useState('');
+          const [newAdminPassword, setNewAdminPassword] = useState('');
+          const [isUpdatingCreds, setIsUpdatingCreds] = useState(false);
+          const [editProductModal, setEditProductModal] = useState({ show: false, product: null });
+
+          const [manageStockModal, setManageStockModal] = useState({ show: false, categoryId: null });
+
+          const handleSaveProduct = async (e) => {
+            e.preventDefault();
+            const updatedCategories = categories.map(cat => cat.id === editProductModal.product.id ? editProductModal.product : cat);
+            const safeDataToSave = updatedCategories.map(cat => ({ id: cat.id, name: cat.name, description: cat.description, price: Number(cat.price), color: cat.color || '' }));
+            try {
+              await setDoc(doc(db, 'artifacts', appId, 'public', 'data', 'Store_Settings', 'Products'), { list: safeDataToSave });
+              triggerToast('Product updated successfully.');
+              setEditProductModal({ show: false, product: null });
+            } catch (err) { triggerToast('Failed to update product.'); }
+          };
+
+          const handleDeleteAccount = async (categoryId, accountIndex) => {
+            if (!window.confirm("Are you sure you want to delete this specific account?")) return;
+            try {
+              const newInv = { ...inventory };
+              newInv[categoryId].splice(accountIndex, 1);
+              await updateDoc(doc(db, 'artifacts', appId, 'public', 'data', 'Store_Inventory', 'Stock'), newInv);
+              triggerToast('Account deleted successfully.');
+            } catch (err) { triggerToast('Failed to delete account.'); }
+          };
+
+          useEffect(() => {
+            if (promoSettings) { setPromoInput(promoSettings.code || ''); setDiscountInput(promoSettings.discount || 0); setPromoActive(promoSettings.isActive || false); }
+            if (globalNotice) setNoticeInput(globalNotice);
+            if (featureSettings) { setDailyRewardActive(featureSettings.dailyReward || false); setReferralActive(featureSettings.referral || false); }
+          }, [promoSettings, globalNotice, featureSettings]);
+
+          const pendingDeposits = deposits.filter(d => d.status === 'Pending' || d.status === 'Verifying...' || d.status === 'Pending Review');
+          const pendingTickets = (tickets || []).filter(t => t.status === 'Open');
+          const totalSales = orders.filter(o => o.status === 'Completed').reduce((sum, order) => sum + Number(order.total || 0), 0);
+
+          const handleUploadAccounts = async (e) => {
+            e.preventDefault();
+            if (!uploadText.trim()) return;
+            const rawAccounts = uploadText.split(/\n\s*\n/);
+            const validAccounts = rawAccounts.map(acc => acc.trim()).filter(acc => acc.length > 5);
+            if (validAccounts.length === 0) return;
+
+            try {
+              const newInv = { ...inventory };
+              if (!newInv[uploadCategory]) newInv[uploadCategory] = [];
+              newInv[uploadCategory] = [...newInv[uploadCategory], ...validAccounts];
+              await updateDoc(doc(db, 'artifacts', appId, 'public', 'data', 'Store_Inventory', 'Stock'), newInv);
+              setUploadText(''); triggerToast(`Added ${validAccounts.length} assets.`);
+            } catch (err) { triggerToast("Upload failed."); }
+          };
+
+          const submitBalanceUpdate = async (e) => {
+            e.preventDefault();
+            const amount = parseFloat(balanceModal.amount);
+            if (isNaN(amount) || amount <= 0) return;
+            const email = balanceModal.email;
+            const current = Number(usersDB[email]?.balance || 0);
+            const newBal = balanceModal.action === 'add' ? current + amount : Math.max(0, current - amount);
+
+            try {
+              await updateDoc(doc(db, 'artifacts', appId, 'public', 'data', 'Store_Users', email), { balance: newBal });
+              triggerToast('Balance updated.');
+            } catch (err) { triggerToast('Update failed.'); }
+            setBalanceModal({ show: false, email: '', action: 'add', amount: '' });
+          };
+
+          const handleManualApprove = async (depId) => {
+            const dep = deposits.find(d => d.id === depId);
+            if(!dep) return;
+            try {
+              await updateDoc(doc(db, 'artifacts', appId, 'public', 'data', 'Store_Deposits', depId), { status: 'Approved' });
+              const currentBal = Number(usersDB[dep.email]?.balance || 0);
+              await updateDoc(doc(db, 'artifacts', appId, 'public', 'data', 'Store_Users', dep.email), { balance: currentBal + Number(dep.amount || 0) });
+              triggerToast("Deposit approved.");
+            } catch (err) { triggerToast("Action failed."); }
+          };
+
+          const handleResolveTicket = async (ticketId) => {
+            try { await updateDoc(doc(db, 'artifacts', appId, 'public', 'data', 'Store_Tickets', ticketId), { status: 'Resolved' }); triggerToast('Ticket resolved.'); } 
+            catch(err) { triggerToast('Failed to close ticket.'); }
+          };
+
+          const handleSaveSettings = async (e) => {
+            e.preventDefault();
+            try {
+              await setDoc(doc(db, 'artifacts', appId, 'public', 'data', 'Store_Settings', 'PromoCode'), { code: String(promoInput).toUpperCase(), discount: parseFloat(discountInput), isActive: promoActive });
+              await setDoc(doc(db, 'artifacts', appId, 'public', 'data', 'Store_Settings', 'Notice'), { text: noticeInput });
+              await setDoc(doc(db, 'artifacts', appId, 'public', 'data', 'Store_Settings', 'Features'), { dailyReward: dailyRewardActive, referral: referralActive });
+              triggerToast("Settings saved.");
+            } catch (error) { triggerToast("Error saving settings."); }
+          };
+
+          const handleUpdateAdminCredentials = async (e) => {
+             e.preventDefault();
+             if (!newAdminEmail && !newAdminPassword) return;
+             setIsUpdatingCreds(true);
+             try {
+                if (newAdminEmail) {
+                   await updateEmail(auth.currentUser, newAdminEmail);
+                   await setDoc(doc(db, 'artifacts', appId, 'public', 'data', 'Store_Settings', 'AdminConfig'), { adminEmail: newAdminEmail }, { merge: true });
+                   triggerToast('Email updated.');
+                }
+                if (newAdminPassword) {
+                   await updatePassword(auth.currentUser, newAdminPassword);
+                   triggerToast('Password updated.');
+                }
+                setNewAdminEmail(''); setNewAdminPassword('');
+             } catch (error) { triggerToast('Error: ' + error.message); } 
+             finally { setIsUpdatingCreds(false); }
+          };
+
+          const ADMIN_TABS = [
+            { id: 'inventory', label: 'Inventory', icon: Package },
+            { id: 'deposits', label: 'Deposits', icon: CreditCard },
+            { id: 'users', label: 'Customers', icon: Users },
+            { id: 'support', label: 'Support', icon: Headset },
+            { id: 'analytics', label: 'Analytics', icon: BarChart },
+            { id: 'settings', label: 'Settings', icon: Settings }
+          ];
+
+          return (
+            <>
+              {balanceModal.show && (
+                <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-gray-900/40 dark:bg-black/60 backdrop-blur-sm transition-all duration-300 w-full h-full">
+                  <div className={uiCard + " w-full max-w-sm p-6"}>
+                     <h3 className="text-lg font-black text-white mb-1">Modify Balance</h3>
+                     <p className="text-xs text-gray-400 font-mono mb-5 truncate font-medium">{balanceModal.email}</p>
+                     <form onSubmit={submitBalanceUpdate} className="space-y-4">
+                        <input type="number" step="0.01" placeholder="Amount ($)" required value={balanceModal.amount} onChange={e => setBalanceModal({...balanceModal, amount: e.target.value})} className={uiInput} />
+                        <div className="flex gap-3">
+                          <button type="button" onClick={() => setBalanceModal({ show: false, email: '', action: 'add', amount: '' })} className={uiBtnSecondary}>Cancel</button>
+                          <button type="submit" className={`btn-animate w-full text-white font-bold py-3 rounded-xl transition-all shadow-sm ${balanceModal.action === 'add' ? 'bg-emerald-600 hover:bg-emerald-500' : 'bg-rose-600 hover:bg-rose-500'}`}>Confirm</button>
+                        </div>
+                     </form>
+                  </div>
+                </div>
+              )}
+
+              {/* Sidebar Navigation */}
+              <div className="w-full md:w-64 shrink-0 mb-4 md:mb-0">
+                <div className={uiCard + " p-3 flex flex-row md:flex-col gap-2 overflow-x-auto md:overflow-visible scrollbar-hide"}>
+                  {ADMIN_TABS.map(tab => {
+                    const active = activeTab === tab.id;
+                    return (
+                    <button 
+                      key={tab.id} onClick={() => setActiveTab(tab.id)} 
+                      className={`btn-animate px-4 py-3 sm:py-3.5 text-xs sm:text-sm font-bold whitespace-nowrap rounded-xl transition-all duration-300 flex items-center justify-between border w-full text-left ${active ? 'bg-white/20 border-white/30 text-white shadow-[0_0_15px_rgba(255,255,255,0.1)]' : 'bg-transparent border-transparent text-gray-400 hover:bg-white/10 hover:text-white'}`}
+                    >
+                      <div className="flex items-center gap-3">
+                        <tab.icon className={`w-5 h-5 shrink-0 ${active ? 'text-cyan-400' : ''}`} /> 
+                        <span className="hidden md:block">{tab.label}</span>
+                        <span className="md:hidden">{tab.label}</span>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        {(tab.id === 'deposits' && pendingDeposits.length > 0) && <span className="w-2 h-2 bg-rose-500 rounded-full animate-pulse shadow-[0_0_8px_rgba(244,63,94,0.8)]"></span>}
+                        {(tab.id === 'support' && pendingTickets.length > 0) && <span className="w-2 h-2 bg-cyan-500 rounded-full animate-pulse shadow-[0_0_8px_rgba(6,182,212,0.8)]"></span>}
+                      </div>
+                    </button>
+                  )})}
+                  
+                  {/* Mobile Logout */}
+                  <button onClick={() => auth.signOut()} className="btn-animate md:hidden px-4 py-3 text-xs sm:text-sm font-bold whitespace-nowrap rounded-xl transition-all duration-300 flex items-center gap-3 border bg-rose-500/10 border-rose-500/20 text-rose-400">
+                      <LogOut className="w-5 h-5 shrink-0" /> Logout
+                  </button>
+                </div>
+              </div>
+
+              {/* Main Content Area */}
+              <div className="flex-grow w-full min-w-0">
+                {activeTab === 'inventory' && (
+                  <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 sm:gap-8 w-full animate-fade-in-up">
+                    <div className={uiCard + " p-5 sm:p-6 lg:col-span-1 h-fit"}>
+                      <h2 className="text-base font-black mb-4 text-white border-b border-white/20 pb-3">Add Stock</h2>
+                      <form onSubmit={handleUploadAccounts} className="flex flex-col space-y-4">
+                        <div>
+                          <label className="block text-xs font-bold text-gray-300 mb-1.5">Category</label>
+                          <select value={uploadCategory} onChange={(e) => setUploadCategory(e.target.value)} className={uiInput}>
+                            {categories.map(cat => <option key={cat.id} value={cat.id} className="dark:bg-gray-900">{cat.name}</option>)}
+                          </select>
+                        </div>
+                        <div>
+                          <label className="block text-xs font-bold text-gray-300 mb-1.5">Data (Line separated)</label>
+                          <textarea value={uploadText} onChange={(e) => setUploadText(e.target.value)} placeholder="email:pass:recovery:phone:state" className={uiInput + " min-h-[150px] resize-none font-mono text-xs"} required />
+                        </div>
+                        <button type="submit" className={uiBtnPrimary}>Upload Assets</button>
+                      </form>
+                    </div>
+
+                    <div className="lg:col-span-2 space-y-6 sm:space-y-8 w-full">
+                      <div className={uiCard}>
+                        <div className="p-4 sm:p-5 border-b border-white/20 bg-white/5 backdrop-blur-sm"><h2 className="text-sm font-bold text-white">Current Stock</h2></div>
+                        <div className="w-full overflow-x-auto">
+                          <table className="w-full text-left text-xs sm:text-sm whitespace-nowrap">
+                            <thead className="bg-white/5 backdrop-blur-sm text-gray-400 font-bold border-b border-white/20">
+                              <tr><th className="p-3 sm:p-4">Asset Name & Price</th><th className="p-3 sm:p-4 text-center">Quantity</th><th className="p-3 sm:p-4 text-right">Action</th></tr>
+                            </thead>
+                            <tbody className="divide-y divide-white/10">
+                              {categories.map(cat => (
+                                <tr key={cat.id} className="hover:bg-white/10 transition-colors">
+                                  <td className="p-3 sm:p-4">
+                                    <p className="text-gray-200 font-black">{cat.name}</p>
+                                    <p className="text-[10px] sm:text-xs text-emerald-400 font-bold">${Number(cat.price).toFixed(2)}</p>
+                                  </td>
+                                  <td className="p-3 sm:p-4 text-center font-black text-cyan-400">{inventory[cat.id] ? inventory[cat.id].length : 0}</td>
+                                  <td className="p-3 sm:p-4 text-right">
+                                    <div className="flex justify-end gap-1.5 sm:gap-2">
+                                      <button onClick={() => setManageStockModal({ show: true, categoryId: cat.id })} className="btn-animate px-2 sm:px-3 py-1.5 bg-white/10 hover:bg-white/20 backdrop-blur-sm text-white rounded-lg font-bold text-[10px] sm:text-xs transition-colors border border-white/20 shadow-sm">Manage Stock</button>
+                                      <button onClick={() => setEditProductModal({ show: true, product: { ...cat } })} className="btn-animate px-2 sm:px-3 py-1.5 bg-cyan-500/20 text-cyan-300 hover:bg-cyan-500/30 backdrop-blur-sm border border-cyan-500/30 rounded-lg font-bold text-[10px] sm:text-xs transition-colors">Edit Info</button>
+                                    </div>
+                                  </td>
+                                </tr>
+                              ))}
+                            </tbody>
+                          </table>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                )}
+
+                {editProductModal.show && (
+                  <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-md transition-all duration-300 w-full h-full">
+                    <div className={uiCard + " w-full max-w-md p-5 sm:p-6"}>
+                       <h3 className="text-lg font-black text-white mb-4">Edit Product Details</h3>
+                       <form onSubmit={handleSaveProduct} className="space-y-4">
+                          <div>
+                            <label className="block text-xs font-bold text-gray-300 mb-1.5">Product Name</label>
+                            <input type="text" required value={editProductModal.product.name} onChange={e => setEditProductModal({ ...editProductModal, product: { ...editProductModal.product, name: e.target.value } })} className={uiInput} />
+                          </div>
+                          <div>
+                            <label className="block text-xs font-bold text-gray-300 mb-1.5">Description</label>
+                            <textarea rows="3" required value={editProductModal.product.description} onChange={e => setEditProductModal({ ...editProductModal, product: { ...editProductModal.product, description: e.target.value } })} className={uiInput + " resize-none text-xs leading-relaxed"}></textarea>
+                          </div>
+                          <div>
+                            <label className="block text-xs font-bold text-gray-300 mb-1.5">Price ($)</label>
+                            <input type="number" step="0.01" required value={editProductModal.product.price} onChange={e => setEditProductModal({ ...editProductModal, product: { ...editProductModal.product, price: parseFloat(e.target.value) } })} className={uiInput} />
+                          </div>
+                          <div className="flex gap-3 pt-2">
+                            <button type="button" onClick={() => setEditProductModal({ show: false, product: null })} className={uiBtnSecondary}>Cancel</button>
+                            <button type="submit" className={uiBtnPrimary}>Save Changes</button>
+                          </div>
+                       </form>
+                    </div>
+                  </div>
+                )}
+
+                {manageStockModal.show && (
+                  <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-md transition-all duration-300 w-full h-full">
+                    <div className={uiCard + " w-full max-w-2xl p-5 sm:p-6 flex flex-col max-h-[80vh]"}>
+                       <div className="flex justify-between items-center mb-4 pb-3 border-b border-white/10 shrink-0">
+                         <h3 className="text-base sm:text-lg font-black text-white flex items-center gap-2"><Package className="w-4 h-4 sm:w-5 sm:h-5 text-cyan-400"/> Manage Uploaded Accounts</h3>
+                         <button onClick={() => setManageStockModal({ show: false, categoryId: null })} className="btn-animate p-1.5 sm:p-2 bg-white/10 hover:bg-white/20 backdrop-blur-sm rounded-full text-white transition-colors"><X className="w-4 h-4 sm:w-5 sm:h-5" /></button>
+                       </div>
+                       <div className="overflow-y-auto flex-grow pr-1 sm:pr-2 scrollbar-hide space-y-2 w-full">
+                          {(!inventory[manageStockModal.categoryId] || inventory[manageStockModal.categoryId].length === 0) ? (
+                              <p className="text-center text-gray-400 font-bold text-sm py-10">No accounts in stock for this category.</p>
+                          ) : (
+                              inventory[manageStockModal.categoryId].map((acc, index) => (
+                                  <div key={index} className={uiInnerPanel + " flex justify-between items-center bg-white/5 w-full"}>
+                                      <pre className="text-[10px] sm:text-xs text-gray-300 font-mono font-medium truncate max-w-[70%] sm:max-w-[75%]">{acc}</pre>
+                                      <button onClick={() => handleDeleteAccount(manageStockModal.categoryId, index)} className="btn-animate p-1.5 sm:p-2 bg-rose-500/20 text-rose-400 border border-rose-500/30 hover:bg-rose-500/40 rounded-lg transition-colors shrink-0" title="Delete Account">
+                                          <Trash2 className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
+                                      </button>
+                                  </div>
+                              ))
+                          )}
+                       </div>
+                    </div>
+                  </div>
+                )}
+
+                {activeTab === 'users' && (
+                  <div className={uiCard + " animate-fade-in-up w-full"}>
+                    <div className="p-4 sm:p-5 border-b border-white/20 flex justify-between items-center bg-white/5 backdrop-blur-sm">
+                      <h2 className="text-sm font-bold text-white">Customer Database</h2>
+                      <span className="text-xs font-bold text-gray-400">{Object.keys(usersDB).length} Users</span>
+                    </div>
+                    <div className="overflow-x-auto w-full">
+                      <table className="w-full text-left text-xs sm:text-sm whitespace-nowrap">
+                        <thead className="bg-white/5 backdrop-blur-sm text-gray-400 font-bold border-b border-white/20">
+                          <tr><th className="p-3 sm:p-4">Email</th><th className="p-3 sm:p-4">Joined</th><th className="p-3 sm:p-4">Spent</th><th className="p-3 sm:p-4">Balance</th><th className="p-3 sm:p-4 text-right">Actions</th></tr>
+                        </thead>
+                        <tbody className="divide-y divide-white/10">
+                          {Object.keys(usersDB).map(email => (
+                            <tr key={email} className="hover:bg-white/10 transition-colors">
+                              <td className="p-3 sm:p-4 text-gray-200 font-black">{String(email)}</td>
+                              <td className="p-3 sm:p-4 text-gray-400 font-medium text-[10px] sm:text-xs">{usersDB[email].joined ? new Date(usersDB[email].joined).toLocaleDateString() : '-'}</td>
+                              <td className="p-3 sm:p-4 font-bold text-gray-300">${Number(usersDB[email].totalSpent || 0).toFixed(2)}</td>
+                              <td className="p-3 sm:p-4 font-black text-emerald-400">${Number(usersDB[email].balance || 0).toFixed(2)}</td>
+                              <td className="p-3 sm:p-4 flex justify-end gap-1.5 sm:gap-2">
+                                <button onClick={() => setBalanceModal({ show: true, email: email, action: 'add', amount: '' })} className="btn-animate px-2 sm:px-3 py-1 sm:py-1.5 bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 hover:bg-emerald-500/30 rounded font-bold text-[10px] sm:text-xs transition-colors">Add</button>
+                                <button onClick={() => setBalanceModal({ show: true, email: email, action: 'deduct', amount: '' })} className="btn-animate px-2 sm:px-3 py-1 sm:py-1.5 bg-rose-500/20 text-rose-300 border border-rose-500/30 hover:bg-rose-500/30 rounded font-bold text-[10px] sm:text-xs transition-colors">Deduct</button>
+                              </td>
+                            </tr>
+                          ))}
+                        </tbody>
+                      </table>
+                    </div>
+                  </div>
+                )}
+
+                {activeTab === 'support' && (
+                  <div className={uiCard + " animate-fade-in-up w-full"}>
+                    <div className="p-4 sm:p-5 border-b border-white/20 flex items-center justify-between bg-white/5 backdrop-blur-sm">
+                       <h2 className="text-sm font-bold text-white">Support Tickets</h2>
+                       {pendingTickets.length > 0 && <span className="bg-cyan-500/20 text-cyan-300 border border-cyan-500/30 px-2 sm:px-2.5 py-0.5 sm:py-1 rounded text-[10px] sm:text-xs font-black">{pendingTickets.length} Open</span>}
+                    </div>
+                    <div className="overflow-x-auto w-full">
+                      <table className="w-full text-left whitespace-nowrap text-xs sm:text-sm">
+                        <thead className="bg-white/5 backdrop-blur-sm text-gray-400 font-bold border-b border-white/20">
+                          <tr><th className="p-3 sm:p-4">User</th><th className="p-3 sm:p-4">Subject</th><th className="p-3 sm:p-4">Date</th><th className="p-3 sm:p-4 text-right">Action</th></tr>
+                        </thead>
+                        <tbody className="divide-y divide-white/10">
+                          {(tickets||[]).map(t => (
+                            <tr key={t.id} className="hover:bg-white/10 transition-colors">
+                              <td className="p-3 sm:p-4 text-gray-200 font-black">{t.email}</td>
+                              <td className="p-3 sm:p-4 text-gray-300">
+                                <span className="font-bold block">{t.subject}</span>
+                                <span className="text-[10px] sm:text-xs truncate max-w-[150px] sm:max-w-xs inline-block font-medium">{t.message}</span>
+                              </td>
+                              <td className="p-3 sm:p-4 text-gray-400 font-medium text-[10px] sm:text-xs">{t.date ? new Date(t.date).toLocaleDateString() : ''}</td>
+                              <td className="p-3 sm:p-4 text-right">
+                                {t.status === 'Open' ? (
+                                  <button onClick={() => handleResolveTicket(t.id)} className="btn-animate px-2 sm:px-3 py-1 sm:py-1.5 bg-white/10 backdrop-blur-sm text-white hover:bg-white/20 rounded font-bold text-[10px] sm:text-xs transition-colors border border-white/20 shadow-sm">Resolve</button>
+                                ) : (
+                                  <span className="text-[10px] sm:text-xs text-emerald-400 font-black">Closed</span>
+                                )}
+                              </td>
+                            </tr>
+                          ))}
+                        </tbody>
+                      </table>
+                      {(!tickets || tickets.length === 0) && <p className="text-center py-10 text-gray-400 text-xs sm:text-sm font-bold">Inbox zero.</p>}
+                    </div>
+                  </div>
+                )}
+
+                {activeTab === 'analytics' && (
+                  <div className="animate-fade-in-up w-full">
+                    <h2 className="text-lg font-black mb-4 text-white">Overview</h2>
+                    <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 sm:gap-6 w-full">
+                      <div className={uiCard + " p-5 sm:p-6"}>
+                        <p className="text-gray-400 text-xs sm:text-sm font-bold mb-1 sm:mb-2">Gross Volume</p>
+                        <h3 className="text-2xl sm:text-3xl font-black text-white">${Number(totalSales || 0).toFixed(2)}</h3>
+                      </div>
+                      <div className={uiCard + " p-5 sm:p-6"}>
+                        <p className="text-gray-400 text-xs sm:text-sm font-bold mb-1 sm:mb-2">Total Customers</p>
+                        <h3 className="text-2xl sm:text-3xl font-black text-white">{Object.keys(usersDB).length}</h3>
+                      </div>
+                      <div className={uiCard + " p-5 sm:p-6"}>
+                        <p className="text-gray-400 text-xs sm:text-sm font-bold mb-1 sm:mb-2">Completed Orders</p>
+                        <h3 className="text-2xl sm:text-3xl font-black text-white">{orders.length}</h3>
+                      </div>
+                    </div>
+                  </div>
+                )}
+
+                {activeTab === 'deposits' && (
+                  <div className={uiCard + " animate-fade-in-up w-full"}>
+                    <div className="p-4 sm:p-5 border-b border-white/20 flex items-center justify-between bg-white/5 backdrop-blur-sm">
+                      <h2 className="text-sm font-bold text-white">Deposit Ledger</h2>
+                      {pendingDeposits.length > 0 && <span className="bg-amber-500/20 border border-amber-500/30 text-amber-400 px-2 sm:px-2.5 py-0.5 sm:py-1 rounded text-[10px] sm:text-xs font-black">{pendingDeposits.length} Pending</span>}
+                    </div>
+                    <div className="overflow-x-auto w-full">
+                      <table className="w-full text-left whitespace-nowrap text-xs sm:text-sm">
+                        <thead className="bg-white/5 backdrop-blur-sm text-gray-400 font-bold border-b border-white/20">
+                          <tr><th className="p-3 sm:p-4">Tx Ref / Date</th><th className="p-3 sm:p-4">User / Method</th><th className="p-3 sm:p-4">Amount</th><th className="p-3 sm:p-4 text-right">Status / Action</th></tr>
+                        </thead>
+                        <tbody className="divide-y divide-white/10">
+                          {deposits.map(dep => {
+                            const isPending = String(dep.status || '').includes('Pending') || String(dep.status || '').includes('Verifying');
+                            return (
+                              <tr key={dep.id} className="hover:bg-white/10 transition-colors">
+                                <td className="p-3 sm:p-4">
+                                  <p className="font-mono text-gray-400 font-bold text-[10px] sm:text-xs">{String(dep.id || '')}</p>
+                                  <p className="text-[9px] sm:text-[11px] text-gray-500 mt-0.5 sm:mt-1 font-medium">{dep.date ? new Date(dep.date).toLocaleString() : ''}</p>
+                                </td>
+                                <td className="p-3 sm:p-4">
+                                  <p className="text-gray-200 font-black">{String(dep.email || '')}</p>
+                                  <p className="text-[9px] sm:text-[11px] text-gray-400 mt-0.5 sm:mt-1 font-bold">{String(dep.method || '')} - <span className="font-mono">{String(dep.txId || '')}</span></p>
+                                </td>
+                                <td className="p-3 sm:p-4 font-black text-emerald-400">${Number(dep.amount || 0).toFixed(2)}</td>
+                                <td className="p-3 sm:p-4 text-right">
+                                  <div className="flex flex-col items-end gap-1.5 sm:gap-2">
+                                    <span className={`text-[10px] sm:text-xs font-black ${dep.status === 'Approved' ? 'text-emerald-400' : isPending ? 'text-amber-400' : 'text-rose-400'}`}>{String(dep.status || '')}</span>
+                                    {isPending && <button onClick={() => handleManualApprove(dep.id)} className="btn-animate text-[9px] sm:text-[11px] bg-white/10 hover:bg-white/20 backdrop-blur-sm border border-white/20 text-gray-200 px-2 sm:px-3 py-1 sm:py-1.5 rounded font-bold transition-colors shadow-sm">Force Approve</button>}
+                                  </div>
+                                </td>
+                              </tr>
+                            )
+                          })}
+                        </tbody>
+                      </table>
+                      {deposits.length === 0 && <p className="text-center py-10 text-gray-400 font-bold text-xs sm:text-sm">No deposits recorded.</p>}
+                    </div>
+                  </div>
+                )}
+
+                {activeTab === 'settings' && (
+                  <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 sm:gap-8 w-full animate-fade-in-up">
+                    <div className={uiCard + " p-5 sm:p-6 w-full"}>
+                      <h2 className="text-base font-black text-white mb-5 sm:mb-6 border-b border-white/20 pb-3">Store Configuration</h2>
+                      
+                      <form onSubmit={handleSaveSettings} className="space-y-5 sm:space-y-6">
+                        <div className="space-y-3 sm:space-y-4">
+                           <h3 className="text-[10px] sm:text-xs font-black text-gray-400 uppercase tracking-wider">Feature Flags</h3>
+                           <label className={uiInnerPanel + " flex items-center justify-between cursor-pointer"}>
+                             <span className="text-xs sm:text-sm font-bold text-white">Daily Login Bonus</span>
+                             <input type="checkbox" checked={dailyRewardActive} onChange={(e) => setDailyRewardActive(e.target.checked)} className="w-3.5 h-3.5 sm:w-4 sm:h-4 rounded text-cyan-500 focus:ring-cyan-500" />
+                           </label>
+                           <label className={uiInnerPanel + " flex items-center justify-between cursor-pointer"}>
+                             <span className="text-xs sm:text-sm font-bold text-white">Affiliate Program</span>
+                             <input type="checkbox" checked={referralActive} onChange={(e) => setReferralActive(e.target.checked)} className="w-3.5 h-3.5 sm:w-4 sm:h-4 rounded text-cyan-500 focus:ring-cyan-500" />
+                           </label>
+                        </div>
+
+                        <div className="space-y-3 sm:space-y-4 pt-3 sm:pt-4 border-t border-white/20">
+                           <h3 className="text-[10px] sm:text-xs font-black text-gray-400 uppercase tracking-wider">Promotions</h3>
+                           <div className="grid grid-cols-2 gap-3 sm:gap-4">
+                             <div>
+                               <label className="block text-[10px] sm:text-xs font-bold text-gray-300 mb-1 sm:mb-1.5">Code</label>
+                               <input type="text" value={promoInput} onChange={(e) => setPromoInput(e.target.value)} placeholder="DISCOUNT20" className={uiInput + " uppercase"} />
+                             </div>
+                             <div>
+                               <label className="block text-[10px] sm:text-xs font-bold text-gray-300 mb-1 sm:mb-1.5">Discount (%)</label>
+                               <input type="number" min="0" max="100" value={discountInput} onChange={(e) => setDiscountInput(e.target.value)} className={uiInput} />
+                             </div>
+                           </div>
+                           <label className="flex items-center gap-2 cursor-pointer mt-1.5 sm:mt-2 pl-1">
+                             <input type="checkbox" checked={promoActive} onChange={(e) => setPromoActive(e.target.checked)} className="w-3.5 h-3.5 sm:w-4 sm:h-4 rounded text-cyan-500" />
+                             <span className="text-xs sm:text-sm font-bold text-gray-200">Enable Promo globally</span>
+                           </label>
+                        </div>
+
+                        <div className="space-y-3 sm:space-y-4 pt-3 sm:pt-4 border-t border-white/20">
+                           <h3 className="text-[10px] sm:text-xs font-black text-gray-400 uppercase tracking-wider">Announcement</h3>
+                           <div>
+                             <label className="block text-[10px] sm:text-xs font-bold text-gray-300 mb-1 sm:mb-1.5">Marquee Bar Text</label>
+                             <input type="text" value={noticeInput} onChange={(e) => setNoticeInput(e.target.value)} placeholder="Store wide announcement..." className={uiInput} />
+                           </div>
+                        </div>
+
+                        <button type="submit" className={uiBtnPrimary}>Save Changes</button>
+                      </form>
+                    </div>
+
+                    <div className={uiCard + " p-5 sm:p-6 h-fit w-full"}>
+                      <h2 className="text-base font-black text-white mb-2 border-b border-white/20 pb-3">Admin Credentials</h2>
+                      <p className="text-[10px] sm:text-xs text-gray-400 font-bold mb-5 sm:mb-6 mt-3 sm:mt-4">Change the master email and password for this panel.</p>
+                      
+                      <form onSubmit={handleUpdateAdminCredentials} className="space-y-3 sm:space-y-4">
+                        <div>
+                          <label className="block text-[10px] sm:text-xs font-bold text-gray-300 mb-1 sm:mb-1.5">New Email</label>
+                          <input type="email" value={newAdminEmail} onChange={(e) => setNewAdminEmail(e.target.value)} placeholder="admin@domain.com" className={uiInput} />
+                        </div>
+                        <div>
+                          <label className="block text-[10px] sm:text-xs font-bold text-gray-300 mb-1 sm:mb-1.5">New Password</label>
+                          <input type="password" value={newAdminPassword} onChange={(e) => setNewAdminPassword(e.target.value)} placeholder="••••••••" minLength="6" className={uiInput} />
+                        </div>
+                        <button type="submit" disabled={isUpdatingCreds || (!newAdminEmail && !newAdminPassword)} className={uiBtnSecondary}>
+                           {isUpdatingCreds ? 'Updating...' : 'Update Credentials'}
+                        </button>
+                      </form>
+                    </div>
+                  </div>
+                )}
+              </div>
+            </>
+          );
+        }
+
+        const root = createRoot(document.getElementById('root'));
+        root.render(<App />);
+    </script>
+</body>
+</html>
