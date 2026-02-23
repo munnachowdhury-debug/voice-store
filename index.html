@@ -116,7 +116,7 @@
             X, Upload, Wallet, CreditCard, Clock, Copy, ArrowRight, ShieldCheck, Bell, User as UserIcon, 
             Activity, Gift, BarChart, Eye, EyeOff, Lock, Search, Megaphone, Award, Zap, Headset, 
             Star, AlertTriangle, MessageSquare, Smartphone, Mail, KeyRound, Key, ShieldAlert, ChevronRight,
-            Sun, Moon, ExternalLink, Menu, HelpCircle, History, TrendingUp, Sparkles, Building, Edit, RefreshCw, ChevronDown
+            Sun, Moon, ExternalLink, Menu, HelpCircle, History, TrendingUp, Sparkles, Building, Edit, RefreshCw, ChevronDown, Bitcoin, Send
         } from 'lucide-react';
 
         // Firebase Imports
@@ -161,6 +161,25 @@
             'vk': 'VKontakte', 'ya': 'Yandex', 'ma': 'Mail.ru', 'mm': 'Microsoft',
             'uk': 'Airbnb', 'ka': 'Shopee', 'rd': 'Yahoo', 'zz': 'Drom', 'hx': 'Badoo'
         };
+
+        const CUSTOMER_TABS = [
+            { id: 'sms', label: 'Live SMS', icon: Smartphone },
+            { id: 'store', label: 'Marketplace', icon: ShoppingCart },
+            { id: 'add_funds', label: 'Deposit', icon: Wallet },
+            { id: 'my_accounts', label: 'My Vault', icon: Package },
+            { id: 'history', label: 'History', icon: History },
+            { id: 'profile', label: 'Profile', icon: UserIcon },
+            { id: 'support', label: 'Support', icon: HelpCircle }
+        ];
+
+        const ADMIN_TABS = [
+            { id: 'inventory', label: 'Inventory', icon: Package },
+            { id: 'deposits', label: 'Deposits', icon: CreditCard },
+            { id: 'users', label: 'Customers', icon: Users },
+            { id: 'support', label: 'Support', icon: Headset },
+            { id: 'analytics', label: 'Analytics', icon: BarChart },
+            { id: 'settings', label: 'Settings', icon: Settings }
+        ];
 
         // 🚀 NEXT LEVEL THEME UI CLASSES 🚀
         const uiCard = "bg-[#0f172a]/60 backdrop-blur-xl border border-white/10 border-t-white/20 border-l-white/20 rounded-3xl shadow-[0_8px_30px_rgb(0,0,0,0.3)] relative overflow-hidden transition-all duration-300 w-full";
@@ -248,9 +267,7 @@
                             
                             const epoch = Math.floor(Date.now() / 1000);
                             setTimeLeft(30 - (epoch % 30));
-                        } catch(e) {
-                            console.error("Invalid 2FA Secret");
-                        }
+                        } catch(e) {}
                     }
                 };
                 
@@ -401,6 +418,7 @@
           const [showSplash, setShowSplash] = useState(true);
           const [authUser, setAuthUser] = useState(null);
           const [user, setUser] = useState(null); 
+          const [activeTab, setActiveTab] = useState('sms');
           
           const [usersDB, setUsersDB] = useState({});
           const [inventory, setInventory] = useState({ new: [], old: [], textplus: [], gv_bulk: [] });
@@ -457,8 +475,10 @@
 
                  if (firebaseUser.email.toLowerCase() === currentAdminEmail.toLowerCase()) {
                     setUser({ email: firebaseUser.email, role: 'admin' });
+                    setActiveTab('inventory');
                  } else if (firebaseUser.emailVerified) {
                     setUser({ email: firebaseUser.email, role: 'customer' });
+                    setActiveTab('sms');
                  } else {
                     setUser(null);
                  }
@@ -683,6 +703,8 @@
 
           const currentUserBalance = user.role === 'customer' ? (usersDB[user.email]?.balance || 0) : 0;
           const currentUserTier = user.role === 'customer' ? getTier(usersDB[user.email]?.totalSpent || 0) : null;
+          const pendingDeposits = deposits.filter(d => d.status === 'Pending' || d.status === 'Verifying...' || d.status === 'Pending Review' || d.status === 'Awaiting Payment');
+          const pendingTickets = (tickets || []).filter(t => t.status === 'Open');
 
           return (
             <div className="min-h-screen w-full relative overflow-x-hidden font-sans pb-24 flex flex-col">
@@ -773,7 +795,7 @@
                 {/* ✨ 1% Blur Glass Top Navigation Bar ✨ */}
                 <div className="w-full relative z-30 pt-1 pb-2">
                   <div className="bg-white/[0.02] backdrop-blur-[2px] border border-white/10 rounded-2xl p-1.5 flex items-center justify-between gap-1 shadow-[0_4px_20px_rgb(0,0,0,0.15)] w-full overflow-x-auto scrollbar-hide">
-                    {(user.role === 'admin' ? ADMIN_TABS : TABS).map(tab => {
+                    {(user.role === 'admin' ? ADMIN_TABS : CUSTOMER_TABS).map(tab => {
                       const active = activeTab === tab.id;
                       return (
                       <button 
@@ -1906,7 +1928,7 @@
                   <div className="animate-fade-in-up grid grid-cols-1 lg:grid-cols-2 gap-6 sm:gap-8 w-full">
                     <div className="space-y-6 sm:space-y-8 w-full">
                         <div className={uiCard + " p-6 sm:p-8 h-fit"}>
-                          <h2 className="text-xl font-bold text-white mb-2 flex items-center gap-2 pb-4 border-b border-brand-border"><Headset className="w-6 h-6 text-brand-primary drop-shadow-[0_0_5px_currentColor]"/> Open a Ticket</h2>
+                          <h2 className="text-xl font-bold text-white mb-2 flex items-center gap-2 pb-4 border-b border-white/5"><Headset className="w-6 h-6 text-brand-primary drop-shadow-[0_0_5px_currentColor]"/> Open a Ticket</h2>
                           <p className="text-sm text-slate-400 font-medium mb-6 mt-4">Experiencing issues? Describe it below and our team will assist you shortly.</p>
                           <form onSubmit={submitTicket} className="space-y-5 w-full">
                             <div>
@@ -2178,7 +2200,7 @@
               )}
 
               {/* Main Content Area */}
-              <div className="flex-grow w-full min-w-0">
+              <div className="flex-grow w-full min-w-0 mt-2 sm:mt-4">
                 {activeTab === 'inventory' && (
                   <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 sm:gap-8 w-full animate-fade-in-up">
                     <div className={uiCard + " p-6 sm:p-8 h-fit lg:col-span-1"}>
@@ -2428,11 +2450,11 @@
                       <form onSubmit={handleSaveSettings} className="space-y-6">
                         <div className="space-y-4">
                            <h3 className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Feature Flags</h3>
-                           <label className={uiInnerPanel + " flex items-center justify-between cursor-pointer"}>
+                           <label className={uiInnerPanel + " flex items-center justify-between cursor-pointer hover:bg-white/10"}>
                              <span className="text-sm font-bold text-slate-200">Daily Login Bonus</span>
                              <input type="checkbox" checked={dailyRewardActive} onChange={(e) => setDailyRewardActive(e.target.checked)} className="w-4 h-4 rounded text-brand-primary" />
                            </label>
-                           <label className={uiInnerPanel + " flex items-center justify-between cursor-pointer"}>
+                           <label className={uiInnerPanel + " flex items-center justify-between cursor-pointer hover:bg-white/10"}>
                              <span className="text-sm font-bold text-slate-200">Affiliate Program</span>
                              <input type="checkbox" checked={referralActive} onChange={(e) => setReferralActive(e.target.checked)} className="w-4 h-4 rounded text-brand-primary" />
                            </label>
