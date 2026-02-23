@@ -934,7 +934,7 @@
                     promoSettings={promoSettings} allOrders={allOrders}
                     tickets={tickets.filter(t => t.email === user.email)}
                     featureSettings={featureSettings} bankSettings={bankSettings} smsSettings={smsSettings} uiCard={uiCard} uiInput={uiInput} uiBtnPrimary={uiBtnPrimary} uiBtnSecondary={uiBtnSecondary} uiBtnAction={uiBtnAction} uiInnerPanel={uiInnerPanel} TIERS={TIERS}
-                    activeTab={activeTab} setPreviewStockModal={setPreviewStockModal}
+                    activeTab={activeTab}
                   />
                 )}
               </main>
@@ -959,9 +959,10 @@
         // ==========================================
         // CUSTOMER DASHBOARD
         // ==========================================
-        function CustomerDashboard({ user, balance, inventory, categories, cart, setCart, purchases, usersDB, deposits, tier, triggerToast, addNotification, db, appId, promoSettings, allOrders, tickets, featureSettings, bankSettings, smsSettings, uiCard, uiInput, uiBtnPrimary, uiBtnSecondary, uiBtnAction, uiInnerPanel, TIERS, activeTab, setPreviewStockModal }) {
+        function CustomerDashboard({ user, balance, inventory, categories, cart, setCart, purchases, usersDB, deposits, tier, triggerToast, addNotification, db, appId, promoSettings, allOrders, tickets, featureSettings, bankSettings, smsSettings, uiCard, uiInput, uiBtnPrimary, uiBtnSecondary, uiBtnAction, uiInnerPanel, TIERS, activeTab }) {
           
           const [searchQuery, setSearchQuery] = useState('');
+          const [previewStockModal, setPreviewStockModal] = useState({show: false, categoryId: null, name: ''});
 
           // Profile Sub-tabs state (Overview, History, Support)
           const [profileSubTab, setProfileSubTab] = useState('overview');
@@ -1122,6 +1123,7 @@
                   const data = await res.json();
                   
                   if (data.success && data.phone) {
+                      // Area Code Verification
                       if (areaCode && areaCode.length === 3) {
                           let cleanPhone = String(data.phone).replace(/\D/g, '');
                           if(cleanPhone.length === 11 && cleanPhone.startsWith('1')) cleanPhone = cleanPhone.substring(1);
@@ -1165,10 +1167,12 @@
           const cancelSmsOrder = async (orderId, priceToRefund) => {
               setIsSmsLoading(true);
               try {
+                  // ১. ক্যানসেল করার ঠিক আগে চেক করা যে কোড এসেছে কি না (Race Condition Fix)
                   const checkRes = await fetch(`https://voice-store-api.vercel.app/api/daisysms?action=getStatus&id=${orderId}`);
                   const checkData = await checkRes.json();
 
                   if (checkData.success && checkData.status === 'OK' && checkData.code) {
+                      // ক্যানসেল করার আগেই কোড চলে এসেছে! রিফান্ড করা যাবে না!
                       setLiveSmsOrder(prev => {
                           if(!prev) return prev;
                           const newCodes = prev.codes.includes(checkData.code) ? prev.codes : [...prev.codes, checkData.code];
@@ -1188,8 +1192,10 @@
                       return;
                   }
 
+                  // ২. যদি কোড না এসে থাকে, তাহলে Daisy তে ক্যানসেল
                   await fetch(`https://voice-store-api.vercel.app/api/daisysms?action=setStatus&status=8&id=${orderId}`);
                   
+                  // ৩. ইউজারের ব্যালেন্স রিফান্ড
                   await fetch('https://voicestore-backend.onrender.com/api/sms-refund', {
                       method: 'POST',
                       headers: { 'Content-Type': 'application/json' },
@@ -1236,6 +1242,7 @@
              triggerToast("Order Finished & Saved to Vault!");
           };
 
+          // SMS Polling
           useEffect(() => {
               let interval;
               if (liveSmsOrder && liveSmsOrder.status === 'ACTIVE') {
@@ -1278,6 +1285,7 @@
               return () => clearInterval(interval);
           }, [liveSmsOrder, user]);
 
+          // Timer Countdown (700s)
           useEffect(() => {
               let timerInterval;
               if (liveSmsOrder && liveSmsOrder.status === 'ACTIVE') {
@@ -1476,6 +1484,39 @@
 
           return (
             <>
+              {previewStockModal.show && (
+                <div className="fixed inset-0 z-[110] flex items-center justify-center p-4 bg-slate-900/60 dark:bg-[#030712]/80 backdrop-blur-sm transition-all duration-300">
+                  <div className={uiCard + " w-full max-w-md p-6 max-h-[80vh] flex flex-col"}>
+                    <div className="flex justify-between items-center mb-5 pb-4 border-b border-slate-200 dark:border-white/10">
+                        <h3 className="font-bold text-lg sm:text-xl text-slate-900 dark:text-white flex items-center gap-2">
+                           <Eye className="w-5 h-5 text-amber-500 dark:text-amber-400" /> Live Stock Preview
+                        </h3>
+                        <button onClick={() => setPreviewStockModal({show: false, categoryId: null, name: ''})} className="btn-animate p-2 bg-slate-100 dark:bg-white/5 hover:bg-slate-200 dark:hover:bg-white/10 rounded-full text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white transition-colors">
+                           <X className="w-5 h-5" />
+                        </button>
+                    </div>
+                    <div className="overflow-y-auto pr-1 sm:pr-2 space-y-3 scrollbar-hide">
+                        {(!inventory[previewStockModal.categoryId] || inventory[previewStockModal.categoryId].length === 0) ? (
+                            <p className="text-center text-sm text-slate-500 dark:text-slate-400 font-medium py-10">No stock currently available.</p>
+                        ) : (
+                            inventory[previewStockModal.categoryId].map((acc, i) => {
+                                const info = getPreviewInfo(acc);
+                                return (
+                                   <div key={i} className={uiInnerPanel + " flex justify-between items-center"}>
+                                      <div className="flex items-center gap-3 sm:gap-4">
+                                         <span className="bg-amber-50 dark:bg-amber-500/10 text-amber-600 dark:text-amber-400 font-bold px-2 sm:px-2.5 py-1 rounded-lg text-[10px] sm:text-xs uppercase border border-amber-200 dark:border-amber-500/20">{info.state}</span>
+                                         <span className="font-mono text-xs sm:text-sm text-slate-700 dark:text-slate-200 font-medium tracking-wide">{info.phone}</span>
+                                      </div>
+                                      <span className="text-[8px] sm:text-[10px] text-emerald-600 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-500/10 px-1.5 sm:px-2 py-1 rounded-md uppercase font-bold tracking-widest border border-emerald-200 dark:border-emerald-500/20">Ready</span>
+                                   </div>
+                                )
+                            })
+                        )}
+                    </div>
+                  </div>
+                </div>
+              )}
+
               {/* Main Content Area */}
               <div className="w-full">
                 
@@ -1825,33 +1866,6 @@
                         <p className="text-[10px] text-slate-500 text-center font-semibold uppercase tracking-wider">Requires manual approval. Open a ticket.</p>
                       </div>
 
-                    </div>
-                  </div>
-                )}
-
-                {activeTab === 'my_accounts' && (
-                  <div className="animate-fade-in-up w-full">
-                    <div className={uiCard + " p-6 sm:p-8 min-h-[500px]"}>
-                      <h2 className="text-xl sm:text-2xl font-bold text-slate-900 dark:text-white mb-6 flex items-center gap-3 pb-4 border-b border-slate-200 dark:border-white/5"><Package className="w-6 h-6 text-fuchsia-500 dark:text-fuchsia-400 drop-shadow-[0_0_5px_currentColor]"/> Purchased Accounts</h2>
-                      {purchases.length === 0 ? (
-                        <div className="text-center py-32 text-slate-500 flex flex-col items-center">
-                          <Lock className="w-16 h-16 mb-4 opacity-20" />
-                          <p className="text-base font-medium">You haven't purchased any accounts yet.</p>
-                        </div>
-                      ) : (
-                        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6 w-full">
-                          {purchases.map((acc, idx) => (
-                             <PurchaseCard 
-                                key={acc.id || idx} 
-                                acc={acc} 
-                                reportAccount={reportAccount} 
-                                copyToClipboard={copyToClipboard} 
-                                uiInnerPanel={uiInnerPanel} 
-                                uiBtnPrimary={uiBtnPrimary} 
-                             />
-                          ))}
-                        </div>
-                      )}
                     </div>
                   </div>
                 )}
