@@ -17,10 +17,10 @@
             },
             colors: {
               brand: {
-                primary: '#6366f1', // Indigo 500
-                primaryHover: '#4f46e5', // Indigo 600
-                darkBg: '#020617', // Slate 950
-                darkCard: '#0f172a', // Slate 900
+                primary: '#f59e0b', // Amber 500 (Gold)
+                primaryHover: '#d97706', // Amber 600
+                darkBg: '#09090b', // Zinc 950 (Obsidian)
+                darkCard: '#18181b', // Zinc 900
                 lightBg: '#f8fafc', // Slate 50
                 lightCard: '#ffffff'
               }
@@ -144,10 +144,10 @@
         const appId = typeof window.__app_id !== 'undefined' ? window.__app_id : 'voice-store-real';
 
         const PRODUCT_CATEGORIES = [
-          { id: 'new', name: 'New Google Voice', description: 'Fresh account with recovery email. Ideal for personal use.', price: 5.00, icon: Package, color: 'text-indigo-500 dark:text-indigo-400' },
+          { id: 'new', name: 'New Google Voice', description: 'Fresh account with recovery email. Ideal for personal use.', price: 5.00, icon: Package, color: 'text-amber-500 dark:text-amber-400' },
           { id: 'old', name: 'Old Google Voice', description: 'Aged and highly trusted account (2012-2020).', price: 15.00, icon: Sparkles, color: 'text-rose-500 dark:text-rose-400' },
-          { id: 'textplus', name: 'TextPlus Account', description: 'Verified USA TextPlus account for unlimited texting.', price: 2.50, icon: Smartphone, color: 'text-amber-500 dark:text-amber-400' },
-          { id: 'gv_bulk', name: 'Bulk Google Voice (10x)', description: 'Wholesale package of 10 fresh Google Voice accounts.', price: 45.00, icon: Users, color: 'text-purple-500 dark:text-purple-400' }
+          { id: 'textplus', name: 'TextPlus Account', description: 'Verified USA TextPlus account for unlimited texting.', price: 2.50, icon: Smartphone, color: 'text-orange-500 dark:text-orange-400' },
+          { id: 'gv_bulk', name: 'Bulk Google Voice (10x)', description: 'Wholesale package of 10 fresh Google Voice accounts.', price: 45.00, icon: Users, color: 'text-yellow-500 dark:text-yellow-400' }
         ];
 
         const KNOWN_SERVICES = {
@@ -177,10 +177,10 @@
             { id: 'settings', label: 'Settings', icon: Settings }
         ];
 
-        // 🚀 UI CLASSES 🚀
-        const uiCard = "bg-white/90 dark:bg-[#0f172a]/60 backdrop-blur-2xl border border-slate-200 dark:border-white/10 rounded-3xl shadow-xl dark:shadow-[0_8px_30px_rgb(0,0,0,0.3)] relative overflow-hidden transition-all duration-300 w-full";
-        const uiInput = "w-full bg-slate-50 dark:bg-[#030712]/50 backdrop-blur-md border border-slate-200 dark:border-white/10 rounded-xl px-4 py-3.5 text-sm text-slate-900 dark:text-slate-200 placeholder-slate-400 dark:placeholder-slate-500 outline-none focus:border-indigo-500/50 focus:ring-1 focus:ring-indigo-500/50 transition-all font-medium shadow-inner";
-        const uiBtnPrimary = "btn-animate w-full bg-gradient-to-r from-indigo-500 to-purple-600 hover:from-indigo-400 hover:to-purple-500 text-white font-bold py-3.5 px-6 rounded-xl shadow-[0_4px_15px_rgba(99,102,241,0.4)] disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 transition-all border border-transparent dark:border-white/10";
+        // 🚀 LUXURY GOLD & OBSIDIAN THEME UI CLASSES 🚀
+        const uiCard = "bg-white/90 dark:bg-brand-darkCard/80 backdrop-blur-2xl border border-slate-200 dark:border-white/10 rounded-3xl shadow-xl dark:shadow-[0_8px_30px_rgb(0,0,0,0.4)] relative overflow-hidden transition-all duration-300 w-full";
+        const uiInput = "w-full bg-slate-50 dark:bg-black/40 backdrop-blur-md border border-slate-200 dark:border-white/10 rounded-xl px-4 py-3.5 text-sm text-slate-900 dark:text-slate-200 placeholder-slate-400 dark:placeholder-slate-500 outline-none focus:border-amber-500/50 focus:ring-1 focus:ring-amber-500/50 transition-all font-medium shadow-inner";
+        const uiBtnPrimary = "btn-animate w-full bg-gradient-to-r from-amber-500 to-orange-600 hover:from-amber-400 hover:to-orange-500 text-white font-bold py-3.5 px-6 rounded-xl shadow-[0_4px_15px_rgba(245,158,11,0.4)] disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 transition-all border border-transparent dark:border-white/10";
         const uiBtnSecondary = "btn-animate w-full bg-slate-100 dark:bg-white/5 hover:bg-slate-200 dark:hover:bg-white/10 border border-slate-200 dark:border-white/10 text-slate-800 dark:text-white font-bold py-3.5 px-6 rounded-xl shadow-sm disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 transition-all";
         const uiBtnAction = "btn-animate bg-slate-100 dark:bg-white/5 hover:bg-slate-200 dark:hover:bg-white/10 border border-slate-200 dark:border-white/10 text-slate-800 dark:text-white font-semibold py-2 px-4 rounded-lg text-xs flex items-center gap-1.5 transition-all disabled:opacity-50 shadow-sm";
         const uiInnerPanel = "bg-slate-50/80 dark:bg-white/[0.02] border border-slate-100 dark:border-white/5 rounded-2xl p-5 w-full transition-all hover:bg-slate-100/80 dark:hover:bg-white/[0.05]";
@@ -232,6 +232,73 @@
             return { phone, state };
         };
 
+        // 🌟 New Product Card Component with State Selection 🌟
+        function ProductCard({ product, inventory, addToCart, setPreviewStockModal, uiCard, uiBtnPrimary, uiInput }) {
+            const [selectedState, setSelectedState] = useState('Any');
+            const stockList = inventory[product.id] || [];
+            const totalStock = stockList.length;
+            
+            // Extract unique available states from inventory
+            const availableStates = [...new Set(stockList.map(acc => {
+                const info = getPreviewInfo(acc);
+                return info.state;
+            }))].sort();
+
+            // Filter stock count based on selected state
+            const currentStockCount = selectedState === 'Any' ? totalStock : stockList.filter(acc => getPreviewInfo(acc).state === selectedState).length;
+            const Icon = product.icon;
+
+            return (
+                <div className={uiCard + " p-6 flex flex-col group hover:-translate-y-1 hover:border-amber-500/30"}>
+                    {totalStock === 0 && <div className="absolute inset-0 bg-slate-900/80 dark:bg-brand-darkBg/80 z-20 flex items-center justify-center backdrop-blur-sm"><span className="bg-slate-800 dark:bg-slate-900 text-white px-4 py-2 rounded-xl text-xs font-bold uppercase tracking-widest shadow-xl border border-white/10">Out of Stock</span></div>}
+                    
+                    <div className="flex justify-between items-start mb-5">
+                        <div className="bg-slate-100 dark:bg-black/30 p-3.5 rounded-xl border border-slate-200 dark:border-white/5 shadow-inner group-hover:scale-110 transition-transform duration-300">
+                            <Icon className={`w-6 h-6 ${product.color} drop-shadow-[0_0_8px_currentColor]`} />
+                        </div>
+                        <div className="bg-white dark:bg-white/5 border border-slate-200 dark:border-white/10 px-3 py-1.5 rounded-xl flex items-center text-slate-800 dark:text-white text-sm font-bold shadow-sm">
+                            ${Number(product.price).toFixed(2)}
+                        </div>
+                    </div>
+                    
+                    <h3 className="text-lg font-bold text-slate-900 dark:text-white mb-2 break-words">{product.name}</h3>
+                    <p className="text-slate-600 dark:text-slate-400 text-xs leading-relaxed mb-4 flex-grow font-medium break-words">{product.description}</p>
+                    
+                    {totalStock > 0 && (
+                        <div className="mb-4">
+                            <label className="block text-[10px] font-bold text-slate-500 dark:text-slate-400 mb-1.5 uppercase tracking-wider">Select Preferred State</label>
+                            <select 
+                                value={selectedState} 
+                                onChange={(e) => setSelectedState(e.target.value)} 
+                                className={uiInput + " !py-2.5 !text-xs cursor-pointer"}
+                            >
+                                <option value="Any">Any State (Random Delivery)</option>
+                                {availableStates.map(st => <option key={st} value={st}>{st} State</option>)}
+                            </select>
+                        </div>
+                    )}
+                    
+                    <div className="flex justify-between items-center mt-auto pt-4 border-t border-slate-200 dark:border-white/5 w-full">
+                        <div className="flex flex-col">
+                            <span className="text-[10px] text-slate-500 font-bold uppercase tracking-wider mb-1">Available</span>
+                            <span className={`text-sm font-black drop-shadow-sm ${currentStockCount > 5 ? 'text-slate-800 dark:text-white' : 'text-rose-500 dark:text-rose-400'}`}>{currentStockCount} pcs</span>
+                        </div>
+                        <button onClick={() => addToCart({...product, selectedState: selectedState === 'Any' ? null : selectedState})} disabled={currentStockCount === 0} className={uiBtnPrimary + " !w-auto !py-2.5 !px-5 text-sm"}>
+                            Add <Plus className="w-4 h-4" />
+                        </button>
+                    </div>
+                    
+                    {totalStock > 0 && (
+                        <div className="mt-4 pt-4 border-t border-slate-200 dark:border-white/5 w-full text-center">
+                            <p onClick={() => setPreviewStockModal({show: true, categoryId: product.id, name: product.name})} className="text-[10px] text-amber-600 dark:text-amber-400 cursor-pointer hover:text-amber-700 dark:hover:text-amber-300 font-bold tracking-wider uppercase flex items-center justify-center gap-1.5 transition-colors">
+                                <Eye className="w-3.5 h-3.5 text-amber-500 dark:text-amber-400 drop-shadow-[0_0_5px_currentColor]"/> View Full Live Stock Preview
+                            </p>
+                        </div>
+                    )}
+                </div>
+            );
+        }
+
         function PurchaseCard({ acc, reportAccount, copyToClipboard, uiInnerPanel, uiBtnPrimary }) {
             const [totpCode, setTotpCode] = useState('');
             const [timeLeft, setTimeLeft] = useState(30);
@@ -275,7 +342,7 @@
                 <div className={uiInnerPanel + " flex flex-col w-full relative group"}>
                     <div className="flex justify-between items-start mb-3 sm:mb-4">
                         <span className="text-xs sm:text-sm font-bold text-slate-800 dark:text-white flex items-center gap-1.5 sm:gap-2 break-words max-w-[70%]">
-                            <Package className="w-4 h-4 text-cyan-500 dark:text-cyan-400 shrink-0 drop-shadow-[0_0_5px_currentColor]"/> {acc.type}
+                            <Package className="w-4 h-4 text-amber-500 dark:text-amber-400 shrink-0 drop-shadow-[0_0_5px_currentColor]"/> {acc.type}
                         </span>
                         <span className="text-[10px] text-slate-500 dark:text-slate-400 font-semibold px-2 py-1 bg-slate-200 dark:bg-black/30 rounded-md shrink-0 border border-slate-300 dark:border-white/5">
                             {acc.date ? new Date(acc.date).toLocaleDateString() : ''}
@@ -283,11 +350,11 @@
                     </div>
 
                     {twoFaSecret && (
-                        <div className="mb-4 bg-indigo-50 dark:bg-indigo-900/10 border border-indigo-200 dark:border-indigo-500/20 p-4 rounded-xl flex flex-col items-center justify-center relative overflow-hidden">
+                        <div className="mb-4 bg-amber-50 dark:bg-amber-900/10 border border-amber-200 dark:border-amber-500/20 p-4 rounded-xl flex flex-col items-center justify-center relative overflow-hidden">
                             <div className="absolute top-0 left-0 w-full h-1 bg-slate-300 dark:bg-slate-800">
-                                <div className="bg-indigo-500 dark:bg-indigo-400 h-full transition-all duration-1000 ease-linear shadow-[0_0_10px_currentColor]" style={{width: `${(timeLeft/30)*100}%`}}></div>
+                                <div className="bg-amber-500 dark:bg-amber-400 h-full transition-all duration-1000 ease-linear shadow-[0_0_10px_currentColor]" style={{width: `${(timeLeft/30)*100}%`}}></div>
                             </div>
-                            <p className="text-[10px] sm:text-xs text-indigo-600 dark:text-indigo-300 font-semibold mb-1 mt-1 uppercase tracking-widest">Live Authenticator Code</p>
+                            <p className="text-[10px] sm:text-xs text-amber-600 dark:text-amber-300 font-semibold mb-1 mt-1 uppercase tracking-widest">Live Authenticator Code</p>
                             <div className="text-3xl sm:text-4xl font-black text-slate-900 dark:text-white tracking-widest font-mono drop-shadow-md">
                                 {totpCode || '------'}
                             </div>
@@ -362,7 +429,7 @@
                 <div className="fixed inset-0 z-[120] flex items-center justify-center p-4 bg-slate-900/60 dark:bg-[#030712]/80 backdrop-blur-sm animate-fade-in-up">
                     <div className={uiCard + " w-full max-w-md p-6"}>
                         <div className="flex justify-between items-center mb-5 pb-4 border-b border-slate-200 dark:border-white/10">
-                            <h3 className="text-lg font-bold text-slate-800 dark:text-white flex items-center gap-2"><ShoppingCart className="w-5 h-5 text-indigo-500 dark:text-indigo-400 drop-shadow-[0_0_5px_currentColor]"/> Your Cart</h3>
+                            <h3 className="text-lg font-bold text-slate-800 dark:text-white flex items-center gap-2"><ShoppingCart className="w-5 h-5 text-amber-500 dark:text-amber-400 drop-shadow-[0_0_5px_currentColor]"/> Your Cart</h3>
                             <button onClick={() => setShowCart(false)} className="p-2 bg-slate-100 dark:bg-white/5 hover:bg-slate-200 dark:hover:bg-white/10 rounded-full text-slate-600 dark:text-slate-300 transition-colors"><X className="w-4 h-4" /></button>
                         </div>
                         {cart.length === 0 ? (
@@ -375,9 +442,11 @@
                                 <div className="max-h-60 overflow-y-auto space-y-2 pr-1 scrollbar-hide">
                                     {cart.map((item, idx) => (
                                         <div key={idx} className={uiInnerPanel + " flex justify-between items-center !p-3"}>
-                                            <span className="text-sm font-semibold text-slate-700 dark:text-slate-200">{item.name}</span>
+                                            <span className="text-sm font-semibold text-slate-700 dark:text-slate-200">
+                                                {item.name} {item.selectedState && <span className="text-[10px] bg-amber-500/10 border border-amber-500/20 text-amber-600 dark:text-amber-400 px-1.5 py-0.5 rounded ml-1.5">{item.selectedState}</span>}
+                                            </span>
                                             <div className="flex items-center gap-4">
-                                                <span className="text-sm font-bold text-indigo-500 dark:text-indigo-400">${item.price.toFixed(2)}</span>
+                                                <span className="text-sm font-bold text-amber-500 dark:text-amber-400">${item.price.toFixed(2)}</span>
                                                 <button onClick={() => setCart(cart.filter((_, i) => i !== idx))} className="text-rose-500 dark:text-rose-400 hover:text-rose-600 dark:hover:text-rose-300 transition-colors"><Trash2 className="w-4 h-4"/></button>
                                             </div>
                                         </div>
@@ -398,21 +467,22 @@
             );
         }
 
+        // Clean static premium background (Supports Dark & Light)
         const PremiumBackground = () => (
           <div className="fixed inset-0 z-[-1] overflow-hidden pointer-events-none transition-colors duration-500">
              <div className="absolute inset-0 bg-grid-pattern opacity-[0.05] dark:opacity-[0.02]"></div>
-             <div className="absolute top-[-20%] left-[-10%] w-[500px] h-[500px] rounded-full bg-indigo-500/10 dark:bg-indigo-600/10 blur-[120px]"></div>
-             <div className="absolute bottom-[-10%] right-[-10%] w-[500px] h-[500px] rounded-full bg-purple-500/10 dark:bg-purple-900/10 blur-[120px]"></div>
+             <div className="absolute top-[-20%] left-[-10%] w-[500px] h-[500px] rounded-full bg-amber-500/10 dark:bg-amber-600/5 blur-[120px]"></div>
+             <div className="absolute bottom-[-10%] right-[-10%] w-[500px] h-[500px] rounded-full bg-orange-500/10 dark:bg-orange-900/10 blur-[120px]"></div>
           </div>
         );
 
         const SplashScreen = () => (
           <div className="fixed inset-0 z-[100] flex flex-col items-center justify-center bg-brand-lightBg dark:bg-brand-darkBg transition-opacity duration-500 w-full h-full p-4">
              <div className="relative z-10 flex flex-col items-center animate-fade-in-up w-full px-4">
-                <div className="w-20 h-20 sm:w-24 sm:h-24 bg-white dark:bg-[#0f172a]/80 backdrop-blur-xl border border-slate-200 dark:border-white/10 rounded-3xl flex items-center justify-center mb-6 shadow-xl">
-                   <Lock className="w-10 h-10 sm:w-12 sm:h-12 text-indigo-500 dark:text-indigo-400" strokeWidth={2.5} />
+                <div className="w-20 h-20 sm:w-24 sm:h-24 bg-white dark:bg-[#18181b]/80 backdrop-blur-xl border border-slate-200 dark:border-white/10 rounded-3xl flex items-center justify-center mb-6 shadow-xl">
+                   <Lock className="w-10 h-10 sm:w-12 sm:h-12 text-amber-500 dark:text-amber-400 drop-shadow-[0_0_8px_currentColor]" strokeWidth={2.5} />
                 </div>
-                <h1 className="text-4xl sm:text-5xl font-black text-transparent bg-clip-text bg-gradient-to-r from-indigo-500 to-purple-600 tracking-tight mb-2 text-center drop-shadow-sm">VoiceStore</h1>
+                <h1 className="text-4xl sm:text-5xl font-black text-transparent bg-clip-text bg-gradient-to-r from-amber-500 to-orange-500 tracking-tight mb-2 text-center drop-shadow-sm">VoiceStore</h1>
                 <p className="text-slate-500 dark:text-slate-400 font-semibold text-xs sm:text-sm text-center w-full uppercase tracking-[0.2em]">Premium Dashboard</p>
              </div>
           </div>
@@ -665,10 +735,10 @@
 
                 <div className="w-full max-w-[400px] animate-fade-in-up px-2 sm:px-0 z-10">
                   <div className="flex flex-col items-center justify-center mb-8">
-                    <div onDoubleClick={() => {setAuthMethod(authMethod === 'admin' ? 'login' : 'admin'); setAuthError(''); setAuthSuccessMsg('');}} className="w-16 h-16 rounded-3xl bg-white dark:bg-[#0f172a]/80 backdrop-blur-xl border border-slate-200 dark:border-white/10 flex items-center justify-center mb-4 select-none shadow-lg">
-                      <Lock className="w-8 h-8 text-indigo-500 dark:text-indigo-400" strokeWidth={2.5} />
+                    <div onDoubleClick={() => {setAuthMethod(authMethod === 'admin' ? 'login' : 'admin'); setAuthError(''); setAuthSuccessMsg('');}} className="w-16 h-16 rounded-3xl bg-white dark:bg-[#18181b]/80 backdrop-blur-xl border border-slate-200 dark:border-white/10 flex items-center justify-center mb-4 select-none shadow-lg">
+                      <Lock className="w-8 h-8 text-amber-500 dark:text-amber-400" strokeWidth={2.5} />
                     </div>
-                    <h2 className="text-3xl font-black text-transparent bg-clip-text bg-gradient-to-r from-indigo-500 to-purple-600 text-center">VoiceStore</h2>
+                    <h2 className="text-3xl font-black text-transparent bg-clip-text bg-gradient-to-r from-amber-500 to-orange-600 text-center">VoiceStore</h2>
                   </div>
 
                   <div className={uiCard + " p-6 sm:p-8"}>
@@ -700,7 +770,7 @@
                         <div className="flex justify-between items-center px-1">
                            <label className="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">Password</label>
                            {(authMethod === 'login' || authMethod === 'admin') && (
-                               <button type="button" onClick={handleForgotPassword} className="text-xs font-bold text-indigo-500 dark:text-indigo-400 hover:text-indigo-600 dark:hover:text-indigo-300 transition-colors">Forgot?</button>
+                               <button type="button" onClick={handleForgotPassword} className="text-xs font-bold text-amber-500 dark:text-amber-400 hover:text-amber-600 dark:hover:text-amber-300 transition-colors">Forgot?</button>
                            )}
                         </div>
                         <input type="password" value={passwordInput} onChange={(e)=>setPasswordInput(e.target.value)} placeholder="••••••••" required className={uiInput} />
@@ -739,11 +809,11 @@
               )}
 
               {/* Clean Top Navigation (Main Header) */}
-              <header className="sticky top-0 z-40 w-full bg-white/80 dark:bg-[#030712]/80 backdrop-blur-2xl border-b border-slate-200 dark:border-white/5 shadow-sm dark:shadow-md transition-colors">
+              <header className="sticky top-0 z-40 w-full bg-white/80 dark:bg-[#09090b]/80 backdrop-blur-2xl border-b border-slate-200 dark:border-white/5 shadow-sm dark:shadow-md transition-colors">
                 <div className="max-w-7xl mx-auto px-4 md:px-6 lg:px-8 h-16 sm:h-20 flex items-center justify-between w-full">
                   <div className="flex items-center gap-3 flex-shrink-0">
                     <div className="w-10 h-10 rounded-xl bg-slate-100 dark:bg-white/5 border border-slate-200 dark:border-white/10 flex items-center justify-center shadow-inner">
-                      <Lock className="w-5 h-5 text-indigo-500 dark:text-indigo-400" strokeWidth={2.5}/>
+                      <Lock className="w-5 h-5 text-amber-500 dark:text-amber-400 drop-shadow-md" strokeWidth={2.5}/>
                     </div>
                     <span className="text-lg sm:text-xl font-black tracking-tight text-slate-900 dark:text-white hidden sm:block">VoiceStore</span>
                   </div>
@@ -751,7 +821,7 @@
                   <div className="flex items-center gap-2 sm:gap-4 md:gap-6 flex-shrink-0">
                     
                     {/* Day/Night Button moved here next to the wallet/balance */}
-                    <button onClick={() => setIsDarkMode(!isDarkMode)} className="btn-animate p-2 sm:p-2.5 rounded-xl bg-slate-100 dark:bg-white/5 border border-slate-200 dark:border-white/10 text-slate-600 dark:text-slate-300 hover:text-indigo-500 dark:hover:text-indigo-400 transition-all flex items-center justify-center">
+                    <button onClick={() => setIsDarkMode(!isDarkMode)} className="btn-animate p-2 sm:p-2.5 rounded-xl bg-slate-100 dark:bg-white/5 border border-slate-200 dark:border-white/10 text-slate-600 dark:text-slate-300 hover:text-amber-500 dark:hover:text-amber-400 transition-all flex items-center justify-center">
                         {isDarkMode ? <Sun className="w-4 h-4 sm:w-4 sm:h-4"/> : <Moon className="w-4 h-4 sm:w-4 sm:h-4"/>}
                     </button>
 
@@ -763,38 +833,43 @@
                     {user.role === 'customer' && (
                       <div className="flex items-center gap-2 sm:gap-3">
                         <div className="bg-slate-100 dark:bg-white/5 border border-slate-200 dark:border-white/10 px-3 sm:px-4 py-1.5 sm:py-2 rounded-xl flex items-center gap-1.5 sm:gap-2 shadow-inner">
-                          <Wallet className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-indigo-500 dark:text-indigo-400" />
+                          <Wallet className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-amber-500 dark:text-amber-400" />
                           <span className="font-bold text-xs sm:text-sm text-slate-800 dark:text-white">${Number(currentUserBalance || 0).toFixed(2)}</span>
                         </div>
                         <button onClick={() => setShowCart(true)} className="btn-animate relative p-2 sm:p-2.5 bg-slate-100 dark:bg-white/5 hover:bg-slate-200 dark:hover:bg-white/10 border border-slate-200 dark:border-white/10 text-slate-700 dark:text-white rounded-xl shadow-inner transition-all">
                           <ShoppingCart className="w-4 h-4 sm:w-5 sm:h-5" />
-                          {cart.length > 0 && <span className="absolute -top-1.5 -right-1.5 sm:-top-2 sm:-right-2 bg-rose-500 text-white text-[9px] sm:text-[10px] w-4 h-4 sm:w-5 sm:h-5 flex items-center justify-center rounded-full font-bold">{cart.length}</span>}
+                          {cart.length > 0 && <span className="absolute -top-1.5 -right-1.5 sm:-top-2 sm:-right-2 bg-rose-500 text-white text-[9px] sm:text-[10px] w-4 h-4 sm:w-5 sm:h-5 flex items-center justify-center rounded-full font-bold shadow-[0_0_8px_rgba(244,63,94,0.6)]">{cart.length}</span>}
                         </button>
                       </div>
                     )}
 
                     <div className="h-6 sm:h-8 w-[1px] bg-slate-200 dark:bg-white/10 mx-0.5 sm:mx-1"></div>
 
-                    <button onClick={() => setShowNotifications(!showNotifications)} className="btn-animate relative p-2 sm:p-2.5 text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-white/5 rounded-xl transition-all">
-                      <Bell className="w-4 h-4 sm:w-5 sm:h-5" />
-                      {notifications.length > 0 && <span className="absolute top-2 right-2 w-2 h-2 bg-rose-500 rounded-full border-2 border-white dark:border-brand-darkBg"></span>}
-                      {showNotifications && (
-                        <div className={uiCard + " absolute right-0 top-full mt-3 w-72 sm:w-80 p-4 sm:p-5 z-50 animate-fade-in-up cursor-default"}>
-                          <div className="flex justify-between items-center mb-3 pb-3 border-b border-slate-200 dark:border-white/10">
-                            <span className="text-sm sm:text-base font-bold text-slate-800 dark:text-white">Notifications</span>
-                            <button onClick={(e) => {e.stopPropagation(); setNotifications([]);}} className="btn-animate text-[10px] sm:text-xs text-indigo-600 dark:text-indigo-400 hover:text-indigo-700 dark:hover:text-indigo-300 font-bold bg-indigo-50 dark:bg-indigo-500/10 border border-indigo-200 dark:border-indigo-500/20 px-3 py-1 rounded-lg">Clear All</button>
-                          </div>
-                          <div className="space-y-2 max-h-72 overflow-y-auto scrollbar-hide pr-1">
-                            {notifications.length === 0 ? <p className="text-sm text-slate-500 text-center py-6 font-medium">No new notifications.</p> : notifications.map(n => (
-                              <div key={n.id} className={uiInnerPanel}>
-                                <p className="text-xs sm:text-sm font-bold text-slate-800 dark:text-white flex items-center gap-1.5"><Sparkles className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-indigo-500 dark:text-indigo-400"/> {n.title}</p>
-                                <p className="text-[10px] sm:text-xs text-slate-500 dark:text-slate-400 mt-1.5 leading-relaxed font-medium">{n.text}</p>
+                    <div className="relative">
+                        <button onClick={() => setShowNotifications(!showNotifications)} className="btn-animate relative p-2 sm:p-2.5 text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-white/5 rounded-xl transition-all flex items-center justify-center">
+                          <Bell className="w-4 h-4 sm:w-5 sm:h-5" />
+                          {notifications.length > 0 && <span className="absolute top-2 right-2 w-2 h-2 bg-rose-500 rounded-full border-2 border-white dark:border-brand-darkBg"></span>}
+                        </button>
+                        {showNotifications && (
+                          <>
+                              <div className="fixed inset-0 z-40 cursor-default" onClick={(e) => { e.stopPropagation(); setShowNotifications(false); }}></div>
+                              <div className={uiCard + " absolute right-0 top-full mt-3 w-72 sm:w-80 p-4 sm:p-5 z-50 animate-fade-in-up cursor-default"}>
+                                <div className="flex justify-between items-center mb-3 pb-3 border-b border-slate-200 dark:border-white/10">
+                                  <span className="text-sm sm:text-base font-bold text-slate-800 dark:text-white">Notifications</span>
+                                  <button onClick={(e) => {e.stopPropagation(); setNotifications([]);}} className="btn-animate text-[10px] sm:text-xs text-amber-600 dark:text-amber-400 hover:text-amber-700 dark:hover:text-amber-300 font-bold bg-amber-50 dark:bg-amber-500/10 border border-amber-200 dark:border-amber-500/20 px-3 py-1 rounded-lg">Clear All</button>
+                                </div>
+                                <div className="space-y-2 max-h-72 overflow-y-auto scrollbar-hide pr-1">
+                                  {notifications.length === 0 ? <p className="text-sm text-slate-500 text-center py-6 font-medium">No new notifications.</p> : notifications.map(n => (
+                                    <div key={n.id} className={uiInnerPanel}>
+                                      <p className="text-xs sm:text-sm font-bold text-slate-800 dark:text-white flex items-center gap-1.5"><Sparkles className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-amber-500 dark:text-amber-400"/> {n.title}</p>
+                                      <p className="text-[10px] sm:text-xs text-slate-500 dark:text-slate-400 mt-1.5 leading-relaxed font-medium">{n.text}</p>
+                                    </div>
+                                  ))}
+                                </div>
                               </div>
-                            ))}
-                          </div>
-                        </div>
-                      )}
-                    </button>
+                          </>
+                        )}
+                    </div>
 
                     <button onClick={handleLogout} className="btn-animate p-2 sm:p-2.5 bg-rose-50 dark:bg-rose-500/10 hover:bg-rose-100 dark:hover:bg-rose-500/20 text-rose-600 dark:text-rose-400 border border-rose-200 dark:border-rose-500/20 rounded-xl transition-all ml-1">
                       <LogOut className="w-4 h-4 sm:w-5 sm:h-5" />
@@ -804,7 +879,7 @@
               </header>
 
               {globalNotice && (
-                <div className="bg-indigo-50 dark:bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 border-b border-indigo-200 dark:border-indigo-500/20 px-4 py-2 sm:py-2.5 flex items-center justify-center gap-3 overflow-hidden relative z-30 w-full backdrop-blur-md">
+                <div className="bg-amber-50 dark:bg-amber-500/10 text-amber-600 dark:text-amber-400 border-b border-amber-200 dark:border-amber-500/20 px-4 py-2 sm:py-2.5 flex items-center justify-center gap-3 overflow-hidden relative z-30 w-full backdrop-blur-md">
                   <Megaphone className="w-4 h-4 flex-shrink-0 animate-pulse" />
                   <div className="marquee-container overflow-hidden max-w-7xl mx-auto w-full text-[10px] sm:text-xs font-bold tracking-widest uppercase">
                     <div className="animate-marquee whitespace-nowrap">
@@ -824,15 +899,15 @@
                       return (
                       <button 
                         key={tab.id} onClick={() => setActiveTab(tab.id)} 
-                        className={`flex-1 flex flex-col sm:flex-row items-center justify-center gap-1 sm:gap-2 py-2.5 sm:py-3 px-2 sm:px-4 rounded-xl transition-all duration-300 min-w-[70px] sm:min-w-0 relative ${active ? 'bg-indigo-50 dark:bg-gradient-to-br dark:from-indigo-500/20 dark:to-purple-500/10 border border-indigo-200 dark:border-indigo-500/30 text-indigo-700 dark:text-indigo-300 shadow-inner dark:shadow-[inset_0_0_12px_rgba(99,102,241,0.2)]' : 'bg-transparent border border-transparent text-slate-500 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-white/5 hover:text-slate-900 dark:hover:text-white'}`}
+                        className={`flex-1 flex flex-col sm:flex-row items-center justify-center gap-1 sm:gap-2 py-2.5 sm:py-3 px-2 sm:px-4 rounded-xl transition-all duration-300 min-w-[70px] sm:min-w-0 relative ${active ? 'bg-amber-50 dark:bg-gradient-to-br dark:from-amber-500/20 dark:to-orange-500/10 border border-amber-200 dark:border-amber-500/30 text-amber-700 dark:text-amber-300 shadow-inner dark:shadow-[inset_0_0_12px_rgba(245,158,11,0.2)]' : 'bg-transparent border border-transparent text-slate-500 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-white/5 hover:text-slate-900 dark:hover:text-white'}`}
                       >
-                        <tab.icon className={`w-4 h-4 sm:w-5 sm:h-5 shrink-0 ${active ? 'text-indigo-600 dark:text-indigo-400' : ''}`} /> 
-                        <span className={`text-[9px] sm:text-xs font-bold tracking-wide ${active ? 'text-indigo-700 dark:text-indigo-300' : ''}`}>{tab.label}</span>
+                        <tab.icon className={`w-4 h-4 sm:w-5 sm:h-5 shrink-0 ${active ? 'text-amber-500 dark:text-amber-400 drop-shadow-[0_0_8px_currentColor]' : ''}`} /> 
+                        <span className={`text-[9px] sm:text-xs font-bold tracking-wide ${active ? 'text-amber-700 dark:text-amber-300' : ''}`}>{tab.label}</span>
                         
                         {user.role === 'admin' && (
                           <div className="absolute top-1 sm:top-2 right-1 sm:right-2 flex items-center gap-1">
                             {(tab.id === 'deposits' && pendingDeposits.length > 0) && <span className="w-1.5 h-1.5 sm:w-2 sm:h-2 bg-rose-500 rounded-full animate-pulse shadow-sm"></span>}
-                            {(tab.id === 'support' && pendingTickets.length > 0) && <span className="w-1.5 h-1.5 sm:w-2 sm:h-2 bg-indigo-500 rounded-full animate-pulse shadow-sm"></span>}
+                            {(tab.id === 'support' && pendingTickets.length > 0) && <span className="w-1.5 h-1.5 sm:w-2 sm:h-2 bg-amber-500 rounded-full animate-pulse shadow-sm"></span>}
                           </div>
                         )}
                       </button>
@@ -859,7 +934,7 @@
                     promoSettings={promoSettings} allOrders={allOrders}
                     tickets={tickets.filter(t => t.email === user.email)}
                     featureSettings={featureSettings} bankSettings={bankSettings} smsSettings={smsSettings} uiCard={uiCard} uiInput={uiInput} uiBtnPrimary={uiBtnPrimary} uiBtnSecondary={uiBtnSecondary} uiBtnAction={uiBtnAction} uiInnerPanel={uiInnerPanel} TIERS={TIERS}
-                    activeTab={activeTab}
+                    activeTab={activeTab} setPreviewStockModal={setPreviewStockModal}
                   />
                 )}
               </main>
@@ -884,10 +959,9 @@
         // ==========================================
         // CUSTOMER DASHBOARD
         // ==========================================
-        function CustomerDashboard({ user, balance, inventory, categories, cart, setCart, purchases, usersDB, deposits, tier, triggerToast, addNotification, db, appId, promoSettings, allOrders, tickets, featureSettings, bankSettings, smsSettings, uiCard, uiInput, uiBtnPrimary, uiBtnSecondary, uiBtnAction, uiInnerPanel, TIERS, activeTab }) {
+        function CustomerDashboard({ user, balance, inventory, categories, cart, setCart, purchases, usersDB, deposits, tier, triggerToast, addNotification, db, appId, promoSettings, allOrders, tickets, featureSettings, bankSettings, smsSettings, uiCard, uiInput, uiBtnPrimary, uiBtnSecondary, uiBtnAction, uiInnerPanel, TIERS, activeTab, setPreviewStockModal }) {
           
           const [searchQuery, setSearchQuery] = useState('');
-          const [previewStockModal, setPreviewStockModal] = useState({show: false, categoryId: null, name: ''});
 
           // Profile Sub-tabs state (Overview, History, Support)
           const [profileSubTab, setProfileSubTab] = useState('overview');
@@ -978,15 +1052,15 @@
               }
           }, [smsSettings]);
 
-          const addToCart = (category) => {
-            const stockAvailable = inventory[category.id] ? inventory[category.id].length : 0;
-            const currentlyInCart = cart.filter(item => item.id === category.id).length;
+          const addToCart = (productWithState) => {
+            const stockAvailable = inventory[productWithState.id] ? inventory[productWithState.id].length : 0;
+            const currentlyInCart = cart.filter(item => item.id === productWithState.id).length;
             if (currentlyInCart >= stockAvailable) {
-              triggerToast('Stock Limit Reached!');
+              triggerToast('Stock Limit Reached for this item!');
               return;
             }
-            setCart([...cart, category]);
-            triggerToast(`${category.name} added to cart.`);
+            setCart([...cart, productWithState]);
+            triggerToast(`${productWithState.name} added to cart.`);
           };
 
           const copyToClipboard10Digits = (fullPhone) => {
@@ -1402,39 +1476,6 @@
 
           return (
             <>
-              {previewStockModal.show && (
-                <div className="fixed inset-0 z-[110] flex items-center justify-center p-4 bg-slate-900/60 dark:bg-[#030712]/80 backdrop-blur-sm transition-all duration-300">
-                  <div className={uiCard + " w-full max-w-md p-6 max-h-[80vh] flex flex-col"}>
-                    <div className="flex justify-between items-center mb-5 pb-4 border-b border-slate-200 dark:border-white/10">
-                        <h3 className="font-bold text-lg sm:text-xl text-slate-900 dark:text-white flex items-center gap-2">
-                           <Eye className="w-5 h-5 text-indigo-500 dark:text-indigo-400" /> Live Stock Preview
-                        </h3>
-                        <button onClick={() => setPreviewStockModal({show: false, categoryId: null, name: ''})} className="btn-animate p-2 bg-slate-100 dark:bg-white/5 hover:bg-slate-200 dark:hover:bg-white/10 rounded-full text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white transition-colors">
-                           <X className="w-5 h-5" />
-                        </button>
-                    </div>
-                    <div className="overflow-y-auto pr-1 sm:pr-2 space-y-3 scrollbar-hide">
-                        {(!inventory[previewStockModal.categoryId] || inventory[previewStockModal.categoryId].length === 0) ? (
-                            <p className="text-center text-sm text-slate-500 dark:text-slate-400 font-medium py-10">No stock currently available.</p>
-                        ) : (
-                            inventory[previewStockModal.categoryId].map((acc, i) => {
-                                const info = getPreviewInfo(acc);
-                                return (
-                                   <div key={i} className={uiInnerPanel + " flex justify-between items-center"}>
-                                      <div className="flex items-center gap-3 sm:gap-4">
-                                         <span className="bg-indigo-50 dark:bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 font-bold px-2 sm:px-2.5 py-1 rounded-lg text-[10px] sm:text-xs uppercase border border-indigo-200 dark:border-indigo-500/20">{info.state}</span>
-                                         <span className="font-mono text-xs sm:text-sm text-slate-700 dark:text-slate-200 font-medium tracking-wide">{info.phone}</span>
-                                      </div>
-                                      <span className="text-[8px] sm:text-[10px] text-emerald-600 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-500/10 px-1.5 sm:px-2 py-1 rounded-md uppercase font-bold tracking-widest border border-emerald-200 dark:border-emerald-500/20">Ready</span>
-                                   </div>
-                                )
-                            })
-                        )}
-                    </div>
-                  </div>
-                </div>
-              )}
-
               {/* Main Content Area */}
               <div className="w-full">
                 
@@ -1453,13 +1494,13 @@
                             <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
                                 <div className="flex-grow w-full max-w-md relative">
                                     <h2 className="text-lg font-bold text-slate-900 dark:text-white flex items-center gap-2 mb-4">
-                                        <Smartphone className="w-5 h-5 text-indigo-500 dark:text-indigo-400 drop-shadow-[0_0_5px_currentColor]"/> Select Service
+                                        <Smartphone className="w-5 h-5 text-amber-500 dark:text-amber-400 drop-shadow-[0_0_5px_currentColor]"/> Select Service
                                     </h2>
                                     
                                     <div className="relative">
                                         <div 
                                             onClick={() => !isSmsLoading && !liveSmsOrder && setShowServiceDropdown(!showServiceDropdown)}
-                                            className={uiInput + ` flex justify-between items-center ${isSmsLoading || liveSmsOrder ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer hover:border-indigo-500/50'}`}
+                                            className={uiInput + ` flex justify-between items-center ${isSmsLoading || liveSmsOrder ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer hover:border-amber-500/50'}`}
                                         >
                                             <span className="font-bold truncate text-slate-800 dark:text-white">{availableServices.find(s=>s.code===selectedSmsService)?.name || 'Select Service'}</span>
                                             <ChevronDown className="w-4 h-4 text-slate-500 dark:text-slate-400"/>
@@ -1476,7 +1517,7 @@
                                                             value={serviceSearch}
                                                             onChange={e => setServiceSearch(e.target.value)}
                                                             onClick={e => e.stopPropagation()}
-                                                            className="w-full bg-slate-50 dark:bg-black/40 border border-slate-200 dark:border-white/10 rounded-lg pl-9 pr-3 py-2 text-sm text-slate-800 dark:text-white placeholder-slate-400 dark:placeholder-slate-500 focus:outline-none focus:border-indigo-500/50 shadow-inner"
+                                                            className="w-full bg-slate-50 dark:bg-black/40 border border-slate-200 dark:border-white/10 rounded-lg pl-9 pr-3 py-2 text-sm text-slate-800 dark:text-white placeholder-slate-400 dark:placeholder-slate-500 focus:outline-none focus:border-amber-500/50 shadow-inner"
                                                         />
                                                     </div>
                                                 </div>
@@ -1485,10 +1526,10 @@
                                                         <div 
                                                             key={s.code} 
                                                             onClick={() => { setSelectedSmsService(s.code); setShowServiceDropdown(false); setServiceSearch(''); }}
-                                                            className={`px-3 py-2.5 rounded-lg cursor-pointer flex justify-between items-center transition-colors ${selectedSmsService === s.code ? 'bg-indigo-50 dark:bg-indigo-500/20 border border-indigo-200 dark:border-indigo-500/30' : 'hover:bg-slate-50 dark:hover:bg-white/5 border border-transparent'}`}
+                                                            className={`px-3 py-2.5 rounded-lg cursor-pointer flex justify-between items-center transition-colors ${selectedSmsService === s.code ? 'bg-amber-50 dark:bg-amber-500/20 border border-amber-200 dark:border-amber-500/30' : 'hover:bg-slate-50 dark:hover:bg-white/5 border border-transparent'}`}
                                                         >
-                                                            <span className={`text-sm font-medium ${selectedSmsService === s.code ? 'text-indigo-700 dark:text-white font-bold' : 'text-slate-600 dark:text-slate-300'}`}>{s.name}</span>
-                                                            <span className="text-xs font-bold text-indigo-600 dark:text-indigo-400">${s.finalPrice.toFixed(2)}</span>
+                                                            <span className={`text-sm font-medium ${selectedSmsService === s.code ? 'text-amber-700 dark:text-white font-bold' : 'text-slate-600 dark:text-slate-300'}`}>{s.name}</span>
+                                                            <span className="text-xs font-bold text-amber-600 dark:text-amber-400">${s.finalPrice.toFixed(2)}</span>
                                                         </div>
                                                     ))}
                                                     {availableServices.filter(s => s.name.toLowerCase().includes(serviceSearch.toLowerCase())).length === 0 && (
@@ -1539,17 +1580,17 @@
                                             <div className="text-2xl sm:text-4xl font-mono font-black text-slate-800 dark:text-white tracking-widest bg-white dark:bg-black/40 px-6 py-4 rounded-2xl border border-slate-200 dark:border-white/10 shadow-inner">
                                                 {String(liveSmsOrder.phone).replace(/(\d{1})(\d{3})(\d{3})(\d{4})/, '+$1 ($2) $3-$4')}
                                             </div>
-                                            <button onClick={() => copyToClipboard10Digits(liveSmsOrder.phone)} className="btn-animate p-4 bg-slate-100 dark:bg-white/5 hover:bg-slate-200 dark:hover:bg-white/10 rounded-2xl text-indigo-500 dark:text-indigo-400 border border-slate-200 dark:border-white/5 shadow-sm transition-colors">
+                                            <button onClick={() => copyToClipboard10Digits(liveSmsOrder.phone)} className="btn-animate p-4 bg-slate-100 dark:bg-white/5 hover:bg-slate-200 dark:hover:bg-white/10 rounded-2xl text-amber-500 dark:text-amber-400 border border-slate-200 dark:border-white/5 shadow-sm transition-colors">
                                                 <Copy className="w-5 h-5 sm:w-6 sm:h-6"/>
                                             </button>
                                         </div>
                                         
                                         {liveSmsOrder.codes.length === 0 ? (
                                             <>
-                                                <p className="text-sm font-bold text-indigo-600 dark:text-indigo-400 flex items-center gap-2 drop-shadow-[0_0_5px_currentColor]"><RefreshCw className="w-4 h-4 animate-spin"/> Waiting for SMS...</p>
+                                                <p className="text-sm font-bold text-amber-600 dark:text-amber-400 flex items-center gap-2 drop-shadow-[0_0_5px_currentColor]"><RefreshCw className="w-4 h-4 animate-spin"/> Waiting for SMS...</p>
                                                 
                                                 <div className="w-full bg-slate-200 dark:bg-slate-800 h-2 rounded-full overflow-hidden shadow-inner">
-                                                    <div className="bg-gradient-to-r from-indigo-500 to-purple-600 h-full transition-all duration-1000 ease-linear dark:shadow-[0_0_10px_rgba(99,102,241,0.8)]" style={{width: `${(smsTimeLeft / 700) * 100}%`}}></div>
+                                                    <div className="bg-gradient-to-r from-amber-500 to-orange-600 h-full transition-all duration-1000 ease-linear dark:shadow-[0_0_10px_rgba(245,158,11,0.8)]" style={{width: `${(smsTimeLeft / 700) * 100}%`}}></div>
                                                 </div>
                                                 
                                                 <div className="flex items-center justify-between w-full mt-2">
@@ -1609,63 +1650,29 @@
                     <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 sm:gap-8 w-full">
                       {/* Products Grid */}
                       <div className="lg:col-span-2 grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6 w-full">
-                        {filteredCategories.map((product) => {
-                          const stock = inventory[product.id] ? inventory[product.id].length : 0;
-                          const Icon = product.icon;
-                          return (
-                            <div key={product.id} className={uiCard + " p-6 flex flex-col group hover:-translate-y-2 hover:border-indigo-500/20"}>
-                              {stock === 0 && <div className="absolute inset-0 bg-slate-900/80 dark:bg-brand-darkBg/80 z-20 flex items-center justify-center backdrop-blur-sm"><span className="bg-slate-800 text-white px-4 py-2 rounded-xl text-xs font-bold uppercase tracking-widest shadow-xl border border-white/10">Out of Stock</span></div>}
-                              
-                              <div className="flex justify-between items-start mb-5">
-                                <div className="bg-slate-100 dark:bg-black/30 p-3.5 rounded-xl border border-slate-200 dark:border-white/5 shadow-inner group-hover:scale-110 transition-transform duration-300"><Icon className={`w-6 h-6 ${product.color} drop-shadow-[0_0_8px_currentColor]`} /></div>
-                                <div className="bg-white dark:bg-white/5 border border-slate-200 dark:border-white/10 px-3 py-1.5 rounded-xl flex items-center text-slate-800 dark:text-white text-sm font-bold shadow-sm">
-                                  ${Number(product.price).toFixed(2)}
-                                </div>
-                              </div>
-                              
-                              <h3 className="text-lg font-bold text-slate-900 dark:text-white mb-2 break-words">{product.name}</h3>
-                              <p className="text-slate-600 dark:text-slate-400 text-sm leading-relaxed mb-8 flex-grow font-medium break-words">{product.description}</p>
-                              
-                              <div className="flex justify-between items-center mt-auto pt-5 border-t border-slate-200 dark:border-white/5 w-full">
-                                <div className="flex flex-col">
-                                  <span className="text-[10px] text-slate-500 font-bold uppercase tracking-wider mb-1">Available</span>
-                                  <span className={`text-sm font-black drop-shadow-sm ${stock > 5 ? 'text-slate-800 dark:text-white' : 'text-rose-500 dark:text-rose-400'}`}>{stock} pcs</span>
-                                </div>
-                                <button onClick={() => addToCart(product)} disabled={stock === 0} className={uiBtnPrimary + " !w-auto !py-2.5 !px-5 text-sm"}>
-                                  Add <Plus className="w-4 h-4" />
-                                </button>
-                              </div>
-                              
-                              {stock > 0 && (
-                                  <div className="mt-5 pt-4 border-t border-slate-200 dark:border-white/5 w-full">
-                                      <p onClick={() => setPreviewStockModal({show: true, categoryId: product.id, name: product.name})} className="text-[10px] text-indigo-600 dark:text-indigo-400 cursor-pointer hover:text-indigo-700 dark:hover:text-indigo-300 font-bold mb-3 tracking-wider uppercase flex items-center gap-1.5 transition-colors"><Eye className="w-3.5 h-3.5 text-indigo-500 dark:text-indigo-400 drop-shadow-[0_0_5px_currentColor]"/> View Full Live Stock Preview</p>
-                                      <div className="max-h-[80px] overflow-y-auto scrollbar-hide space-y-2 pr-1">
-                                          {inventory[product.id].slice(0, 20).map((acc, i) => {
-                                              const info = getPreviewInfo(acc);
-                                              return (
-                                                  <div key={i} className="flex justify-between items-center bg-slate-50 dark:bg-black/30 px-3 py-2 rounded-xl border border-slate-200 dark:border-white/5 shadow-inner">
-                                                      <span className="bg-indigo-100 dark:bg-indigo-500/10 border border-indigo-200 dark:border-indigo-500/20 text-indigo-600 dark:text-indigo-300 font-bold px-2 py-0.5 rounded text-[9px] uppercase">{info.state}</span>
-                                                      <span className="font-mono text-xs text-slate-700 dark:text-slate-300 font-medium tracking-wider">{info.phone}</span>
-                                                  </div>
-                                              )
-                                          })}
-                                      </div>
-                                  </div>
-                              )}
-                            </div>
-                          );
-                        })}
+                        {filteredCategories.map((product) => (
+                            <ProductCard 
+                                key={product.id} 
+                                product={product} 
+                                inventory={inventory} 
+                                addToCart={addToCart} 
+                                setPreviewStockModal={setPreviewStockModal} 
+                                uiCard={uiCard} 
+                                uiBtnPrimary={uiBtnPrimary} 
+                                uiInput={uiInput} 
+                            />
+                        ))}
                         {filteredCategories.length === 0 && <div className="col-span-full py-20 text-center text-slate-500 font-medium"><Search className="w-12 h-12 mx-auto mb-4 opacity-20"/>No products match.</div>}
                       </div>
 
                       {/* Sidebar: Activity */}
                       <div className="lg:col-span-1 w-full">
                          <div className={uiCard + " p-6 h-full flex flex-col"}>
-                            <h3 className="font-bold text-slate-900 dark:text-white mb-5 flex items-center gap-2 pb-4 border-b border-slate-200 dark:border-white/5 text-lg"><TrendingUp className="w-5 h-5 text-indigo-500 dark:text-indigo-400 drop-shadow-[0_0_5px_currentColor]"/> Live Activity</h3>
+                            <h3 className="font-bold text-slate-900 dark:text-white mb-5 flex items-center gap-2 pb-4 border-b border-slate-200 dark:border-white/5 text-lg"><TrendingUp className="w-5 h-5 text-amber-500 dark:text-amber-400 drop-shadow-[0_0_5px_currentColor]"/> Live Activity</h3>
                             <div className="space-y-4 overflow-y-auto flex-grow scrollbar-hide pr-1">
                               {recentActivity.map((act, i) => (
                                 <div key={i} className={uiInnerPanel + " !p-3 relative overflow-hidden group hover:bg-slate-200 dark:hover:bg-white/[0.05] transition-colors"}>
-                                  <div className="absolute top-0 left-0 w-1 h-full bg-indigo-500 shadow-[0_0_10px_currentColor]"></div>
+                                  <div className="absolute top-0 left-0 w-1 h-full bg-amber-500 shadow-[0_0_10px_currentColor]"></div>
                                   <p className="text-sm text-slate-700 dark:text-slate-300 font-medium ml-2 break-words">
                                     <span className="font-bold text-slate-900 dark:text-white">{(act.customer || 'User').split('@')[0]}***</span> bought <span className="font-bold text-emerald-600 dark:text-emerald-400 drop-shadow-sm">${Number(act.total || 0).toFixed(2)}</span>
                                   </p>
@@ -1684,9 +1691,9 @@
                   <div className="animate-fade-in-up grid grid-cols-1 lg:grid-cols-2 gap-6 sm:gap-8 w-full">
                     
                     <div className="space-y-6 sm:space-y-8 w-full">
-                      <div className={uiCard + " p-6 sm:p-8 border-indigo-200 dark:border-indigo-500/30 h-fit"}>
+                      <div className={uiCard + " p-6 sm:p-8 border-amber-200 dark:border-amber-500/30 h-fit"}>
                         <h2 className="text-xl font-bold mb-2 text-slate-900 dark:text-white flex items-center gap-2">
-                           <Zap className="w-6 h-6 text-indigo-500 dark:text-indigo-400 drop-shadow-[0_0_5px_currentColor]"/> Auto Crypto Deposit
+                           <Zap className="w-6 h-6 text-amber-500 dark:text-amber-400 drop-shadow-[0_0_5px_currentColor]"/> Auto Crypto Deposit
                         </h2>
                         
                         {!autoPay.active ? (
@@ -1702,7 +1709,7 @@
                                 </div>
                                 <div>
                                     <label className="block text-xs font-bold text-slate-500 dark:text-slate-400 mb-2 uppercase tracking-wider">Select Network</label>
-                                    <select value={cryptoMethod} onChange={e => setCryptoMethod(e.target.value)} className={uiInput + " h-12"}>
+                                    <select value={cryptoMethod} onChange={e => setCryptoMethod(e.target.value)} className={uiInput + " h-12 cursor-pointer"}>
                                         <option value="USDT TRC20">USDT (TRC20 Network)</option>
                                         <option value="BTC">Bitcoin (BTC Network)</option>
                                     </select>
@@ -1713,14 +1720,14 @@
                         ) : (
                             <div className={uiInnerPanel + " text-center space-y-6 relative overflow-hidden mt-6 bg-slate-100 dark:bg-black/40 shadow-inner"}>
                                 <div className="absolute top-0 left-0 w-full h-1.5 bg-slate-200 dark:bg-slate-800">
-                                    <div className="h-full bg-gradient-to-r from-indigo-500 to-purple-600 transition-all duration-1000 shadow-[0_0_10px_currentColor]" style={{ width: `${(autoPay.time / 1800) * 100}%` }}></div>
+                                    <div className="h-full bg-gradient-to-r from-amber-500 to-orange-600 transition-all duration-1000 shadow-[0_0_10px_currentColor]" style={{ width: `${(autoPay.time / 1800) * 100}%` }}></div>
                                 </div>
                                 
                                 <p className="text-sm font-bold text-slate-900 dark:text-white flex items-center justify-center gap-2.5 pt-3">
-                                    <span className="w-2.5 h-2.5 bg-indigo-500 dark:bg-indigo-400 rounded-full animate-pulse shadow-[0_0_5px_currentColor]"></span> Listening to {autoPay.method}...
+                                    <span className="w-2.5 h-2.5 bg-amber-500 dark:bg-amber-400 rounded-full animate-pulse shadow-[0_0_5px_currentColor]"></span> Listening to {autoPay.method}...
                                 </p>
                                 
-                                <div className="text-4xl sm:text-5xl font-black text-indigo-600 dark:text-indigo-400 tracking-tight drop-shadow-md">
+                                <div className="text-4xl sm:text-5xl font-black text-amber-600 dark:text-amber-400 tracking-tight drop-shadow-md">
                                     {autoPay.cryptoAmount} {autoPay.method === 'BTC' ? 'BTC' : 'USDT'}
                                 </div>
                                 <p className="text-slate-500 dark:text-slate-400 font-medium text-sm">Equals to ${autoPay.amount.toFixed(2)} USD</p>
@@ -1855,16 +1862,16 @@
                     
                     {/* Inner Sub-Navigation for Profile */}
                     <div className="flex space-x-2 mb-6 p-1.5 bg-slate-200/50 dark:bg-white/[0.05] rounded-xl w-max mx-auto md:mx-0 shadow-inner">
-                        <button onClick={() => setProfileSubTab('overview')} className={`px-4 py-2 rounded-lg text-sm font-bold transition-all ${profileSubTab === 'overview' ? 'bg-white dark:bg-white/10 text-indigo-600 dark:text-indigo-400 shadow-sm' : 'text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'}`}>Overview</button>
-                        <button onClick={() => setProfileSubTab('history')} className={`px-4 py-2 rounded-lg text-sm font-bold transition-all ${profileSubTab === 'history' ? 'bg-white dark:bg-white/10 text-indigo-600 dark:text-indigo-400 shadow-sm' : 'text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'}`}>History</button>
-                        <button onClick={() => setProfileSubTab('support')} className={`px-4 py-2 rounded-lg text-sm font-bold transition-all ${profileSubTab === 'support' ? 'bg-white dark:bg-white/10 text-indigo-600 dark:text-indigo-400 shadow-sm' : 'text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'}`}>Support Tickets</button>
+                        <button onClick={() => setProfileSubTab('overview')} className={`px-4 py-2 rounded-lg text-sm font-bold transition-all ${profileSubTab === 'overview' ? 'bg-white dark:bg-white/10 text-amber-600 dark:text-amber-400 shadow-sm' : 'text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'}`}>Overview</button>
+                        <button onClick={() => setProfileSubTab('history')} className={`px-4 py-2 rounded-lg text-sm font-bold transition-all ${profileSubTab === 'history' ? 'bg-white dark:bg-white/10 text-amber-600 dark:text-amber-400 shadow-sm' : 'text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'}`}>History</button>
+                        <button onClick={() => setProfileSubTab('support')} className={`px-4 py-2 rounded-lg text-sm font-bold transition-all ${profileSubTab === 'support' ? 'bg-white dark:bg-white/10 text-amber-600 dark:text-amber-400 shadow-sm' : 'text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'}`}>Support Tickets</button>
                     </div>
 
                     {profileSubTab === 'overview' && (
                         <div className="grid grid-cols-1 xl:grid-cols-3 gap-6 sm:gap-8 w-full animate-fade-in-up">
                             <div className={uiCard + " p-8 text-center xl:col-span-1 h-fit flex flex-col items-center"}>
-                              <div className="w-24 h-24 bg-indigo-50 dark:bg-indigo-500/10 rounded-[2rem] flex items-center justify-center mb-5 border border-indigo-200 dark:border-indigo-500/30 shadow-[inset_0_0_15px_rgba(99,102,241,0.2)]">
-                                <UserIcon className="w-10 h-10 text-indigo-600 dark:text-indigo-400 drop-shadow-[0_0_8px_currentColor]" strokeWidth={2.5}/>
+                              <div className="w-24 h-24 bg-amber-50 dark:bg-amber-500/10 rounded-[2rem] flex items-center justify-center mb-5 border border-amber-200 dark:border-amber-500/30 shadow-[inset_0_0_15px_rgba(245,158,11,0.2)]">
+                                <UserIcon className="w-10 h-10 text-amber-600 dark:text-amber-400 drop-shadow-[0_0_8px_currentColor]" strokeWidth={2.5}/>
                               </div>
                               <h2 className="text-lg font-bold text-slate-900 dark:text-white mb-1 w-full truncate" title={user.email}>{user.email}</h2>
                               <p className="text-xs text-slate-500 dark:text-slate-400 font-semibold mb-8">Joined {userInfo?.joined ? new Date(userInfo.joined).toLocaleDateString() : 'N/A'}</p>
@@ -1879,13 +1886,13 @@
                               
                               {tier && tier.next && (
                                   <div className="w-full bg-slate-200 dark:bg-slate-800 rounded-full h-2 mb-2 overflow-hidden shadow-inner">
-                                      <div className="bg-gradient-to-r from-indigo-500 to-purple-600 h-full rounded-full shadow-[0_0_10px_rgba(99,102,241,0.8)]" style={{width: `${Math.min(100, ((userInfo?.totalSpent || 0) / tier.next) * 100)}%`}}></div>
+                                      <div className="bg-gradient-to-r from-amber-500 to-orange-600 h-full rounded-full shadow-[0_0_10px_rgba(245,158,11,0.8)]" style={{width: `${Math.min(100, ((userInfo?.totalSpent || 0) / tier.next) * 100)}%`}}></div>
                                   </div>
                               )}
                               {tier && tier.next ? (
                                   <p className="text-[10px] text-slate-600 dark:text-slate-500 font-medium w-full text-left mb-6">Spend ${Number(tier.next - (userInfo?.totalSpent || 0)).toFixed(2)} more to level up.</p>
                               ) : (
-                                  <p className="text-[10px] text-amber-600 dark:text-amber-400 font-bold w-full text-center mb-6 uppercase tracking-widest drop-shadow-sm">Max Level Achieved!</p>
+                                  <p className="text-[10px] text-emerald-600 dark:text-emerald-400 font-bold w-full text-center mb-6 uppercase tracking-widest drop-shadow-sm">Max Level Achieved!</p>
                               )}
                             </div>
 
@@ -1927,7 +1934,7 @@
 
                     {profileSubTab === 'history' && (
                         <div className={uiCard + " p-6 sm:p-8 min-h-[500px] animate-fade-in-up"}>
-                          <h2 className="text-xl sm:text-2xl font-bold text-slate-900 dark:text-white mb-6 flex items-center gap-3 pb-4 border-b border-slate-200 dark:border-white/5"><History className="w-6 h-6 text-indigo-500 dark:text-indigo-400 drop-shadow-[0_0_5px_currentColor]"/> Transaction Ledger</h2>
+                          <h2 className="text-xl sm:text-2xl font-bold text-slate-900 dark:text-white mb-6 flex items-center gap-3 pb-4 border-b border-slate-200 dark:border-white/5"><History className="w-6 h-6 text-amber-500 dark:text-amber-400 drop-shadow-[0_0_5px_currentColor]"/> Transaction Ledger</h2>
                           
                           {unifiedHistory.length === 0 ? (
                             <div className="text-center py-32 text-slate-500 flex flex-col items-center">
@@ -1974,7 +1981,7 @@
                         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 sm:gap-8 w-full animate-fade-in-up">
                             <div className="space-y-6 sm:space-y-8 w-full">
                                 <div className={uiCard + " p-6 sm:p-8 h-fit"}>
-                                  <h2 className="text-xl font-bold text-slate-900 dark:text-white mb-2 flex items-center gap-2 pb-4 border-b border-slate-200 dark:border-white/5"><Headset className="w-6 h-6 text-indigo-500 dark:text-indigo-400 drop-shadow-[0_0_5px_currentColor]"/> Open a Ticket</h2>
+                                  <h2 className="text-xl font-bold text-slate-900 dark:text-white mb-2 flex items-center gap-2 pb-4 border-b border-slate-200 dark:border-white/5"><Headset className="w-6 h-6 text-amber-500 dark:text-amber-400 drop-shadow-[0_0_5px_currentColor]"/> Open a Ticket</h2>
                                   <p className="text-sm text-slate-600 dark:text-slate-400 font-medium mb-6 mt-4">Experiencing issues? Describe it below and our team will assist you shortly.</p>
                                   <form onSubmit={submitTicket} className="space-y-5 w-full">
                                     <div>
@@ -2218,7 +2225,7 @@
                 <div className="fixed inset-0 z-[150] flex items-center justify-center p-4 bg-slate-900/60 dark:bg-[#030712]/80 backdrop-blur-sm transition-all duration-300 w-full h-full">
                   <div className={uiCard + " w-full max-w-md p-6"}>
                      <div className="flex justify-between items-center mb-5 border-b border-slate-200 dark:border-white/10 pb-4">
-                         <h3 className="text-lg font-bold text-slate-900 dark:text-white flex items-center gap-2"><Edit className="w-5 h-5 text-indigo-500 dark:text-indigo-400"/> Edit Customer</h3>
+                         <h3 className="text-lg font-bold text-slate-900 dark:text-white flex items-center gap-2"><Edit className="w-5 h-5 text-amber-500 dark:text-amber-400"/> Edit Customer</h3>
                          <button onClick={() => setEditUserModal({ show: false, email: '', password: '', balance: 0, totalSpent: 0 })} className="p-2 bg-slate-100 dark:bg-white/5 hover:bg-slate-200 dark:hover:bg-white/10 rounded-full text-slate-600 dark:text-slate-300 transition-colors"><X className="w-4 h-4" /></button>
                      </div>
                      <p className="text-xs text-slate-700 dark:text-slate-400 font-mono mb-5 font-bold bg-slate-100 dark:bg-black/30 p-3 rounded-lg truncate border border-slate-200 dark:border-white/5 shadow-inner">{editUserModal.email}</p>
@@ -2284,11 +2291,11 @@
                                     <p className="text-slate-900 dark:text-slate-200 font-bold">{cat.name}</p>
                                     <p className="text-xs text-emerald-600 dark:text-emerald-400 font-bold mt-1 drop-shadow-sm">${Number(cat.price).toFixed(2)}</p>
                                   </td>
-                                  <td className="p-4 sm:p-5 text-center font-black text-indigo-600 dark:text-brand-primary drop-shadow-[0_0_5px_currentColor]">{inventory[cat.id] ? inventory[cat.id].length : 0}</td>
+                                  <td className="p-4 sm:p-5 text-center font-black text-amber-600 dark:text-amber-400 drop-shadow-[0_0_5px_currentColor]">{inventory[cat.id] ? inventory[cat.id].length : 0}</td>
                                   <td className="p-4 sm:p-5 text-right">
                                     <div className="flex justify-end gap-2">
                                       <button onClick={() => setManageStockModal({ show: true, categoryId: cat.id })} className={uiBtnAction}>Manage</button>
-                                      <button onClick={() => setEditProductModal({ show: true, product: { ...cat } })} className={uiBtnAction + " !bg-indigo-50 dark:!bg-brand-primary/10 border-indigo-200 dark:!border-brand-primary/20 text-indigo-600 dark:!text-brand-primary hover:bg-indigo-100 dark:hover:!bg-brand-primary/20"}>Edit Info</button>
+                                      <button onClick={() => setEditProductModal({ show: true, product: { ...cat } })} className={uiBtnAction + " !bg-amber-50 dark:!bg-amber-500/10 border-amber-200 dark:!border-amber-500/20 text-amber-600 dark:!text-amber-400 hover:bg-amber-100 dark:hover:!bg-amber-500/20"}>Edit Info</button>
                                     </div>
                                   </td>
                                 </tr>
@@ -2331,7 +2338,7 @@
                   <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 dark:bg-brand-darkBg/80 backdrop-blur-sm transition-all duration-300 w-full h-full">
                     <div className={uiCard + " w-full max-w-2xl p-6 flex flex-col max-h-[80vh]"}>
                        <div className="flex justify-between items-center mb-5 pb-4 border-b border-slate-200 dark:border-white/5 shrink-0">
-                         <h3 className="text-lg font-bold text-slate-900 dark:text-white flex items-center gap-2"><Package className="w-5 h-5 text-indigo-500 dark:text-brand-primary drop-shadow-[0_0_5px_currentColor]"/> Manage Accounts</h3>
+                         <h3 className="text-lg font-bold text-slate-900 dark:text-white flex items-center gap-2"><Package className="w-5 h-5 text-amber-500 dark:text-amber-400 drop-shadow-[0_0_5px_currentColor]"/> Manage Accounts</h3>
                          <button onClick={() => setManageStockModal({ show: false, categoryId: null })} className="p-2 bg-slate-100 dark:bg-white/5 hover:bg-slate-200 dark:hover:bg-white/10 rounded-full text-slate-500 dark:text-slate-300 transition-colors"><X className="w-5 h-5" /></button>
                        </div>
                        <div className="overflow-y-auto flex-grow pr-2 scrollbar-hide space-y-3 w-full">
@@ -2379,7 +2386,7 @@
                               <td className="p-4 sm:p-5 font-semibold text-slate-700 dark:text-slate-300">${Number(usersDB[email].totalSpent || 0).toFixed(2)}</td>
                               <td className="p-4 sm:p-5 font-black text-emerald-600 dark:text-emerald-400 drop-shadow-sm">${Number(usersDB[email].balance || 0).toFixed(2)}</td>
                               <td className="p-4 sm:p-5 text-right">
-                                <button onClick={() => setEditUserModal({ show: true, email: email, password: usersDB[email].password || '', balance: usersDB[email].balance || 0, totalSpent: usersDB[email].totalSpent || 0 })} className={uiBtnAction + " !w-auto !ml-auto !bg-indigo-50 dark:!bg-brand-primary/10 border-indigo-200 dark:!border-brand-primary/20 text-indigo-600 dark:!text-brand-primary hover:bg-indigo-100 dark:hover:!bg-brand-primary/20"}><Edit className="w-4 h-4"/> Edit Profile</button>
+                                <button onClick={() => setEditUserModal({ show: true, email: email, password: usersDB[email].password || '', balance: usersDB[email].balance || 0, totalSpent: usersDB[email].totalSpent || 0 })} className={uiBtnAction + " !w-auto !ml-auto !bg-amber-50 dark:!bg-amber-500/10 border-amber-200 dark:!border-amber-500/20 text-amber-600 dark:!text-amber-400 hover:bg-amber-100 dark:hover:!bg-amber-500/20"}><Edit className="w-4 h-4"/> Edit Profile</button>
                               </td>
                             </tr>
                           ))}
@@ -2394,7 +2401,7 @@
                   <div className={uiCard + " animate-fade-in-up w-full"}>
                     <div className="p-5 sm:p-6 border-b border-slate-200 dark:border-white/5 flex items-center justify-between bg-slate-50 dark:bg-white/[0.02] backdrop-blur-sm">
                        <h2 className="text-base font-bold text-slate-900 dark:text-white">Support Tickets</h2>
-                       {pendingTickets.length > 0 && <span className="bg-indigo-50 dark:bg-brand-primary/10 text-indigo-600 dark:text-brand-primary px-3 py-1 rounded-lg text-xs font-bold border border-indigo-200 dark:border-brand-primary/20 shadow-[0_0_5px_currentColor]">{pendingTickets.length} Open</span>}
+                       {pendingTickets.length > 0 && <span className="bg-amber-50 dark:bg-amber-500/10 text-amber-600 dark:text-amber-400 px-3 py-1 rounded-lg text-xs font-bold border border-amber-200 dark:border-amber-500/20 shadow-[0_0_5px_currentColor]">{pendingTickets.length} Open</span>}
                     </div>
                     <div className="overflow-x-auto w-full">
                       <table className="w-full text-left whitespace-nowrap text-sm">
@@ -2501,11 +2508,11 @@
                            <h3 className="text-[10px] font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">Feature Flags</h3>
                            <label className={uiInnerPanel + " flex items-center justify-between cursor-pointer hover:bg-slate-100 dark:hover:bg-white/10"}>
                              <span className="text-sm font-bold text-slate-800 dark:text-slate-200">Daily Login Bonus</span>
-                             <input type="checkbox" checked={dailyRewardActive} onChange={(e) => setDailyRewardActive(e.target.checked)} className="w-4 h-4 rounded text-indigo-500 focus:ring-indigo-500" />
+                             <input type="checkbox" checked={dailyRewardActive} onChange={(e) => setDailyRewardActive(e.target.checked)} className="w-4 h-4 rounded text-amber-500 focus:ring-amber-500" />
                            </label>
                            <label className={uiInnerPanel + " flex items-center justify-between cursor-pointer hover:bg-slate-100 dark:hover:bg-white/10"}>
                              <span className="text-sm font-bold text-slate-800 dark:text-slate-200">Affiliate Program</span>
-                             <input type="checkbox" checked={referralActive} onChange={(e) => setReferralActive(e.target.checked)} className="w-4 h-4 rounded text-indigo-500 focus:ring-indigo-500" />
+                             <input type="checkbox" checked={referralActive} onChange={(e) => setReferralActive(e.target.checked)} className="w-4 h-4 rounded text-amber-500 focus:ring-amber-500" />
                            </label>
                         </div>
 
@@ -2518,7 +2525,7 @@
                              </div>
                            </div>
                            <label className="flex items-center gap-2.5 cursor-pointer mt-2 pl-1">
-                             <input type="checkbox" checked={smsActiveInput} onChange={(e) => setSmsActiveInput(e.target.checked)} className="w-4 h-4 rounded text-indigo-500 focus:ring-indigo-500" />
+                             <input type="checkbox" checked={smsActiveInput} onChange={(e) => setSmsActiveInput(e.target.checked)} className="w-4 h-4 rounded text-amber-500 focus:ring-amber-500" />
                              <span className="text-sm font-bold text-slate-800 dark:text-slate-200">Enable Live SMS Verification</span>
                            </label>
                         </div>
@@ -2536,7 +2543,7 @@
                              </div>
                            </div>
                            <label className="flex items-center gap-2.5 cursor-pointer mt-2 pl-1">
-                             <input type="checkbox" checked={promoActive} onChange={(e) => setPromoActive(e.target.checked)} className="w-4 h-4 rounded text-indigo-500 focus:ring-indigo-500" />
+                             <input type="checkbox" checked={promoActive} onChange={(e) => setPromoActive(e.target.checked)} className="w-4 h-4 rounded text-amber-500 focus:ring-amber-500" />
                              <span className="text-sm font-bold text-slate-800 dark:text-slate-200">Enable Promo globally</span>
                            </label>
                         </div>
@@ -2564,7 +2571,7 @@
                              <input type="text" value={flutterwaveKeyInput} onChange={(e) => setFlutterwaveKeyInput(e.target.value)} placeholder="FLWPUBK_TEST-xxxxxxxxx" className={uiInput} />
                            </div>
                            <label className="flex items-center gap-2.5 cursor-pointer mt-2 pl-1">
-                             <input type="checkbox" checked={flutterwaveActiveInput} onChange={(e) => setFlutterwaveActiveInput(e.target.checked)} className="w-4 h-4 rounded text-indigo-500 focus:ring-indigo-500" />
+                             <input type="checkbox" checked={flutterwaveActiveInput} onChange={(e) => setFlutterwaveActiveInput(e.target.checked)} className="w-4 h-4 rounded text-amber-500 focus:ring-amber-500" />
                              <span className="text-sm font-bold text-slate-800 dark:text-slate-200">Enable Flutterwave Deposit for Users</span>
                            </label>
                         </div>
