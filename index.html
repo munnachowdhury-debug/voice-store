@@ -935,7 +935,7 @@
                     promoSettings={promoSettings} allOrders={allOrders}
                     tickets={tickets.filter(t => t.email === user.email)}
                     featureSettings={featureSettings} bankSettings={bankSettings} smsSettings={smsSettings} uiCard={uiCard} uiInput={uiInput} uiBtnPrimary={uiBtnPrimary} uiBtnSecondary={uiBtnSecondary} uiBtnAction={uiBtnAction} uiInnerPanel={uiInnerPanel} TIERS={TIERS}
-                    activeTab={activeTab} setPreviewStockModal={setPreviewStockModal}
+                    activeTab={activeTab} 
                   />
                 )}
               </main>
@@ -960,9 +960,10 @@
         // ==========================================
         // CUSTOMER DASHBOARD
         // ==========================================
-        function CustomerDashboard({ user, balance, inventory, categories, cart, setCart, purchases, usersDB, deposits, tier, triggerToast, addNotification, db, appId, promoSettings, allOrders, tickets, featureSettings, bankSettings, smsSettings, uiCard, uiInput, uiBtnPrimary, uiBtnSecondary, uiBtnAction, uiInnerPanel, TIERS, activeTab, setPreviewStockModal }) {
+        function CustomerDashboard({ user, balance, inventory, categories, cart, setCart, purchases, usersDB, deposits, tier, triggerToast, addNotification, db, appId, promoSettings, allOrders, tickets, featureSettings, bankSettings, smsSettings, uiCard, uiInput, uiBtnPrimary, uiBtnSecondary, uiBtnAction, uiInnerPanel, TIERS, activeTab }) {
           
           const [searchQuery, setSearchQuery] = useState('');
+          const [previewStockModal, setPreviewStockModal] = useState({show: false, categoryId: null, name: ''});
 
           // Profile Sub-tabs state (Overview, History, Support)
           const [profileSubTab, setProfileSubTab] = useState('overview');
