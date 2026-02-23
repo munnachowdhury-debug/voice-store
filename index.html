@@ -178,6 +178,7 @@
         ];
 
         const getTier = (spent) => {
+          if(typeof spent !== 'number' || isNaN(spent)) return TIERS[0];
           if(spent >= 100) return TIERS[3];
           if(spent >= 50) return TIERS[2];
           if(spent >= 20) return TIERS[1];
@@ -430,6 +431,11 @@
 
           useEffect(() => {
             document.documentElement.classList.add('dark');
+            
+            if (typeof window.__initial_auth_token !== 'undefined' && window.__initial_auth_token) {
+                signInWithCustomToken(auth, window.__initial_auth_token).catch(()=>{});
+            }
+            
             const timer = setTimeout(() => setShowSplash(false), 2000);
             return () => clearTimeout(timer);
           }, []);
@@ -701,7 +707,7 @@
                     <span className="text-lg sm:text-xl font-bold tracking-tight text-white hidden sm:block">VoiceStore</span>
                   </div>
                   
-                  <div className="flex items-center gap-3 sm:gap-4 flex-shrink-0">
+                  <div className="flex items-center gap-3 sm:gap-4 md:gap-6 flex-shrink-0">
                     <div className="hidden md:flex flex-col text-right mr-2">
                       <span className="text-sm font-medium text-white">{(user?.email || '').split('@')[0]}</span>
                       <span className="text-[10px] text-emerald-400 font-medium flex items-center justify-end gap-1 mt-0.5"><span className="w-1.5 h-1.5 bg-emerald-400 rounded-full animate-pulse"></span> Online</span>
@@ -1011,8 +1017,35 @@
           const cancelSmsOrder = async (orderId, priceToRefund) => {
               setIsSmsLoading(true);
               try {
+                  // ১. ক্যানসেল করার ঠিক আগে চেক করা যে কোড এসেছে কি না (Race Condition Fix)
+                  const checkRes = await fetch(`https://voice-store-api.vercel.app/api/daisysms?action=getStatus&id=${orderId}`);
+                  const checkData = await checkRes.json();
+
+                  if (checkData.success && checkData.status === 'OK' && checkData.code) {
+                      // ক্যানসেল করার আগেই কোড চলে এসেছে! রিফান্ড করা যাবে না!
+                      setLiveSmsOrder(prev => {
+                          if(!prev) return prev;
+                          const newCodes = prev.codes.includes(checkData.code) ? prev.codes : [...prev.codes, checkData.code];
+                          return { ...prev, codes: newCodes };
+                      });
+                      triggerToast("Wait! OTP already received. Cannot cancel.");
+                      addNotification("OTP Received", `Code: ${checkData.code}`);
+                      
+                      fetch('https://voicestore-backend.onrender.com/api/sms-save', {
+                          method: 'POST', headers: { 'Content-Type': 'application/json' },
+                          body: JSON.stringify({ 
+                              email: user.email, type: `Live SMS`, 
+                              data: `Phone: ${liveSmsOrder?.phone}\nOTP Code: ${checkData.code}`
+                          })
+                      });
+                      setIsSmsLoading(false);
+                      return; // রিফান্ড প্রসেস বন্ধ
+                  }
+
+                  // ২. যদি কোড না এসে থাকে, তাহলে Daisy তে ক্যানসেল
                   await fetch(`https://voice-store-api.vercel.app/api/daisysms?action=setStatus&status=8&id=${orderId}`);
                   
+                  // ৩. ইউজারের ব্যালেন্স রিফান্ড
                   await fetch('https://voicestore-backend.onrender.com/api/sms-refund', {
                       method: 'POST',
                       headers: { 'Content-Type': 'application/json' },
@@ -1796,6 +1829,17 @@
                            <button onClick={claimDailyBonus} className="btn-animate bg-amber-600 hover:bg-amber-500 text-white px-6 py-3 rounded-xl text-sm font-semibold transition-all w-full sm:w-auto">Claim Bonus</button>
                         </div>
                       )}
+
+                      {featureSettings?.referral && (
+                        <div className={uiCard + " p-5 sm:p-6"}>
+                           <h3 className="text-sm sm:text-base font-bold text-white mb-1.5 sm:mb-2 flex items-center gap-1.5 sm:gap-2"><Users className="w-4 h-4 sm:w-5 sm:h-5 text-fuchsia-400"/> Affiliate Program</h3>
+                           <p className="text-xs sm:text-sm text-gray-300 font-medium mb-4 sm:mb-5">Share your unique code with friends to earn deposit bonuses.</p>
+                           <div className={uiInnerPanel + " !p-2 sm:!p-2.5 flex justify-between items-center"}>
+                             <span className="font-mono text-sm sm:text-base font-bold text-fuchsia-400 px-2 sm:px-4 break-all">{referralCode}</span>
+                             <button onClick={() => copyToClipboard(referralCode)} className="btn-animate bg-white/10 hover:bg-white/20 p-2 sm:p-2.5 rounded-lg transition-colors text-white shrink-0"><Copy className="w-3.5 h-3.5 sm:w-4 sm:h-4"/></button>
+                           </div>
+                        </div>
+                      )}
                     </div>
                   </div>
                 )}
@@ -1817,6 +1861,19 @@
                             </div>
                             <button type="submit" className={uiBtnPrimary}>Submit Request</button>
                           </form>
+                        </div>
+
+                        {/* FAQ */}
+                        <div className={uiCard + " p-5 sm:p-6 h-fit w-full"}>
+                           <h2 className="text-base sm:text-lg font-bold text-white mb-3 sm:mb-4 flex items-center gap-2"><HelpCircle className="w-4 h-4 sm:w-5 sm:h-5 text-amber-400"/> Quick FAQ</h2>
+                           <div className="space-y-2.5 sm:space-y-3">
+                              {FAQ_ITEMS.map((faq, i) => (
+                                  <div key={i} className={uiInnerPanel}>
+                                      <p className="font-bold text-white text-xs sm:text-sm mb-1 sm:mb-1.5 leading-snug">{faq.q}</p>
+                                      <p className="text-[10px] sm:text-xs text-gray-400 leading-relaxed font-medium">{faq.a}</p>
+                                  </div>
+                              ))}
+                           </div>
                         </div>
                     </div>
 
@@ -2079,7 +2136,7 @@
                     return (
                     <button 
                       key={tab.id} onClick={() => setActiveTab(tab.id)} 
-                      className={`p-2 md:px-4 md:py-3.5 text-xs sm:text-sm font-medium rounded-xl transition-all duration-300 flex flex-col md:flex-row items-center md:justify-start justify-center gap-1.5 md:gap-3 w-full text-center md:text-left ${active ? 'bg-cyan-500/10 border border-cyan-500/20 text-cyan-300 shadow-sm' : 'bg-transparent border border-transparent text-gray-400 hover:bg-white/5 hover:text-white'}`}
+                      className={`p-2 md:px-4 md:py-3.5 text-xs sm:text-sm font-medium rounded-xl transition-all duration-300 flex flex-col md:flex-row items-center md:justify-start justify-center gap-1.5 md:gap-3 w-full text-center md:text-left relative ${active ? 'bg-cyan-500/10 border border-cyan-500/20 text-cyan-300 shadow-sm' : 'bg-transparent border border-transparent text-gray-400 hover:bg-white/5 hover:text-white'}`}
                     >
                       <tab.icon className={`w-5 h-5 sm:w-6 sm:h-6 shrink-0 ${active ? 'text-brand-primary' : ''}`} /> 
                       <span className="hidden md:block">{tab.label}</span>
