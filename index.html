@@ -102,7 +102,7 @@
         }
     </script>
 </head>
-<body class="antialiased bg-brand-lightBg dark:bg-brand-darkBg text-slate-900 dark:text-slate-100 dark">
+<body class="antialiased bg-brand-lightBg dark:bg-brand-darkBg text-slate-900 dark:text-slate-100 transition-colors duration-500">
     <div id="root"></div>
 
     <script type="text/babel" data-type="module">
@@ -165,7 +165,7 @@
             { id: 'store', label: 'Marketplace', icon: ShoppingCart },
             { id: 'add_funds', label: 'Deposit', icon: Wallet },
             { id: 'my_accounts', label: 'My Vault', icon: Package },
-            { id: 'profile', label: 'My Profile', icon: UserIcon } // History and Support moved inside here
+            { id: 'profile', label: 'My Profile', icon: UserIcon } 
         ];
 
         const ADMIN_TABS = [
@@ -178,12 +178,12 @@
         ];
 
         // 🚀 NEW LIGHT & DARK COMPATIBLE UI CLASSES 🚀
-        const uiCard = "bg-white/80 dark:bg-[#0f172a]/60 backdrop-blur-2xl border border-slate-200 dark:border-white/10 rounded-3xl shadow-xl dark:shadow-[0_8px_30px_rgb(0,0,0,0.3)] relative overflow-hidden transition-all duration-300 w-full";
+        const uiCard = "bg-white/90 dark:bg-[#0f172a]/60 backdrop-blur-2xl border border-slate-200 dark:border-white/10 rounded-3xl shadow-xl dark:shadow-[0_8px_30px_rgb(0,0,0,0.3)] relative overflow-hidden transition-all duration-300 w-full";
         const uiInput = "w-full bg-slate-50 dark:bg-[#030712]/50 backdrop-blur-md border border-slate-200 dark:border-white/10 rounded-xl px-4 py-3.5 text-sm text-slate-900 dark:text-slate-200 placeholder-slate-400 dark:placeholder-slate-500 outline-none focus:border-indigo-500/50 focus:ring-1 focus:ring-indigo-500/50 transition-all font-medium shadow-inner";
         const uiBtnPrimary = "btn-animate w-full bg-gradient-to-r from-indigo-500 to-purple-600 hover:from-indigo-400 hover:to-purple-500 text-white font-bold py-3.5 px-6 rounded-xl shadow-[0_4px_15px_rgba(99,102,241,0.4)] disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 transition-all border border-transparent dark:border-white/10";
         const uiBtnSecondary = "btn-animate w-full bg-slate-100 dark:bg-white/5 hover:bg-slate-200 dark:hover:bg-white/10 border border-slate-200 dark:border-white/10 text-slate-800 dark:text-white font-bold py-3.5 px-6 rounded-xl shadow-sm disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 transition-all";
         const uiBtnAction = "btn-animate bg-slate-100 dark:bg-white/5 hover:bg-slate-200 dark:hover:bg-white/10 border border-slate-200 dark:border-white/10 text-slate-800 dark:text-white font-semibold py-2 px-4 rounded-lg text-xs flex items-center gap-1.5 transition-all disabled:opacity-50 shadow-sm";
-        const uiInnerPanel = "bg-slate-50/50 dark:bg-white/[0.02] border border-slate-100 dark:border-white/5 rounded-2xl p-5 w-full transition-all hover:bg-slate-100/50 dark:hover:bg-white/[0.05]";
+        const uiInnerPanel = "bg-slate-50/80 dark:bg-white/[0.02] border border-slate-100 dark:border-white/5 rounded-2xl p-5 w-full transition-all hover:bg-slate-100/80 dark:hover:bg-white/[0.05]";
 
         const TIERS = [
             { threshold: 0, name: 'Bronze', next: 20, color: 'text-orange-500 dark:text-orange-400', icon: Award },
@@ -277,14 +277,14 @@
                         <span className="text-xs sm:text-sm font-bold text-slate-800 dark:text-white flex items-center gap-1.5 sm:gap-2 break-words max-w-[70%]">
                             <Package className="w-4 h-4 text-indigo-500 dark:text-indigo-400 shrink-0"/> {acc.type}
                         </span>
-                        <span className="text-[10px] text-slate-500 dark:text-slate-400 font-semibold px-2 py-1 bg-slate-100 dark:bg-black/30 rounded-md shrink-0 border border-slate-200 dark:border-white/5">
+                        <span className="text-[10px] text-slate-500 dark:text-slate-400 font-semibold px-2 py-1 bg-slate-200 dark:bg-black/30 rounded-md shrink-0 border border-slate-300 dark:border-white/5">
                             {acc.date ? new Date(acc.date).toLocaleDateString() : ''}
                         </span>
                     </div>
 
                     {twoFaSecret && (
                         <div className="mb-4 bg-indigo-50 dark:bg-indigo-900/10 border border-indigo-200 dark:border-indigo-500/20 p-4 rounded-xl flex flex-col items-center justify-center relative overflow-hidden">
-                            <div className="absolute top-0 left-0 w-full h-1 bg-slate-200 dark:bg-slate-800">
+                            <div className="absolute top-0 left-0 w-full h-1 bg-slate-300 dark:bg-slate-800">
                                 <div className="bg-indigo-500 dark:bg-indigo-400 h-full transition-all duration-1000 ease-linear" style={{width: `${(timeLeft/30)*100}%`}}></div>
                             </div>
                             <p className="text-[10px] sm:text-xs text-indigo-600 dark:text-indigo-300 font-semibold mb-1 mt-1 uppercase tracking-widest">Live Authenticator Code</p>
@@ -295,7 +295,7 @@
                         </div>
                     )}
 
-                    <div className="w-full bg-slate-100 dark:bg-black/40 border border-slate-200 dark:border-white/5 p-3 sm:p-4 rounded-xl mb-4 sm:mb-5 overflow-x-auto shadow-inner">
+                    <div className="w-full bg-white dark:bg-black/40 border border-slate-200 dark:border-white/5 p-3 sm:p-4 rounded-xl mb-4 sm:mb-5 overflow-x-auto shadow-inner">
                         <pre className="font-mono text-xs sm:text-sm text-emerald-600 dark:text-emerald-400 whitespace-pre-wrap break-words font-semibold">{String(acc.data || '')}</pre>
                     </div>
                     
@@ -321,6 +321,12 @@
                     return;
                 }
                 setIsCheckingOut(true);
+                
+                // Show waking up notice if it takes long
+                let serverWakeTimer = setTimeout(() => {
+                    triggerToast("Secure server is waking up... please wait a few seconds.");
+                }, 4000);
+
                 try {
                     const response = await fetch('https://voicestore-backend.onrender.com/api/checkout', {
                         method: 'POST',
@@ -330,6 +336,10 @@
                             cart: cart
                         })
                     });
+                    
+                    clearTimeout(serverWakeTimer);
+                    
+                    if (!response.ok) throw new Error("Network response was not ok");
                     
                     const result = await response.json();
                     
@@ -342,7 +352,8 @@
                         triggerToast("Error: " + result.message);
                     }
                 } catch(e) {
-                    triggerToast("Checkout failed. Server might be sleeping.");
+                    clearTimeout(serverWakeTimer);
+                    triggerToast("Checkout failed. Server error or network issue.");
                 } finally {
                     setIsCheckingOut(false);
                 }
@@ -379,7 +390,7 @@
                                     <div className="flex justify-between text-xl font-black text-slate-800 dark:text-white pt-2 border-t border-slate-200 dark:border-white/10"><span>Total:</span><span>${finalAmount.toFixed(2)}</span></div>
                                 </div>
                                 <button onClick={handleCheckout} disabled={isCheckingOut || balance < finalAmount} className={uiBtnPrimary + " mt-4"}>
-                                    {isCheckingOut ? 'Processing Securely...' : (balance < finalAmount ? 'Insufficient Balance' : 'Complete Purchase')}
+                                    {isCheckingOut ? 'Processing Purchase...' : (balance < finalAmount ? 'Insufficient Balance' : 'Complete Purchase')}
                                 </button>
                             </div>
                         )}
@@ -391,14 +402,14 @@
         // Clean static premium background (Supports Dark & Light)
         const PremiumBackground = () => (
           <div className="fixed inset-0 z-[-1] overflow-hidden pointer-events-none transition-colors duration-500">
-             <div className="absolute inset-0 bg-grid-pattern opacity-[0.03] dark:opacity-[0.02]"></div>
-             <div className="absolute top-[-20%] left-[-10%] w-[500px] h-[500px] rounded-full bg-indigo-500/20 dark:bg-indigo-600/10 blur-[120px]"></div>
-             <div className="absolute bottom-[-10%] right-[-10%] w-[500px] h-[500px] rounded-full bg-purple-500/20 dark:bg-purple-900/10 blur-[120px]"></div>
+             <div className="absolute inset-0 bg-grid-pattern opacity-[0.05] dark:opacity-[0.02]"></div>
+             <div className="absolute top-[-20%] left-[-10%] w-[500px] h-[500px] rounded-full bg-indigo-500/10 dark:bg-indigo-600/10 blur-[120px]"></div>
+             <div className="absolute bottom-[-10%] right-[-10%] w-[500px] h-[500px] rounded-full bg-purple-500/10 dark:bg-purple-900/10 blur-[120px]"></div>
           </div>
         );
 
         const SplashScreen = () => (
-          <div className="fixed inset-0 z-[100] flex flex-col items-center justify-center bg-slate-50 dark:bg-[#030712] transition-opacity duration-500 w-full h-full p-4">
+          <div className="fixed inset-0 z-[100] flex flex-col items-center justify-center bg-brand-lightBg dark:bg-brand-darkBg transition-opacity duration-500 w-full h-full p-4">
              <div className="relative z-10 flex flex-col items-center animate-fade-in-up w-full px-4">
                 <div className="w-20 h-20 sm:w-24 sm:h-24 bg-white dark:bg-[#0f172a]/80 backdrop-blur-xl border border-slate-200 dark:border-white/10 rounded-3xl flex items-center justify-center mb-6 shadow-xl">
                    <Lock className="w-10 h-10 sm:w-12 sm:h-12 text-indigo-500 dark:text-indigo-400" strokeWidth={2.5} />
@@ -415,8 +426,8 @@
           const [user, setUser] = useState(null); 
           const [activeTab, setActiveTab] = useState('sms');
           
-          // Theme State
-          const [isDarkMode, setIsDarkMode] = useState(true);
+          // Theme State (Default: Light Mode)
+          const [isDarkMode, setIsDarkMode] = useState(false);
 
           const [usersDB, setUsersDB] = useState({});
           const [inventory, setInventory] = useState({ new: [], old: [], textplus: [], gv_bulk: [] });
@@ -446,6 +457,7 @@
           const [passwordInput, setPasswordInput] = useState('');
           const [isLoadingAuth, setIsLoadingAuth] = useState(false);
 
+          // Handle Theme Change
           useEffect(() => {
               if (isDarkMode) {
                   document.documentElement.classList.add('dark');
@@ -648,13 +660,14 @@
               <div className="min-h-screen flex items-center justify-center p-4 relative font-sans w-full bg-brand-lightBg dark:bg-brand-darkBg text-slate-900 dark:text-slate-100 transition-colors duration-500">
                 <PremiumBackground />
 
-                <div className="absolute top-4 right-4 z-50">
-                    <button onClick={() => setIsDarkMode(!isDarkMode)} className="p-3 bg-white dark:bg-slate-800 rounded-full shadow-md text-slate-800 dark:text-white border border-slate-200 dark:border-slate-700 transition-all">
+                {/* Day/Night Button for Login Screen */}
+                <div className="absolute top-4 right-4 sm:top-6 sm:right-8 z-50">
+                    <button onClick={() => setIsDarkMode(!isDarkMode)} className="p-3 bg-white dark:bg-slate-800 rounded-full shadow-md text-slate-800 dark:text-white border border-slate-200 dark:border-slate-700 transition-all hover:scale-105">
                         {isDarkMode ? <Sun className="w-5 h-5"/> : <Moon className="w-5 h-5"/>}
                     </button>
                 </div>
 
-                <div className="w-full max-w-[400px] animate-fade-in-up px-2 sm:px-0">
+                <div className="w-full max-w-[400px] animate-fade-in-up px-2 sm:px-0 z-10">
                   <div className="flex flex-col items-center justify-center mb-8">
                     <div onDoubleClick={() => {setAuthMethod(authMethod === 'admin' ? 'login' : 'admin'); setAuthError(''); setAuthSuccessMsg('');}} className="w-16 h-16 rounded-3xl bg-white dark:bg-[#0f172a]/80 backdrop-blur-xl border border-slate-200 dark:border-white/10 flex items-center justify-center mb-4 select-none shadow-lg">
                       <Lock className="w-8 h-8 text-indigo-500 dark:text-indigo-400" strokeWidth={2.5} />
@@ -793,17 +806,6 @@
                 </div>
               </header>
 
-              {globalNotice && (
-                <div className="bg-indigo-50 dark:bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 border-b border-indigo-200 dark:border-indigo-500/20 px-4 py-2 sm:py-2.5 flex items-center justify-center gap-3 overflow-hidden relative z-30 w-full backdrop-blur-md">
-                  <Megaphone className="w-4 h-4 flex-shrink-0 animate-pulse" />
-                  <div className="marquee-container overflow-hidden max-w-7xl mx-auto w-full text-[10px] sm:text-xs font-bold tracking-widest uppercase">
-                    <div className="animate-marquee whitespace-nowrap">
-                      {globalNotice} &nbsp;&bull;&nbsp; {globalNotice} &nbsp;&bull;&nbsp; {globalNotice}
-                    </div>
-                  </div>
-                </div>
-              )}
-
               <main className="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 mt-4 sm:mt-6 relative z-10 w-full flex-grow flex flex-col items-center gap-4 sm:gap-6 pb-6">
                 
                 {/* ✨ 1% Blur Glass Top Navigation Bar ✨ */}
@@ -869,10 +871,6 @@
                 />
               )}
 
-              <style dangerouslySetInnerHTML={{__html: `
-                @keyframes marquee { 0% { transform: translateX(100%); } 100% { transform: translateX(-100%); } }
-                .animate-marquee { display: inline-block; animation: marquee 30s linear infinite; }
-              `}} />
             </div>
           );
         }
@@ -907,7 +905,6 @@
 
           const [cryptoMethod, setCryptoMethod] = useState('USDT TRC20');
 
-          // LocalStorage রিকভারি
           const [liveSmsOrder, setLiveSmsOrder] = useState(() => {
               const saved = localStorage.getItem(`smsOrder_${user?.email}`);
               if (saved) {
@@ -1419,7 +1416,7 @@
                                 return (
                                    <div key={i} className={uiInnerPanel + " flex justify-between items-center"}>
                                       <div className="flex items-center gap-3 sm:gap-4">
-                                         <span className="bg-indigo-50 dark:bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 font-bold px-2 sm:px-2.5 py-1 rounded-lg text-[10px] sm:text-xs uppercase border border-indigo-200 dark:border-indigo-500/20">{info.state}</span>
+                                         <span className="bg-brand-primary/10 text-brand-primary font-bold px-2 sm:px-2.5 py-1 rounded-lg text-[10px] sm:text-xs uppercase border border-brand-primary/20">{info.state}</span>
                                          <span className="font-mono text-xs sm:text-sm text-slate-700 dark:text-slate-200 font-medium tracking-wide">{info.phone}</span>
                                       </div>
                                       <span className="text-[8px] sm:text-[10px] text-emerald-600 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-500/10 px-1.5 sm:px-2 py-1 rounded-md uppercase font-bold tracking-widest border border-emerald-200 dark:border-emerald-500/20">Ready</span>
