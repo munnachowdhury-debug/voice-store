@@ -500,7 +500,7 @@
           const [inventory, setInventory] = useState({ new: [], old: [], textplus: [], gv_bulk: [] });
           const [allOrders, setAllOrders] = useState([]);
           const [deposits, setDeposits] = useState([]);
-          const [purchases, setPurchases] = useState([]);
+          const [purchases, setPurchases] = useState([]); // This stores ALL RAW purchases directly from DB
           const [tickets, setTickets] = useState([]);
           
           const [promoSettings, setPromoSettings] = useState({ code: '', discount: 0, isActive: false });
@@ -604,6 +604,7 @@
                   const dep = []; snap.forEach(d => dep.push({ id: d.id, ...d.data() })); setDeposits(dep.sort((a,b) => new Date(b.date) - new Date(a.date)));
                 }, errLog));
                 unsubs.push(onSnapshot(collection(db, 'artifacts', appId, 'public', 'data', 'Store_Purchases'), (snap) => {
+                  // Fetch raw purchases unconditionally for state
                   const p = []; snap.forEach(d => p.push({ id: d.id, ...d.data() })); setPurchases(p.sort((a,b) => new Date(b.date) - new Date(a.date)));
                 }, errLog));
                 unsubs.push(onSnapshot(collection(db, 'artifacts', appId, 'public', 'data', 'Store_Tickets'), (snap) => {
@@ -928,13 +929,13 @@
                   <CustomerDashboard 
                     user={user} balance={currentUserBalance} inventory={inventory} 
                     categories={categories} cart={cart} setCart={setCart} 
-                    purchases={purchases.filter(p => p.customer && p.customer.toLowerCase() === user.email.toLowerCase())}
+                    purchases={purchases} // Fixed: Raw purchases passed directly
                     usersDB={usersDB} deposits={deposits} tier={currentUserTier}
                     triggerToast={triggerToast} addNotification={addNotification} db={db} appId={appId}
                     promoSettings={promoSettings} allOrders={allOrders}
                     tickets={tickets.filter(t => t.email === user.email)}
                     featureSettings={featureSettings} bankSettings={bankSettings} smsSettings={smsSettings} uiCard={uiCard} uiInput={uiInput} uiBtnPrimary={uiBtnPrimary} uiBtnSecondary={uiBtnSecondary} uiBtnAction={uiBtnAction} uiInnerPanel={uiInnerPanel} TIERS={TIERS}
-                    activeTab={activeTab}
+                    activeTab={activeTab} setPreviewStockModal={setPreviewStockModal}
                   />
                 )}
               </main>
@@ -959,10 +960,9 @@
         // ==========================================
         // CUSTOMER DASHBOARD
         // ==========================================
-        function CustomerDashboard({ user, balance, inventory, categories, cart, setCart, purchases, usersDB, deposits, tier, triggerToast, addNotification, db, appId, promoSettings, allOrders, tickets, featureSettings, bankSettings, smsSettings, uiCard, uiInput, uiBtnPrimary, uiBtnSecondary, uiBtnAction, uiInnerPanel, TIERS, activeTab }) {
+        function CustomerDashboard({ user, balance, inventory, categories, cart, setCart, purchases, usersDB, deposits, tier, triggerToast, addNotification, db, appId, promoSettings, allOrders, tickets, featureSettings, bankSettings, smsSettings, uiCard, uiInput, uiBtnPrimary, uiBtnSecondary, uiBtnAction, uiInnerPanel, TIERS, activeTab, setPreviewStockModal }) {
           
           const [searchQuery, setSearchQuery] = useState('');
-          const [previewStockModal, setPreviewStockModal] = useState({show: false, categoryId: null, name: ''});
 
           // Profile Sub-tabs state (Overview, History, Support)
           const [profileSubTab, setProfileSubTab] = useState('overview');
@@ -1167,12 +1167,11 @@
           const cancelSmsOrder = async (orderId, priceToRefund) => {
               setIsSmsLoading(true);
               try {
-                  // ১. ক্যানসেল করার ঠিক আগে চেক করা যে কোড এসেছে কি না (Race Condition Fix)
+                  // 1. Cancel race condition fix
                   const checkRes = await fetch(`https://voice-store-api.vercel.app/api/daisysms?action=getStatus&id=${orderId}`);
                   const checkData = await checkRes.json();
 
                   if (checkData.success && checkData.status === 'OK' && checkData.code) {
-                      // ক্যানসেল করার আগেই কোড চলে এসেছে! রিফান্ড করা যাবে না!
                       setLiveSmsOrder(prev => {
                           if(!prev) return prev;
                           const newCodes = prev.codes.includes(checkData.code) ? prev.codes : [...prev.codes, checkData.code];
@@ -1192,10 +1191,10 @@
                       return;
                   }
 
-                  // ২. যদি কোড না এসে থাকে, তাহলে Daisy তে ক্যানসেল
+                  // 2. Cancel in Daisy
                   await fetch(`https://voice-store-api.vercel.app/api/daisysms?action=setStatus&status=8&id=${orderId}`);
                   
-                  // ৩. ইউজারের ব্যালেন্স রিফান্ড
+                  // 3. User balance refund
                   await fetch('https://voicestore-backend.onrender.com/api/sms-refund', {
                       method: 'POST',
                       headers: { 'Content-Type': 'application/json' },
@@ -1462,9 +1461,12 @@
             } catch(err) {}
           };
 
+          // 🌟 IMPORTANT: Explicit filtering to fix empty Vault bug 🌟
+          const myPurchases = (purchases || []).filter(p => p.customer && p.customer.toLowerCase() === (user?.email || '').toLowerCase());
+          const vaultAccounts = myPurchases.filter(p => !String(p.type || '').toLowerCase().includes('live sms'));
+
           const userDeposits = deposits.filter(d => d.email === user.email);
           const userOrders = allOrders.filter(o => o.customer === user.email);
-          const userPurchases = purchases.filter(p => p.customer === user.email);
           const userInfo = usersDB[user.email];
           const filteredCategories = categories.filter(c => c.name.toLowerCase().includes(searchQuery.toLowerCase()));
           const recentActivity = allOrders.slice(0, 5);
@@ -1473,7 +1475,7 @@
           const unifiedHistory = [
               ...userDeposits.map(d => ({ id: d.id, type: 'Deposit', amount: d.amount, date: d.date, status: d.status, method: d.method })),
               ...userOrders.map(o => ({ id: o.id, type: 'Market Purchase', amount: o.total, date: o.date, status: o.status, method: 'Store Balance' })),
-              ...userPurchases.filter(p => String(p.type).includes('Live SMS')).map(p => ({ id: p.id, type: p.type, amount: 0, date: p.date, status: 'Completed', method: 'Store Balance' }))
+              ...myPurchases.filter(p => String(p.type).includes('Live SMS')).map(p => ({ id: p.id, type: p.type, amount: 0, date: p.date, status: 'Completed', method: 'Store Balance' }))
           ].sort((a,b) => new Date(b.date) - new Date(a.date));
 
           const FAQ_ITEMS = [
@@ -1548,36 +1550,39 @@
                                         </div>
 
                                         {showServiceDropdown && !isSmsLoading && !liveSmsOrder && (
-                                            <div className="absolute z-50 w-full mt-2 bg-white dark:bg-brand-darkCard/95 backdrop-blur-xl border border-slate-200 dark:border-white/10 rounded-xl shadow-2xl dark:shadow-[0_10px_40px_rgba(0,0,0,0.5)] max-h-64 overflow-y-auto scrollbar-hide">
-                                                <div className="p-3 sticky top-0 bg-white/95 dark:bg-brand-darkCard/95 backdrop-blur-md border-b border-slate-200 dark:border-white/5 z-10">
-                                                    <div className="relative">
-                                                        <Search className="absolute left-3 top-2.5 w-4 h-4 text-slate-400 dark:text-slate-400"/>
-                                                        <input 
-                                                            type="text" 
-                                                            placeholder="Search service..." 
-                                                            value={serviceSearch}
-                                                            onChange={e => setServiceSearch(e.target.value)}
-                                                            onClick={e => e.stopPropagation()}
-                                                            className="w-full bg-slate-50 dark:bg-black/40 border border-slate-200 dark:border-white/10 rounded-lg pl-9 pr-3 py-2 text-sm text-slate-800 dark:text-white placeholder-slate-400 dark:placeholder-slate-500 focus:outline-none focus:border-amber-500/50 shadow-inner"
-                                                        />
+                                            <>
+                                                <div className="fixed inset-0 z-40 cursor-default" onClick={(e) => { e.stopPropagation(); setShowServiceDropdown(false); }}></div>
+                                                <div className="absolute z-50 w-full mt-2 bg-white dark:bg-brand-darkCard/95 backdrop-blur-xl border border-slate-200 dark:border-white/10 rounded-xl shadow-2xl dark:shadow-[0_10px_40px_rgba(0,0,0,0.5)] max-h-64 overflow-y-auto scrollbar-hide">
+                                                    <div className="p-3 sticky top-0 bg-white/95 dark:bg-brand-darkCard/95 backdrop-blur-md border-b border-slate-200 dark:border-white/5 z-10">
+                                                        <div className="relative">
+                                                            <Search className="absolute left-3 top-2.5 w-4 h-4 text-slate-400 dark:text-slate-400"/>
+                                                            <input 
+                                                                type="text" 
+                                                                placeholder="Search service..." 
+                                                                value={serviceSearch}
+                                                                onChange={e => setServiceSearch(e.target.value)}
+                                                                onClick={e => e.stopPropagation()}
+                                                                className="w-full bg-slate-50 dark:bg-black/40 border border-slate-200 dark:border-white/10 rounded-lg pl-9 pr-3 py-2 text-sm text-slate-800 dark:text-white placeholder-slate-400 dark:placeholder-slate-500 focus:outline-none focus:border-amber-500/50 shadow-inner"
+                                                            />
+                                                        </div>
+                                                    </div>
+                                                    <div className="p-1.5 space-y-0.5">
+                                                        {availableServices.filter(s => s.name.toLowerCase().includes(serviceSearch.toLowerCase())).map(s => (
+                                                            <div 
+                                                                key={s.code} 
+                                                                onClick={() => { setSelectedSmsService(s.code); setShowServiceDropdown(false); setServiceSearch(''); }}
+                                                                className={`px-3 py-2.5 rounded-lg cursor-pointer flex justify-between items-center transition-colors ${selectedSmsService === s.code ? 'bg-amber-50 dark:bg-amber-500/20 border border-amber-200 dark:border-amber-500/30' : 'hover:bg-slate-50 dark:hover:bg-white/5 border border-transparent'}`}
+                                                            >
+                                                                <span className={`text-sm font-medium ${selectedSmsService === s.code ? 'text-amber-700 dark:text-white font-bold' : 'text-slate-600 dark:text-slate-300'}`}>{s.name}</span>
+                                                                <span className="text-xs font-bold text-amber-600 dark:text-amber-400">${s.finalPrice.toFixed(2)}</span>
+                                                            </div>
+                                                        ))}
+                                                        {availableServices.filter(s => s.name.toLowerCase().includes(serviceSearch.toLowerCase())).length === 0 && (
+                                                            <div className="text-center py-4 text-xs text-slate-500 font-medium">No services found</div>
+                                                        )}
                                                     </div>
                                                 </div>
-                                                <div className="p-1.5 space-y-0.5">
-                                                    {availableServices.filter(s => s.name.toLowerCase().includes(serviceSearch.toLowerCase())).map(s => (
-                                                        <div 
-                                                            key={s.code} 
-                                                            onClick={() => { setSelectedSmsService(s.code); setShowServiceDropdown(false); setServiceSearch(''); }}
-                                                            className={`px-3 py-2.5 rounded-lg cursor-pointer flex justify-between items-center transition-colors ${selectedSmsService === s.code ? 'bg-amber-50 dark:bg-amber-500/20 border border-amber-200 dark:border-amber-500/30' : 'hover:bg-slate-50 dark:hover:bg-white/5 border border-transparent'}`}
-                                                        >
-                                                            <span className={`text-sm font-medium ${selectedSmsService === s.code ? 'text-amber-700 dark:text-white font-bold' : 'text-slate-600 dark:text-slate-300'}`}>{s.name}</span>
-                                                            <span className="text-xs font-bold text-amber-600 dark:text-amber-400">${s.finalPrice.toFixed(2)}</span>
-                                                        </div>
-                                                    ))}
-                                                    {availableServices.filter(s => s.name.toLowerCase().includes(serviceSearch.toLowerCase())).length === 0 && (
-                                                        <div className="text-center py-4 text-xs text-slate-500 font-medium">No services found</div>
-                                                    )}
-                                                </div>
-                                            </div>
+                                            </>
                                         )}
                                     </div>
                                     
@@ -1866,6 +1871,33 @@
                         <p className="text-[10px] text-slate-500 text-center font-semibold uppercase tracking-wider">Requires manual approval. Open a ticket.</p>
                       </div>
 
+                    </div>
+                  </div>
+                )}
+
+                {activeTab === 'my_accounts' && (
+                  <div className="animate-fade-in-up w-full">
+                    <div className={uiCard + " p-6 sm:p-8 min-h-[500px]"}>
+                      <h2 className="text-xl sm:text-2xl font-bold text-slate-900 dark:text-white mb-6 flex items-center gap-3 pb-4 border-b border-slate-200 dark:border-white/5"><Package className="w-6 h-6 text-amber-500 dark:text-amber-400 drop-shadow-[0_0_5px_currentColor]"/> Purchased Accounts</h2>
+                      {vaultAccounts.length === 0 ? (
+                        <div className="text-center py-32 text-slate-500 flex flex-col items-center">
+                          <Lock className="w-16 h-16 mb-4 opacity-20" />
+                          <p className="text-base font-medium">You haven't purchased any accounts yet.</p>
+                        </div>
+                      ) : (
+                        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6 w-full">
+                          {vaultAccounts.map((acc, idx) => (
+                             <PurchaseCard 
+                                key={acc.id || idx} 
+                                acc={acc} 
+                                reportAccount={reportAccount} 
+                                copyToClipboard={copyToClipboard} 
+                                uiInnerPanel={uiInnerPanel} 
+                                uiBtnPrimary={uiBtnPrimary} 
+                             />
+                          ))}
+                        </div>
+                      )}
                     </div>
                   </div>
                 )}
