@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>VoiceStore Premium</title>
+    <title>VoiceStore Dashboard</title>
     
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
@@ -15,23 +15,27 @@
             fontFamily: {
               sans: ['Inter', 'system-ui', 'sans-serif'],
             },
+            colors: {
+              brand: {
+                dark: '#030712',
+                card: '#0f172a',
+                border: '#1e293b',
+                primary: '#0ea5e9',
+                primaryHover: '#0284c7'
+              }
+            },
             animation: {
-              'fade-in-up': 'fadeInUp 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards',
-              'pop-in': 'popIn 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards',
-              'slide-down': 'slideDown 0.4s ease-out forwards',
+              'fade-in-up': 'fadeInUp 0.4s ease-out forwards',
+              'pop-in': 'popIn 0.3s ease-out forwards',
             },
             keyframes: {
               fadeInUp: {
-                '0%': { opacity: '0', transform: 'translateY(20px)' },
+                '0%': { opacity: '0', transform: 'translateY(15px)' },
                 '100%': { opacity: '1', transform: 'translateY(0)' },
               },
               popIn: {
-                '0%': { opacity: '0', transform: 'scale(0.8) translateY(10px)' },
+                '0%': { opacity: '0', transform: 'scale(0.95) translateY(10px)' },
                 '100%': { opacity: '1', transform: 'scale(1) translateY(0)' },
-              },
-              slideDown: {
-                '0%': { opacity: '0', transform: 'translate(-50%, -20px)' },
-                '100%': { opacity: '1', transform: 'translate(-50%, 0)' },
               }
             }
           }
@@ -40,7 +44,7 @@
     </script>
     
     <!-- Google Fonts: Inter -->
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     
     <!-- Import Maps for React and Lucide -->
     <script type="importmap">
@@ -66,31 +70,20 @@
             transition: background-color 0.3s ease, color 0.3s ease;
             -webkit-user-select: none; -moz-user-select: none; -ms-user-select: none; user-select: none;
             font-family: 'Inter', sans-serif;
-            background-color: #020617; 
+            background-color: #030712; 
+            color: #f1f5f9;
             overflow-x: hidden;
         }
         
         input, textarea, pre, select {
             -webkit-user-select: text; -moz-user-select: text; -ms-user-select: text; user-select: text;
         }
-        
-        .bg-grid-pattern {
-            background-size: 40px 40px;
-            background-image: linear-gradient(to right, rgba(255, 255, 255, 0.03) 1px, transparent 1px),
-                              linear-gradient(to bottom, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
-        }
-        
-        .text-gradient-primary {
-            background-clip: text; -webkit-background-clip: text; -webkit-text-fill-color: transparent;
-            background-image: linear-gradient(to right, #22d3ee, #3b82f6);
-        }
 
         .btn-animate {
             transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
         }
         .btn-animate:active {
-            transform: translateY(2px) scale(0.98);
-            filter: brightness(1.1);
+            transform: translateY(1px) scale(0.98);
         }
     </style>
 
@@ -111,7 +104,7 @@
         }
     </script>
 </head>
-<body class="text-gray-900 dark:text-gray-100 antialiased dark">
+<body class="antialiased">
     <div id="root"></div>
 
     <script type="text/babel" data-type="module">
@@ -152,15 +145,13 @@
         const db = getFirestore(app);
         const appId = typeof window.__app_id !== 'undefined' ? window.__app_id : 'voice-store-real';
 
-        // Product Categories
         const PRODUCT_CATEGORIES = [
-          { id: 'new', name: 'New Google Voice', description: 'Fresh account with recovery email. Ideal for personal use.', price: 5.00, icon: Package, color: 'text-cyan-400' },
+          { id: 'new', name: 'New Google Voice', description: 'Fresh account with recovery email. Ideal for personal use.', price: 5.00, icon: Package, color: 'text-sky-400' },
           { id: 'old', name: 'Old Google Voice', description: 'Aged and highly trusted account (2012-2020).', price: 15.00, icon: Sparkles, color: 'text-rose-400' },
           { id: 'textplus', name: 'TextPlus Account', description: 'Verified USA TextPlus account for unlimited texting.', price: 2.50, icon: Smartphone, color: 'text-amber-400' },
           { id: 'gv_bulk', name: 'Bulk Google Voice (10x)', description: 'Wholesale package of 10 fresh Google Voice accounts.', price: 45.00, icon: Users, color: 'text-violet-400' }
         ];
 
-        // Friendly Names for DaisySMS Services
         const KNOWN_SERVICES = {
             'go': 'Google Voice', 'wa': 'WhatsApp', 'tg': 'Telegram', 'ig': 'Instagram',
             'fb': 'Facebook', 'tw': 'Twitter', 'vi': 'Viber', 'di': 'Discord',
@@ -171,23 +162,22 @@
             'uk': 'Airbnb', 'ka': 'Shopee', 'rd': 'Yahoo', 'zz': 'Drom', 'hx': 'Badoo'
         };
 
-        // 3D UI Classes (Minimalist)
-        const uiCard = "bg-[#0f172a]/70 backdrop-blur-xl border border-white/5 rounded-2xl shadow-xl relative overflow-hidden transition-all duration-300 w-full";
-        const uiInput = "w-full bg-black/30 backdrop-blur-md border border-white/10 rounded-xl px-4 py-3 text-sm text-gray-200 placeholder-gray-500 outline-none focus:ring-1 focus:ring-cyan-500/50 transition-all font-medium";
-        const uiBtnPrimary = "btn-animate w-full bg-cyan-600 hover:bg-cyan-500 text-white font-semibold py-3 px-6 rounded-xl shadow-lg disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 transition-all";
-        const uiBtnSecondary = "btn-animate w-full bg-white/5 hover:bg-white/10 border border-white/10 text-white font-semibold py-3 px-6 rounded-xl shadow-md disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 transition-all";
-        const uiBtnAction = "btn-animate bg-white/5 hover:bg-white/10 border border-white/10 text-white font-medium py-2 px-4 rounded-lg text-xs flex items-center gap-1.5 transition-all disabled:opacity-50";
-        const uiInnerPanel = "bg-white/5 border border-white/5 rounded-xl p-4 w-full transition-all";
+        // Clean Minimalist UI Classes
+        const uiCard = "bg-brand-card border border-brand-border rounded-2xl relative overflow-hidden transition-all duration-300 w-full shadow-sm";
+        const uiInput = "w-full bg-slate-900 border border-slate-800 rounded-xl px-4 py-3 text-sm text-slate-200 placeholder-slate-500 outline-none focus:border-brand-primary focus:ring-1 focus:ring-brand-primary transition-all font-medium";
+        const uiBtnPrimary = "btn-animate w-full bg-brand-primary hover:bg-brand-primaryHover text-white font-semibold py-3 px-6 rounded-xl disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 transition-all";
+        const uiBtnSecondary = "btn-animate w-full bg-slate-800 hover:bg-slate-700 text-white font-medium py-3 px-6 rounded-xl disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 transition-all";
+        const uiBtnAction = "btn-animate bg-slate-800 hover:bg-slate-700 text-white font-medium py-2 px-4 rounded-lg text-xs flex items-center gap-1.5 transition-all disabled:opacity-50";
+        const uiInnerPanel = "bg-slate-900/50 border border-slate-800/80 rounded-xl p-4 w-full transition-all";
 
         const TIERS = [
-            { threshold: 0, name: 'Bronze', next: 20, color: 'text-orange-400', bg: 'bg-orange-500/10 border-orange-500/30', icon: Award },
-            { threshold: 20, name: 'Silver', next: 50, color: 'text-slate-300', bg: 'bg-slate-500/10 border-slate-500/30', icon: Award },
-            { threshold: 50, name: 'Gold', next: 100, color: 'text-yellow-400', bg: 'bg-yellow-500/10 border-yellow-500/30', icon: Award },
-            { threshold: 100, name: 'VIP Status', next: 100, color: 'text-amber-400', bg: 'bg-amber-500/20 border-amber-500/40', icon: Zap }
+            { threshold: 0, name: 'Bronze', next: 20, color: 'text-orange-400', icon: Award },
+            { threshold: 20, name: 'Silver', next: 50, color: 'text-slate-300', icon: Award },
+            { threshold: 50, name: 'Gold', next: 100, color: 'text-yellow-400', icon: Award },
+            { threshold: 100, name: 'VIP Status', next: 100, color: 'text-amber-400', icon: Zap }
         ];
 
         const getTier = (spent) => {
-          if(typeof spent !== 'number' || isNaN(spent)) return TIERS[0];
           if(spent >= 100) return TIERS[3];
           if(spent >= 50) return TIERS[2];
           if(spent >= 20) return TIERS[1];
@@ -269,46 +259,43 @@
             }, [twoFaSecret]);
 
             return (
-                <div className={uiInnerPanel + " flex flex-col w-full relative group hover:border-white/20 transition-colors"}>
+                <div className={uiInnerPanel + " flex flex-col w-full relative group"}>
                     <div className="flex justify-between items-start mb-3 sm:mb-4">
-                        <span className="text-xs sm:text-sm font-bold text-white flex items-center gap-1.5 sm:gap-2 break-words max-w-[70%]">
-                            <Sparkles className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-cyan-400 shrink-0"/> {acc.type}
+                        <span className="text-sm font-semibold text-white flex items-center gap-2 break-words max-w-[70%]">
+                            <Package className="w-4 h-4 text-brand-primary shrink-0"/> {acc.type}
                         </span>
-                        <span className="text-[9px] sm:text-[10px] text-gray-400 font-medium bg-black/30 px-1.5 sm:px-2 py-0.5 sm:py-1 rounded-md shrink-0 border border-white/5">
+                        <span className="text-[10px] text-slate-400 font-medium px-2 py-1 bg-slate-800/50 rounded-md shrink-0">
                             {acc.date ? new Date(acc.date).toLocaleDateString() : ''}
                         </span>
                     </div>
 
                     {twoFaSecret && (
-                        <div className="mb-4 bg-cyan-900/10 border border-cyan-500/20 p-4 rounded-xl flex flex-col items-center justify-center relative overflow-hidden">
-                            <div className="absolute top-0 left-0 w-full h-1 bg-gray-800">
-                                <div className="bg-cyan-400 h-full transition-all duration-1000 ease-linear shadow-[0_0_10px_rgba(34,211,238,0.8)]" style={{width: `${(timeLeft/30)*100}%`}}></div>
+                        <div className="mb-4 bg-slate-800/50 border border-slate-700/50 p-4 rounded-xl flex flex-col items-center justify-center relative overflow-hidden">
+                            <div className="absolute top-0 left-0 w-full h-1 bg-slate-800">
+                                <div className="bg-brand-primary h-full transition-all duration-1000 ease-linear" style={{width: `${(timeLeft/30)*100}%`}}></div>
                             </div>
-                            <p className="text-[10px] sm:text-xs text-cyan-300 font-medium mb-1.5 uppercase tracking-widest flex items-center gap-1.5 mt-1">
-                                <ShieldCheck className="w-3.5 h-3.5 sm:w-4 sm:h-4"/> Live Authenticator Code
-                            </p>
-                            <div className="text-3xl sm:text-4xl font-black text-white tracking-[0.2em] font-mono drop-shadow-md">
+                            <p className="text-[10px] sm:text-xs text-slate-400 font-medium mb-1 mt-1">Live Authenticator Code</p>
+                            <div className="text-3xl sm:text-4xl font-bold text-white tracking-widest font-mono">
                                 {totpCode || '------'}
                             </div>
-                            <p className="text-[9px] sm:text-[10px] text-gray-400 mt-2 font-medium">Valid for {timeLeft} seconds</p>
+                            <p className="text-[10px] text-slate-500 mt-2">Valid for {timeLeft} seconds</p>
                         </div>
                     )}
 
-                    <div className="w-full bg-black/30 backdrop-blur-md p-3 sm:p-4 rounded-xl border border-white/5 mb-4 sm:mb-5 overflow-x-auto">
+                    <div className="w-full bg-slate-900 border border-slate-800 p-3 sm:p-4 rounded-xl mb-4 sm:mb-5 overflow-x-auto">
                         <pre className="font-mono text-xs sm:text-sm text-emerald-400 whitespace-pre-wrap break-words font-medium">{String(acc.data || '')}</pre>
                     </div>
                     
-                    <div className="flex justify-end gap-2 sm:gap-3 mt-auto">
-                        <button onClick={() => reportAccount(acc.id)} className="btn-animate text-[10px] sm:text-[11px] text-gray-400 hover:text-rose-400 font-medium px-2 sm:px-3 py-1.5 sm:py-2 transition-colors">Report Issue</button>
-                        <button onClick={() => copyToClipboard(String(acc.data || ''))} className={uiBtnPrimary + " !w-auto !py-1.5 sm:!py-2 !px-3 sm:!px-4 !rounded-lg !text-[10px] sm:!text-xs"}>
-                            <Copy className="w-3 h-3 sm:w-3.5 sm:h-3.5"/> Copy Data
+                    <div className="flex justify-end gap-3 mt-auto items-center">
+                        <button onClick={() => reportAccount(acc.id)} className="btn-animate text-[11px] text-slate-400 hover:text-rose-400 font-medium px-3 py-2">Report Issue</button>
+                        <button onClick={() => copyToClipboard(String(acc.data || ''))} className={uiBtnPrimary + " !w-auto !py-2 !px-4 !text-xs !rounded-lg"}>
+                            <Copy className="w-3.5 h-3.5"/> Copy Data
                         </button>
                     </div>
                 </div>
             );
         }
 
-        // CartModal Component
         function CartModal({ cart, setCart, setShowCart, inventory, user, balance, usersDB, addNotification, triggerToast, db, appId, promoSettings, uiCard, uiInput, uiBtnPrimary, uiInnerPanel }) {
             const [isCheckingOut, setIsCheckingOut] = useState(false);
             const totalAmount = cart.reduce((sum, item) => sum + item.price, 0);
@@ -349,15 +336,15 @@
             };
 
             return (
-                <div className="fixed inset-0 z-[120] flex items-center justify-center p-4 bg-black/70 backdrop-blur-md animate-fade-in-up">
-                    <div className={uiCard + " w-full max-w-md p-5 sm:p-6"}>
-                        <div className="flex justify-between items-center mb-4 pb-3 border-b border-white/5">
-                            <h3 className="text-lg font-bold text-white flex items-center gap-2"><ShoppingCart className="w-5 h-5 text-cyan-400"/> Your Cart</h3>
-                            <button onClick={() => setShowCart(false)} className="p-1.5 bg-white/5 hover:bg-white/10 rounded-full text-white transition-colors"><X className="w-4 h-4" /></button>
+                <div className="fixed inset-0 z-[120] flex items-center justify-center p-4 bg-brand-dark/80 backdrop-blur-sm animate-fade-in-up">
+                    <div className={uiCard + " w-full max-w-md p-6"}>
+                        <div className="flex justify-between items-center mb-5 pb-4 border-b border-brand-border">
+                            <h3 className="text-lg font-semibold text-white flex items-center gap-2"><ShoppingCart className="w-5 h-5 text-brand-primary"/> Your Cart</h3>
+                            <button onClick={() => setShowCart(false)} className="p-2 hover:bg-slate-800 rounded-full text-slate-400 hover:text-white transition-colors"><X className="w-4 h-4" /></button>
                         </div>
                         {cart.length === 0 ? (
-                            <div className="text-center py-10 text-gray-500 flex flex-col items-center">
-                                <ShoppingCart className="w-12 h-12 mb-3 opacity-30" />
+                            <div className="text-center py-10 text-slate-500 flex flex-col items-center">
+                                <ShoppingCart className="w-12 h-12 mb-3 opacity-20" />
                                 <p className="font-medium">Your cart is completely empty.</p>
                             </div>
                         ) : (
@@ -365,20 +352,20 @@
                                 <div className="max-h-60 overflow-y-auto space-y-2 pr-1 scrollbar-hide">
                                     {cart.map((item, idx) => (
                                         <div key={idx} className={uiInnerPanel + " flex justify-between items-center !p-3"}>
-                                            <span className="text-sm font-medium text-gray-200">{item.name}</span>
+                                            <span className="text-sm font-medium text-slate-200">{item.name}</span>
                                             <div className="flex items-center gap-4">
-                                                <span className="text-sm font-bold text-cyan-400">${item.price.toFixed(2)}</span>
+                                                <span className="text-sm font-semibold text-brand-primary">${item.price.toFixed(2)}</span>
                                                 <button onClick={() => setCart(cart.filter((_, i) => i !== idx))} className="text-rose-400 hover:text-rose-300 transition-colors"><Trash2 className="w-4 h-4"/></button>
                                             </div>
                                         </div>
                                     ))}
                                 </div>
-                                <div className="border-t border-white/5 pt-4 space-y-2.5">
-                                    <div className="flex justify-between text-sm text-gray-400 font-medium"><span>Subtotal:</span><span>${totalAmount.toFixed(2)}</span></div>
+                                <div className="border-t border-brand-border pt-4 space-y-2.5">
+                                    <div className="flex justify-between text-sm text-slate-400 font-medium"><span>Subtotal:</span><span>${totalAmount.toFixed(2)}</span></div>
                                     {promoSettings?.isActive && discountAmount > 0 && <div className="flex justify-between text-sm text-emerald-400 font-medium"><span>Discount ({promoSettings.discount}%):</span><span>-${discountAmount.toFixed(2)}</span></div>}
-                                    <div className="flex justify-between text-xl font-bold text-white pt-2 border-t border-white/5"><span>Total:</span><span>${finalAmount.toFixed(2)}</span></div>
+                                    <div className="flex justify-between text-lg font-bold text-white pt-2 border-t border-brand-border"><span>Total:</span><span>${finalAmount.toFixed(2)}</span></div>
                                 </div>
-                                <button onClick={handleCheckout} disabled={isCheckingOut || balance < finalAmount} className={uiBtnPrimary + " mt-2"}>
+                                <button onClick={handleCheckout} disabled={isCheckingOut || balance < finalAmount} className={uiBtnPrimary + " mt-4"}>
                                     {isCheckingOut ? 'Processing Securely...' : (balance < finalAmount ? 'Insufficient Balance' : 'Complete Purchase')}
                                 </button>
                             </div>
@@ -388,23 +375,22 @@
             );
         }
 
-        // فون গরম হওয়া বন্ধ করতে স্ট্যাটিক ব্যাকগ্রাউন্ড
+        // Clean static background
         const PremiumBackground = () => (
-          <div className="fixed inset-0 z-[-1] overflow-hidden bg-[#020617] pointer-events-none">
-             <div className="absolute inset-0 bg-grid-pattern opacity-10"></div>
-             <div className="absolute top-[-10%] left-[-10%] w-[300px] sm:w-[500px] h-[300px] sm:h-[500px] rounded-full bg-cyan-900/30 blur-[100px]"></div>
-             <div className="absolute bottom-[10%] right-[-10%] w-[350px] sm:w-[600px] h-[350px] sm:h-[600px] rounded-full bg-fuchsia-900/20 blur-[120px]"></div>
+          <div className="fixed inset-0 z-[-1] overflow-hidden bg-brand-dark pointer-events-none">
+             <div className="absolute top-[-20%] left-[-10%] w-[500px] h-[500px] rounded-full bg-brand-primary/10 blur-[120px]"></div>
+             <div className="absolute bottom-[-10%] right-[-10%] w-[500px] h-[500px] rounded-full bg-indigo-900/10 blur-[120px]"></div>
           </div>
         );
 
         const SplashScreen = () => (
-          <div className="fixed inset-0 z-[100] flex flex-col items-center justify-center bg-[#020617]/90 backdrop-blur-2xl transition-opacity duration-500 w-full h-full p-4">
+          <div className="fixed inset-0 z-[100] flex flex-col items-center justify-center bg-brand-dark transition-opacity duration-500 w-full h-full p-4">
              <div className="relative z-10 flex flex-col items-center animate-fade-in-up w-full px-4">
-                <div className="w-24 h-24 sm:w-28 sm:h-28 bg-[#0f172a]/80 backdrop-blur-xl border border-white/5 rounded-[2rem] sm:rounded-[2.5rem] flex items-center justify-center mb-6 shadow-2xl">
-                   <Lock className="w-12 h-12 sm:w-14 sm:h-14 text-cyan-400" strokeWidth={2.5} />
+                <div className="w-20 h-20 sm:w-24 sm:h-24 bg-brand-card border border-brand-border rounded-3xl flex items-center justify-center mb-6">
+                   <Lock className="w-10 h-10 sm:w-12 sm:h-12 text-brand-primary" strokeWidth={2.5} />
                 </div>
-                <h1 className="text-5xl sm:text-6xl font-black text-white tracking-tight mb-2 text-center text-gradient-primary w-full break-words">VoiceStore</h1>
-                <p className="text-gray-400 font-medium tracking-[0.2em] sm:tracking-[0.3em] uppercase text-xs sm:text-sm text-center w-full">Premium Edition</p>
+                <h1 className="text-4xl sm:text-5xl font-bold text-white tracking-tight mb-2 text-center">VoiceStore</h1>
+                <p className="text-slate-400 font-medium text-xs sm:text-sm text-center w-full">Premium Dashboard</p>
              </div>
           </div>
         );
@@ -442,10 +428,9 @@
           const [passwordInput, setPasswordInput] = useState('');
           const [isLoadingAuth, setIsLoadingAuth] = useState(false);
 
-          // রিলোড লগআউট ফিক্স
           useEffect(() => {
             document.documentElement.classList.add('dark');
-            const timer = setTimeout(() => setShowSplash(false), 2500);
+            const timer = setTimeout(() => setShowSplash(false), 2000);
             return () => clearTimeout(timer);
           }, []);
 
@@ -633,45 +618,44 @@
               <div className="min-h-screen flex items-center justify-center p-4 relative font-sans w-full">
                 <PremiumBackground />
 
-                <div className="w-full max-w-[420px] animate-fade-in-up px-2 sm:px-0">
-                  <div className="flex flex-col items-center justify-center mb-10">
-                    <div onDoubleClick={() => {setAuthMethod(authMethod === 'admin' ? 'login' : 'admin'); setAuthError(''); setAuthSuccessMsg('');}} className="w-20 h-20 rounded-3xl bg-[#0f172a]/70 backdrop-blur-xl border border-white/5 flex items-center justify-center mb-5 shadow-2xl select-none btn-animate">
-                      <Lock className="w-10 h-10 text-cyan-400" strokeWidth={2.5} />
+                <div className="w-full max-w-[400px] animate-fade-in-up px-2 sm:px-0">
+                  <div className="flex flex-col items-center justify-center mb-8">
+                    <div onDoubleClick={() => {setAuthMethod(authMethod === 'admin' ? 'login' : 'admin'); setAuthError(''); setAuthSuccessMsg('');}} className="w-16 h-16 rounded-2xl bg-brand-card border border-brand-border flex items-center justify-center mb-4 select-none">
+                      <Lock className="w-8 h-8 text-brand-primary" strokeWidth={2.5} />
                     </div>
-                    <h2 className="text-3xl font-black tracking-tight text-white text-center text-gradient-primary">VoiceStore</h2>
-                    <p className="text-gray-400 text-xs mt-2 font-medium tracking-[0.2em] uppercase text-center">Secure Authentication</p>
+                    <h2 className="text-2xl font-bold text-white text-center">VoiceStore</h2>
                   </div>
 
                   <div className={uiCard + " p-6 sm:p-8"}>
                     {authMethod !== 'admin' && (
-                      <div className="flex bg-black/30 backdrop-blur-md p-1.5 rounded-2xl mb-8 border border-white/5 shadow-inner">
-                         <button type="button" onClick={() => { setAuthMethod('login'); setAuthError(''); setAuthSuccessMsg(''); }} className={`btn-animate flex-1 flex items-center justify-center py-2.5 rounded-xl text-sm font-semibold transition-all duration-300 ${authMethod === 'login' ? 'bg-white/10 text-white shadow-md border border-white/10' : 'text-gray-500 hover:text-white hover:bg-white/5'}`}>Log In</button>
-                         <button type="button" onClick={() => { setAuthMethod('signup'); setAuthError(''); setAuthSuccessMsg(''); }} className={`btn-animate flex-1 flex items-center justify-center py-2.5 rounded-xl text-sm font-semibold transition-all duration-300 ${authMethod === 'signup' ? 'bg-white/10 text-white shadow-md border border-white/10' : 'text-gray-500 hover:text-white hover:bg-white/5'}`}>Sign Up</button>
+                      <div className="flex bg-slate-900/50 p-1.5 rounded-xl mb-8 border border-slate-800">
+                         <button type="button" onClick={() => { setAuthMethod('login'); setAuthError(''); setAuthSuccessMsg(''); }} className={`btn-animate flex-1 flex items-center justify-center py-2 rounded-lg text-sm font-medium transition-all duration-300 ${authMethod === 'login' ? 'bg-slate-800 text-white shadow-sm' : 'text-slate-400 hover:text-white'}`}>Log In</button>
+                         <button type="button" onClick={() => { setAuthMethod('signup'); setAuthError(''); setAuthSuccessMsg(''); }} className={`btn-animate flex-1 flex items-center justify-center py-2 rounded-lg text-sm font-medium transition-all duration-300 ${authMethod === 'signup' ? 'bg-slate-800 text-white shadow-sm' : 'text-slate-400 hover:text-white'}`}>Sign Up</button>
                       </div>
                     )}
                     
                     {authMethod === 'admin' && (
-                       <div className="text-center mb-8 pb-4 border-b border-white/5">
-                         <span className="text-xs font-bold text-rose-400 tracking-widest uppercase flex items-center justify-center gap-1.5"><ShieldAlert className="w-4 h-4"/> Admin Access</span>
+                       <div className="text-center mb-8 pb-4 border-b border-slate-800">
+                         <span className="text-xs font-semibold text-rose-400 uppercase tracking-widest flex items-center justify-center gap-1.5"><ShieldAlert className="w-4 h-4"/> Admin Access</span>
                        </div>
                     )}
                     
-                    <form onSubmit={handleAuthSubmit} className="space-y-5">
-                      {authError && <div className="bg-rose-500/10 backdrop-blur-md border border-rose-500/20 text-rose-300 p-4 rounded-xl text-sm font-medium flex gap-3 items-start"><AlertTriangle className="w-5 h-5 flex-shrink-0 mt-0.5 text-rose-400"/> <span>{authError}</span></div>}
-                      {authSuccessMsg && <div className="bg-emerald-500/10 backdrop-blur-md border border-emerald-500/20 text-emerald-300 p-4 rounded-xl text-sm font-medium flex gap-3 items-start"><CheckCircle className="w-5 h-5 flex-shrink-0 mt-0.5 text-emerald-400"/> <span>{authSuccessMsg}</span></div>}
+                    <form onSubmit={handleAuthSubmit} className="space-y-4">
+                      {authError && <div className="bg-rose-500/10 border border-rose-500/20 text-rose-400 p-4 rounded-xl text-sm font-medium flex gap-3 items-start"><AlertTriangle className="w-5 h-5 flex-shrink-0 mt-0.5"/> <span>{authError}</span></div>}
+                      {authSuccessMsg && <div className="bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 p-4 rounded-xl text-sm font-medium flex gap-3 items-start"><CheckCircle className="w-5 h-5 flex-shrink-0 mt-0.5"/> <span>{authSuccessMsg}</span></div>}
                       
-                      <div className="space-y-2">
-                        <label className="text-xs font-semibold text-gray-400 uppercase tracking-wider ml-1">
+                      <div className="space-y-1.5">
+                        <label className="text-xs font-medium text-slate-400 pl-1">
                           {authMethod === 'admin' ? 'Admin Email' : 'Email Address'}
                         </label>
                         <input type="email" value={emailInput} onChange={(e)=>setEmailInput(e.target.value)} placeholder="name@example.com" required className={uiInput} />
                       </div>
 
-                      <div className="space-y-2">
+                      <div className="space-y-1.5">
                         <div className="flex justify-between items-center px-1">
-                           <label className="text-xs font-semibold text-gray-400 uppercase tracking-wider">Password</label>
+                           <label className="text-xs font-medium text-slate-400">Password</label>
                            {(authMethod === 'login' || authMethod === 'admin') && (
-                               <button type="button" onClick={handleForgotPassword} className="text-xs font-medium text-cyan-500 hover:text-cyan-400 transition-colors">Forgot password?</button>
+                               <button type="button" onClick={handleForgotPassword} className="text-xs font-medium text-brand-primary hover:text-brand-primaryHover transition-colors">Forgot?</button>
                            )}
                         </div>
                         <input type="password" value={passwordInput} onChange={(e)=>setPasswordInput(e.target.value)} placeholder="••••••••" required className={uiInput} />
@@ -680,7 +664,7 @@
                       <div className="pt-4">
                         <button type="submit" disabled={isLoadingAuth} className={uiBtnPrimary}>
                           {isLoadingAuth ? 'Processing...' : authMethod === 'signup' ? 'Create Account' : authMethod === 'login' ? 'Sign In' : 'Admin Login'}
-                          {!isLoadingAuth && <ArrowRight className="w-5 h-5" />}
+                          {!isLoadingAuth && <ArrowRight className="w-4 h-4" />}
                         </button>
                       </div>
                     </form>
@@ -697,63 +681,61 @@
             <div className="min-h-screen w-full relative overflow-x-hidden font-sans pb-24 flex flex-col">
               <PremiumBackground />
               
-              {/* Floating Toast Animation */}
+              {/* Toast Animation */}
               {toastData.show && (
-                <div className="fixed top-10 left-1/2 -translate-x-1/2 z-[200] animate-slide-down w-[90%] sm:w-auto max-w-sm">
-                  <div className="bg-[#0f172a]/90 backdrop-blur-3xl border border-white/5 p-4 sm:px-6 sm:py-4 rounded-2xl shadow-2xl flex items-center gap-4 w-full">
-                    <div className="w-8 h-8 sm:w-10 sm:h-10 bg-cyan-600 rounded-full flex items-center justify-center shrink-0">
-                      <CheckCircle className="w-5 h-5 sm:w-6 sm:h-6 text-white" />
-                    </div>
-                    <span className="text-white font-medium text-sm sm:text-base tracking-wide flex-grow">{toastData.msg}</span>
+                <div className="fixed top-6 left-1/2 -translate-x-1/2 z-[200] animate-slide-down w-[90%] sm:w-auto max-w-sm">
+                  <div className="bg-slate-800 border border-slate-700 p-4 rounded-xl shadow-xl flex items-center gap-3 w-full">
+                    <CheckCircle className="w-5 h-5 text-emerald-400 shrink-0" />
+                    <span className="text-white font-medium text-sm flex-grow">{toastData.msg}</span>
                   </div>
                 </div>
               )}
 
-              {/* Premium Top Navigation Glass */}
-              <header className="sticky top-0 z-40 w-full bg-[#0f172a]/60 backdrop-blur-2xl border-b border-white/5 shadow-md transition-colors">
+              {/* Clean Top Navigation */}
+              <header className="sticky top-0 z-40 w-full bg-brand-dark/80 backdrop-blur-xl border-b border-brand-border transition-colors">
                 <div className="max-w-7xl mx-auto px-4 md:px-6 lg:px-8 h-16 sm:h-20 flex items-center justify-between w-full">
-                  <div className="flex items-center gap-3 sm:gap-4 flex-shrink-0">
-                    <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-xl bg-white/5 backdrop-blur-xl border border-white/10 flex items-center justify-center shadow-inner">
-                      <Lock className="w-4 h-4 sm:w-5 sm:h-5 text-cyan-400" strokeWidth={2.5}/>
+                  <div className="flex items-center gap-3 flex-shrink-0">
+                    <div className="w-10 h-10 rounded-xl bg-brand-card border border-brand-border flex items-center justify-center">
+                      <Lock className="w-5 h-5 text-brand-primary" strokeWidth={2.5}/>
                     </div>
                     <span className="text-lg sm:text-xl font-bold tracking-tight text-white hidden sm:block">VoiceStore</span>
                   </div>
                   
-                  <div className="flex items-center gap-3 sm:gap-4 md:gap-6 flex-shrink-0">
+                  <div className="flex items-center gap-3 sm:gap-4 flex-shrink-0">
                     <div className="hidden md:flex flex-col text-right mr-2">
                       <span className="text-sm font-medium text-white">{(user?.email || '').split('@')[0]}</span>
-                      <span className="text-[10px] text-emerald-400 font-bold uppercase flex items-center justify-end gap-1.5 mt-0.5"><span className="w-2 h-2 bg-emerald-400 rounded-full animate-pulse"></span> Online</span>
+                      <span className="text-[10px] text-emerald-400 font-medium flex items-center justify-end gap-1 mt-0.5"><span className="w-1.5 h-1.5 bg-emerald-400 rounded-full animate-pulse"></span> Online</span>
                     </div>
 
                     {user.role === 'customer' && (
-                      <div className="flex items-center gap-2 sm:gap-3">
-                        <div className="bg-white/5 backdrop-blur-xl border border-white/10 px-3 sm:px-4 py-1.5 sm:py-2 rounded-xl sm:rounded-2xl flex items-center gap-1.5 sm:gap-2 shadow-inner">
-                          <Wallet className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-cyan-400" />
-                          <span className="font-bold text-xs sm:text-sm text-white">${Number(currentUserBalance || 0).toFixed(2)}</span>
+                      <div className="flex items-center gap-2">
+                        <div className="bg-slate-800/50 border border-slate-700/50 px-3 py-1.5 rounded-xl flex items-center gap-1.5">
+                          <Wallet className="w-4 h-4 text-brand-primary" />
+                          <span className="font-semibold text-sm text-white">${Number(currentUserBalance || 0).toFixed(2)}</span>
                         </div>
-                        <button onClick={() => setShowCart(true)} className="btn-animate relative p-2 sm:p-2.5 bg-white/5 hover:bg-white/10 backdrop-blur-xl border border-white/10 text-white rounded-xl sm:rounded-2xl shadow-inner transition-all">
-                          <ShoppingCart className="w-4 h-4 sm:w-5 sm:h-5" />
-                          {cart.length > 0 && <span className="absolute -top-1.5 -right-1.5 sm:-top-2 sm:-right-2 bg-rose-500 text-white text-[9px] sm:text-[10px] w-4 h-4 sm:w-5 sm:h-5 flex items-center justify-center rounded-full font-bold shadow-md">{cart.length}</span>}
+                        <button onClick={() => setShowCart(true)} className="btn-animate relative p-2.5 bg-slate-800/50 hover:bg-slate-700 border border-slate-700/50 text-white rounded-xl transition-all">
+                          <ShoppingCart className="w-4 h-4" />
+                          {cart.length > 0 && <span className="absolute -top-1.5 -right-1.5 bg-rose-500 text-white text-[10px] w-5 h-5 flex items-center justify-center rounded-full font-bold">{cart.length}</span>}
                         </button>
                       </div>
                     )}
 
-                    <div className="h-6 sm:h-8 w-[1px] bg-white/10 mx-0.5 sm:mx-1"></div>
+                    <div className="h-6 w-[1px] bg-slate-800 mx-1"></div>
 
-                    <button onClick={() => setShowNotifications(!showNotifications)} className="btn-animate relative p-2 sm:p-2.5 bg-transparent hover:bg-white/5 backdrop-blur-xl border border-transparent rounded-xl sm:rounded-2xl text-gray-400 hover:text-white transition-all">
-                      <Bell className="w-4 h-4 sm:w-5 sm:h-5" />
-                      {notifications.length > 0 && <span className="absolute top-1.5 right-1.5 sm:top-2 sm:right-2 w-2 h-2 sm:w-2.5 sm:h-2.5 bg-rose-500 rounded-full shadow-[0_0_8px_rgba(244,63,94,0.8)] border border-[#0f172a]"></span>}
+                    <button onClick={() => setShowNotifications(!showNotifications)} className="btn-animate relative p-2.5 text-slate-400 hover:text-white hover:bg-slate-800/50 rounded-xl transition-all">
+                      <Bell className="w-4 h-4" />
+                      {notifications.length > 0 && <span className="absolute top-2 right-2 w-2 h-2 bg-rose-500 rounded-full border-2 border-brand-dark"></span>}
                       {showNotifications && (
-                        <div className={uiCard + " absolute right-0 top-full mt-4 w-72 sm:w-80 p-4 sm:p-5 z-50 animate-fade-in-up cursor-default"}>
-                          <div className="flex justify-between items-center mb-4 pb-3 border-b border-white/5">
-                            <span className="text-sm sm:text-base font-bold text-white">Notifications</span>
-                            <button onClick={(e) => {e.stopPropagation(); setNotifications([]);}} className="btn-animate text-[10px] sm:text-xs text-cyan-400 hover:text-cyan-300 font-medium bg-cyan-500/10 border border-cyan-500/20 px-3 py-1 rounded-lg">Clear All</button>
+                        <div className={uiCard + " absolute right-0 top-full mt-3 w-72 sm:w-80 p-4 z-50 animate-fade-in-up cursor-default"}>
+                          <div className="flex justify-between items-center mb-3 pb-3 border-b border-slate-800">
+                            <span className="text-sm font-semibold text-white">Notifications</span>
+                            <button onClick={(e) => {e.stopPropagation(); setNotifications([]);}} className="text-[10px] text-brand-primary hover:text-brand-primaryHover font-medium">Clear All</button>
                           </div>
-                          <div className="space-y-3 max-h-72 overflow-y-auto scrollbar-hide pr-1">
-                            {notifications.length === 0 ? <p className="text-sm text-gray-500 text-center py-6 font-medium">You have no new notifications.</p> : notifications.map(n => (
-                              <div key={n.id} className={uiInnerPanel}>
-                                <p className="text-xs sm:text-sm font-bold text-white flex items-center gap-2"><Sparkles className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-cyan-400"/> {n.title}</p>
-                                <p className="text-[10px] sm:text-xs text-gray-400 mt-1.5 font-medium leading-relaxed">{n.text}</p>
+                          <div className="space-y-2 max-h-72 overflow-y-auto scrollbar-hide">
+                            {notifications.length === 0 ? <p className="text-sm text-slate-500 text-center py-4">No notifications.</p> : notifications.map(n => (
+                              <div key={n.id} className="p-3 bg-slate-900/50 rounded-lg">
+                                <p className="text-xs font-semibold text-white flex items-center gap-1.5"><Sparkles className="w-3 h-3 text-brand-primary"/> {n.title}</p>
+                                <p className="text-[10px] text-slate-400 mt-1 leading-relaxed">{n.text}</p>
                               </div>
                             ))}
                           </div>
@@ -761,17 +743,17 @@
                       )}
                     </button>
 
-                    <button onClick={handleLogout} className="btn-animate p-2 sm:p-2.5 bg-rose-500/10 hover:bg-rose-500/20 text-rose-400 border border-rose-500/20 rounded-xl sm:rounded-2xl hidden sm:block transition-all">
-                      <LogOut className="w-4 h-4 sm:w-5 sm:h-5" />
+                    <button onClick={handleLogout} className="btn-animate p-2.5 bg-rose-500/10 hover:bg-rose-500/20 text-rose-400 rounded-xl hidden sm:block transition-all">
+                      <LogOut className="w-4 h-4" />
                     </button>
                   </div>
                 </div>
               </header>
 
               {globalNotice && (
-                <div className="bg-gradient-to-r from-violet-600/90 via-fuchsia-600/90 to-cyan-600/90 backdrop-blur-xl text-white px-4 py-2 sm:py-2.5 flex items-center justify-center gap-3 overflow-hidden shadow-md relative z-30 border-b border-white/5 w-full">
-                  <Megaphone className="w-4 h-4 flex-shrink-0 animate-pulse" />
-                  <div className="marquee-container overflow-hidden max-w-7xl mx-auto w-full text-[10px] sm:text-xs font-semibold tracking-widest uppercase">
+                <div className="bg-brand-primary/10 text-brand-primary border-b border-brand-primary/20 px-4 py-2 flex items-center justify-center gap-3 overflow-hidden relative z-30 w-full">
+                  <Megaphone className="w-4 h-4 flex-shrink-0" />
+                  <div className="marquee-container overflow-hidden max-w-7xl mx-auto w-full text-xs font-medium">
                     <div className="animate-marquee whitespace-nowrap">
                       {globalNotice} &nbsp;&bull;&nbsp; {globalNotice} &nbsp;&bull;&nbsp; {globalNotice}
                     </div>
@@ -779,7 +761,7 @@
                 </div>
               )}
 
-              <main className="max-w-7xl mx-auto px-2 sm:px-4 md:px-6 lg:px-8 mt-4 sm:mt-8 relative z-10 w-full flex-grow flex flex-row items-start gap-3 sm:gap-6">
+              <main className="max-w-7xl mx-auto px-4 md:px-6 lg:px-8 mt-6 sm:mt-8 relative z-10 w-full flex-grow flex flex-col md:flex-row items-start gap-6">
                 {user.role === 'admin' ? (
                   <AdminDashboard 
                     inventory={inventory} orders={allOrders} deposits={deposits}
@@ -844,9 +826,9 @@
           const [serviceSearch, setServiceSearch] = useState('');
           const [showServiceDropdown, setShowServiceDropdown] = useState(false);
           const [smsTimeLeft, setSmsTimeLeft] = useState(0);
-          const [areaCode, setAreaCode] = useState(''); // New Area Code Feature
+          const [areaCode, setAreaCode] = useState(''); 
 
-          // LocalStorage থেকে রিলোড ডেটা রিকভারি করা
+          // LocalStorage রিকভারি
           const [liveSmsOrder, setLiveSmsOrder] = useState(() => {
               const saved = localStorage.getItem(`smsOrder_${user?.email}`);
               if (saved) {
@@ -862,7 +844,7 @@
               return null;
           });
 
-          // State চেঞ্জ হলে LocalStorage আপডেট করা
+          // State চেঞ্জ হলে LocalStorage আপডেট
           useEffect(() => {
               if (user?.email) {
                   if (liveSmsOrder) {
@@ -909,9 +891,7 @@
                                   }
                               }
                           }
-                      } catch (e) {
-                          console.error("Failed to load dynamic prices");
-                      }
+                      } catch (e) {}
                   };
                   fetchPrices();
               }
@@ -929,7 +909,6 @@
           };
 
           const copyToClipboard10Digits = (fullPhone) => {
-             // শুধুমাত্র সংখ্যাগুলো রাখবে এবং প্রথমে 1 থাকলে সেটা বাদ দিয়ে ১০ ডিজিট কপি করবে
              let clean = String(fullPhone).replace(/\D/g, '');
              if(clean.length === 11 && clean.startsWith('1')) clean = clean.substring(1);
              copyToClipboard(clean);
@@ -952,16 +931,12 @@
             }
             navigator.clipboard.writeText(text).then(() => {
                 triggerToast('Copied to clipboard.');
-            }).catch(() => {
-                triggerToast('Failed to copy.');
             });
           };
 
           const baseSmsPrice = dynamicPrices[selectedSmsService] || (1.00 + Number(smsSettings?.markup || 1.00));
-          // এরিয়া কোড দিলে ২০% প্রাইস বাড়বে
           const currentSmsPrice = areaCode.length === 3 ? parseFloat((baseSmsPrice * 1.20).toFixed(2)) : parseFloat(baseSmsPrice.toFixed(2));
 
-          // --- SMS Automation Logic ---
           const buySmsNumber = async () => {
               if (balance < currentSmsPrice) {
                   triggerToast(`Insufficient balance. Minimum $${currentSmsPrice.toFixed(2)} required.`);
@@ -984,7 +959,7 @@
                   }
 
                   let apiUrl = `https://voice-store-api.vercel.app/api/daisysms?action=getNumber&service=${selectedSmsService}`;
-                  if (areaCode.length === 3) {
+                  if (areaCode && areaCode.length === 3) {
                       apiUrl += `&areacode=${areaCode}`;
                   }
 
@@ -992,6 +967,23 @@
                   const data = await res.json();
                   
                   if (data.success && data.phone) {
+                      // Area Code Verification
+                      if (areaCode && areaCode.length === 3) {
+                          let cleanPhone = String(data.phone).replace(/\D/g, '');
+                          if(cleanPhone.length === 11 && cleanPhone.startsWith('1')) cleanPhone = cleanPhone.substring(1);
+                          
+                          if (!cleanPhone.startsWith(areaCode)) {
+                              await fetch(`https://voice-store-api.vercel.app/api/daisysms?action=setStatus&status=8&id=${data.orderId}`);
+                              await fetch('https://voicestore-backend.onrender.com/api/sms-refund', {
+                                  method: 'POST', headers: { 'Content-Type': 'application/json' },
+                                  body: JSON.stringify({ email: user.email, price: currentSmsPrice })
+                              });
+                              triggerToast("This area code is not available right now.");
+                              setIsSmsLoading(false);
+                              return;
+                          }
+                      }
+
                       const serviceName = availableServices.find(s => s.code === selectedSmsService)?.name || selectedSmsService.toUpperCase();
                       setLiveSmsOrder({ 
                           id: data.orderId, 
@@ -1000,7 +992,6 @@
                           price: currentSmsPrice, 
                           status: 'ACTIVE', 
                           codes: [], 
-                          // 700 Seconds (11.6 Mins) Timer
                           expiresAt: Date.now() + 700 * 1000 
                       }); 
                   } else {
@@ -1030,11 +1021,8 @@
                   
                   triggerToast(`Order Cancelled. $${priceToRefund.toFixed(2)} refunded.`);
                   setLiveSmsOrder(null);
-              } catch (e) {
-                  triggerToast("Error cancelling order.");
-              } finally {
-                  setIsSmsLoading(false);
-              }
+              } catch (e) {} 
+              finally { setIsSmsLoading(false); }
           };
 
           const requestAnotherSms = async () => {
@@ -1061,17 +1049,12 @@
 
                  await fetch(`https://voice-store-api.vercel.app/api/daisysms?action=setStatus&status=3&id=${liveSmsOrder.id}`);
                  triggerToast("Requested another SMS! $0.50 deducted.");
-             } catch(e) {
-                 triggerToast("Failed to request SMS.");
-             } finally {
-                 setIsSmsLoading(false);
-             }
+             } catch(e) {} 
+             finally { setIsSmsLoading(false); }
           };
 
           const finishSmsOrder = async () => {
-             try {
-                 await fetch(`https://voice-store-api.vercel.app/api/daisysms?action=setStatus&status=6&id=${liveSmsOrder.id}`);
-             } catch(e) {}
+             try { await fetch(`https://voice-store-api.vercel.app/api/daisysms?action=setStatus&status=6&id=${liveSmsOrder.id}`); } catch(e) {}
              setLiveSmsOrder(null);
              triggerToast("Order Finished & Saved to Vault!");
           };
@@ -1119,7 +1102,7 @@
               return () => clearInterval(interval);
           }, [liveSmsOrder, user]);
 
-          // Timer Countdown 700s
+          // Timer Countdown (700s)
           useEffect(() => {
               let timerInterval;
               if (liveSmsOrder && liveSmsOrder.status === 'ACTIVE') {
@@ -1164,20 +1147,17 @@
                   setAutoPay({ active: true, amount: finalAmount, time: 900, checking: true, invoiceId: newInvoiceId });
                   triggerToast(`Please send exactly $${finalAmount}`);
               } catch (err) {
-                  console.error(err);
-                  triggerToast("Request failed: " + err.message);
+                  triggerToast("Request failed.");
               }
           };
 
           const handleFlutterwavePayment = () => {
               if(!bankSettings?.flutterwaveActive || !bankSettings?.flutterwaveKey) {
-                  triggerToast("Flutterwave is currently disabled by Admin.");
-                  return;
+                  triggerToast("Flutterwave is currently disabled by Admin."); return;
               }
               const usdAmt = parseFloat(depositAmountUsd);
               if(isNaN(usdAmt) || usdAmt < 1) {
-                  triggerToast("Minimum deposit is $1.00");
-                  return;
+                  triggerToast("Minimum deposit is $1.00"); return;
               }
 
               const nairaRate = bankSettings?.nairaRate || 1500;
@@ -1190,14 +1170,8 @@
                       amount: nairaAmount,
                       currency: "NGN",
                       payment_options: "card, banktransfer, ussd",
-                      customer: {
-                        email: user.email,
-                      },
-                      customizations: {
-                        title: "VoiceStore Premium",
-                        description: "Wallet Deposit ($" + usdAmt + ")",
-                        logo: "https://i.ibb.co/6nd5s4F/voicestore-logo.png",
-                      },
+                      customer: { email: user.email },
+                      customizations: { title: "VoiceStore Premium", description: "Wallet Deposit ($" + usdAmt + ")" },
                       callback: async function (data) {
                           if(data.status === "successful" || data.status === "completed") {
                               try {
@@ -1206,23 +1180,15 @@
                                   await updateDoc(userRef, { balance: currentBal + Number(usdAmt) });
                                   
                                   await setDoc(doc(db, 'artifacts', appId, 'public', 'data', 'Store_Deposits', data.transaction_id || data.tx_ref), { 
-                                      email: user.email, 
-                                      amount: Number(usdAmt), 
-                                      method: 'Card/Bank (Flutterwave)', 
-                                      status: 'Approved', 
-                                      date: new Date().toISOString(),
-                                      txId: String(data.transaction_id || data.tx_ref)
+                                      email: user.email, amount: Number(usdAmt), method: 'Card/Bank (Flutterwave)', 
+                                      status: 'Approved', date: new Date().toISOString(), txId: String(data.transaction_id || data.tx_ref)
                                   });
                                   triggerToast(`Successfully added $${usdAmt.toFixed(2)} to wallet!`);
                                   setDepositAmountUsd('');
-                              } catch(e) {
-                                  triggerToast("Error updating balance. Please contact support.");
-                              }
+                              } catch(e) {}
                           }
                       },
-                      onclose: function() {
-                          triggerToast('Payment window closed.');
-                      }
+                      onclose: function() { triggerToast('Payment window closed.'); }
                   });
               } else {
                   triggerToast("Payment module loading... please try again.");
@@ -1235,8 +1201,7 @@
                   interval = setInterval(async () => {
                       try {
                           const response = await fetch('https://voice-store-api.vercel.app/api/verify', {
-                              method: 'POST',
-                              headers: { 'Content-Type': 'application/json' },
+                              method: 'POST', headers: { 'Content-Type': 'application/json' },
                               body: JSON.stringify({ invoiceId: autoPay.invoiceId, email: user.email, amount: autoPay.amount })
                           });
                           const result = await response.json();
@@ -1266,16 +1231,12 @@
           const claimDailyBonus = async () => {
             const today = new Date().toISOString().split('T')[0];
             const userInfo = usersDB[user.email];
-            if (userInfo?.lastBonusDate === today) {
-              triggerToast('Bonus already claimed today.');
-              return;
-            }
+            if (userInfo?.lastBonusDate === today) { triggerToast('Bonus already claimed today.'); return; }
             try {
               const userRef = doc(db, 'artifacts', appId, 'public', 'data', 'Store_Users', user.email);
               await updateDoc(userRef, { balance: (userInfo?.balance || 0) + 0.50, lastBonusDate: today });
               triggerToast('$0.50 daily reward credited.');
-              addNotification('Daily Reward', 'Funds added to wallet.');
-            } catch(err) { triggerToast('Failed to claim reward.'); }
+            } catch(err) {}
           };
 
           const submitTicket = async (e) => {
@@ -1286,19 +1247,18 @@
               await setDoc(doc(db, 'artifacts', appId, 'public', 'data', 'Store_Tickets', ticketId), {
                 email: user.email, subject: ticketSubject, message: ticketMessage, status: 'Open', date: new Date().toISOString()
               });
-              setTicketSubject(''); setTicketMessage('');
-              triggerToast('Support ticket created.');
-            } catch(err) { triggerToast('Submission error.'); }
+              setTicketSubject(''); setTicketMessage(''); triggerToast('Support ticket created.');
+            } catch(err) {}
           };
 
           const reportAccount = async (accId) => {
             try {
               const ticketId = 'REP-' + Date.now();
               await setDoc(doc(db, 'artifacts', appId, 'public', 'data', 'Store_Tickets', ticketId), {
-                email: user.email, subject: `Reported Account: ${accId}`, message: `Issue reported with account ID: ${accId}.`, status: 'Open', date: new Date().toISOString()
+                email: user.email, subject: `Reported Account: ${accId}`, message: `Issue reported.`, status: 'Open', date: new Date().toISOString()
               });
               triggerToast('Report forwarded to admin.');
-            } catch(err) { triggerToast('Error submitting report.'); }
+            } catch(err) {}
           };
 
           const userDeposits = deposits.filter(d => d.email === user.email);
@@ -1317,8 +1277,8 @@
 
           const FAQ_ITEMS = [
               { q: "How long does Auto Deposit take?", a: "USDT TRC20 deposits are usually credited within 1-3 minutes after blockchain confirmation." },
-              { q: "What if the account I bought is invalid?", a: "Please click 'Report Issue' in the 'My Vault' tab. Our team will verify and provide a replacement or refund to your balance." },
-              { q: "Can I withdraw my balance?", a: "Store balances are non-withdrawable and can only be used to purchase digital assets on this platform." }
+              { q: "What if the account I bought is invalid?", a: "Please click 'Report Issue' in the 'My Vault' tab. Our team will verify and provide a replacement." },
+              { q: "Can I withdraw my balance?", a: "Store balances are non-withdrawable and can only be used to purchase digital assets." }
           ];
 
           const TABS = [
@@ -1334,29 +1294,25 @@
           return (
             <>
               {previewStockModal.show && (
-                <div className="fixed inset-0 z-[110] flex items-center justify-center p-4 bg-black/60 backdrop-blur-md transition-all duration-300">
-                  <div className={uiCard + " w-full max-w-md p-5 sm:p-6 max-h-[80vh] flex flex-col"}>
-                    <div className="flex justify-between items-center mb-5 border-b border-white/10 pb-4">
-                        <h3 className="font-bold text-lg sm:text-xl text-white flex items-center gap-2">
-                           <Eye className="w-5 h-5 text-cyan-400" /> Live Stock Preview
-                        </h3>
-                        <button onClick={() => setPreviewStockModal({show: false, categoryId: null, name: ''})} className="btn-animate p-2 bg-white/10 hover:bg-white/20 backdrop-blur-md rounded-full text-white transition-colors">
-                           <X className="w-5 h-5" />
-                        </button>
+                <div className="fixed inset-0 z-[110] flex items-center justify-center p-4 bg-brand-dark/80 backdrop-blur-sm transition-all duration-300">
+                  <div className={uiCard + " w-full max-w-md p-6 max-h-[80vh] flex flex-col"}>
+                    <div className="flex justify-between items-center mb-5 pb-4 border-b border-brand-border">
+                        <h3 className="font-semibold text-lg text-white flex items-center gap-2"><Eye className="w-5 h-5 text-brand-primary" /> Live Stock Preview</h3>
+                        <button onClick={() => setPreviewStockModal({show: false, categoryId: null, name: ''})} className="p-2 hover:bg-slate-800 rounded-full text-slate-400 hover:text-white transition-colors"><X className="w-4 h-4" /></button>
                     </div>
-                    <div className="overflow-y-auto pr-1 sm:pr-2 space-y-3 scrollbar-hide">
+                    <div className="overflow-y-auto pr-1 space-y-3 scrollbar-hide">
                         {(!inventory[previewStockModal.categoryId] || inventory[previewStockModal.categoryId].length === 0) ? (
-                            <p className="text-center text-sm text-gray-400 font-medium py-10">No stock currently available.</p>
+                            <p className="text-center text-sm text-slate-500 font-medium py-10">No stock currently available.</p>
                         ) : (
                             inventory[previewStockModal.categoryId].map((acc, i) => {
                                 const info = getPreviewInfo(acc);
                                 return (
-                                   <div key={i} className={uiInnerPanel + " flex justify-between items-center bg-white/5 hover:bg-white/10 transition-colors"}>
-                                      <div className="flex items-center gap-3 sm:gap-4">
-                                         <span className="bg-cyan-500/20 text-cyan-300 font-bold px-2 sm:px-2.5 py-1 rounded-lg text-[10px] sm:text-xs uppercase border border-cyan-500/30">{info.state}</span>
-                                         <span className="font-mono text-xs sm:text-sm text-gray-200 font-medium tracking-wide">{info.phone}</span>
+                                   <div key={i} className={uiInnerPanel + " flex justify-between items-center"}>
+                                      <div className="flex items-center gap-3">
+                                         <span className="bg-brand-primary/10 text-brand-primary font-medium px-2 py-1 rounded-md text-[10px] uppercase border border-brand-primary/20">{info.state}</span>
+                                         <span className="font-mono text-xs text-slate-300 font-medium">{info.phone}</span>
                                       </div>
-                                      <span className="text-[8px] sm:text-[10px] text-emerald-300 bg-emerald-500/20 border border-emerald-500/30 px-1.5 sm:px-2 py-1 rounded-md uppercase font-bold tracking-widest">Ready</span>
+                                      <span className="text-[10px] text-emerald-400 bg-emerald-500/10 px-2 py-1 rounded-md font-medium">Ready</span>
                                    </div>
                                 )
                             })
@@ -1374,18 +1330,17 @@
                     return (
                     <button 
                       key={tab.id} onClick={() => setActiveTab(tab.id)} 
-                      className={`p-2 md:px-4 md:py-3.5 text-xs sm:text-sm font-medium rounded-xl transition-all duration-300 flex flex-col md:flex-row items-center md:justify-start justify-center gap-1.5 md:gap-3 w-full text-center md:text-left ${active ? 'bg-cyan-500/10 border border-cyan-500/20 text-cyan-300 shadow-sm' : 'bg-transparent border border-transparent text-gray-400 hover:bg-white/5 hover:text-white'}`}
+                      className={`p-2 md:px-4 md:py-3 text-xs sm:text-sm font-medium rounded-xl transition-all duration-300 flex flex-col md:flex-row items-center md:justify-start justify-center gap-1.5 md:gap-3 w-full text-center md:text-left ${active ? 'bg-slate-800 text-white shadow-sm' : 'bg-transparent text-slate-400 hover:bg-slate-800/50 hover:text-slate-200'}`}
                     >
-                      <tab.icon className={`w-5 h-5 sm:w-6 sm:h-6 shrink-0 ${active ? 'text-cyan-400' : ''}`} /> 
+                      <tab.icon className={`w-5 h-5 shrink-0 ${active ? 'text-brand-primary' : ''}`} /> 
                       <span className="hidden md:block">{tab.label}</span>
-                      <span className="md:hidden text-[9px] leading-tight font-medium tracking-tight break-words">{tab.label}</span>
+                      <span className="md:hidden text-[9px] leading-tight break-words">{tab.label}</span>
                     </button>
                   )})}
                   
-                  {/* Mobile Logout */}
-                  <button onClick={handleLogout} className="btn-animate p-2 text-xs font-bold rounded-xl transition-all duration-300 flex flex-col items-center justify-center gap-1.5 border w-full text-center bg-rose-500/10 border-rose-500/20 text-rose-400 md:hidden mt-2 shadow-sm">
+                  <button onClick={handleLogout} className="p-2 text-xs font-medium rounded-xl transition-all duration-300 flex flex-col items-center justify-center gap-1.5 w-full text-center bg-rose-500/10 text-rose-400 md:hidden mt-2">
                       <LogOut className="w-5 h-5 shrink-0" /> 
-                      <span className="text-[9px] leading-tight font-medium">Logout</span>
+                      <span className="text-[9px] leading-tight">Logout</span>
                   </button>
                 </div>
               </div>
@@ -1399,137 +1354,133 @@
                      <div className="flex flex-col xl:flex-row justify-between items-start xl:items-center gap-4 w-full">
                       <div className="w-full xl:w-auto">
                         <h1 className="text-2xl sm:text-3xl font-bold text-white tracking-tight">Live Verification</h1>
-                        <p className="text-gray-400 text-xs sm:text-sm mt-1 font-medium">Real-time OTP for Google Voice and other services.</p>
+                        <p className="text-slate-400 text-sm mt-1">Real-time OTP for Google Voice and other services.</p>
                       </div>
                     </div>
                     
                     {smsSettings?.active ? (
-                        <div className={uiCard + " p-6 sm:p-8 w-full mb-2"}>
-                            <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
-                                <div className="flex-grow w-full max-w-sm relative">
-                                    <h2 className="text-xl font-bold text-white flex items-center gap-2">
-                                        <Smartphone className="w-5 h-5 text-cyan-400"/> Select Service
+                        <div className={uiCard + " p-6 sm:p-8 w-full"}>
+                            <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
+                                <div className="flex-grow w-full max-w-md relative">
+                                    <h2 className="text-lg font-semibold text-white flex items-center gap-2 mb-4">
+                                        <Smartphone className="w-5 h-5 text-brand-primary"/> Select Service
                                     </h2>
-                                    <p className="text-xs text-gray-400 mt-1 mb-4">Choose the service you need an OTP for.</p>
                                     
                                     <div className="relative">
                                         <div 
                                             onClick={() => !isSmsLoading && !liveSmsOrder && setShowServiceDropdown(!showServiceDropdown)}
                                             className={uiInput + ` flex justify-between items-center ${isSmsLoading || liveSmsOrder ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'}`}
                                         >
-                                            <span className="font-bold truncate text-white">{availableServices.find(s=>s.code===selectedSmsService)?.name || 'Select Service'}</span>
-                                            <ChevronDown className="w-4 h-4 text-gray-400"/>
+                                            <span className="font-medium truncate text-white">{availableServices.find(s=>s.code===selectedSmsService)?.name || 'Select Service'}</span>
+                                            <ChevronDown className="w-4 h-4 text-slate-400"/>
                                         </div>
 
                                         {showServiceDropdown && !isSmsLoading && !liveSmsOrder && (
-                                            <div className="absolute z-50 w-full mt-2 bg-[#0f172a] border border-cyan-500/20 rounded-xl shadow-2xl max-h-64 overflow-y-auto scrollbar-hide">
-                                                <div className="p-3 sticky top-0 bg-[#0f172a]/95 backdrop-blur-md border-b border-white/5 z-10">
+                                            <div className="absolute z-50 w-full mt-2 bg-brand-card border border-brand-border rounded-xl shadow-2xl max-h-64 overflow-y-auto scrollbar-hide">
+                                                <div className="p-3 sticky top-0 bg-brand-card/95 backdrop-blur-md border-b border-brand-border z-10">
                                                     <div className="relative">
-                                                        <Search className="absolute left-3 top-2.5 w-4 h-4 text-gray-400"/>
+                                                        <Search className="absolute left-3 top-2.5 w-4 h-4 text-slate-400"/>
                                                         <input 
                                                             type="text" 
-                                                            placeholder="Search service name..." 
+                                                            placeholder="Search service..." 
                                                             value={serviceSearch}
                                                             onChange={e => setServiceSearch(e.target.value)}
                                                             onClick={e => e.stopPropagation()}
-                                                            className="w-full bg-black/40 border border-white/10 rounded-lg pl-9 pr-3 py-2 text-xs text-white placeholder-gray-500 focus:outline-none focus:border-cyan-500/50"
+                                                            className="w-full bg-slate-900 border border-brand-border rounded-lg pl-9 pr-3 py-2 text-sm text-white placeholder-slate-500 focus:outline-none focus:border-brand-primary/50"
                                                         />
                                                     </div>
                                                 </div>
-                                                <div className="p-1">
+                                                <div className="p-1.5">
                                                     {availableServices.filter(s => s.name.toLowerCase().includes(serviceSearch.toLowerCase())).map(s => (
                                                         <div 
                                                             key={s.code} 
                                                             onClick={() => { setSelectedSmsService(s.code); setShowServiceDropdown(false); setServiceSearch(''); }}
-                                                            className={`px-3 py-2.5 rounded-lg cursor-pointer flex justify-between items-center ${selectedSmsService === s.code ? 'bg-cyan-500/10 border border-cyan-500/20' : 'hover:bg-white/5 border border-transparent'}`}
+                                                            className={`px-3 py-2.5 rounded-lg cursor-pointer flex justify-between items-center ${selectedSmsService === s.code ? 'bg-slate-800' : 'hover:bg-slate-800/50'}`}
                                                         >
-                                                            <span className="text-sm text-gray-200 font-medium">{s.name}</span>
-                                                            <span className="text-xs font-bold text-cyan-400">${s.finalPrice.toFixed(2)}</span>
+                                                            <span className="text-sm text-slate-200">{s.name}</span>
+                                                            <span className="text-xs font-semibold text-brand-primary">${s.finalPrice.toFixed(2)}</span>
                                                         </div>
                                                     ))}
-                                                    {availableServices.filter(s => s.name.toLowerCase().includes(serviceSearch.toLowerCase())).length === 0 && (
-                                                        <div className="text-center py-4 text-xs text-gray-500 font-medium">No services found</div>
-                                                    )}
                                                 </div>
                                             </div>
                                         )}
                                     </div>
                                     
                                     {!liveSmsOrder && (
-                                        <div className="mt-3">
-                                            <label className="block text-[10px] sm:text-xs font-bold text-gray-400 mb-1">Specific Area Code (Optional)</label>
+                                        <div className="mt-4">
+                                            <label className="block text-xs font-medium text-slate-400 mb-1.5">Specific Area Code (Optional)</label>
                                             <input 
                                                 type="text" 
                                                 maxLength="3"
                                                 placeholder="e.g. 347" 
                                                 value={areaCode}
                                                 onChange={e => setAreaCode(e.target.value.replace(/\D/g, ''))}
-                                                className={uiInput + " !py-2"}
+                                                className={uiInput + " !py-2.5"}
                                                 disabled={isSmsLoading || liveSmsOrder}
                                             />
-                                            {areaCode.length === 3 && <p className="text-[10px] text-amber-400 mt-1 font-bold">+20% Price for specific area code.</p>}
+                                            {areaCode.length === 3 && <p className="text-xs text-amber-400 mt-1.5 font-medium">+20% Price for specific area code.</p>}
                                         </div>
                                     )}
                                 </div>
-                                <div className="bg-white/5 border border-white/10 px-5 py-3 rounded-xl text-white font-bold text-2xl whitespace-nowrap mt-4 md:mt-0">
+                                <div className="bg-slate-800 border border-slate-700 px-6 py-4 rounded-2xl text-white font-semibold text-2xl whitespace-nowrap w-full md:w-auto text-center">
                                     {currentSmsPrice ? `$${currentSmsPrice.toFixed(2)}` : 'Loading...'}
                                 </div>
                             </div>
                             
                             {!liveSmsOrder ? (
-                                <div className="flex flex-col mt-6">
+                                <div className="flex flex-col mt-6 pt-6 border-t border-brand-border">
                                     <button 
                                         onClick={buySmsNumber} 
                                         disabled={isSmsLoading || !dynamicPrices[selectedSmsService]} 
-                                        className={uiBtnPrimary + " !w-full sm:!w-auto"}
+                                        className={uiBtnPrimary + " !w-full sm:!w-auto md:max-w-xs"}
                                     >
                                         {isSmsLoading ? <RefreshCw className="w-5 h-5 animate-spin"/> : <Zap className="w-5 h-5"/>}
                                         {isSmsLoading ? 'Number is on the way...' : `Buy ${availableServices.find(s=>s.code===selectedSmsService)?.name || 'Number'}`}
                                     </button>
                                 </div>
                             ) : (
-                                <div className={uiInnerPanel + " mt-6 flex flex-col items-center"}>
-                                    <div className="flex flex-col items-center justify-center text-center space-y-4 w-full max-w-sm">
-                                        <p className="text-sm font-medium text-gray-400">Service: <span className="text-white font-bold">{liveSmsOrder.service}</span></p>
+                                <div className={uiInnerPanel + " mt-6 flex flex-col items-center py-6"}>
+                                    <div className="flex flex-col items-center justify-center text-center space-y-4 w-full max-w-md">
+                                        <p className="text-sm font-medium text-slate-400">Service: <span className="text-white font-semibold">{liveSmsOrder.service}</span></p>
                                         <div className="flex items-center gap-3">
-                                            <div className="text-2xl sm:text-3xl font-mono font-bold text-white tracking-widest bg-black/40 px-6 py-3 rounded-xl border border-white/10">
+                                            <div className="text-2xl sm:text-3xl font-mono font-bold text-white tracking-widest bg-slate-900 px-6 py-4 rounded-xl border border-slate-800">
                                                 {String(liveSmsOrder.phone).replace(/(\d{1})(\d{3})(\d{3})(\d{4})/, '+$1 ($2) $3-$4')}
                                             </div>
-                                            <button onClick={() => copyToClipboard10Digits(liveSmsOrder.phone)} className="btn-animate p-3 bg-white/5 hover:bg-white/10 rounded-xl text-cyan-400 border border-white/10">
+                                            <button onClick={() => copyToClipboard10Digits(liveSmsOrder.phone)} className="btn-animate p-4 bg-slate-800 hover:bg-slate-700 rounded-xl text-slate-300">
                                                 <Copy className="w-5 h-5"/>
                                             </button>
                                         </div>
                                         
                                         {liveSmsOrder.codes.length === 0 ? (
                                             <>
-                                                <p className="text-sm font-medium text-gray-400 flex items-center gap-2"><RefreshCw className="w-4 h-4 animate-spin text-cyan-400"/> Waiting for SMS / OTP...</p>
+                                                <p className="text-sm font-medium text-brand-primary flex items-center gap-2"><RefreshCw className="w-4 h-4 animate-spin"/> Waiting for SMS...</p>
                                                 
-                                                <div className="w-full bg-gray-800 h-1.5 rounded-full overflow-hidden">
-                                                    <div className="bg-cyan-400 h-full transition-all duration-1000 ease-linear" style={{width: `${(smsTimeLeft / 700) * 100}%`}}></div>
+                                                <div className="w-full bg-slate-800 h-1.5 rounded-full overflow-hidden my-2">
+                                                    <div className="bg-brand-primary h-full transition-all duration-1000 ease-linear" style={{width: `${(smsTimeLeft / 700) * 100}%`}}></div>
                                                 </div>
                                                 
                                                 <div className="flex items-center gap-4 mt-2">
-                                                    <p className="text-xs text-gray-500 font-mono">{Math.floor(smsTimeLeft / 60)}:{(smsTimeLeft % 60).toString().padStart(2, '0')} remaining</p>
-                                                    <button onClick={() => cancelSmsOrder(liveSmsOrder.id, liveSmsOrder.price)} disabled={isSmsLoading} className="btn-animate text-xs bg-rose-500/20 text-rose-400 border border-rose-500/30 hover:bg-rose-500/30 px-4 py-2 rounded-lg font-medium transition-all">
+                                                    <p className="text-sm text-slate-400 font-mono">{Math.floor(smsTimeLeft / 60)}:{(smsTimeLeft % 60).toString().padStart(2, '0')}</p>
+                                                    <button onClick={() => cancelSmsOrder(liveSmsOrder.id, liveSmsOrder.price)} disabled={isSmsLoading} className="text-xs text-rose-400 hover:text-rose-300 font-medium px-4 py-2 bg-rose-500/10 rounded-lg transition-colors">
                                                         Cancel & Refund
                                                     </button>
                                                 </div>
                                             </>
                                         ) : (
                                             <>
-                                                <div className="w-full space-y-3 mt-2">
+                                                <div className="w-full space-y-3 mt-4">
                                                     {liveSmsOrder.codes.map((c, i) => (
-                                                        <div key={i} className="flex items-center justify-between gap-3 bg-emerald-500/10 border border-emerald-500/30 p-3 rounded-xl">
-                                                            <div className="text-2xl sm:text-3xl font-mono font-bold text-emerald-400 tracking-[0.2em]">{c}</div>
-                                                            <button onClick={() => copyToClipboard(c)} className="btn-animate p-2.5 bg-white/5 hover:bg-white/10 rounded-lg text-emerald-400 border border-white/10"><Copy className="w-5 h-5"/></button>
+                                                        <div key={i} className="flex items-center justify-between gap-3 bg-emerald-500/10 border border-emerald-500/20 p-4 rounded-xl">
+                                                            <div className="text-3xl font-mono font-bold text-emerald-400 tracking-widest">{c}</div>
+                                                            <button onClick={() => copyToClipboard(c)} className="p-3 bg-slate-800 hover:bg-slate-700 rounded-lg text-emerald-400 transition-colors"><Copy className="w-5 h-5"/></button>
                                                         </div>
                                                     ))}
                                                 </div>
-                                                <p className="text-[10px] text-gray-400 mt-2 flex items-center gap-1.5"><RefreshCw className="w-3 h-3 animate-spin text-gray-500"/> Listening for more SMS from this number...</p>
+                                                <p className="text-xs text-slate-400 mt-4 flex items-center gap-2"><RefreshCw className="w-3.5 h-3.5 animate-spin"/> Listening for more SMS...</p>
                                                 
-                                                <div className="flex flex-col sm:flex-row items-center justify-center gap-3 w-full mt-4 border-t border-white/10 pt-4">
-                                                    <button onClick={requestAnotherSms} disabled={isSmsLoading} className={uiBtnSecondary + " !w-full sm:!w-auto !py-2.5 !px-4 !text-xs whitespace-nowrap"}>Get Another SMS ($0.50)</button>
-                                                    <button onClick={finishSmsOrder} className={uiBtnPrimary + " !w-full sm:!w-auto !py-2.5 !px-5 !text-xs"}>Finish Order</button>
+                                                <div className="flex flex-col sm:flex-row items-center justify-center gap-3 w-full mt-6 pt-6 border-t border-slate-800">
+                                                    <button onClick={requestAnotherSms} disabled={isSmsLoading} className={uiBtnSecondary + " !w-full sm:!w-auto !py-2.5 !px-5 !text-sm"}>Get Another SMS ($0.50)</button>
+                                                    <button onClick={finishSmsOrder} className={uiBtnPrimary + " !w-full sm:!w-auto !py-2.5 !px-6 !text-sm"}>Finish Order</button>
                                                 </div>
                                             </>
                                         )}
@@ -1538,7 +1489,7 @@
                             )}
                         </div>
                     ) : (
-                        <div className="text-center py-20 text-gray-500 font-medium w-full">
+                        <div className="text-center py-20 text-slate-500 font-medium w-full bg-brand-card rounded-2xl border border-brand-border">
                             <Smartphone className="w-12 h-12 mx-auto mb-4 opacity-20"/>
                             Live SMS Verification is currently disabled by Admin.
                         </div>
@@ -1552,12 +1503,12 @@
                     <div className="flex flex-col xl:flex-row justify-between items-start xl:items-center gap-4 w-full">
                       <div className="w-full xl:w-auto">
                         <h1 className="text-2xl sm:text-3xl font-bold text-white tracking-tight">Marketplace</h1>
-                        <p className="text-gray-400 text-xs sm:text-sm mt-1 font-medium">High-quality verified static accounts.</p>
+                        <p className="text-slate-400 text-sm mt-1">High-quality verified static accounts.</p>
                       </div>
                       <div className="w-full xl:w-80">
                          <div className="relative flex items-center w-full">
-                           <Search className="w-4 h-4 sm:w-5 sm:h-5 text-gray-400 absolute left-4" />
-                           <input type="text" placeholder="Search inventory..." value={searchQuery} onChange={(e)=>setSearchQuery(e.target.value)} className={uiInput + " pl-10 sm:pl-12 py-3 sm:py-4 rounded-xl sm:rounded-2xl w-full"} />
+                           <Search className="w-4 h-4 text-slate-500 absolute left-4" />
+                           <input type="text" placeholder="Search inventory..." value={searchQuery} onChange={(e)=>setSearchQuery(e.target.value)} className={uiInput + " pl-11"} />
                          </div>
                       </div>
                     </div>
@@ -1569,68 +1520,49 @@
                           const stock = inventory[product.id] ? inventory[product.id].length : 0;
                           const Icon = product.icon;
                           return (
-                            <div key={product.id} className={uiCard + " p-5 sm:p-6 flex flex-col group hover:-translate-y-2 hover:shadow-2xl"}>
-                              {stock === 0 && <div className="absolute inset-0 bg-black/60 z-20 flex items-center justify-center backdrop-blur-sm"><span className="bg-[#0f172a]/80 backdrop-blur-xl border border-white/10 text-white px-3 sm:px-4 py-1.5 sm:py-2 rounded-xl text-xs sm:text-sm font-bold uppercase tracking-widest shadow-xl">Out of Stock</span></div>}
+                            <div key={product.id} className={uiCard + " p-6 flex flex-col group hover:border-slate-700"}>
+                              {stock === 0 && <div className="absolute inset-0 bg-brand-dark/80 z-20 flex items-center justify-center backdrop-blur-sm"><span className="bg-slate-800 text-white px-4 py-2 rounded-xl text-xs font-semibold uppercase tracking-widest">Out of Stock</span></div>}
                               
-                              <div className="flex justify-between items-start mb-4 sm:mb-5">
-                                <div className={`bg-black/30 backdrop-blur-md p-3 sm:p-3.5 rounded-xl sm:rounded-2xl border border-white/5 shadow-inner group-hover:scale-110 transition-transform`}>{Icon && <Icon className={`w-5 h-5 sm:w-6 sm:h-6 ${product.color}`} />}</div>
-                                <div className="bg-white/5 backdrop-blur-md border border-white/10 px-2.5 sm:px-3 py-1 sm:py-1.5 rounded-xl flex items-center gap-1 text-white text-sm sm:text-base font-bold shadow-sm">
+                              <div className="flex justify-between items-start mb-5">
+                                <div className="bg-slate-800 p-3 rounded-xl"><Icon className={`w-6 h-6 ${product.color}`} /></div>
+                                <div className="bg-slate-800/50 px-3 py-1.5 rounded-xl flex items-center text-white text-sm font-semibold">
                                   ${Number(product.price).toFixed(2)}
                                 </div>
                               </div>
                               
-                              <h3 className="text-base sm:text-lg font-bold text-white mb-1.5 sm:mb-2 break-words">{product.name}</h3>
-                              <p className="text-gray-400 text-xs sm:text-sm leading-relaxed mb-6 sm:mb-8 flex-grow font-medium break-words">{product.description}</p>
+                              <h3 className="text-lg font-semibold text-white mb-2">{product.name}</h3>
+                              <p className="text-slate-400 text-sm leading-relaxed mb-8 flex-grow">{product.description}</p>
                               
-                              <div className="flex justify-between items-center mt-auto pt-4 sm:pt-5 border-t border-white/5 w-full">
+                              <div className="flex justify-between items-center mt-auto pt-5 border-t border-brand-border w-full">
                                 <div className="flex flex-col">
-                                  <span className="text-[9px] sm:text-[10px] text-gray-500 font-bold uppercase tracking-widest mb-0.5 sm:mb-1">Available</span>
-                                  <div className="flex items-center gap-2 sm:gap-3">
-                                      <span className={`text-sm sm:text-base font-bold ${stock > 5 ? 'text-white' : 'text-rose-400'}`}>{stock} pcs</span>
-                                  </div>
+                                  <span className="text-[10px] text-slate-500 font-medium uppercase tracking-wider mb-1">Available</span>
+                                  <span className={`text-sm font-semibold ${stock > 5 ? 'text-white' : 'text-rose-400'}`}>{stock} pcs</span>
                                 </div>
-                                <button onClick={() => addToCart(product)} disabled={stock === 0} className={uiBtnPrimary + " !w-auto !py-2 sm:!py-2.5 !px-4 sm:!px-5 text-xs sm:text-sm rounded-xl"}>
-                                  Add <Plus className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
+                                <button onClick={() => addToCart(product)} disabled={stock === 0} className={uiBtnPrimary + " !w-auto !py-2.5 !px-5 text-sm"}>
+                                  Add <Plus className="w-4 h-4" />
                                 </button>
                               </div>
-                              
-                              {stock > 0 && (
-                                  <div className="mt-4 pt-3 border-t border-white/5 w-full">
-                                      <p onClick={() => setPreviewStockModal({show: true, categoryId: product.id, name: product.name})} className="text-[9px] text-cyan-400 cursor-pointer hover:text-cyan-300 font-bold mb-2 tracking-wider uppercase flex items-center gap-1 transition-colors"><Eye className="w-3 h-3 text-cyan-400"/> View Full Live Stock Preview</p>
-                                      <div className="max-h-[80px] overflow-y-auto scrollbar-hide space-y-2 pr-1">
-                                          {inventory[product.id].slice(0, 20).map((acc, i) => {
-                                              const info = getPreviewInfo(acc);
-                                              return (
-                                                  <div key={i} className="flex justify-between items-center bg-[#020617]/50 px-2 py-1.5 rounded-lg border border-white/5 shadow-inner">
-                                                      <span className="bg-cyan-500/10 border border-cyan-500/20 text-cyan-300 font-bold px-1.5 py-0.5 rounded text-[8px] uppercase">{info.state}</span>
-                                                      <span className="font-mono text-[10px] text-gray-300 tracking-wider">{info.phone}</span>
-                                                  </div>
-                                              )
-                                          })}
-                                      </div>
-                                  </div>
-                              )}
                             </div>
                           );
                         })}
-                        {filteredCategories.length === 0 && <div className="col-span-full py-20 text-center text-gray-500 font-medium w-full"><Search className="w-10 h-10 sm:w-12 sm:h-12 mx-auto mb-4 opacity-30"/>No products match your search.</div>}
+                        {filteredCategories.length === 0 && <div className="col-span-full py-20 text-center text-slate-500 font-medium"><Search className="w-12 h-12 mx-auto mb-4 opacity-20"/>No products match.</div>}
                       </div>
 
                       {/* Sidebar: Activity */}
                       <div className="lg:col-span-1 w-full">
-                         <div className={uiCard + " p-5 sm:p-6 h-full flex flex-col"}>
-                            <h3 className="font-bold text-white mb-4 sm:mb-5 flex items-center gap-2 text-sm sm:text-base pb-3 border-b border-white/5"><TrendingUp className="w-4 h-4 sm:w-5 sm:h-5 text-cyan-400"/> Live Activity</h3>
-                            <div className="space-y-3 sm:space-y-4 overflow-y-auto flex-grow scrollbar-hide pr-1">
+                         <div className={uiCard + " p-6 h-full flex flex-col"}>
+                            <h3 className="font-semibold text-white mb-5 flex items-center gap-2 pb-4 border-b border-brand-border"><TrendingUp className="w-5 h-5 text-brand-primary"/> Live Activity</h3>
+                            <div className="space-y-4 overflow-y-auto flex-grow scrollbar-hide pr-1">
                               {recentActivity.map((act, i) => (
-                                <div key={i} className={uiInnerPanel + " !p-3 relative overflow-hidden group hover:bg-[#020617]/30 transition-colors"}>
-                                  <div className="absolute top-0 left-0 w-1 h-full bg-cyan-500"></div>
-                                  <p className="text-xs sm:text-sm text-gray-300 font-medium ml-2 break-words">
-                                    <span className="font-bold text-white">{(act.customer || 'User').split('@')[0]}***</span> bought <span className="font-bold text-emerald-400">${Number(act.total || 0).toFixed(2)}</span>
+                                <div key={i} className="bg-slate-900/50 border border-slate-800/50 rounded-xl p-3 relative overflow-hidden">
+                                  <div className="absolute top-0 left-0 w-1 h-full bg-brand-primary"></div>
+                                  <p className="text-sm text-slate-300 ml-2">
+                                    <span className="font-medium text-white">{(act.customer || 'User').split('@')[0]}***</span> bought <span className="font-medium text-emerald-400">${Number(act.total || 0).toFixed(2)}</span>
                                   </p>
-                                  <p className="text-[9px] sm:text-xs text-gray-500 mt-1.5 sm:mt-2 font-medium ml-2 flex items-center gap-1 sm:gap-1.5"><Clock className="w-2.5 h-2.5 sm:w-3 sm:h-3"/> {new Date(act.date).toLocaleTimeString()}</p>
+                                  <p className="text-xs text-slate-500 mt-2 ml-2 flex items-center gap-1.5"><Clock className="w-3 h-3"/> {new Date(act.date).toLocaleTimeString()}</p>
                                 </div>
                               ))}
-                              {recentActivity.length === 0 && <p className="text-xs sm:text-sm text-gray-500 text-center py-10 font-medium">No recent activity.</p>}
+                              {recentActivity.length === 0 && <p className="text-sm text-slate-500 text-center py-10">No recent activity.</p>}
                             </div>
                          </div>
                       </div>
@@ -1641,117 +1573,97 @@
                 {activeTab === 'add_funds' && (
                   <div className="animate-fade-in-up grid grid-cols-1 lg:grid-cols-2 gap-6 sm:gap-8 w-full">
                     
-                    {/* Flutterwave Payment Card (Automated) */}
                     {bankSettings?.flutterwaveActive && (
-                        <div className={uiCard + " p-5 sm:p-8 lg:col-span-2 border-emerald-500/20 shadow-xl"}>
-                            <h2 className="text-lg sm:text-xl font-bold mb-2 text-white flex items-center gap-2">
-                               <CreditCard className="w-5 h-5 sm:w-6 sm:h-6 text-emerald-400"/> Fast Checkout (Flutterwave)
+                        <div className={uiCard + " p-6 sm:p-8 lg:col-span-2 border-emerald-500/20"}>
+                            <h2 className="text-xl font-semibold mb-2 text-white flex items-center gap-2">
+                               <CreditCard className="w-6 h-6 text-emerald-400"/> Fast Checkout
                             </h2>
-                            <p className="text-xs sm:text-sm text-gray-300 mb-5 sm:mb-6 font-medium leading-relaxed">Fund your wallet instantly using Cards, Bank Transfer or USSD. Amounts are automatically converted to Naira at ₦{bankSettings?.nairaRate || 1500}/$.</p>
+                            <p className="text-sm text-slate-400 mb-6 leading-relaxed">Fund your wallet instantly using Cards or Bank Transfer. Auto conversion rate: ₦{bankSettings?.nairaRate || 1500}/$.</p>
                             
                             <div className="flex flex-col sm:flex-row gap-4 items-end w-full">
                                 <div className="w-full">
-                                  <label className="block text-[10px] sm:text-xs font-bold text-gray-400 mb-1.5 sm:mb-2 uppercase tracking-wider">Amount in USD ($)</label>
+                                  <label className="block text-xs font-medium text-slate-400 mb-2">Amount in USD ($)</label>
                                   <div className="relative">
-                                     <DollarSign className="w-4 h-4 sm:w-5 sm:h-5 text-gray-400 absolute left-3 sm:left-4 top-3.5 sm:top-4" />
-                                     <input type="number" step="1" min="1" value={depositAmountUsd} onChange={e => setDepositAmountUsd(e.target.value)} placeholder="10" className={uiInput + " pl-10 sm:pl-12 text-base sm:text-lg font-bold h-12 sm:h-14"} />
+                                     <DollarSign className="w-5 h-5 text-slate-500 absolute left-4 top-3.5" />
+                                     <input type="number" step="1" min="1" value={depositAmountUsd} onChange={e => setDepositAmountUsd(e.target.value)} placeholder="10" className={uiInput + " pl-12 text-lg font-semibold h-12"} />
                                   </div>
                                 </div>
-                                <button onClick={handleFlutterwavePayment} className="btn-animate w-full sm:w-auto bg-emerald-600 hover:bg-emerald-500 text-white font-bold py-3 sm:py-3.5 px-6 sm:px-8 rounded-xl sm:rounded-2xl shadow-lg transition-all h-12 sm:h-14 whitespace-nowrap">
+                                <button onClick={handleFlutterwavePayment} className="btn-animate w-full sm:w-auto bg-emerald-600 hover:bg-emerald-500 text-white font-semibold px-8 rounded-xl h-12 whitespace-nowrap">
                                     Pay ₦{depositAmountUsd ? (parseFloat(depositAmountUsd) * (bankSettings?.nairaRate || 1500)).toLocaleString() : '0'}
                                 </button>
                             </div>
                         </div>
                     )}
 
-                    <div className="space-y-6 sm:space-y-8 w-full">
-                      {/* Bank Transfer Option */}
-                      <div className={uiCard + " p-5 sm:p-8"}>
-                        <h3 className="text-base sm:text-lg font-bold text-white mb-4 sm:mb-5 flex items-center gap-2 pb-2 sm:pb-3 border-b border-white/5">
-                          <Building className="w-5 h-5 sm:w-6 sm:h-6 text-fuchsia-400"/> Bank Transfer
+                    <div className="space-y-6 w-full">
+                      <div className={uiCard + " p-6 sm:p-8"}>
+                        <h3 className="text-lg font-semibold text-white mb-5 flex items-center gap-2 pb-3 border-b border-brand-border">
+                          <Building className="w-6 h-6 text-fuchsia-400"/> Bank Transfer
                         </h3>
-                        <div className={uiInnerPanel + " mb-4 sm:mb-6 text-sm sm:text-base space-y-2 sm:space-y-3"}>
-                          <div className="flex justify-between items-center border-b border-white/5 pb-2"><span className="text-gray-400 font-medium">Bank</span> <span className="font-bold text-white">Parallex</span></div>
-                          <div className="flex justify-between items-center border-b border-white/5 pb-2 pt-1"><span className="text-gray-400 font-medium">Name</span> <span className="font-bold text-white text-right">Samuel Osita Emmanuel</span></div>
-                          <div className="flex justify-between items-center pt-1"><span className="text-gray-400 font-medium">A/C Number</span> <span className="font-mono text-fuchsia-400 font-bold text-base sm:text-lg">1120927346</span></div>
+                        <div className={uiInnerPanel + " mb-6 text-sm space-y-3"}>
+                          <div className="flex justify-between items-center border-b border-slate-800 pb-2"><span className="text-slate-400">Bank</span> <span className="font-medium text-white">Parallex</span></div>
+                          <div className="flex justify-between items-center border-b border-slate-800 pb-2 pt-1"><span className="text-slate-400">Name</span> <span className="font-medium text-white text-right">Samuel Osita Emmanuel</span></div>
+                          <div className="flex justify-between items-center pt-1"><span className="text-slate-400">A/C Number</span> <span className="font-mono text-fuchsia-400 font-semibold text-lg">1120927346</span></div>
                         </div>
-                        <button onClick={() => copyToClipboard('1120927346')} className={uiBtnSecondary + " mb-4"}><Copy className="w-4 h-4 sm:w-5 sm:h-5" /> Copy A/C Number</button>
-                        
-                        <div className="bg-fuchsia-900/10 border border-fuchsia-500/20 p-3 sm:p-4 rounded-xl mb-3">
-                            <p className="text-[10px] sm:text-xs font-bold text-fuchsia-300 mb-2 uppercase flex items-center gap-1.5"><Activity className="w-3.5 h-3.5"/> Naira Calculator (Rate: ₦{bankSettings?.nairaRate || 1500}/$)</p>
-                            <input type="number" placeholder="Amount to deposit in USD ($)" value={depositAmountUsd} onChange={e => setDepositAmountUsd(e.target.value)} className={uiInput + " !py-2 !text-xs mb-2"} />
-                            <p className="text-xs sm:text-sm font-medium text-gray-200">You need to send: <span className="font-bold text-white">₦{depositAmountUsd ? (parseFloat(depositAmountUsd) * (bankSettings?.nairaRate || 1500)).toLocaleString() : '0'}</span></p>
-                        </div>
-                        <p className="text-[10px] sm:text-xs text-gray-500 text-center font-medium">Requires manual approval post-submission. Open a ticket.</p>
+                        <button onClick={() => copyToClipboard('1120927346')} className={uiBtnSecondary + " mb-4"}><Copy className="w-4 h-4" /> Copy A/C Number</button>
+                        <p className="text-xs text-slate-500 text-center font-medium">Requires manual approval post-submission.</p>
                       </div>
 
-                      <div className={uiCard + " p-5 sm:p-8"}>
-                        <h3 className="text-base sm:text-lg font-bold text-white mb-4 sm:mb-5 flex items-center gap-2 pb-2 sm:pb-3 border-b border-white/5"><Wallet className="w-5 h-5 sm:w-6 sm:h-6 text-emerald-400"/> Crypto (USDT TRC20)</h3>
-                        <div className={uiInnerPanel + " mb-4 sm:mb-6 overflow-hidden"}>
-                          <p className="font-mono text-sm sm:text-base font-medium text-gray-200 break-all text-center select-all tracking-wide">{TRON_ADDRESS}</p>
+                      <div className={uiCard + " p-6 sm:p-8"}>
+                        <h3 className="text-lg font-semibold text-white mb-5 flex items-center gap-2 pb-3 border-b border-brand-border"><Wallet className="w-6 h-6 text-emerald-400"/> Crypto (USDT TRC20)</h3>
+                        <div className={uiInnerPanel + " mb-6 overflow-hidden bg-slate-900"}>
+                          <p className="font-mono text-sm text-slate-300 break-all text-center select-all">{TRON_ADDRESS}</p>
                         </div>
-                        <button onClick={() => copyToClipboard(TRON_ADDRESS)} className={uiBtnSecondary}><Copy className="w-4 h-4 sm:w-5 sm:h-5" /> Copy Address</button>
-                      </div>
-
-                      <div className={uiCard + " p-5 sm:p-8"}>
-                        <h3 className="text-base sm:text-lg font-bold text-white mb-4 sm:mb-5 flex items-center gap-2 pb-2 sm:pb-3 border-b border-white/5">
-                          <DollarSign className="w-5 h-5 sm:w-6 sm:h-6 text-yellow-400"/> Binance Pay
-                        </h3>
-                        <div className={uiInnerPanel + " mb-4 sm:mb-6 text-sm sm:text-base space-y-2 sm:space-y-3"}>
-                          <div className="flex justify-between items-center border-b border-white/5 pb-2"><span className="text-gray-400 font-medium">Name</span> <span className="font-bold text-white">__CrYpTo-BoT_</span></div>
-                          <div className="flex justify-between items-center pt-1"><span className="text-gray-400 font-medium">Binance ID</span> <span className="font-mono text-yellow-400 font-bold text-base sm:text-lg">406439321</span></div>
-                        </div>
-                        <button onClick={() => copyToClipboard('406439321')} className={uiBtnSecondary + " mb-3"}><Copy className="w-4 h-4 sm:w-5 sm:h-5" /> Copy ID</button>
-                        <p className="text-[10px] sm:text-xs text-gray-500 text-center font-medium">Requires manual approval post-submission. Open a ticket.</p>
+                        <button onClick={() => copyToClipboard(TRON_ADDRESS)} className={uiBtnSecondary}><Copy className="w-4 h-4" /> Copy Address</button>
                       </div>
                     </div>
 
-                    <div className="space-y-6 sm:space-y-8 w-full">
-                      <div className={uiCard + " p-5 sm:p-8 border-cyan-500/20 h-fit sticky top-24"}>
-                        <h2 className="text-lg sm:text-xl font-bold mb-2 text-white flex items-center gap-2">
-                           <Zap className="w-5 h-5 sm:w-6 sm:h-6 text-cyan-400"/> Auto Deposit Engine
+                    <div className="space-y-6 w-full">
+                      <div className={uiCard + " p-6 sm:p-8 border-cyan-500/20 h-fit sticky top-24"}>
+                        <h2 className="text-xl font-semibold mb-2 text-white flex items-center gap-2">
+                           <Zap className="w-6 h-6 text-brand-primary"/> Auto Deposit Engine
                         </h2>
                         
                         {!autoPay.active ? (
-                            <div className="mt-4 sm:mt-6">
-                              <p className="text-xs sm:text-sm text-gray-300 mb-5 sm:mb-6 font-medium leading-relaxed">Enter your desired amount. Our system will generate a unique payment invoice for automated 1-minute detection.</p>
-                              <form onSubmit={startAutoDeposit} className="space-y-4 sm:space-y-5 w-full">
+                            <div className="mt-6">
+                              <p className="text-sm text-slate-400 mb-6">Enter desired amount. System generates a unique payment invoice for automated detection.</p>
+                              <form onSubmit={startAutoDeposit} className="space-y-5 w-full">
                                 <div>
-                                  <label className="block text-[10px] sm:text-xs font-bold text-gray-400 mb-1.5 sm:mb-2 uppercase tracking-wider">Deposit Amount (USD)</label>
+                                  <label className="block text-xs font-medium text-slate-400 mb-2">Deposit Amount (USD)</label>
                                   <div className="relative">
-                                     <DollarSign className="w-4 h-4 sm:w-5 sm:h-5 text-gray-400 absolute left-3 sm:left-4 top-3.5 sm:top-4" />
-                                     <input type="number" step="1" min="1" name="amount" required placeholder="10" className={uiInput + " pl-10 sm:pl-12 text-base sm:text-lg font-bold h-12 sm:h-14"} />
+                                     <DollarSign className="w-5 h-5 text-slate-500 absolute left-4 top-3.5" />
+                                     <input type="number" step="1" min="1" name="amount" required placeholder="10" className={uiInput + " pl-12 text-lg font-semibold h-12"} />
                                   </div>
                                 </div>
-                                <button type="submit" className={uiBtnPrimary + " h-12 sm:h-14 text-sm sm:text-lg"}>Generate Auto-Invoice</button>
+                                <button type="submit" className={uiBtnPrimary + " h-12 text-sm"}>Generate Invoice</button>
                               </form>
                             </div>
                         ) : (
-                            <div className={uiInnerPanel + " text-center space-y-4 sm:space-y-6 relative overflow-hidden mt-4 sm:mt-6"}>
-                                <div className="absolute top-0 left-0 w-full h-1 bg-[#0f172a]">
-                                    <div className="h-full bg-cyan-400 transition-all duration-1000" style={{ width: `${(autoPay.time / 900) * 100}%` }}></div>
+                            <div className={uiInnerPanel + " text-center space-y-6 relative overflow-hidden mt-6 bg-slate-900"}>
+                                <div className="absolute top-0 left-0 w-full h-1 bg-slate-800">
+                                    <div className="h-full bg-brand-primary transition-all duration-1000" style={{ width: `${(autoPay.time / 900) * 100}%` }}></div>
                                 </div>
                                 
-                                <p className="text-xs sm:text-sm font-bold text-white flex items-center justify-center gap-2 sm:gap-2.5 pt-2">
-                                    <span className="w-2 h-2 sm:w-2.5 sm:h-2.5 bg-cyan-400 rounded-full animate-pulse"></span> Listening to Blockchain...
+                                <p className="text-sm font-medium text-white flex items-center justify-center gap-2.5 pt-2">
+                                    <span className="w-2.5 h-2.5 bg-brand-primary rounded-full animate-pulse"></span> Listening to Blockchain...
                                 </p>
                                 
-                                <div className="text-4xl sm:text-5xl font-black text-cyan-400 tracking-tight">
+                                <div className="text-5xl font-bold text-brand-primary tracking-tight">
                                     ${autoPay.amount.toFixed(2)}
                                 </div>
                                 
-                                <div className="bg-rose-500/10 p-3 sm:p-4 rounded-xl border border-rose-500/20 text-left">
-                                   <p className="text-[10px] sm:text-xs text-rose-400 font-bold mb-1 sm:mb-1.5 uppercase tracking-wider flex items-center gap-1"><AlertTriangle className="w-3 h-3 sm:w-3.5 sm:h-3.5"/> Critical Instruction</p>
-                                   <p className="text-xs sm:text-sm text-gray-200 font-medium leading-relaxed">
-                                       You MUST send exactly <span className="font-bold text-white border-b border-rose-400">${autoPay.amount.toFixed(2)}</span> to our USDT TRC20 address. Different amounts will <span className="text-rose-400 font-bold">fail to auto-credit</span>.
+                                <div className="bg-rose-500/10 p-4 rounded-xl border border-rose-500/20 text-left">
+                                   <p className="text-xs text-rose-400 font-semibold mb-1.5 flex items-center gap-1.5"><AlertTriangle className="w-4 h-4"/> Critical Instruction</p>
+                                   <p className="text-sm text-slate-300 leading-relaxed">
+                                       You MUST send exactly <span className="font-bold text-white border-b border-rose-400">${autoPay.amount.toFixed(2)}</span> to our USDT TRC20 address. Different amounts will <span className="text-rose-400">fail to auto-credit</span>.
                                    </p>
                                 </div>
                                 
-                                <div className="flex justify-between items-center pt-3 sm:pt-4 border-t border-white/5 w-full">
-                                    <p className="text-xs sm:text-sm font-mono text-gray-300 font-bold flex items-center gap-1.5 sm:gap-2">
-                                        <Clock className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-gray-400"/> {Math.floor(autoPay.time / 60)}:{(autoPay.time % 60).toString().padStart(2, '0')}
+                                <div className="flex justify-between items-center pt-4 border-t border-slate-800 w-full">
+                                    <p className="text-sm font-mono text-slate-400 font-medium flex items-center gap-2">
+                                        <Clock className="w-4 h-4 text-slate-500"/> {Math.floor(autoPay.time / 60)}:{(autoPay.time % 60).toString().padStart(2, '0')}
                                     </p>
-                                    <button onClick={() => setAutoPay({active: false, amount: 0, time: 0, checking: false, invoiceId: ''})} className="btn-animate text-[10px] sm:text-xs text-rose-400 hover:text-rose-300 font-bold px-3 sm:px-4 py-1.5 sm:py-2 bg-rose-500/10 rounded-lg sm:rounded-xl transition-all border border-rose-500/20">Cancel Invoice</button>
+                                    <button onClick={() => setAutoPay({active: false, amount: 0, time: 0, checking: false, invoiceId: ''})} className="text-xs text-rose-400 hover:text-rose-300 font-medium px-4 py-2 bg-rose-500/10 rounded-lg transition-colors">Cancel</button>
                                 </div>
                             </div>
                         )}
@@ -1762,38 +1674,38 @@
 
                 {activeTab === 'history' && (
                   <div className="animate-fade-in-up w-full">
-                    <div className={uiCard + " p-5 sm:p-6 min-h-[500px]"}>
-                      <h2 className="text-xl sm:text-2xl font-bold text-white mb-5 sm:mb-6 flex items-center gap-2 sm:gap-3 pb-3 sm:pb-4 border-b border-white/5"><History className="w-5 h-5 sm:w-6 sm:h-6 text-cyan-400"/> Transaction Ledger</h2>
+                    <div className={uiCard + " p-6 sm:p-8 min-h-[500px]"}>
+                      <h2 className="text-xl sm:text-2xl font-semibold text-white mb-6 flex items-center gap-3 pb-4 border-b border-brand-border"><History className="w-6 h-6 text-brand-primary"/> Transaction Ledger</h2>
                       
                       {unifiedHistory.length === 0 ? (
-                        <div className="text-center py-20 sm:py-32 text-gray-500 flex flex-col items-center">
-                          <Activity className="w-12 h-12 sm:w-16 sm:h-16 mb-3 sm:mb-4 opacity-20" />
-                          <p className="text-sm sm:text-base font-medium">No transactions found.</p>
+                        <div className="text-center py-32 text-slate-500 flex flex-col items-center">
+                          <Activity className="w-16 h-16 mb-4 opacity-20" />
+                          <p className="text-base font-medium">No transactions found.</p>
                         </div>
                       ) : (
-                        <div className="space-y-3 sm:space-y-4 w-full">
+                        <div className="space-y-3 w-full">
                           {unifiedHistory.map((item, idx) => {
                               const isDeposit = item.type === 'Deposit';
                               return (
-                                  <div key={idx} className={uiInnerPanel + " !p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3 sm:gap-4 hover:bg-white/10"}>
-                                      <div className="flex items-center gap-3 sm:gap-4">
-                                          <div className={`w-10 h-10 sm:w-12 sm:h-12 rounded-lg sm:rounded-xl flex items-center justify-center border shrink-0 ${isDeposit ? 'bg-emerald-500/10 border-emerald-500/30 text-emerald-400' : 'bg-rose-500/10 border-rose-500/30 text-rose-400'}`}>
-                                              {isDeposit ? <Wallet className="w-5 h-5 sm:w-6 sm:h-6"/> : <ShoppingCart className="w-5 h-5 sm:w-6 sm:h-6"/>}
+                                  <div key={idx} className="p-4 bg-slate-900/50 border border-slate-800 rounded-xl flex flex-col sm:flex-row sm:items-center justify-between gap-4 hover:bg-slate-800/50 transition-colors">
+                                      <div className="flex items-center gap-4">
+                                          <div className={`w-12 h-12 rounded-xl flex items-center justify-center border shrink-0 ${isDeposit ? 'bg-emerald-500/10 border-emerald-500/20 text-emerald-400' : 'bg-rose-500/10 border-rose-500/20 text-rose-400'}`}>
+                                              {isDeposit ? <Wallet className="w-6 h-6"/> : <ShoppingCart className="w-6 h-6"/>}
                                           </div>
-                                          <div className="overflow-hidden">
-                                              <p className="text-sm sm:text-base font-bold text-white">{item.type}</p>
-                                              <p className="text-[10px] sm:text-xs text-gray-400 font-mono mt-0.5 sm:mt-1 truncate">{item.id}</p>
-                                              <p className="text-[10px] sm:text-xs text-gray-500 font-medium mt-0.5">{item.date ? new Date(item.date).toLocaleString() : ''}</p>
+                                          <div>
+                                              <p className="text-base font-semibold text-white">{item.type}</p>
+                                              <p className="text-xs text-slate-400 font-mono mt-1">{item.id}</p>
+                                              <p className="text-xs text-slate-500 font-medium mt-0.5">{item.date ? new Date(item.date).toLocaleString() : ''}</p>
                                           </div>
                                       </div>
-                                      <div className="flex sm:flex-col items-center sm:items-end justify-between sm:justify-center w-full sm:w-auto mt-2 sm:mt-0 pt-2 sm:pt-0 border-t border-white/5 sm:border-0">
-                                          <p className={`text-lg sm:text-xl font-bold ${isDeposit ? 'text-emerald-400' : 'text-white'}`}>
+                                      <div className="flex sm:flex-col items-center sm:items-end justify-between w-full sm:w-auto mt-2 sm:mt-0 pt-3 sm:pt-0 border-t border-slate-800 sm:border-0">
+                                          <p className={`text-xl font-bold ${isDeposit ? 'text-emerald-400' : 'text-white'}`}>
                                               {isDeposit ? '+' : '-'}${Number(item.amount || 0).toFixed(2)}
                                           </p>
-                                          <span className={`text-[9px] sm:text-[10px] font-bold mt-0 sm:mt-1 px-2 sm:px-2.5 py-0.5 sm:py-1 rounded-md sm:rounded-lg uppercase tracking-wider border ${
-                                              String(item.status || '').includes('Approved') || String(item.status || '').includes('Completed') || String(item.status || '').includes('successful') ? 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20' : 
-                                              String(item.status || '').includes('Pending') || String(item.status || '').includes('Verifying') || String(item.status || '').includes('Awaiting') ? 'bg-amber-500/10 text-amber-400 border-amber-500/20' : 
-                                              'bg-rose-500/10 text-rose-400 border-rose-500/20'
+                                          <span className={`text-[10px] font-medium mt-1 px-2.5 py-1 rounded-md uppercase tracking-wider ${
+                                              String(item.status || '').includes('Completed') || String(item.status || '').includes('Approved') ? 'bg-emerald-500/10 text-emerald-400' : 
+                                              String(item.status || '').includes('Pending') || String(item.status || '').includes('Awaiting') ? 'bg-amber-500/10 text-amber-400' : 
+                                              'bg-rose-500/10 text-rose-400'
                                           }`}>
                                               {item.status}
                                           </span>
@@ -1809,12 +1721,12 @@
 
                 {activeTab === 'my_accounts' && (
                   <div className="animate-fade-in-up w-full">
-                    <div className={uiCard + " p-5 sm:p-6 min-h-[500px]"}>
-                      <h2 className="text-xl sm:text-2xl font-bold text-white mb-5 sm:mb-6 flex items-center gap-2 sm:gap-3 pb-3 sm:pb-4 border-b border-white/5"><Package className="w-5 h-5 sm:w-6 h-6 text-fuchsia-400"/> My Vault</h2>
+                    <div className={uiCard + " p-6 sm:p-8 min-h-[500px]"}>
+                      <h2 className="text-xl sm:text-2xl font-semibold text-white mb-6 flex items-center gap-3 pb-4 border-b border-brand-border"><Package className="w-6 h-6 text-fuchsia-400"/> My Vault</h2>
                       {purchases.length === 0 ? (
-                        <div className="text-center py-20 sm:py-32 text-gray-500 flex flex-col items-center font-medium">
-                          <Lock className="w-12 h-12 sm:w-16 sm:h-16 mb-3 sm:mb-4 opacity-20" />
-                          <p className="text-sm sm:text-base">Your secure vault is currently empty.</p>
+                        <div className="text-center py-32 text-slate-500 flex flex-col items-center">
+                          <Lock className="w-16 h-16 mb-4 opacity-20" />
+                          <p className="text-base font-medium">Your secure vault is currently empty.</p>
                         </div>
                       ) : (
                         <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6 w-full">
@@ -1836,63 +1748,52 @@
 
                 {activeTab === 'profile' && (
                   <div className="animate-fade-in-up grid grid-cols-1 xl:grid-cols-3 gap-6 sm:gap-8 w-full">
-                    <div className={uiCard + " p-6 sm:p-8 text-center xl:col-span-1 h-fit flex flex-col items-center"}>
-                      <div className="w-20 h-20 sm:w-24 sm:h-24 bg-cyan-500/10 rounded-[1.5rem] sm:rounded-[2rem] flex items-center justify-center mb-4 sm:mb-5 border border-cyan-400/20">
-                        <UserIcon className="w-8 h-8 sm:w-10 sm:h-10 text-cyan-400" strokeWidth={2.5}/>
+                    <div className={uiCard + " p-8 text-center xl:col-span-1 h-fit flex flex-col items-center"}>
+                      <div className="w-24 h-24 bg-brand-primary/10 rounded-[2rem] flex items-center justify-center mb-5 border border-brand-primary/20">
+                        <UserIcon className="w-10 h-10 text-brand-primary" strokeWidth={2.5}/>
                       </div>
-                      <h2 className="text-base sm:text-lg font-bold text-white mb-1 truncate w-full" title={user.email}>{user.email}</h2>
-                      <p className="text-[10px] sm:text-xs text-gray-400 font-medium mb-6 sm:mb-8">Joined {userInfo?.joined ? new Date(userInfo.joined).toLocaleDateString() : 'N/A'}</p>
+                      <h2 className="text-lg font-semibold text-white mb-1 w-full truncate" title={user.email}>{user.email}</h2>
+                      <p className="text-xs text-slate-400 font-medium mb-8">Joined {userInfo?.joined ? new Date(userInfo.joined).toLocaleDateString() : 'N/A'}</p>
                       
                       <div className="w-full text-left mb-2 flex justify-between items-end">
-                          <span className="text-[10px] sm:text-xs font-bold text-gray-400 uppercase tracking-wider">Level</span>
-                          <span className={`text-xs sm:text-sm font-bold ${tier?.color || 'text-gray-400'} flex items-center gap-1`}>
-                              {tier && tier.icon && <tier.icon className="w-3 h-3 sm:w-3.5 sm:h-3.5"/>}
+                          <span className="text-xs font-medium text-slate-400 uppercase tracking-wider">Level</span>
+                          <span className={`text-sm font-semibold ${tier?.color || 'text-slate-400'} flex items-center gap-1`}>
+                              {tier && tier.icon && <tier.icon className="w-3.5 h-3.5"/>}
                               {tier?.name || 'Loading'}
                           </span>
                       </div>
                       
                       {tier && tier.next && (
-                          <div className="w-full bg-gray-800 rounded-full h-1.5 sm:h-2 mb-2 overflow-hidden">
-                              <div className="bg-cyan-500 h-full rounded-full" style={{width: `${Math.min(100, ((userInfo?.totalSpent || 0) / tier.next) * 100)}%`}}></div>
+                          <div className="w-full bg-slate-800 rounded-full h-2 mb-2 overflow-hidden">
+                              <div className="bg-brand-primary h-full rounded-full" style={{width: `${Math.min(100, ((userInfo?.totalSpent || 0) / tier.next) * 100)}%`}}></div>
                           </div>
                       )}
                       {tier && tier.next ? (
-                          <p className="text-[9px] sm:text-[10px] text-gray-500 font-medium w-full text-left mb-4 sm:mb-6">Spend ${Number(tier.next - (userInfo?.totalSpent || 0)).toFixed(2)} more to level up.</p>
+                          <p className="text-[10px] text-slate-500 font-medium w-full text-left mb-6">Spend ${Number(tier.next - (userInfo?.totalSpent || 0)).toFixed(2)} more to level up.</p>
                       ) : (
-                          <p className="text-[9px] sm:text-[10px] text-amber-400 font-bold w-full text-center mb-4 sm:mb-6">Max Level Achieved!</p>
+                          <p className="text-[10px] text-amber-400 font-medium w-full text-center mb-6">Max Level Achieved!</p>
                       )}
                     </div>
 
-                    <div className="xl:col-span-2 space-y-6 sm:space-y-8 w-full">
-                      <div className="grid grid-cols-2 gap-4 sm:gap-6 w-full">
-                        <div className={uiCard + " p-5 sm:p-8 flex flex-col justify-center items-center text-center"}>
-                          <p className="text-gray-400 text-[10px] sm:text-xs font-bold mb-1.5 sm:mb-2 uppercase tracking-widest break-words w-full">Lifetime Spent</p>
-                          <p className="text-2xl sm:text-4xl font-bold text-white">${Number(userInfo?.totalSpent || 0).toFixed(2)}</p>
+                    <div className="xl:col-span-2 space-y-6 w-full">
+                      <div className="grid grid-cols-2 gap-6 w-full">
+                        <div className={uiCard + " p-8 flex flex-col justify-center items-center text-center"}>
+                          <p className="text-slate-400 text-xs font-medium mb-2 uppercase tracking-widest">Lifetime Spent</p>
+                          <p className="text-4xl font-bold text-white">${Number(userInfo?.totalSpent || 0).toFixed(2)}</p>
                         </div>
-                        <div className={uiCard + " p-5 sm:p-8 flex flex-col justify-center items-center text-center border-emerald-500/20 bg-emerald-500/5"}>
-                          <p className="text-emerald-400/80 text-[10px] sm:text-xs font-bold mb-1.5 sm:mb-2 uppercase tracking-widest break-words w-full">Current Balance</p>
-                          <p className="text-2xl sm:text-4xl font-bold text-emerald-400">${Number(balance || 0).toFixed(2)}</p>
+                        <div className={uiCard + " p-8 flex flex-col justify-center items-center text-center border-emerald-500/20 bg-emerald-500/5"}>
+                          <p className="text-emerald-400/80 text-xs font-medium mb-2 uppercase tracking-widest">Current Balance</p>
+                          <p className="text-4xl font-bold text-emerald-400">${Number(balance || 0).toFixed(2)}</p>
                         </div>
                       </div>
 
                       {featureSettings?.dailyReward && (
-                        <div className={uiCard + " p-5 sm:p-6 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 sm:gap-5 border-amber-500/20 bg-amber-500/5"}>
-                           <div className="w-full sm:w-auto">
-                             <h3 className="text-sm sm:text-base font-bold text-white flex items-center gap-1.5 sm:gap-2 mb-1 sm:mb-1.5"><Star className="w-4 h-4 sm:w-5 sm:h-5 text-yellow-400"/> Daily Reward Check-in</h3>
-                             <p className="text-xs sm:text-sm text-gray-300 font-medium">Claim your free <span className="font-bold text-amber-400">$0.50</span> wallet bonus every 24 hours.</p>
+                        <div className={uiCard + " p-6 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-5 border-amber-500/20 bg-amber-500/5"}>
+                           <div>
+                             <h3 className="text-base font-semibold text-white flex items-center gap-2 mb-1.5"><Star className="w-5 h-5 text-yellow-400"/> Daily Reward</h3>
+                             <p className="text-sm text-slate-400 font-medium">Claim your free <span className="font-semibold text-amber-400">$0.50</span> wallet bonus every 24 hours.</p>
                            </div>
-                           <button onClick={claimDailyBonus} className="btn-animate bg-amber-600 hover:bg-amber-500 text-white px-5 sm:px-6 py-2.5 sm:py-3 rounded-xl text-xs sm:text-sm font-bold transition-all w-full sm:w-auto shadow-md">Claim Bonus</button>
-                        </div>
-                      )}
-
-                      {featureSettings?.referral && (
-                        <div className={uiCard + " p-5 sm:p-6"}>
-                           <h3 className="text-sm sm:text-base font-bold text-white mb-1.5 sm:mb-2 flex items-center gap-1.5 sm:gap-2"><Users className="w-4 h-4 sm:w-5 sm:h-5 text-fuchsia-400"/> Affiliate Program</h3>
-                           <p className="text-xs sm:text-sm text-gray-300 font-medium mb-4 sm:mb-5">Share your unique code with friends to earn deposit bonuses.</p>
-                           <div className={uiInnerPanel + " !p-2 sm:!p-2.5 flex justify-between items-center"}>
-                             <span className="font-mono text-sm sm:text-base font-bold text-fuchsia-400 px-2 sm:px-4 break-all">{referralCode}</span>
-                             <button onClick={() => copyToClipboard(referralCode)} className="btn-animate bg-white/10 hover:bg-white/20 p-2 sm:p-2.5 rounded-lg transition-colors text-white shrink-0"><Copy className="w-3.5 h-3.5 sm:w-4 sm:h-4"/></button>
-                           </div>
+                           <button onClick={claimDailyBonus} className="btn-animate bg-amber-600 hover:bg-amber-500 text-white px-6 py-3 rounded-xl text-sm font-semibold transition-all w-full sm:w-auto">Claim Bonus</button>
                         </div>
                       )}
                     </div>
@@ -1902,49 +1803,36 @@
                 {activeTab === 'support' && (
                   <div className="animate-fade-in-up grid grid-cols-1 lg:grid-cols-2 gap-6 sm:gap-8 w-full">
                     <div className="space-y-6 sm:space-y-8 w-full">
-                        <div className={uiCard + " p-5 sm:p-8 h-fit"}>
-                          <h2 className="text-lg sm:text-xl font-bold text-white mb-2 flex items-center gap-2 pb-3 sm:pb-4 border-b border-white/5"><Headset className="w-5 h-5 sm:w-6 sm:h-6 text-cyan-400"/> Open a Ticket</h2>
-                          <p className="text-xs sm:text-sm text-gray-400 font-medium mb-5 sm:mb-6 mt-3 sm:mt-4">Experiencing issues? Describe it below and our team will assist you shortly.</p>
-                          <form onSubmit={submitTicket} className="space-y-4 sm:space-y-5 w-full">
+                        <div className={uiCard + " p-6 sm:p-8 h-fit"}>
+                          <h2 className="text-xl font-semibold text-white mb-2 flex items-center gap-2 pb-4 border-b border-brand-border"><Headset className="w-6 h-6 text-brand-primary"/> Open a Ticket</h2>
+                          <p className="text-sm text-slate-400 font-medium mb-6 mt-4">Experiencing issues? Describe it below and our team will assist you shortly.</p>
+                          <form onSubmit={submitTicket} className="space-y-5 w-full">
                             <div>
-                              <label className="block text-[10px] sm:text-xs font-bold text-gray-400 mb-1.5 sm:mb-2 uppercase tracking-wider">Subject</label>
+                              <label className="block text-xs font-medium text-slate-400 mb-2 uppercase tracking-wider">Subject</label>
                               <input type="text" value={ticketSubject} onChange={e => setTicketSubject(e.target.value)} required placeholder="Brief issue title" className={uiInput} />
                             </div>
                             <div>
-                              <label className="block text-[10px] sm:text-xs font-bold text-gray-400 mb-1.5 sm:mb-2 uppercase tracking-wider">Details</label>
+                              <label className="block text-xs font-medium text-slate-400 mb-2 uppercase tracking-wider">Details</label>
                               <textarea value={ticketMessage} onChange={e => setTicketMessage(e.target.value)} required placeholder="Provide full context..." rows="4" className={uiInput + " resize-none"} />
                             </div>
                             <button type="submit" className={uiBtnPrimary}>Submit Request</button>
                           </form>
                         </div>
-
-                        {/* FAQ */}
-                        <div className={uiCard + " p-5 sm:p-6 h-fit w-full"}>
-                           <h2 className="text-base sm:text-lg font-bold text-white mb-3 sm:mb-4 flex items-center gap-2"><HelpCircle className="w-4 h-4 sm:w-5 sm:h-5 text-amber-400"/> Quick FAQ</h2>
-                           <div className="space-y-2.5 sm:space-y-3">
-                              {FAQ_ITEMS.map((faq, i) => (
-                                  <div key={i} className={uiInnerPanel}>
-                                      <p className="font-bold text-white text-xs sm:text-sm mb-1 sm:mb-1.5 leading-snug">{faq.q}</p>
-                                      <p className="text-[10px] sm:text-xs text-gray-400 leading-relaxed font-medium">{faq.a}</p>
-                                  </div>
-                              ))}
-                           </div>
-                        </div>
                     </div>
 
-                    <div className={uiCard + " p-5 sm:p-6 flex flex-col w-full"}>
-                       <h3 className="text-base sm:text-lg font-bold text-white mb-4 sm:mb-5 pb-3 sm:pb-4 border-b border-white/5">Active Tickets</h3>
-                       <div className="space-y-3 sm:space-y-4 overflow-y-auto scrollbar-hide pr-1 sm:pr-2">
-                         {tickets.length === 0 ? <p className="text-center text-gray-500 font-medium py-16 sm:py-20 text-xs sm:text-sm">You have no active support tickets.</p> : tickets.map(t => (
-                           <div key={t.id} className={uiInnerPanel + " w-full"}>
-                             <div className="flex justify-between items-start mb-2 sm:mb-3">
-                               <h4 className="font-bold text-white text-sm sm:text-base break-words w-[70%]">{t.subject}</h4>
-                               <span className={`text-[8px] sm:text-[10px] px-2 sm:px-2.5 py-0.5 sm:py-1 rounded-md font-bold uppercase tracking-wider border shrink-0 ${t.status === 'Open' ? 'bg-amber-500/10 text-amber-400 border-amber-500/20' : 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20'}`}>{t.status}</span>
+                    <div className={uiCard + " p-6 sm:p-8 flex flex-col w-full"}>
+                       <h3 className="text-lg font-semibold text-white mb-5 pb-4 border-b border-brand-border">Active Tickets</h3>
+                       <div className="space-y-4 overflow-y-auto scrollbar-hide pr-2">
+                         {tickets.length === 0 ? <p className="text-center text-slate-500 font-medium py-20 text-sm">You have no active support tickets.</p> : tickets.map(t => (
+                           <div key={t.id} className={uiInnerPanel + " w-full bg-slate-900"}>
+                             <div className="flex justify-between items-start mb-3">
+                               <h4 className="font-semibold text-white text-base break-words w-[70%]">{t.subject}</h4>
+                               <span className={`text-[10px] px-2.5 py-1 rounded-md font-semibold uppercase tracking-wider border shrink-0 ${t.status === 'Open' ? 'bg-amber-500/10 text-amber-400 border-amber-500/20' : 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20'}`}>{t.status}</span>
                              </div>
-                             <div className="bg-black/20 p-2 sm:p-3 rounded-lg border border-white/5 mb-2 sm:mb-3 w-full">
-                               <p className="text-xs sm:text-sm text-gray-300 font-medium leading-relaxed break-words">{t.message}</p>
+                             <div className="bg-slate-800 p-3 rounded-lg border border-slate-700 mb-3 w-full">
+                               <p className="text-sm text-slate-300 font-medium leading-relaxed break-words">{t.message}</p>
                              </div>
-                             <p className="text-[9px] sm:text-[10px] text-gray-500 font-medium flex items-center gap-1 sm:gap-1.5"><Clock className="w-2.5 h-2.5 sm:w-3 sm:h-3"/> {t.date ? new Date(t.date).toLocaleString() : ''}</p>
+                             <p className="text-[10px] text-slate-500 font-medium flex items-center gap-1.5"><Clock className="w-3 h-3"/> {t.date ? new Date(t.date).toLocaleString() : ''}</p>
                            </div>
                          ))}
                        </div>
@@ -2151,40 +2039,39 @@
             <>
               {/* Edit Full User Modal */}
               {editUserModal.show && (
-                <div className="fixed inset-0 z-[150] flex items-center justify-center p-4 bg-gray-900/60 dark:bg-black/80 backdrop-blur-md transition-all duration-300 w-full h-full">
+                <div className="fixed inset-0 z-[150] flex items-center justify-center p-4 bg-brand-dark/80 backdrop-blur-sm transition-all duration-300 w-full h-full">
                   <div className={uiCard + " w-full max-w-md p-6"}>
-                     <div className="flex justify-between items-center mb-4 border-b border-white/5 pb-3">
-                         <h3 className="text-lg font-bold text-white flex items-center gap-2"><Edit className="w-5 h-5 text-cyan-400"/> Edit Customer</h3>
-                         <button onClick={() => setEditUserModal({ show: false, email: '', password: '', balance: 0, totalSpent: 0 })} className="p-1.5 bg-white/5 hover:bg-white/10 rounded-full text-white transition-colors"><X className="w-4 h-4" /></button>
+                     <div className="flex justify-between items-center mb-5 border-b border-brand-border pb-4">
+                         <h3 className="text-lg font-semibold text-white flex items-center gap-2"><Edit className="w-5 h-5 text-brand-primary"/> Edit Customer</h3>
+                         <button onClick={() => setEditUserModal({ show: false, email: '', password: '', balance: 0, totalSpent: 0 })} className="p-2 hover:bg-slate-800 rounded-full text-slate-400 hover:text-white transition-colors"><X className="w-4 h-4" /></button>
                      </div>
-                     <p className="text-xs text-gray-400 font-mono mb-4 font-medium bg-black/30 p-2 rounded-lg truncate border border-white/5">{editUserModal.email}</p>
+                     <p className="text-xs text-slate-400 font-mono mb-5 font-medium bg-slate-900 p-3 rounded-lg truncate border border-brand-border">{editUserModal.email}</p>
                      
                      <form onSubmit={submitEditUser} className="space-y-4">
                         <div>
-                           <label className="block text-[10px] sm:text-xs font-bold text-gray-400 mb-1.5 uppercase tracking-wider">Saved Password (Database)</label>
+                           <label className="block text-xs font-medium text-slate-400 mb-2 uppercase tracking-wider">Saved Password</label>
                            <input type="text" placeholder="User's Password" value={editUserModal.password} onChange={e => setEditUserModal({...editUserModal, password: e.target.value})} className={uiInput} />
-                           <p className="text-[9px] text-amber-400/80 mt-1.5 font-medium leading-tight">Note: Editing this changes the password saved in the database display. For security, click "Send Reset Link" below to force a real login password change.</p>
                         </div>
                         <div className="grid grid-cols-2 gap-4">
                             <div>
-                               <label className="block text-[10px] sm:text-xs font-bold text-gray-400 mb-1.5 uppercase tracking-wider">Wallet Balance ($)</label>
+                               <label className="block text-xs font-medium text-slate-400 mb-2 uppercase tracking-wider">Balance ($)</label>
                                <input type="number" step="0.01" required value={editUserModal.balance} onChange={e => setEditUserModal({...editUserModal, balance: e.target.value})} className={uiInput} />
                             </div>
                             <div>
-                               <label className="block text-[10px] sm:text-xs font-bold text-gray-400 mb-1.5 uppercase tracking-wider">Total Spent ($)</label>
+                               <label className="block text-xs font-medium text-slate-400 mb-2 uppercase tracking-wider">Total Spent ($)</label>
                                <input type="number" step="0.01" required value={editUserModal.totalSpent} onChange={e => setEditUserModal({...editUserModal, totalSpent: e.target.value})} className={uiInput} />
                             </div>
                         </div>
-                        <div className="pt-3 flex flex-col gap-2 border-t border-white/5 mt-2">
+                        <div className="pt-5 flex flex-col gap-3 border-t border-brand-border mt-4">
                           <button type="submit" className={uiBtnPrimary}>Save Changes</button>
-                          <button type="button" onClick={() => sendResetLinkToUser(editUserModal.email)} className={uiBtnSecondary + " !bg-rose-500/10 !text-rose-400 hover:!bg-rose-500/20 !border-rose-500/30"}><Mail className="w-4 h-4"/> Send Password Reset Link</button>
+                          <button type="button" onClick={() => sendResetLinkToUser(editUserModal.email)} className={uiBtnSecondary + " !bg-rose-500/10 hover:!bg-rose-500/20 !border-rose-500/20 !text-rose-400"}><Mail className="w-4 h-4"/> Send Password Reset Link</button>
                         </div>
                      </form>
                   </div>
                 </div>
               )}
 
-              {/* Sidebar Navigation: বামপাশের ফিক্সড সাইডবার */}
+              {/* Sidebar Navigation */}
               <div className="w-[72px] sm:w-20 md:w-64 shrink-0 sticky top-24 z-20">
                 <div className={uiCard + " p-2 md:p-3 flex flex-col gap-2 h-max"}>
                   {ADMIN_TABS.map(tab => {
@@ -2192,23 +2079,23 @@
                     return (
                     <button 
                       key={tab.id} onClick={() => setActiveTab(tab.id)} 
-                      className={`btn-animate p-2 md:px-4 md:py-3.5 text-xs sm:text-sm font-medium rounded-xl transition-all duration-300 flex flex-col md:flex-row items-center md:justify-start justify-center gap-1.5 md:gap-3 w-full text-center md:text-left relative ${active ? 'bg-cyan-500/10 border border-cyan-500/20 text-cyan-300 shadow-sm' : 'bg-transparent border border-transparent text-gray-400 hover:bg-white/5 hover:text-white'}`}
+                      className={`p-2 md:px-4 md:py-3.5 text-xs sm:text-sm font-medium rounded-xl transition-all duration-300 flex flex-col md:flex-row items-center md:justify-start justify-center gap-1.5 md:gap-3 w-full text-center md:text-left ${active ? 'bg-cyan-500/10 border border-cyan-500/20 text-cyan-300 shadow-sm' : 'bg-transparent border border-transparent text-gray-400 hover:bg-white/5 hover:text-white'}`}
                     >
-                      <tab.icon className={`w-5 h-5 sm:w-6 sm:h-6 shrink-0 ${active ? 'text-cyan-400' : 'drop-shadow-sm'}`} /> 
+                      <tab.icon className={`w-5 h-5 sm:w-6 sm:h-6 shrink-0 ${active ? 'text-brand-primary' : ''}`} /> 
                       <span className="hidden md:block">{tab.label}</span>
                       <span className="md:hidden text-[9px] leading-tight font-medium tracking-tight break-words">{tab.label}</span>
                       
                       <div className="absolute top-1 right-1 flex items-center gap-1">
-                        {(tab.id === 'deposits' && pendingDeposits.length > 0) && <span className="w-2 h-2 bg-rose-500 rounded-full animate-pulse shadow-[0_0_8px_rgba(244,63,94,0.8)] border border-[#0f172a]"></span>}
-                        {(tab.id === 'support' && pendingTickets.length > 0) && <span className="w-2 h-2 bg-cyan-500 rounded-full animate-pulse shadow-[0_0_8px_rgba(6,182,212,0.8)] border border-[#0f172a]"></span>}
+                        {(tab.id === 'deposits' && pendingDeposits.length > 0) && <span className="w-2 h-2 bg-rose-500 rounded-full animate-pulse"></span>}
+                        {(tab.id === 'support' && pendingTickets.length > 0) && <span className="w-2 h-2 bg-brand-primary rounded-full animate-pulse"></span>}
                       </div>
                     </button>
                   )})}
                   
                   {/* Mobile Logout */}
-                  <button onClick={() => auth.signOut()} className="btn-animate p-2 text-xs font-bold rounded-xl transition-all duration-300 flex flex-col items-center justify-center gap-1.5 border bg-rose-500/10 border-rose-500/20 text-rose-400 md:hidden mt-2 shadow-sm">
+                  <button onClick={() => auth.signOut()} className="p-2 text-xs font-medium rounded-xl transition-all duration-300 flex flex-col items-center justify-center gap-1.5 w-full text-center bg-rose-500/10 text-rose-400 md:hidden mt-2">
                       <LogOut className="w-5 h-5 shrink-0" />
-                      <span className="text-[9px] leading-tight font-medium">Logout</span>
+                      <span className="text-[9px] leading-tight">Logout</span>
                   </button>
                 </div>
               </div>
@@ -2217,18 +2104,18 @@
               <div className="flex-grow w-full min-w-0">
                 {activeTab === 'inventory' && (
                   <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 sm:gap-8 w-full animate-fade-in-up">
-                    <div className={uiCard + " p-5 sm:p-6 lg:col-span-1 h-fit"}>
-                      <h2 className="text-base font-bold mb-4 text-white border-b border-white/5 pb-3">Add Stock</h2>
+                    <div className={uiCard + " p-6 h-fit lg:col-span-1"}>
+                      <h2 className="text-lg font-semibold mb-5 text-white border-b border-brand-border pb-4">Add Stock</h2>
                       <form onSubmit={handleUploadAccounts} className="flex flex-col space-y-4">
                         <div>
-                          <label className="block text-[10px] sm:text-xs font-bold text-gray-400 mb-1.5 uppercase tracking-wider">Category</label>
+                          <label className="block text-xs font-medium text-slate-400 mb-2 uppercase tracking-wider">Category</label>
                           <select value={uploadCategory} onChange={(e) => setUploadCategory(e.target.value)} className={uiInput}>
-                            {categories.map(cat => <option key={cat.id} value={cat.id} className="bg-[#0f172a] text-white">{cat.name}</option>)}
+                            {categories.map(cat => <option key={cat.id} value={cat.id} className="bg-brand-dark text-white">{cat.name}</option>)}
                           </select>
                         </div>
                         <div>
-                          <label className="block text-[10px] sm:text-xs font-bold text-gray-400 mb-1.5 uppercase tracking-wider">Paste Data Here (Auto-detects format)</label>
-                          <textarea value={uploadText} onChange={(e) => setUploadText(e.target.value)} placeholder="Paste accounts here..." className={uiInput + " min-h-[150px] resize-none font-mono text-[10px] sm:text-xs"} required />
+                          <label className="block text-xs font-medium text-slate-400 mb-2 uppercase tracking-wider">Paste Data</label>
+                          <textarea value={uploadText} onChange={(e) => setUploadText(e.target.value)} placeholder="Paste accounts here..." className={uiInput + " min-h-[150px] resize-none font-mono text-xs"} required />
                         </div>
                         <button type="submit" className={uiBtnPrimary}>Upload Assets</button>
                       </form>
@@ -2236,24 +2123,24 @@
 
                     <div className="lg:col-span-2 space-y-6 sm:space-y-8 w-full">
                       <div className={uiCard}>
-                        <div className="p-4 sm:p-5 border-b border-white/5 bg-white/5 backdrop-blur-sm"><h2 className="text-sm font-bold text-white">Current Stock</h2></div>
+                        <div className="p-5 border-b border-brand-border"><h2 className="text-lg font-semibold text-white">Current Stock</h2></div>
                         <div className="w-full overflow-x-auto">
-                          <table className="w-full text-left text-xs sm:text-sm whitespace-nowrap">
-                            <thead className="bg-black/20 backdrop-blur-sm text-gray-400 font-bold border-b border-white/5">
-                              <tr><th className="p-3 sm:p-4">Asset Name & Price</th><th className="p-3 sm:p-4 text-center">Quantity</th><th className="p-3 sm:p-4 text-right">Action</th></tr>
+                          <table className="w-full text-left text-sm whitespace-nowrap">
+                            <thead className="bg-slate-900/50 text-slate-400 font-medium border-b border-brand-border">
+                              <tr><th className="p-4">Asset Name & Price</th><th className="p-4 text-center">Quantity</th><th className="p-4 text-right">Action</th></tr>
                             </thead>
-                            <tbody className="divide-y divide-white/5">
+                            <tbody className="divide-y divide-brand-border">
                               {categories.map(cat => (
-                                <tr key={cat.id} className="hover:bg-white/5 transition-colors">
-                                  <td className="p-3 sm:p-4">
-                                    <p className="text-gray-200 font-bold">{cat.name}</p>
-                                    <p className="text-[10px] sm:text-xs text-emerald-400 font-medium">${Number(cat.price).toFixed(2)}</p>
+                                <tr key={cat.id} className="hover:bg-slate-800/30 transition-colors">
+                                  <td className="p-4">
+                                    <p className="text-slate-200 font-semibold">{cat.name}</p>
+                                    <p className="text-xs text-emerald-400 font-medium mt-0.5">${Number(cat.price).toFixed(2)}</p>
                                   </td>
-                                  <td className="p-3 sm:p-4 text-center font-bold text-cyan-400">{inventory[cat.id] ? inventory[cat.id].length : 0}</td>
-                                  <td className="p-3 sm:p-4 text-right">
-                                    <div className="flex justify-end gap-1.5 sm:gap-2">
+                                  <td className="p-4 text-center font-bold text-brand-primary">{inventory[cat.id] ? inventory[cat.id].length : 0}</td>
+                                  <td className="p-4 text-right">
+                                    <div className="flex justify-end gap-2">
                                       <button onClick={() => setManageStockModal({ show: true, categoryId: cat.id })} className={uiBtnAction}>Manage</button>
-                                      <button onClick={() => setEditProductModal({ show: true, product: { ...cat } })} className={uiBtnAction + " !bg-cyan-500/10 !border-cyan-500/20 !text-cyan-300 hover:!bg-cyan-500/20"}>Edit Info</button>
+                                      <button onClick={() => setEditProductModal({ show: true, product: { ...cat } })} className={uiBtnAction + " !bg-brand-primary/10 !border-brand-primary/20 !text-brand-primary hover:!bg-brand-primary/20"}>Edit Info</button>
                                     </div>
                                   </td>
                                 </tr>
@@ -2267,23 +2154,23 @@
                 )}
 
                 {editProductModal.show && (
-                  <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-gray-900/60 dark:bg-black/80 backdrop-blur-md transition-all duration-300 w-full h-full">
-                    <div className={uiCard + " w-full max-w-md p-5 sm:p-6"}>
-                       <h3 className="text-lg font-bold text-white mb-4 border-b border-white/5 pb-3">Edit Product Details</h3>
+                  <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-brand-dark/80 backdrop-blur-sm transition-all duration-300 w-full h-full">
+                    <div className={uiCard + " w-full max-w-md p-6"}>
+                       <h3 className="text-lg font-semibold text-white mb-5 border-b border-brand-border pb-4">Edit Product Details</h3>
                        <form onSubmit={handleSaveProduct} className="space-y-4">
                           <div>
-                            <label className="block text-[10px] sm:text-xs font-bold text-gray-400 mb-1.5 uppercase tracking-wider">Product Name</label>
+                            <label className="block text-xs font-medium text-slate-400 mb-2 uppercase tracking-wider">Product Name</label>
                             <input type="text" required value={editProductModal.product.name} onChange={e => setEditProductModal({ ...editProductModal, product: { ...editProductModal.product, name: e.target.value } })} className={uiInput} />
                           </div>
                           <div>
-                            <label className="block text-[10px] sm:text-xs font-bold text-gray-400 mb-1.5 uppercase tracking-wider">Description</label>
-                            <textarea rows="3" required value={editProductModal.product.description} onChange={e => setEditProductModal({ ...editProductModal, product: { ...editProductModal.product, description: e.target.value } })} className={uiInput + " resize-none text-[10px] sm:text-xs leading-relaxed"}></textarea>
+                            <label className="block text-xs font-medium text-slate-400 mb-2 uppercase tracking-wider">Description</label>
+                            <textarea rows="3" required value={editProductModal.product.description} onChange={e => setEditProductModal({ ...editProductModal, product: { ...editProductModal.product, description: e.target.value } })} className={uiInput + " resize-none text-sm"}></textarea>
                           </div>
                           <div>
-                            <label className="block text-[10px] sm:text-xs font-bold text-gray-400 mb-1.5 uppercase tracking-wider">Price ($)</label>
+                            <label className="block text-xs font-medium text-slate-400 mb-2 uppercase tracking-wider">Price ($)</label>
                             <input type="number" step="0.01" required value={editProductModal.product.price} onChange={e => setEditProductModal({ ...editProductModal, product: { ...editProductModal.product, price: parseFloat(e.target.value) } })} className={uiInput} />
                           </div>
-                          <div className="flex gap-3 pt-3 border-t border-white/5 mt-2">
+                          <div className="flex gap-3 pt-5 border-t border-brand-border mt-4">
                             <button type="button" onClick={() => setEditProductModal({ show: false, product: null })} className={uiBtnSecondary}>Cancel</button>
                             <button type="submit" className={uiBtnPrimary}>Save Changes</button>
                           </div>
@@ -2293,21 +2180,21 @@
                 )}
 
                 {manageStockModal.show && (
-                  <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-gray-900/60 dark:bg-black/80 backdrop-blur-md transition-all duration-300 w-full h-full">
-                    <div className={uiCard + " w-full max-w-2xl p-5 sm:p-6 flex flex-col max-h-[80vh]"}>
-                       <div className="flex justify-between items-center mb-4 pb-3 border-b border-white/5 shrink-0">
-                         <h3 className="text-base sm:text-lg font-bold text-white flex items-center gap-2"><Package className="w-4 h-4 sm:w-5 sm:h-5 text-cyan-400"/> Manage Uploaded Accounts</h3>
-                         <button onClick={() => setManageStockModal({ show: false, categoryId: null })} className="btn-animate p-1.5 sm:p-2 bg-white/10 hover:bg-white/20 backdrop-blur-sm rounded-full text-white transition-colors shadow-sm"><X className="w-4 h-4 sm:w-5 sm:h-5" /></button>
+                  <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-brand-dark/80 backdrop-blur-sm transition-all duration-300 w-full h-full">
+                    <div className={uiCard + " w-full max-w-2xl p-6 flex flex-col max-h-[80vh]"}>
+                       <div className="flex justify-between items-center mb-5 pb-4 border-b border-brand-border shrink-0">
+                         <h3 className="text-lg font-semibold text-white flex items-center gap-2"><Package className="w-5 h-5 text-brand-primary"/> Manage Accounts</h3>
+                         <button onClick={() => setManageStockModal({ show: false, categoryId: null })} className="p-2 hover:bg-slate-800 rounded-full text-slate-400 hover:text-white transition-colors"><X className="w-5 h-5" /></button>
                        </div>
-                       <div className="overflow-y-auto flex-grow pr-1 sm:pr-2 scrollbar-hide space-y-2.5 w-full">
+                       <div className="overflow-y-auto flex-grow pr-2 scrollbar-hide space-y-3 w-full">
                           {(!inventory[manageStockModal.categoryId] || inventory[manageStockModal.categoryId].length === 0) ? (
-                              <p className="text-center text-gray-400 font-medium text-sm py-10">No accounts in stock for this category.</p>
+                              <p className="text-center text-slate-500 font-medium py-10">No accounts in stock.</p>
                           ) : (
                               inventory[manageStockModal.categoryId].map((acc, index) => (
-                                  <div key={index} className={uiInnerPanel + " flex justify-between items-center bg-black/20 w-full"}>
-                                      <pre className="text-[10px] sm:text-xs text-gray-300 font-mono font-medium truncate max-w-[70%] sm:max-w-[75%]">{acc}</pre>
-                                      <button onClick={() => handleDeleteAccount(manageStockModal.categoryId, index)} className="btn-animate p-1.5 sm:p-2 bg-rose-500/10 text-rose-400 border border-rose-500/20 hover:bg-rose-500/20 rounded-lg transition-colors shadow-sm shrink-0" title="Delete Account">
-                                          <Trash2 className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
+                                  <div key={index} className={uiInnerPanel + " flex justify-between items-center bg-slate-900 w-full"}>
+                                      <pre className="text-xs text-slate-300 font-mono font-medium truncate max-w-[75%]">{acc}</pre>
+                                      <button onClick={() => handleDeleteAccount(manageStockModal.categoryId, index)} className="p-2 bg-rose-500/10 text-rose-400 hover:bg-rose-500/20 rounded-lg transition-colors shrink-0">
+                                          <Trash2 className="w-4 h-4" />
                                       </button>
                                   </div>
                               ))
@@ -2319,93 +2206,93 @@
 
                 {activeTab === 'users' && (
                   <div className={uiCard + " animate-fade-in-up w-full"}>
-                    <div className="p-4 sm:p-5 border-b border-white/5 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 bg-white/5 backdrop-blur-sm">
-                      <h2 className="text-sm font-bold text-white">Customer Database</h2>
+                    <div className="p-5 border-b border-brand-border flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+                      <h2 className="text-lg font-semibold text-white">Customer Database</h2>
                       <div className="flex items-center gap-3 w-full sm:w-auto">
                         <div className="relative flex-grow sm:flex-grow-0 sm:w-64">
-                           <Search className="w-4 h-4 text-gray-400 absolute left-3 top-3" />
-                           <input type="text" placeholder="Search customer email..." value={customerSearch} onChange={(e)=>setCustomerSearch(e.target.value)} className={uiInput + " !py-2 !pl-9 !text-[10px] sm:!text-xs"} />
+                           <Search className="w-4 h-4 text-slate-400 absolute left-3 top-3" />
+                           <input type="text" placeholder="Search email..." value={customerSearch} onChange={(e)=>setCustomerSearch(e.target.value)} className={uiInput + " !py-2 !pl-9"} />
                         </div>
-                        <span className="text-[10px] sm:text-xs font-bold text-gray-400 whitespace-nowrap bg-black/40 px-2 py-1 rounded-md">{filteredUsers.length} Users</span>
+                        <span className="text-xs font-semibold text-slate-300 whitespace-nowrap bg-slate-800 px-3 py-1.5 rounded-lg">{filteredUsers.length} Users</span>
                       </div>
                     </div>
                     <div className="overflow-x-auto w-full">
-                      <table className="w-full text-left text-xs sm:text-sm whitespace-nowrap">
-                        <thead className="bg-black/20 backdrop-blur-sm text-gray-400 font-bold border-b border-white/5">
-                          <tr><th className="p-3 sm:p-4">Email & Password</th><th className="p-3 sm:p-4">Spent</th><th className="p-3 sm:p-4">Balance</th><th className="p-3 sm:p-4 text-right">Actions</th></tr>
+                      <table className="w-full text-left text-sm whitespace-nowrap">
+                        <thead className="bg-slate-900/50 text-slate-400 font-medium border-b border-brand-border">
+                          <tr><th className="p-4">Email & Password</th><th className="p-4">Spent</th><th className="p-4">Balance</th><th className="p-4 text-right">Actions</th></tr>
                         </thead>
-                        <tbody className="divide-y divide-white/5">
+                        <tbody className="divide-y divide-brand-border">
                           {filteredUsers.map(email => (
-                            <tr key={email} className="hover:bg-white/5 transition-colors">
-                              <td className="p-3 sm:p-4">
-                                  <p className="text-gray-200 font-bold">{String(email)}</p>
-                                  <p className="text-[10px] text-gray-500 mt-0.5 font-mono">Pass: {usersDB[email].password || 'Hidden/Not Saved'}</p>
+                            <tr key={email} className="hover:bg-slate-800/30 transition-colors">
+                              <td className="p-4">
+                                  <p className="text-slate-200 font-semibold">{String(email)}</p>
+                                  <p className="text-[10px] text-slate-500 mt-1 font-mono">Pass: {usersDB[email].password || 'Hidden/Not Saved'}</p>
                               </td>
-                              <td className="p-3 sm:p-4 font-medium text-gray-300">${Number(usersDB[email].totalSpent || 0).toFixed(2)}</td>
-                              <td className="p-3 sm:p-4 font-bold text-emerald-400">${Number(usersDB[email].balance || 0).toFixed(2)}</td>
-                              <td className="p-3 sm:p-4 text-right">
-                                <button onClick={() => setEditUserModal({ show: true, email: email, password: usersDB[email].password || '', balance: usersDB[email].balance || 0, totalSpent: usersDB[email].totalSpent || 0 })} className={uiBtnAction + " !w-auto !ml-auto !bg-blue-500/10 !text-blue-400 !border-blue-500/20 hover:!bg-blue-500/20"}><Edit className="w-3.5 h-3.5"/> Edit Full Profile</button>
+                              <td className="p-4 font-medium text-slate-300">${Number(usersDB[email].totalSpent || 0).toFixed(2)}</td>
+                              <td className="p-4 font-bold text-emerald-400">${Number(usersDB[email].balance || 0).toFixed(2)}</td>
+                              <td className="p-4 text-right">
+                                <button onClick={() => setEditUserModal({ show: true, email: email, password: usersDB[email].password || '', balance: usersDB[email].balance || 0, totalSpent: usersDB[email].totalSpent || 0 })} className={uiBtnAction + " !w-auto !ml-auto !bg-brand-primary/10 !text-brand-primary !border-brand-primary/20 hover:!bg-brand-primary/20"}><Edit className="w-4 h-4"/> Edit Profile</button>
                               </td>
                             </tr>
                           ))}
                         </tbody>
                       </table>
-                      {filteredUsers.length === 0 && <p className="text-center py-10 text-gray-500 font-medium text-xs sm:text-sm">No customers found.</p>}
+                      {filteredUsers.length === 0 && <p className="text-center py-10 text-slate-500 font-medium">No customers found.</p>}
                     </div>
                   </div>
                 )}
 
                 {activeTab === 'support' && (
                   <div className={uiCard + " animate-fade-in-up w-full"}>
-                    <div className="p-4 sm:p-5 border-b border-white/5 flex items-center justify-between bg-white/5 backdrop-blur-sm">
-                       <h2 className="text-sm font-bold text-white">Support Tickets</h2>
-                       {pendingTickets.length > 0 && <span className="bg-cyan-500/10 text-cyan-400 border border-cyan-500/20 px-2 sm:px-2.5 py-0.5 sm:py-1 rounded text-[10px] sm:text-xs font-bold">{pendingTickets.length} Open</span>}
+                    <div className="p-5 border-b border-brand-border flex items-center justify-between">
+                       <h2 className="text-lg font-semibold text-white">Support Tickets</h2>
+                       {pendingTickets.length > 0 && <span className="bg-brand-primary/10 text-brand-primary px-3 py-1 rounded-lg text-xs font-semibold">{pendingTickets.length} Open</span>}
                     </div>
                     <div className="overflow-x-auto w-full">
-                      <table className="w-full text-left whitespace-nowrap text-xs sm:text-sm">
-                        <thead className="bg-black/20 backdrop-blur-sm text-gray-400 font-bold border-b border-white/5">
-                          <tr><th className="p-3 sm:p-4">User</th><th className="p-3 sm:p-4">Subject</th><th className="p-3 sm:p-4">Date</th><th className="p-3 sm:p-4 text-right">Action</th></tr>
+                      <table className="w-full text-left whitespace-nowrap text-sm">
+                        <thead className="bg-slate-900/50 text-slate-400 font-medium border-b border-brand-border">
+                          <tr><th className="p-4">User</th><th className="p-4">Subject</th><th className="p-4">Date</th><th className="p-4 text-right">Action</th></tr>
                         </thead>
-                        <tbody className="divide-y divide-white/5">
+                        <tbody className="divide-y divide-brand-border">
                           {(tickets||[]).map(t => (
-                            <tr key={t.id} className="hover:bg-white/5 transition-colors">
-                              <td className="p-3 sm:p-4 text-gray-200 font-bold">{t.email}</td>
-                              <td className="p-3 sm:p-4 text-gray-300">
-                                <span className="font-bold block">{t.subject}</span>
-                                <span className="text-[10px] sm:text-xs truncate max-w-[150px] sm:max-w-xs inline-block font-medium text-gray-500">{t.message}</span>
+                            <tr key={t.id} className="hover:bg-slate-800/30 transition-colors">
+                              <td className="p-4 text-slate-200 font-semibold">{t.email}</td>
+                              <td className="p-4 text-slate-300">
+                                <span className="font-semibold block">{t.subject}</span>
+                                <span className="text-xs truncate max-w-[150px] sm:max-w-xs inline-block font-medium text-slate-500 mt-1">{t.message}</span>
                               </td>
-                              <td className="p-3 sm:p-4 text-gray-400 font-medium text-[10px] sm:text-xs">{new Date(t.date).toLocaleDateString()}</td>
-                              <td className="p-3 sm:p-4 text-right">
+                              <td className="p-4 text-slate-400 font-medium text-xs">{new Date(t.date).toLocaleDateString()}</td>
+                              <td className="p-4 text-right">
                                 {t.status === 'Open' ? (
                                   <button onClick={() => handleResolveTicket(t.id)} className={uiBtnAction + " !w-auto !ml-auto"}>Resolve</button>
                                 ) : (
-                                  <span className="text-[10px] sm:text-xs text-emerald-400 font-bold">Closed</span>
+                                  <span className="text-xs text-emerald-400 font-bold">Closed</span>
                                 )}
                               </td>
                             </tr>
                           ))}
                         </tbody>
                       </table>
-                      {(!tickets || tickets.length === 0) && <p className="text-center py-10 text-gray-500 text-xs sm:text-sm font-medium">Inbox zero.</p>}
+                      {(!tickets || tickets.length === 0) && <p className="text-center py-10 text-slate-500 font-medium">Inbox zero.</p>}
                     </div>
                   </div>
                 )}
 
                 {activeTab === 'analytics' && (
                   <div className="animate-fade-in-up w-full">
-                    <h2 className="text-lg font-bold mb-4 text-white">Overview</h2>
-                    <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 sm:gap-6 w-full">
-                      <div className={uiCard + " p-5 sm:p-6"}>
-                        <p className="text-gray-400 text-[10px] sm:text-xs font-bold mb-1 sm:mb-2 uppercase tracking-widest">Gross Volume</p>
-                        <h3 className="text-2xl sm:text-3xl font-black text-white">${Number(totalSales || 0).toFixed(2)}</h3>
+                    <h2 className="text-xl font-semibold mb-6 text-white">Overview</h2>
+                    <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 w-full">
+                      <div className={uiCard + " p-6"}>
+                        <p className="text-slate-400 text-xs font-medium mb-2 uppercase tracking-wider">Gross Volume</p>
+                        <h3 className="text-3xl font-bold text-white">${Number(totalSales || 0).toFixed(2)}</h3>
                       </div>
-                      <div className={uiCard + " p-5 sm:p-6"}>
-                        <p className="text-gray-400 text-[10px] sm:text-xs font-bold mb-1 sm:mb-2 uppercase tracking-widest">Total Customers</p>
-                        <h3 className="text-2xl sm:text-3xl font-black text-white">{Object.keys(usersDB).length}</h3>
+                      <div className={uiCard + " p-6"}>
+                        <p className="text-slate-400 text-xs font-medium mb-2 uppercase tracking-wider">Total Customers</p>
+                        <h3 className="text-3xl font-bold text-white">{Object.keys(usersDB).length}</h3>
                       </div>
-                      <div className={uiCard + " p-5 sm:p-6"}>
-                        <p className="text-gray-400 text-[10px] sm:text-xs font-bold mb-1 sm:mb-2 uppercase tracking-widest">Completed Orders</p>
-                        <h3 className="text-2xl sm:text-3xl font-black text-white">{orders.length}</h3>
+                      <div className={uiCard + " p-6"}>
+                        <p className="text-slate-400 text-xs font-medium mb-2 uppercase tracking-wider">Completed Orders</p>
+                        <h3 className="text-3xl font-bold text-white">{orders.length}</h3>
                       </div>
                     </div>
                   </div>
@@ -2413,35 +2300,35 @@
 
                 {activeTab === 'deposits' && (
                   <div className={uiCard + " animate-fade-in-up w-full"}>
-                    <div className="p-4 sm:p-5 border-b border-white/5 flex items-center justify-between bg-white/5 backdrop-blur-sm">
-                      <h2 className="text-sm font-bold text-white">Deposit Ledger</h2>
-                      {pendingDeposits.length > 0 && <span className="bg-amber-500/10 border border-amber-500/20 text-amber-400 px-2 sm:px-2.5 py-0.5 sm:py-1 rounded text-[10px] sm:text-xs font-bold">{pendingDeposits.length} Pending</span>}
+                    <div className="p-5 border-b border-brand-border flex items-center justify-between">
+                      <h2 className="text-lg font-semibold text-white">Deposit Ledger</h2>
+                      {pendingDeposits.length > 0 && <span className="bg-amber-500/10 text-amber-400 px-3 py-1 rounded-lg text-xs font-bold">{pendingDeposits.length} Pending</span>}
                     </div>
                     <div className="overflow-x-auto w-full">
-                      <table className="w-full text-left whitespace-nowrap text-xs sm:text-sm">
-                        <thead className="bg-black/20 backdrop-blur-sm text-gray-400 font-bold border-b border-white/5">
-                          <tr><th className="p-3 sm:p-4">Tx Ref / Date</th><th className="p-3 sm:p-4">User / Method</th><th className="p-3 sm:p-4">Amount</th><th className="p-3 sm:p-4 text-right">Status / Action</th></tr>
+                      <table className="w-full text-left whitespace-nowrap text-sm">
+                        <thead className="bg-slate-900/50 text-slate-400 font-medium border-b border-brand-border">
+                          <tr><th className="p-4">Tx Ref / Date</th><th className="p-4">User / Method</th><th className="p-4">Amount</th><th className="p-4 text-right">Status / Action</th></tr>
                         </thead>
-                        <tbody className="divide-y divide-white/5">
+                        <tbody className="divide-y divide-brand-border">
                           {deposits.map(dep => {
                             const isPending = String(dep.status || '').includes('Pending') || String(dep.status || '').includes('Verifying') || String(dep.status || '').includes('Awaiting');
                             return (
-                              <tr key={dep.id} className="hover:bg-white/5 transition-colors">
-                                <td className="p-3 sm:p-4">
-                                  <p className="font-mono text-gray-400 font-bold text-[10px] sm:text-xs">{String(dep.id || '')}</p>
-                                  <p className="text-[9px] sm:text-[11px] text-gray-500 mt-0.5 sm:mt-1 font-medium">{dep.date ? new Date(dep.date).toLocaleString() : ''}</p>
+                              <tr key={dep.id} className="hover:bg-slate-800/30 transition-colors">
+                                <td className="p-4">
+                                  <p className="font-mono text-slate-400 font-semibold text-xs">{String(dep.id || '')}</p>
+                                  <p className="text-[10px] text-slate-500 mt-1 font-medium">{dep.date ? new Date(dep.date).toLocaleString() : ''}</p>
                                 </td>
-                                <td className="p-3 sm:p-4">
-                                  <p className="text-gray-200 font-bold">{String(dep.email || '')}</p>
-                                  <p className="text-[9px] sm:text-[11px] text-gray-400 mt-0.5 sm:mt-1 font-medium">{String(dep.method || '')} - <span className="font-mono">{String(dep.txId || '')}</span></p>
+                                <td className="p-4">
+                                  <p className="text-slate-200 font-semibold">{String(dep.email || '')}</p>
+                                  <p className="text-xs text-slate-400 mt-1 font-medium">{String(dep.method || '')}</p>
                                 </td>
-                                <td className="p-3 sm:p-4 font-bold text-emerald-400">${Number(dep.amount || 0).toFixed(2)}</td>
-                                <td className="p-3 sm:p-4 text-right">
-                                  <div className="flex flex-col items-end gap-1.5 sm:gap-2">
-                                    <span className={`text-[10px] sm:text-xs font-bold ${dep.status === 'Approved' ? 'text-emerald-400' : isPending ? 'text-amber-400' : 'text-rose-400'}`}>{String(dep.status || '')}</span>
+                                <td className="p-4 font-bold text-emerald-400">${Number(dep.amount || 0).toFixed(2)}</td>
+                                <td className="p-4 text-right">
+                                  <div className="flex flex-col items-end gap-2">
+                                    <span className={`text-xs font-semibold ${dep.status === 'Approved' ? 'text-emerald-400' : isPending ? 'text-amber-400' : 'text-rose-400'}`}>{String(dep.status || '')}</span>
                                     {isPending && (
-                                        <button onClick={() => handleManualApprove(dep.id)} className="btn-animate text-[10px] sm:text-xs bg-emerald-600 hover:bg-emerald-500 text-white px-3 sm:px-4 py-1.5 sm:py-2 rounded-lg font-bold transition-all flex items-center justify-center gap-1.5 shadow-md">
-                                            <CheckCircle className="w-3.5 h-3.5"/> Approve ✅
+                                        <button onClick={() => handleManualApprove(dep.id)} className="text-xs bg-emerald-600 hover:bg-emerald-500 text-white px-4 py-2 rounded-lg font-medium transition-all flex items-center gap-1.5 shadow-sm">
+                                            <CheckCircle className="w-4 h-4"/> Approve
                                         </button>
                                     )}
                                   </div>
@@ -2451,104 +2338,104 @@
                           })}
                         </tbody>
                       </table>
-                      {deposits.length === 0 && <p className="text-center py-10 text-gray-400 font-medium text-xs sm:text-sm">No deposits recorded.</p>}
+                      {deposits.length === 0 && <p className="text-center py-10 text-slate-500 font-medium">No deposits recorded.</p>}
                     </div>
                   </div>
                 )}
 
                 {activeTab === 'settings' && (
                   <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 sm:gap-8 w-full animate-fade-in-up">
-                    <div className={uiCard + " p-5 sm:p-6 w-full"}>
-                      <h2 className="text-base font-bold text-white mb-5 sm:mb-6 border-b border-white/5 pb-3">Store Configuration</h2>
+                    <div className={uiCard + " p-6 sm:p-8 w-full"}>
+                      <h2 className="text-lg font-semibold text-white mb-6 border-b border-brand-border pb-4">Store Configuration</h2>
                       
-                      <form onSubmit={handleSaveSettings} className="space-y-5 sm:space-y-6">
-                        <div className="space-y-3 sm:space-y-4">
-                           <h3 className="text-[10px] sm:text-xs font-bold text-gray-400 uppercase tracking-wider">Feature Flags</h3>
-                           <label className={uiInnerPanel + " flex items-center justify-between cursor-pointer hover:bg-white/10"}>
-                             <span className="text-xs sm:text-sm font-bold text-white">Daily Login Bonus</span>
-                             <input type="checkbox" checked={dailyRewardActive} onChange={(e) => setDailyRewardActive(e.target.checked)} className="w-3.5 h-3.5 sm:w-4 sm:h-4 rounded text-cyan-500 focus:ring-cyan-500" />
+                      <form onSubmit={handleSaveSettings} className="space-y-6">
+                        <div className="space-y-4">
+                           <h3 className="text-xs font-medium text-slate-400 uppercase tracking-wider">Feature Flags</h3>
+                           <label className={uiInnerPanel + " flex items-center justify-between cursor-pointer hover:bg-slate-800"}>
+                             <span className="text-sm font-medium text-slate-200">Daily Login Bonus</span>
+                             <input type="checkbox" checked={dailyRewardActive} onChange={(e) => setDailyRewardActive(e.target.checked)} className="w-4 h-4 rounded text-brand-primary" />
                            </label>
-                           <label className={uiInnerPanel + " flex items-center justify-between cursor-pointer hover:bg-white/10"}>
-                             <span className="text-xs sm:text-sm font-bold text-white">Affiliate Program</span>
-                             <input type="checkbox" checked={referralActive} onChange={(e) => setReferralActive(e.target.checked)} className="w-3.5 h-3.5 sm:w-4 sm:h-4 rounded text-cyan-500 focus:ring-cyan-500" />
+                           <label className={uiInnerPanel + " flex items-center justify-between cursor-pointer hover:bg-slate-800"}>
+                             <span className="text-sm font-medium text-slate-200">Affiliate Program</span>
+                             <input type="checkbox" checked={referralActive} onChange={(e) => setReferralActive(e.target.checked)} className="w-4 h-4 rounded text-brand-primary" />
                            </label>
                         </div>
 
-                        <div className="space-y-3 sm:space-y-4 pt-4 sm:pt-5 border-t border-white/5">
-                           <h3 className="text-[10px] sm:text-xs font-bold text-gray-400 uppercase tracking-wider">API Settings (DaisySMS)</h3>
-                           <div className="grid grid-cols-1 gap-3 sm:gap-4">
+                        <div className="space-y-4 pt-6 border-t border-brand-border">
+                           <h3 className="text-xs font-medium text-slate-400 uppercase tracking-wider">API Settings (DaisySMS)</h3>
+                           <div className="grid grid-cols-1 gap-4">
                              <div>
-                               <label className="block text-[10px] sm:text-xs font-bold text-gray-300 mb-1 sm:mb-1.5">Markup per SMS ($) <span className="text-[8px] text-gray-400 font-medium ml-1">Profit added to original price</span></label>
+                               <label className="block text-xs font-medium text-slate-300 mb-2">Markup per SMS ($) <span className="text-[10px] text-slate-500 ml-1">Profit added to original price</span></label>
                                <input type="number" step="0.01" value={smsMarkupInput} onChange={(e) => setSmsMarkupInput(e.target.value)} placeholder="1.00" className={uiInput} />
                              </div>
                            </div>
-                           <label className="flex items-center gap-2 cursor-pointer mt-1.5 sm:mt-2 pl-1">
-                             <input type="checkbox" checked={smsActiveInput} onChange={(e) => setSmsActiveInput(e.target.checked)} className="w-3.5 h-3.5 sm:w-4 sm:h-4 rounded text-cyan-500" />
-                             <span className="text-xs sm:text-sm font-bold text-gray-200">Enable Live SMS Verification</span>
+                           <label className="flex items-center gap-2.5 cursor-pointer mt-2 pl-1">
+                             <input type="checkbox" checked={smsActiveInput} onChange={(e) => setSmsActiveInput(e.target.checked)} className="w-4 h-4 rounded text-brand-primary" />
+                             <span className="text-sm font-medium text-slate-200">Enable Live SMS Verification</span>
                            </label>
                         </div>
 
-                        <div className="space-y-3 sm:space-y-4 pt-4 sm:pt-5 border-t border-white/5">
-                           <h3 className="text-[10px] sm:text-xs font-bold text-gray-400 uppercase tracking-wider">Promotions</h3>
-                           <div className="grid grid-cols-2 gap-3 sm:gap-4">
+                        <div className="space-y-4 pt-6 border-t border-brand-border">
+                           <h3 className="text-xs font-medium text-slate-400 uppercase tracking-wider">Promotions</h3>
+                           <div className="grid grid-cols-2 gap-4">
                              <div>
-                               <label className="block text-[10px] sm:text-xs font-bold text-gray-300 mb-1 sm:mb-1.5">Code</label>
+                               <label className="block text-xs font-medium text-slate-300 mb-2">Code</label>
                                <input type="text" value={promoInput} onChange={(e) => setPromoInput(e.target.value)} placeholder="DISCOUNT20" className={uiInput + " uppercase"} />
                              </div>
                              <div>
-                               <label className="block text-[10px] sm:text-xs font-bold text-gray-300 mb-1 sm:mb-1.5">Discount (%)</label>
+                               <label className="block text-xs font-medium text-slate-300 mb-2">Discount (%)</label>
                                <input type="number" min="0" max="100" value={discountInput} onChange={(e) => setDiscountInput(e.target.value)} className={uiInput} />
                              </div>
                            </div>
-                           <label className="flex items-center gap-2 cursor-pointer mt-1.5 sm:mt-2 pl-1">
-                             <input type="checkbox" checked={promoActive} onChange={(e) => setPromoActive(e.target.checked)} className="w-3.5 h-3.5 sm:w-4 sm:h-4 rounded text-cyan-500" />
-                             <span className="text-xs sm:text-sm font-bold text-gray-200">Enable Promo globally</span>
+                           <label className="flex items-center gap-2.5 cursor-pointer mt-2 pl-1">
+                             <input type="checkbox" checked={promoActive} onChange={(e) => setPromoActive(e.target.checked)} className="w-4 h-4 rounded text-brand-primary" />
+                             <span className="text-sm font-medium text-slate-200">Enable Promo globally</span>
                            </label>
                         </div>
 
-                        <div className="space-y-3 sm:space-y-4 pt-4 sm:pt-5 border-t border-white/5">
-                           <h3 className="text-[10px] sm:text-xs font-bold text-gray-400 uppercase tracking-wider">Announcement</h3>
+                        <div className="space-y-4 pt-6 border-t border-brand-border">
+                           <h3 className="text-xs font-medium text-slate-400 uppercase tracking-wider">Announcement</h3>
                            <div>
-                             <label className="block text-[10px] sm:text-xs font-bold text-gray-300 mb-1 sm:mb-1.5">Marquee Bar Text</label>
+                             <label className="block text-xs font-medium text-slate-300 mb-2">Marquee Bar Text</label>
                              <input type="text" value={noticeInput} onChange={(e) => setNoticeInput(e.target.value)} placeholder="Store wide announcement..." className={uiInput} />
                            </div>
                         </div>
 
-                        <div className="space-y-3 sm:space-y-4 pt-4 sm:pt-5 border-t border-white/5">
-                           <h3 className="text-[10px] sm:text-xs font-bold text-gray-400 uppercase tracking-wider">Bank Transfer (Naira)</h3>
+                        <div className="space-y-4 pt-6 border-t border-brand-border">
+                           <h3 className="text-xs font-medium text-slate-400 uppercase tracking-wider">Bank Transfer (Naira)</h3>
                            <div>
-                             <label className="block text-[10px] sm:text-xs font-bold text-gray-300 mb-1 sm:mb-1.5">Naira Exchange Rate (1 USD = ? NGN)</label>
+                             <label className="block text-xs font-medium text-slate-300 mb-2">Naira Exchange Rate (1 USD = ? NGN)</label>
                              <input type="number" value={nairaRateInput} onChange={(e) => setNairaRateInput(e.target.value)} placeholder="1500" className={uiInput} />
                            </div>
                         </div>
 
-                        <div className="space-y-3 sm:space-y-4 pt-4 sm:pt-5 border-t border-white/5">
-                           <h3 className="text-[10px] sm:text-xs font-bold text-gray-400 uppercase tracking-wider">Flutterwave API (Automated)</h3>
+                        <div className="space-y-4 pt-6 border-t border-brand-border">
+                           <h3 className="text-xs font-medium text-slate-400 uppercase tracking-wider">Flutterwave API (Automated)</h3>
                            <div>
-                             <label className="block text-[10px] sm:text-xs font-bold text-gray-300 mb-1 sm:mb-1.5">Flutterwave Public Key</label>
+                             <label className="block text-xs font-medium text-slate-300 mb-2">Flutterwave Public Key</label>
                              <input type="text" value={flutterwaveKeyInput} onChange={(e) => setFlutterwaveKeyInput(e.target.value)} placeholder="FLWPUBK_TEST-xxxxxxxxx" className={uiInput} />
                            </div>
-                           <label className="flex items-center gap-2 cursor-pointer mt-1.5 sm:mt-2 pl-1">
-                             <input type="checkbox" checked={flutterwaveActiveInput} onChange={(e) => setFlutterwaveActiveInput(e.target.checked)} className="w-3.5 h-3.5 sm:w-4 sm:h-4 rounded text-cyan-500" />
-                             <span className="text-xs sm:text-sm font-bold text-gray-200">Enable Flutterwave Deposit for Users</span>
+                           <label className="flex items-center gap-2.5 cursor-pointer mt-2 pl-1">
+                             <input type="checkbox" checked={flutterwaveActiveInput} onChange={(e) => setFlutterwaveActiveInput(e.target.checked)} className="w-4 h-4 rounded text-brand-primary" />
+                             <span className="text-sm font-medium text-slate-200">Enable Flutterwave Deposit for Users</span>
                            </label>
                         </div>
 
-                        <div className="pt-2"><button type="submit" className={uiBtnPrimary}>Save Changes</button></div>
+                        <div className="pt-4"><button type="submit" className={uiBtnPrimary}>Save Changes</button></div>
                       </form>
                     </div>
 
-                    <div className={uiCard + " p-5 sm:p-6 h-fit w-full"}>
-                      <h2 className="text-base font-bold text-white mb-2 border-b border-white/5 pb-3">Admin Credentials</h2>
-                      <p className="text-[10px] sm:text-xs text-gray-400 font-medium mb-5 sm:mb-6 mt-3 sm:mt-4">Change the master email and password for this panel.</p>
+                    <div className={uiCard + " p-6 sm:p-8 h-fit w-full"}>
+                      <h2 className="text-lg font-semibold text-white mb-2 border-b border-brand-border pb-4">Admin Credentials</h2>
+                      <p className="text-sm text-slate-400 font-medium mb-6 mt-4">Change the master email and password for this panel.</p>
                       
-                      <form onSubmit={handleUpdateAdminCredentials} className="space-y-4">
+                      <form onSubmit={handleUpdateAdminCredentials} className="space-y-5">
                         <div>
-                          <label className="block text-[10px] sm:text-xs font-bold text-gray-300 mb-1 sm:mb-1.5 uppercase tracking-wider">New Email</label>
+                          <label className="block text-xs font-medium text-slate-400 mb-2 uppercase tracking-wider">New Email</label>
                           <input type="email" value={newAdminEmail} onChange={(e) => setNewAdminEmail(e.target.value)} placeholder="admin@domain.com" className={uiInput} />
                         </div>
                         <div>
-                          <label className="block text-[10px] sm:text-xs font-bold text-gray-300 mb-1 sm:mb-1.5 uppercase tracking-wider">New Password</label>
+                          <label className="block text-xs font-medium text-slate-400 mb-2 uppercase tracking-wider">New Password</label>
                           <input type="password" value={newAdminPassword} onChange={(e) => setNewAdminPassword(e.target.value)} placeholder="••••••••" minLength="6" className={uiInput} />
                         </div>
                         <div className="pt-2">
