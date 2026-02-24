@@ -984,6 +984,10 @@
           const [showServiceDropdown, setShowServiceDropdown] = useState(false);
           const [smsTimeLeft, setSmsTimeLeft] = useState(0);
           
+          // 🌟 NEW: Loading & Error States for Service Fetching 🌟
+          const [isFetchingServices, setIsFetchingServices] = useState(false);
+          const [serviceFetchError, setServiceFetchError] = useState('');
+          
           // 🌟 NEW: Single Country State (12 = USA, 16 = UK) 🌟
           const [smsCountry, setSmsCountry] = useState('12'); 
           const [cryptoMethod, setCryptoMethod] = useState('USDT TRC20');
@@ -1017,8 +1021,12 @@
           useEffect(() => {
               if (smsSettings?.active) {
                   const fetchPrices = async () => {
+                      setIsFetchingServices(true);
+                      setServiceFetchError('');
                       try {
                           const res = await fetch(`https://voicestore-backend.onrender.com/api/grizzly/getPrices?country=${smsCountry}`);
+                          if (!res.ok) throw new Error("Backend not responding. Did you update Render?");
+                          
                           const json = await res.json();
                           if (json.success && json.data) {
                               let newPrices = {};
@@ -1056,9 +1064,18 @@
                                   if (servicesList.length > 0 && !servicesList.find(s => s.code === selectedSmsService)) {
                                       setSelectedSmsService(servicesList[0].code);
                                   }
+                                  
+                                  if (servicesList.length === 0) setServiceFetchError("No apps available right now.");
                               }
+                          } else {
+                              setServiceFetchError("Backend failed to fetch Grizzly data.");
                           }
-                      } catch (e) { console.error("Error fetching Grizzly products:", e); }
+                      } catch (e) { 
+                          console.error("Error fetching Grizzly products:", e); 
+                          setServiceFetchError("Server error. Please update your Render backend!");
+                      } finally {
+                          setIsFetchingServices(false);
+                      }
                   };
                   fetchPrices();
               }
@@ -1515,14 +1532,16 @@
                                     
                                     <div className="relative">
                                         <div 
-                                            onClick={() => !isSmsLoading && !liveSmsOrder && setShowServiceDropdown(!showServiceDropdown)}
-                                            className={uiInput + ` flex justify-between items-center ${isSmsLoading || liveSmsOrder ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer hover:border-amber-500/50'}`}
+                                            onClick={() => !isSmsLoading && !liveSmsOrder && !isFetchingServices && setShowServiceDropdown(!showServiceDropdown)}
+                                            className={uiInput + ` flex justify-between items-center ${isSmsLoading || liveSmsOrder || isFetchingServices ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer hover:border-amber-500/50'}`}
                                         >
-                                            <span className="font-bold truncate text-slate-800 dark:text-white">{availableServices.find(s=>s.code===selectedSmsService)?.name || 'Loading Services...'}</span>
-                                            <ChevronDown className="w-4 h-4 text-slate-500 dark:text-slate-400"/>
+                                            <span className={`font-bold truncate ${serviceFetchError ? 'text-rose-500 dark:text-rose-400 text-xs' : 'text-slate-800 dark:text-white'}`}>
+                                                {isFetchingServices ? 'Waking up server... (Wait 30s)' : (serviceFetchError ? serviceFetchError : (availableServices.find(s=>s.code===selectedSmsService)?.name || 'Loading Services...'))}
+                                            </span>
+                                            {isFetchingServices ? <RefreshCw className="w-4 h-4 text-amber-500 animate-spin"/> : <ChevronDown className="w-4 h-4 text-slate-500 dark:text-slate-400"/>}
                                         </div>
 
-                                        {showServiceDropdown && !isSmsLoading && !liveSmsOrder && (
+                                        {showServiceDropdown && !isSmsLoading && !liveSmsOrder && !isFetchingServices && (
                                             <>
                                                 <div className="fixed inset-0 z-40 cursor-default" onClick={(e) => { e.stopPropagation(); setShowServiceDropdown(false); }}></div>
                                                 <div className="absolute z-50 w-full mt-2 bg-white dark:bg-brand-darkCard/95 backdrop-blur-xl border border-slate-200 dark:border-white/10 rounded-xl shadow-2xl dark:shadow-[0_10px_40px_rgba(0,0,0,0.5)] max-h-64 overflow-y-auto scrollbar-hide">
@@ -1563,8 +1582,8 @@
                                     </div>
                                     
                                 </div>
-                                <div className="bg-slate-100 dark:bg-white/5 border border-slate-200 dark:border-white/10 px-6 py-4 rounded-2xl text-slate-800 dark:text-white font-black text-2xl whitespace-nowrap w-full md:w-auto text-center shadow-inner">
-                                    {currentSmsPrice ? `$${currentSmsPrice.toFixed(2)}` : 'Loading...'}
+                                <div className="bg-slate-100 dark:bg-white/5 border border-slate-200 dark:border-white/10 px-6 py-4 rounded-2xl text-slate-800 dark:text-white font-black text-2xl whitespace-nowrap w-full md:w-auto text-center shadow-inner flex items-center justify-center">
+                                    {isFetchingServices ? <span className="text-sm text-amber-500 flex items-center gap-2"><RefreshCw className="w-4 h-4 animate-spin"/> Fetching</span> : (currentSmsPrice ? `$${currentSmsPrice.toFixed(2)}` : '$0.00')}
                                 </div>
                             </div>
                             
@@ -1572,7 +1591,7 @@
                                 <div className="flex flex-col mt-6 pt-6 border-t border-slate-200 dark:border-white/5">
                                     <button 
                                         onClick={buySmsNumber} 
-                                        disabled={isSmsLoading || !dynamicPrices[selectedSmsService]} 
+                                        disabled={isSmsLoading || isFetchingServices || !dynamicPrices[selectedSmsService] || !!serviceFetchError} 
                                         className={uiBtnPrimary + " !w-full sm:!w-auto md:max-w-xs !mx-auto md:!mx-0"}
                                     >
                                         {isSmsLoading ? <RefreshCw className="w-5 h-5 animate-spin"/> : <Zap className="w-5 h-5"/>}
