@@ -476,7 +476,6 @@
             );
         }
 
-        // Clean static premium background
         const PremiumBackground = () => (
           <div className="fixed inset-0 z-[-1] overflow-hidden pointer-events-none transition-colors duration-500">
              <div className="absolute inset-0 bg-grid-pattern opacity-[0.05] dark:opacity-[0.02]"></div>
@@ -516,7 +515,9 @@
           const [globalNotice, setGlobalNotice] = useState('');
           const [featureSettings, setFeatureSettings] = useState({ dailyReward: false, referral: false });
           const [bankSettings, setBankSettings] = useState({ nairaRate: 1500, flutterwaveKey: '', flutterwaveActive: false });
-          const [smsSettings, setSmsSettings] = useState({ active: true, markup: 1.00 });
+          
+          // 🌟 Added targetPrices default value
+          const [smsSettings, setSmsSettings] = useState({ active: true, markup: 1.00, targetPrices: "wa=2.50, tg=1.20" });
           const [categories, setCategories] = useState(PRODUCT_CATEGORIES);
           
           const [cart, setCart] = useState([]);
@@ -984,9 +985,6 @@
           const [showServiceDropdown, setShowServiceDropdown] = useState(false);
           const [smsTimeLeft, setSmsTimeLeft] = useState(0);
           
-          // 🌟 NEW: Quality / Operator Selection 🌟
-          const [selectedQualityIndex, setSelectedQualityIndex] = useState(0);
-          
           // 🌟 NEW: Loading & Error States for Service Fetching 🌟
           const [isFetchingServices, setIsFetchingServices] = useState(false);
           const [serviceFetchError, setServiceFetchError] = useState('');
@@ -1032,61 +1030,12 @@
                           
                           const json = await res.json();
                           if (json.success && json.data) {
-                              let servicesList = [];
-                              const markup = Number(smsSettings?.markup ?? 1.00); 
-                              
-                              const countryKey = Object.keys(json.data)[0];
-                              if (countryKey && json.data[countryKey]) {
-                                  const services = json.data[countryKey];
-                                  for (let code in services) {
-                                      const serviceData = services[code];
-                                      let options = [];
-
-                                      // 🌟 Smart Parser: Handling both single price and nested operator formats
-                                      if (serviceData.cost !== undefined && serviceData.count !== undefined) {
-                                          options.push({ operator: 'any', cost: parseFloat(serviceData.cost), count: parseInt(serviceData.count) });
-                                      } else {
-                                          for (let key in serviceData) {
-                                              if (typeof serviceData[key] === 'object' && serviceData[key].cost !== undefined) {
-                                                  options.push({ operator: key, cost: parseFloat(serviceData[key].cost), count: parseInt(serviceData[key].count) });
-                                              }
-                                          }
-                                      }
-
-                                      if (options.length > 0) {
-                                          options = options.map(opt => ({
-                                              ...opt,
-                                              finalPrice: opt.cost + markup
-                                          })).sort((a,b) => a.cost - b.cost);
-
-                                          const sName = KNOWN_SERVICES[code] || String(code).toUpperCase() + " Service";
-                                          
-                                          servicesList.push({
-                                              code: code,
-                                              name: sName,
-                                              options: options,
-                                              count: options.reduce((sum, opt) => sum + opt.count, 0),
-                                              finalPrice: options[0].finalPrice
-                                          });
-                                      }
-                                  }
-                                  
-                                  servicesList.sort((a, b) => {
-                                      const aKnown = KNOWN_SERVICES[a.code] ? 1 : 0;
-                                      const bKnown = KNOWN_SERVICES[b.code] ? 1 : 0;
-                                      if (aKnown !== bKnown) return bKnown - aKnown;
-                                      return a.name.localeCompare(b.name);
-                                  });
-                                  
-                                  setAvailableServices(servicesList);
-                                  
-                                  if (servicesList.length > 0 && !servicesList.find(s => s.code === selectedSmsService)) {
-                                      setSelectedSmsService(servicesList[0].code);
-                                      setSelectedQualityIndex(0);
-                                  }
-                                  
-                                  if (servicesList.length === 0) setServiceFetchError("No apps available right now.");
+                              setAvailableServices(json.data); // Server Version 7.0 sends the clean filtered array!
+                              if (json.data.length > 0 && !json.data.find(s => s.code === selectedSmsService)) {
+                                  setSelectedSmsService(json.data[0].code);
                               }
+                              
+                              if (json.data.length === 0) setServiceFetchError("No apps available right now.");
                           } else {
                               setServiceFetchError("Backend failed to fetch Grizzly data.");
                           }
@@ -1138,14 +1087,12 @@
             });
           };
 
-          // 🌟 Dynamic Quality Extraction 🌟
-          const selectedServiceData = availableServices.find(s => s.code === selectedSmsService);
-          const currentOptions = selectedServiceData ? selectedServiceData.options : [];
-          const validQualityIndex = currentOptions[selectedQualityIndex] ? selectedQualityIndex : 0;
-          const currentSmsPrice = currentOptions.length > 0 ? parseFloat(currentOptions[validQualityIndex].finalPrice.toFixed(2)) : 0;
-          const currentOperator = currentOptions.length > 0 ? currentOptions[validQualityIndex].operator : 'any';
+          // 🌟 Clean UI Values 🌟
+          const currentService = availableServices.find(s => s.code === selectedSmsService);
+          const currentSmsPrice = currentService ? parseFloat(currentService.finalPrice.toFixed(2)) : 0;
 
           const buySmsNumber = async () => {
+              if (!currentService) return;
               if (balance < currentSmsPrice) {
                   triggerToast(`Insufficient balance. Minimum $${currentSmsPrice.toFixed(2)} required.`);
                   return;
@@ -1166,24 +1113,24 @@
                       return;
                   }
 
-                  // 🌟 Unified secure request to our backend which handles Grizzly and Quality Operator 🌟
+                  // 🌟 Unified secure request to our backend which handles Grizzly internally based on Smart Rules 🌟
                   const res = await fetch('https://voicestore-backend.onrender.com/api/juicy/getNumber', {
                       method: 'POST',
                       headers: { 'Content-Type': 'application/json' },
                       body: JSON.stringify({ 
                           serviceId: selectedSmsService, 
-                          countryId: smsCountry,
-                          operator: currentOperator
+                          countryId: smsCountry
+                          // Server automatically decides the operator now based on your settings!
                       })
                   });
                   const data = await res.json();
                   
                   if (data.success && data.phone) {
-                      const serviceName = availableServices.find(s => s.code === selectedSmsService)?.name || selectedSmsService.toUpperCase();
+                      const serviceName = currentService?.name || selectedSmsService.toUpperCase();
                       setLiveSmsOrder({ 
                           id: data.orderId, 
                           phone: data.phone, 
-                          service: `${serviceName} (${currentOperator.toUpperCase()})`, 
+                          service: serviceName, 
                           price: currentSmsPrice, 
                           status: 'ACTIVE', 
                           codes: [], 
@@ -1565,7 +1512,7 @@
                                             className={uiInput + ` flex justify-between items-center ${isSmsLoading || liveSmsOrder || isFetchingServices ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer hover:border-amber-500/50'}`}
                                         >
                                             <span className={`font-bold truncate ${serviceFetchError ? 'text-rose-500 dark:text-rose-400 text-xs' : 'text-slate-800 dark:text-white'}`}>
-                                                {isFetchingServices ? 'Waking up server... (Wait 30s)' : (serviceFetchError ? serviceFetchError : (availableServices.find(s=>s.code===selectedSmsService)?.name || 'Loading Services...'))}
+                                                {isFetchingServices ? 'Waking up server... (Wait 30s)' : (serviceFetchError ? serviceFetchError : (currentService?.name || 'Loading Services...'))}
                                             </span>
                                             {isFetchingServices ? <RefreshCw className="w-4 h-4 text-amber-500 animate-spin"/> : <ChevronDown className="w-4 h-4 text-slate-500 dark:text-slate-400"/>}
                                         </div>
@@ -1591,7 +1538,7 @@
                                                         {availableServices.filter(s => s.name.toLowerCase().includes(serviceSearch.toLowerCase())).map(s => (
                                                             <div 
                                                                 key={s.code} 
-                                                                onClick={() => { setSelectedSmsService(s.code); setSelectedQualityIndex(0); setShowServiceDropdown(false); setServiceSearch(''); }}
+                                                                onClick={() => { setSelectedSmsService(s.code); setShowServiceDropdown(false); setServiceSearch(''); }}
                                                                 className={`px-3 py-2.5 rounded-lg cursor-pointer flex justify-between items-center transition-colors ${selectedSmsService === s.code ? 'bg-amber-50 dark:bg-amber-500/20 border border-amber-200 dark:border-amber-500/30' : 'hover:bg-slate-50 dark:hover:bg-white/5 border border-transparent'}`}
                                                             >
                                                                 <div className="flex flex-col">
@@ -1610,29 +1557,7 @@
                                         )}
                                     </div>
                                     
-                                    {/* 🌟 NEW: Quality Dropdown 🌟 */}
-                                    {currentOptions.length > 1 && !liveSmsOrder && !isFetchingServices && (
-                                        <div className="mt-4 animate-fade-in-up">
-                                            <label className="block text-[10px] font-bold text-slate-500 dark:text-slate-400 mb-1.5 uppercase tracking-wider">Select Quality / Operator</label>
-                                            <select 
-                                                value={validQualityIndex}
-                                                onChange={(e) => setSelectedQualityIndex(Number(e.target.value))}
-                                                className={uiInput + " !py-2.5 cursor-pointer font-bold text-amber-700 dark:text-amber-400 border-amber-200 dark:border-amber-500/30"}
-                                            >
-                                                {currentOptions.map((opt, idx) => {
-                                                    let rank = idx === 0 ? '🥉 Standard' : idx === currentOptions.length - 1 ? '🥇 Premium' : '🥈 Medium';
-                                                    let opName = opt.operator.toUpperCase();
-                                                    return (
-                                                        <option key={idx} value={idx} className="bg-white dark:bg-slate-800 text-slate-800 dark:text-white">
-                                                            {rank} ({opName}) - ${opt.finalPrice.toFixed(2)} ({opt.count} pcs)
-                                                        </option>
-                                                    );
-                                                })}
-                                            </select>
-                                            <p className="text-[9px] text-slate-400 mt-1.5 font-medium leading-tight">Higher priced numbers usually have real physical SIMs and receive OTPs faster.</p>
-                                        </div>
-                                    )}
-
+                                    {/* Removed Quality Dropdown completely as requested */}
                                 </div>
                                 <div className="bg-slate-100 dark:bg-white/5 border border-slate-200 dark:border-white/10 px-6 py-4 rounded-2xl text-slate-800 dark:text-white font-black text-2xl whitespace-nowrap w-full md:w-auto text-center shadow-inner flex items-center justify-center">
                                     {isFetchingServices ? <span className="text-sm text-amber-500 flex items-center gap-2"><RefreshCw className="w-4 h-4 animate-spin"/> Fetching</span> : (currentSmsPrice ? `$${currentSmsPrice.toFixed(2)}` : '$0.00')}
@@ -1643,11 +1568,11 @@
                                 <div className="flex flex-col mt-6 pt-6 border-t border-slate-200 dark:border-white/5">
                                     <button 
                                         onClick={buySmsNumber} 
-                                        disabled={isSmsLoading || isFetchingServices || !currentOptions.length || !!serviceFetchError} 
+                                        disabled={isSmsLoading || isFetchingServices || !currentService || !!serviceFetchError} 
                                         className={uiBtnPrimary + " !w-full sm:!w-auto md:max-w-xs !mx-auto md:!mx-0"}
                                     >
                                         {isSmsLoading ? <RefreshCw className="w-5 h-5 animate-spin"/> : <Zap className="w-5 h-5"/>}
-                                        {isSmsLoading ? 'Number is on the way...' : `Buy ${availableServices.find(s=>s.code===selectedSmsService)?.name || 'Number'}`}
+                                        {isSmsLoading ? 'Number is on the way...' : `Buy ${currentService?.name || 'Number'}`}
                                     </button>
                                 </div>
                             ) : (
@@ -2137,9 +2062,10 @@
           const [dailyRewardActive, setDailyRewardActive] = useState(false);
           const [referralActive, setReferralActive] = useState(false);
 
-          // SMS API Settings
+          // SMS API Settings (Smart Logic)
           const [smsMarkupInput, setSmsMarkupInput] = useState(1.00);
           const [smsActiveInput, setSmsActiveInput] = useState(true);
+          const [targetPricesInput, setTargetPricesInput] = useState("");
 
           const [editUserModal, setEditUserModal] = useState({ show: false, email: '', password: '', balance: 0, totalSpent: 0 });
           
@@ -2183,6 +2109,7 @@
             if (smsSettings) {
                 setSmsMarkupInput(smsSettings.markup !== undefined ? smsSettings.markup : 1.00);
                 setSmsActiveInput(smsSettings.active ?? true);
+                setTargetPricesInput(smsSettings.targetPrices || "wa=2.50, tg=1.20");
             }
           }, [promoSettings, globalNotice, featureSettings, bankSettings, smsSettings]);
 
@@ -2269,7 +2196,7 @@
               await setDoc(doc(db, 'artifacts', appId, 'public', 'data', 'Store_Settings', 'PromoCode'), { code: String(promoInput).toUpperCase(), discount: parseFloat(discountInput), isActive: promoActive });
               await setDoc(doc(db, 'artifacts', appId, 'public', 'data', 'Store_Settings', 'Notice'), { text: noticeInput });
               await setDoc(doc(db, 'artifacts', appId, 'public', 'data', 'Store_Settings', 'Features'), { dailyReward: dailyRewardActive, referral: referralActive });
-              await setDoc(doc(db, 'artifacts', appId, 'public', 'data', 'Store_Settings', 'SMS'), { markup: parseFloat(smsMarkupInput), active: smsActiveInput });
+              await setDoc(doc(db, 'artifacts', appId, 'public', 'data', 'Store_Settings', 'SMS'), { markup: parseFloat(smsMarkupInput), active: smsActiveInput, targetPrices: targetPricesInput });
               await setDoc(doc(db, 'artifacts', appId, 'public', 'data', 'Store_Settings', 'Bank'), { 
                   nairaRate: parseFloat(nairaRateInput) || 1500,
                   flutterwaveKey: flutterwaveKeyInput,
@@ -2597,11 +2524,16 @@
                         </div>
 
                         <div className="space-y-4 pt-6 border-t border-slate-200 dark:border-white/5">
-                           <h3 className="text-[10px] font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">API Settings (Grizzly SMS)</h3>
+                           <h3 className="text-[10px] font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">Smart Target API Rules (Grizzly)</h3>
                            <div className="grid grid-cols-1 gap-4">
                              <div>
                                <label className="block text-[10px] font-bold text-slate-700 dark:text-slate-300 mb-2">Markup per SMS ($) <span className="text-[8px] text-slate-500 ml-1">Profit added to original price</span></label>
                                <input type="number" step="0.01" value={smsMarkupInput} onChange={(e) => setSmsMarkupInput(e.target.value)} placeholder="1.00" className={uiInput} />
+                             </div>
+                             <div>
+                               <label className="block text-[10px] font-bold text-slate-700 dark:text-slate-300 mb-2">Target Price Overrides (The Magic Rule)</label>
+                               <textarea rows="3" value={targetPricesInput} onChange={(e) => setTargetPricesInput(e.target.value)} className={uiInput + " font-mono text-sm"} placeholder="wa=2.50, tg=1.20"></textarea>
+                               <p className="text-[9px] text-amber-600 dark:text-amber-400/80 font-bold mt-1.5 leading-relaxed">Format: AppCode=MinimumPrice. Example: <code className="bg-slate-200 dark:bg-black/50 px-1 rounded">wa=2.50, tg=1.20</code>. Forces the backend to ignore cheap/bad numbers and buy high-quality physical numbers automatically.</p>
                              </div>
                            </div>
                            <label className="flex items-center gap-2.5 cursor-pointer mt-2 pl-1">
