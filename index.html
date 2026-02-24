@@ -978,11 +978,14 @@
           
           const [isSmsLoading, setIsSmsLoading] = useState(false);
           const [selectedSmsService, setSelectedSmsService] = useState('go');
-          const [dynamicPrices, setDynamicPrices] = useState({});
+          
           const [availableServices, setAvailableServices] = useState([]);
           const [serviceSearch, setServiceSearch] = useState('');
           const [showServiceDropdown, setShowServiceDropdown] = useState(false);
           const [smsTimeLeft, setSmsTimeLeft] = useState(0);
+          
+          // 🌟 NEW: Quality / Operator Selection 🌟
+          const [selectedQualityIndex, setSelectedQualityIndex] = useState(0);
           
           // 🌟 NEW: Loading & Error States for Service Fetching 🌟
           const [isFetchingServices, setIsFetchingServices] = useState(false);
@@ -1029,7 +1032,6 @@
                           
                           const json = await res.json();
                           if (json.success && json.data) {
-                              let newPrices = {};
                               let servicesList = [];
                               const markup = Number(smsSettings?.markup ?? 1.00); 
                               
@@ -1037,18 +1039,36 @@
                               if (countryKey && json.data[countryKey]) {
                                   const services = json.data[countryKey];
                                   for (let code in services) {
-                                      const basePrice = parseFloat(services[code].cost);
-                                      const finalPrice = basePrice + markup;
-                                      newPrices[code] = finalPrice;
-                                      
-                                      const sName = KNOWN_SERVICES[code] || String(code).toUpperCase() + " Service";
-                                      
-                                      servicesList.push({
-                                          code: code,
-                                          name: sName,
-                                          count: parseInt(services[code].count || 0),
-                                          finalPrice: finalPrice
-                                      });
+                                      const serviceData = services[code];
+                                      let options = [];
+
+                                      // 🌟 Smart Parser: Handling both single price and nested operator formats
+                                      if (serviceData.cost !== undefined && serviceData.count !== undefined) {
+                                          options.push({ operator: 'any', cost: parseFloat(serviceData.cost), count: parseInt(serviceData.count) });
+                                      } else {
+                                          for (let key in serviceData) {
+                                              if (typeof serviceData[key] === 'object' && serviceData[key].cost !== undefined) {
+                                                  options.push({ operator: key, cost: parseFloat(serviceData[key].cost), count: parseInt(serviceData[key].count) });
+                                              }
+                                          }
+                                      }
+
+                                      if (options.length > 0) {
+                                          options = options.map(opt => ({
+                                              ...opt,
+                                              finalPrice: opt.cost + markup
+                                          })).sort((a,b) => a.cost - b.cost);
+
+                                          const sName = KNOWN_SERVICES[code] || String(code).toUpperCase() + " Service";
+                                          
+                                          servicesList.push({
+                                              code: code,
+                                              name: sName,
+                                              options: options,
+                                              count: options.reduce((sum, opt) => sum + opt.count, 0),
+                                              finalPrice: options[0].finalPrice
+                                          });
+                                      }
                                   }
                                   
                                   servicesList.sort((a, b) => {
@@ -1059,10 +1079,10 @@
                                   });
                                   
                                   setAvailableServices(servicesList);
-                                  setDynamicPrices(newPrices);
                                   
                                   if (servicesList.length > 0 && !servicesList.find(s => s.code === selectedSmsService)) {
                                       setSelectedSmsService(servicesList[0].code);
+                                      setSelectedQualityIndex(0);
                                   }
                                   
                                   if (servicesList.length === 0) setServiceFetchError("No apps available right now.");
@@ -1118,7 +1138,12 @@
             });
           };
 
-          const currentSmsPrice = dynamicPrices[selectedSmsService] ? parseFloat(dynamicPrices[selectedSmsService].toFixed(2)) : 0;
+          // 🌟 Dynamic Quality Extraction 🌟
+          const selectedServiceData = availableServices.find(s => s.code === selectedSmsService);
+          const currentOptions = selectedServiceData ? selectedServiceData.options : [];
+          const validQualityIndex = currentOptions[selectedQualityIndex] ? selectedQualityIndex : 0;
+          const currentSmsPrice = currentOptions.length > 0 ? parseFloat(currentOptions[validQualityIndex].finalPrice.toFixed(2)) : 0;
+          const currentOperator = currentOptions.length > 0 ? currentOptions[validQualityIndex].operator : 'any';
 
           const buySmsNumber = async () => {
               if (balance < currentSmsPrice) {
@@ -1141,11 +1166,15 @@
                       return;
                   }
 
-                  // 🌟 Unified secure request to our backend which handles Grizzly 🌟
+                  // 🌟 Unified secure request to our backend which handles Grizzly and Quality Operator 🌟
                   const res = await fetch('https://voicestore-backend.onrender.com/api/juicy/getNumber', {
                       method: 'POST',
                       headers: { 'Content-Type': 'application/json' },
-                      body: JSON.stringify({ serviceId: selectedSmsService, countryId: smsCountry })
+                      body: JSON.stringify({ 
+                          serviceId: selectedSmsService, 
+                          countryId: smsCountry,
+                          operator: currentOperator
+                      })
                   });
                   const data = await res.json();
                   
@@ -1154,7 +1183,7 @@
                       setLiveSmsOrder({ 
                           id: data.orderId, 
                           phone: data.phone, 
-                          service: serviceName, 
+                          service: `${serviceName} (${currentOperator.toUpperCase()})`, 
                           price: currentSmsPrice, 
                           status: 'ACTIVE', 
                           codes: [], 
@@ -1562,7 +1591,7 @@
                                                         {availableServices.filter(s => s.name.toLowerCase().includes(serviceSearch.toLowerCase())).map(s => (
                                                             <div 
                                                                 key={s.code} 
-                                                                onClick={() => { setSelectedSmsService(s.code); setShowServiceDropdown(false); setServiceSearch(''); }}
+                                                                onClick={() => { setSelectedSmsService(s.code); setSelectedQualityIndex(0); setShowServiceDropdown(false); setServiceSearch(''); }}
                                                                 className={`px-3 py-2.5 rounded-lg cursor-pointer flex justify-between items-center transition-colors ${selectedSmsService === s.code ? 'bg-amber-50 dark:bg-amber-500/20 border border-amber-200 dark:border-amber-500/30' : 'hover:bg-slate-50 dark:hover:bg-white/5 border border-transparent'}`}
                                                             >
                                                                 <div className="flex flex-col">
@@ -1581,6 +1610,29 @@
                                         )}
                                     </div>
                                     
+                                    {/* 🌟 NEW: Quality Dropdown 🌟 */}
+                                    {currentOptions.length > 1 && !liveSmsOrder && !isFetchingServices && (
+                                        <div className="mt-4 animate-fade-in-up">
+                                            <label className="block text-[10px] font-bold text-slate-500 dark:text-slate-400 mb-1.5 uppercase tracking-wider">Select Quality / Operator</label>
+                                            <select 
+                                                value={validQualityIndex}
+                                                onChange={(e) => setSelectedQualityIndex(Number(e.target.value))}
+                                                className={uiInput + " !py-2.5 cursor-pointer font-bold text-amber-700 dark:text-amber-400 border-amber-200 dark:border-amber-500/30"}
+                                            >
+                                                {currentOptions.map((opt, idx) => {
+                                                    let rank = idx === 0 ? '🥉 Standard' : idx === currentOptions.length - 1 ? '🥇 Premium' : '🥈 Medium';
+                                                    let opName = opt.operator.toUpperCase();
+                                                    return (
+                                                        <option key={idx} value={idx} className="bg-white dark:bg-slate-800 text-slate-800 dark:text-white">
+                                                            {rank} ({opName}) - ${opt.finalPrice.toFixed(2)} ({opt.count} pcs)
+                                                        </option>
+                                                    );
+                                                })}
+                                            </select>
+                                            <p className="text-[9px] text-slate-400 mt-1.5 font-medium leading-tight">Higher priced numbers usually have real physical SIMs and receive OTPs faster.</p>
+                                        </div>
+                                    )}
+
                                 </div>
                                 <div className="bg-slate-100 dark:bg-white/5 border border-slate-200 dark:border-white/10 px-6 py-4 rounded-2xl text-slate-800 dark:text-white font-black text-2xl whitespace-nowrap w-full md:w-auto text-center shadow-inner flex items-center justify-center">
                                     {isFetchingServices ? <span className="text-sm text-amber-500 flex items-center gap-2"><RefreshCw className="w-4 h-4 animate-spin"/> Fetching</span> : (currentSmsPrice ? `$${currentSmsPrice.toFixed(2)}` : '$0.00')}
@@ -1591,7 +1643,7 @@
                                 <div className="flex flex-col mt-6 pt-6 border-t border-slate-200 dark:border-white/5">
                                     <button 
                                         onClick={buySmsNumber} 
-                                        disabled={isSmsLoading || isFetchingServices || !dynamicPrices[selectedSmsService] || !!serviceFetchError} 
+                                        disabled={isSmsLoading || isFetchingServices || !currentOptions.length || !!serviceFetchError} 
                                         className={uiBtnPrimary + " !w-full sm:!w-auto md:max-w-xs !mx-auto md:!mx-0"}
                                     >
                                         {isSmsLoading ? <RefreshCw className="w-5 h-5 animate-spin"/> : <Zap className="w-5 h-5"/>}
