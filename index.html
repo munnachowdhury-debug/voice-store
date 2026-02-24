@@ -151,12 +151,12 @@
         ];
 
         const KNOWN_SERVICES = {
-            'go': 'Google Voice', 'wa': 'WhatsApp', 'tg': 'Telegram', 'ig': 'Instagram',
+            'go': 'Google Voice/Gmail', 'wa': 'WhatsApp', 'tg': 'Telegram', 'ig': 'Instagram',
             'fb': 'Facebook', 'tw': 'Twitter', 'vi': 'Viber', 'di': 'Discord',
             'tn': 'Tinder', 'lf': 'TikTok', 'am': 'Amazon', 'ts': 'PayPal',
             'ew': 'Zelle', 'ot': 'Other / Any Service', 'nv': 'Naver', 'sn': 'Snapchat',
             'ub': 'Uber', 'ly': 'Lyft', 'px': 'Paxful', 'mo': 'Bumble', 'rr': 'Deliveroo',
-            'vk': 'VKontakte', 'ya': 'Yandex', 'ma': 'Mail.ru', 'mm': 'Microsoft',
+            'vk': 'VKontakte', 'ya': 'Yandex', 'ma': 'Mail.ru', 'mm': 'Microsoft/Apple',
             'uk': 'Airbnb', 'ka': 'Shopee', 'rd': 'Yahoo', 'zz': 'Drom', 'hx': 'Badoo'
         };
 
@@ -942,7 +942,7 @@
                     promoSettings={promoSettings} allOrders={allOrders}
                     tickets={tickets.filter(t => t.email === user.email)}
                     featureSettings={featureSettings} bankSettings={bankSettings} smsSettings={smsSettings} uiCard={uiCard} uiInput={uiInput} uiBtnPrimary={uiBtnPrimary} uiBtnSecondary={uiBtnSecondary} uiBtnAction={uiBtnAction} uiInnerPanel={uiInnerPanel} TIERS={TIERS}
-                    activeTab={activeTab} 
+                    activeTab={activeTab}
                   />
                 )}
               </main>
@@ -1070,7 +1070,14 @@
                     { code: 'tg', name: 'Telegram', finalPrice: 2.50 },
                     { code: 'fb', name: 'Facebook', finalPrice: 2.50 },
                     { code: 'ig', name: 'Instagram', finalPrice: 2.50 },
-                    { code: 'tn', name: 'Tinder', finalPrice: 2.50 }
+                    { code: 'tn', name: 'Tinder', finalPrice: 2.50 },
+                    { code: 'lf', name: 'TikTok', finalPrice: 2.50 },
+                    { code: 'di', name: 'Discord', finalPrice: 2.50 },
+                    { code: 'tw', name: 'Twitter', finalPrice: 2.50 },
+                    { code: 'sn', name: 'Snapchat', finalPrice: 2.50 },
+                    { code: 'rd', name: 'Yahoo', finalPrice: 2.50 },
+                    { code: 'mm', name: 'Microsoft/Apple', finalPrice: 2.50 },
+                    { code: 'ub', name: 'Uber', finalPrice: 2.50 }
                   ];
                   setAvailableServices(juicyMappedServices);
                   const pMap = {};
@@ -1143,16 +1150,26 @@
                       return;
                   }
 
-                  let apiUrl = `https://voice-store-api.vercel.app/api/daisysms?action=getNumber&service=${selectedSmsService}`;
-                  if (areaCode && areaCode.length === 3) {
-                      apiUrl += `&areacode=${areaCode}`;
+                  let data = {};
+                  if (smsProvider === 'usa') {
+                      let apiUrl = `https://voice-store-api.vercel.app/api/daisysms?action=getNumber&service=${selectedSmsService}`;
+                      if (areaCode && areaCode.length === 3) {
+                          apiUrl += `&areacode=${areaCode}`;
+                      }
+                      const res = await fetch(apiUrl);
+                      data = await res.json();
+                  } else {
+                      // Call our custom Render backend API for JuicySMS
+                      const res = await fetch('https://voicestore-backend.onrender.com/api/juicy/getNumber', {
+                          method: 'POST',
+                          headers: { 'Content-Type': 'application/json' },
+                          body: JSON.stringify({ serviceId: selectedSmsService, countryId: juicyCountry })
+                      });
+                      data = await res.json();
                   }
-
-                  const res = await fetch(smsProvider === 'usa' ? apiUrl : 'https://voicestore-backend.onrender.com/api/juicy/getNumber', smsProvider === 'usa' ? undefined : { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ serviceId: selectedSmsService, countryId: juicyCountry }) });
-                  const data = await res.json();
                   
                   if (data.success && data.phone) {
-                      // Area Code Verification
+                      // Area Code Verification for USA
                       if (areaCode && areaCode.length === 3 && smsProvider === 'usa') {
                           let cleanPhone = String(data.phone).replace(/\D/g, '');
                           if(cleanPhone.length === 11 && cleanPhone.startsWith('1')) cleanPhone = cleanPhone.substring(1);
@@ -1185,7 +1202,7 @@
                           method: 'POST', headers: { 'Content-Type': 'application/json' },
                           body: JSON.stringify({ email: user.email, price: currentSmsPrice })
                       });
-                      triggerToast("Failed to get number. Balance refunded.");
+                      triggerToast("Failed to get number: " + (data.message || "Refunded."));
                   }
               } catch (e) {
                   triggerToast("API Connection Error");
@@ -1198,8 +1215,14 @@
               setIsSmsLoading(true);
               try {
                   // 1. Cancel race condition fix
-                  const checkRes = await fetch(provider === 'juicy' ? `https://voicestore-backend.onrender.com/api/juicy/getStatus?orderId=${orderId}` : `https://voice-store-api.vercel.app/api/daisysms?action=getStatus&id=${orderId}`);
-                  const checkData = await checkRes.json();
+                  let checkData = {};
+                  if (provider === 'juicy') {
+                      const checkRes = await fetch(`https://voicestore-backend.onrender.com/api/juicy/getStatus?orderId=${orderId}`);
+                      checkData = await checkRes.json();
+                  } else {
+                      const checkRes = await fetch(`https://voice-store-api.vercel.app/api/daisysms?action=getStatus&id=${orderId}`);
+                      checkData = await checkRes.json();
+                  }
 
                   if (checkData.success && checkData.status === 'OK' && checkData.code) {
                       setLiveSmsOrder(prev => {
@@ -1223,7 +1246,7 @@
 
                   // 2. Cancel
                   if(provider === 'juicy') { 
-                      await fetch('https://voicestore-backend.onrender.com/api/juicy/cancel', { method: 'POST', headers: {'Content-Type':'application/json'}, body: JSON.stringify({orderId}) }); 
+                      await fetch(`https://voicestore-backend.onrender.com/api/juicy/cancel`, { method: 'POST', headers: {'Content-Type':'application/json'}, body: JSON.stringify({orderId}) }); 
                   } else { 
                       await fetch(`https://voice-store-api.vercel.app/api/daisysms?action=setStatus&status=8&id=${orderId}`); 
                   }
@@ -1287,8 +1310,14 @@
               if (liveSmsOrder && liveSmsOrder.status === 'ACTIVE') {
                   interval = setInterval(async () => {
                       try {
-                          const res = await fetch(liveSmsOrder?.provider === 'juicy' ? `https://voicestore-backend.onrender.com/api/juicy/getStatus?orderId=${liveSmsOrder.id}` : `https://voice-store-api.vercel.app/api/daisysms?action=getStatus&id=${liveSmsOrder.id}`);
-                          const data = await res.json();
+                          let data = {};
+                          if (liveSmsOrder?.provider === 'juicy') {
+                              const res = await fetch(`https://voicestore-backend.onrender.com/api/juicy/getStatus?orderId=${liveSmsOrder.id}`);
+                              data = await res.json();
+                          } else {
+                              const res = await fetch(`https://voice-store-api.vercel.app/api/daisysms?action=getStatus&id=${liveSmsOrder.id}`);
+                              data = await res.json();
+                          }
                           
                           if (data.success) {
                               if (data.status === 'OK' && data.code) {
