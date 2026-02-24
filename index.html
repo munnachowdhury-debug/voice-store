@@ -150,23 +150,27 @@
           { id: 'gv_bulk', name: 'Bulk Google Voice (10x)', description: 'Wholesale package of 10 fresh Google Voice accounts.', price: 45.00, icon: Users, color: 'text-yellow-500 dark:text-yellow-400' }
         ];
 
+        // 🌟 Massive Dictionary for Grizzly SMS Products 🌟
         const KNOWN_SERVICES = {
-            'go': 'Google Voice/Gmail', 'wa': 'WhatsApp', 'tg': 'Telegram', 'ig': 'Instagram',
-            'fb': 'Facebook', 'tw': 'Twitter', 'vi': 'Viber', 'di': 'Discord',
-            'tn': 'Tinder', 'lf': 'TikTok', 'am': 'Amazon', 'ts': 'PayPal',
-            'ew': 'Zelle', 'ot': 'Other / Any Service', 'nv': 'Naver', 'sn': 'Snapchat',
+            'go': 'Google Voice / Gmail', 'wa': 'WhatsApp', 'tg': 'Telegram', 'ig': 'Instagram',
+            'fb': 'Facebook', 'tw': 'Twitter / X', 'vi': 'Viber', 'di': 'Discord',
+            'tn': 'Tinder', 'lf': 'TikTok / Douyin', 'am': 'Amazon', 'ts': 'PayPal',
+            'ew': 'Zelle', 'ot': 'Any Other App', 'nv': 'Naver', 'sn': 'Snapchat',
             'ub': 'Uber', 'ly': 'Lyft', 'px': 'Paxful', 'mo': 'Bumble', 'rr': 'Deliveroo',
-            'vk': 'VKontakte', 'ya': 'Yandex', 'ma': 'Mail.ru', 'mm': 'Microsoft/Apple',
-            'uk': 'Airbnb', 'ka': 'Shopee', 'rd': 'Yahoo', 'zz': 'Drom', 'hx': 'Badoo'
+            'vk': 'VKontakte', 'ya': 'Yandex', 'ma': 'Mail.ru', 'mm': 'Microsoft / Apple',
+            'uk': 'Airbnb', 'ka': 'Shopee', 'rd': 'Yahoo', 'zz': 'Drom', 'hx': 'Badoo',
+            'wb': 'WeChat', 'ki': 'Qiwi', 'nf': 'Netflix', 'st': 'Steam', 'ps': 'PlayStation',
+            'xb': 'Xbox', 'mc': 'Minecraft', 'rx': 'Roblox', 'pm': 'Pokemon', 'nk': 'Nike',
+            'ad': 'Adidas', 'ab': 'Alibaba', 'jd': 'JD.com', 'tb': 'Taobao', 'eb': 'eBay',
+            'cg': 'CashApp', 'co': 'Coinbase', 'rl': 'Revolut', 'df': 'Vinted', 'kf': 'KFC',
+            'bz': 'Blizzard', 'we': 'Weibo', 'ku': 'Kuaishou', 'xh': 'Xiaohongshu',
+            'mt': 'Meituan', 'dp': 'Dianping', 'ali': 'Alibaba', 'az': 'Amazon',
+            'ea': 'EA', 'ep': 'Epic Games', 'rg': 'Riot Games', 'up': 'Uplay', 'gg': 'GOG',
+            'nt': 'Nintendo', 'nso': 'Nintendo Switch Online', 'sg': 'Sega',
+            'pu': 'Puma', 'ua': 'Under Armour', 'lv': 'Louis Vuitton', 'gu': 'Gucci',
+            'yl': 'Yalla', 'hw': 'Huawei', 'za': 'Zalando', 'wx': 'Apple', 'mb': 'Yahoo',
+            'wc': 'Apple', 'oi': 'Tinder', 'dl': 'Bari', 'im': 'Imo', 'gr': 'Grover'
         };
-
-        const JUICY_COUNTRIES = [
-            { id: '2', name: '🇬🇧 United Kingdom' },
-            { id: '3', name: '🇳🇱 Netherlands' },
-            { id: '1', name: '🇵🇱 Poland' },
-            { id: '13', name: '🇫🇷 France' },
-            { id: '45', name: '🇪🇸 Spain' }
-        ];
 
         const CUSTOMER_TABS = [
             { id: 'sms', label: 'Live SMS', icon: Smartphone },
@@ -240,19 +244,16 @@
             return { phone, state };
         };
 
-        // 🌟 New Product Card Component with State Selection 🌟
         function ProductCard({ product, inventory, addToCart, setPreviewStockModal, uiCard, uiBtnPrimary, uiInput }) {
             const [selectedState, setSelectedState] = useState('Any');
             const stockList = inventory[product.id] || [];
             const totalStock = stockList.length;
             
-            // Extract unique available states from inventory
             const availableStates = [...new Set(stockList.map(acc => {
                 const info = getPreviewInfo(acc);
                 return info.state;
             }))].sort();
 
-            // Filter stock count based on selected state
             const currentStockCount = selectedState === 'Any' ? totalStock : stockList.filter(acc => getPreviewInfo(acc).state === selectedState).length;
             const Icon = product.icon;
 
@@ -475,7 +476,7 @@
             );
         }
 
-        // Clean static premium background (Supports Dark & Light)
+        // Clean static premium background
         const PremiumBackground = () => (
           <div className="fixed inset-0 z-[-1] overflow-hidden pointer-events-none transition-colors duration-500">
              <div className="absolute inset-0 bg-grid-pattern opacity-[0.05] dark:opacity-[0.02]"></div>
@@ -508,7 +509,7 @@
           const [inventory, setInventory] = useState({ new: [], old: [], textplus: [], gv_bulk: [] });
           const [allOrders, setAllOrders] = useState([]);
           const [deposits, setDeposits] = useState([]);
-          const [purchases, setPurchases] = useState([]); // This stores ALL RAW purchases directly from DB
+          const [purchases, setPurchases] = useState([]);
           const [tickets, setTickets] = useState([]);
           
           const [promoSettings, setPromoSettings] = useState({ code: '', discount: 0, isActive: false });
@@ -612,7 +613,6 @@
                   const dep = []; snap.forEach(d => dep.push({ id: d.id, ...d.data() })); setDeposits(dep.sort((a,b) => new Date(b.date) - new Date(a.date)));
                 }, errLog));
                 unsubs.push(onSnapshot(collection(db, 'artifacts', appId, 'public', 'data', 'Store_Purchases'), (snap) => {
-                  // Fetch raw purchases unconditionally for state
                   const p = []; snap.forEach(d => p.push({ id: d.id, ...d.data() })); setPurchases(p.sort((a,b) => new Date(b.date) - new Date(a.date)));
                 }, errLog));
                 unsubs.push(onSnapshot(collection(db, 'artifacts', appId, 'public', 'data', 'Store_Tickets'), (snap) => {
@@ -735,7 +735,6 @@
               <div className="min-h-screen flex items-center justify-center p-4 relative font-sans w-full bg-brand-lightBg dark:bg-brand-darkBg text-slate-900 dark:text-slate-100 transition-colors duration-500">
                 <PremiumBackground />
 
-                {/* Day/Night Button for Login Screen */}
                 <div className="absolute top-4 right-4 sm:top-6 sm:right-8 z-50">
                     <button onClick={() => setIsDarkMode(!isDarkMode)} className="p-3 bg-white dark:bg-slate-800 rounded-full shadow-md text-slate-800 dark:text-white border border-slate-200 dark:border-slate-700 transition-all hover:scale-105">
                         {isDarkMode ? <Sun className="w-5 h-5"/> : <Moon className="w-5 h-5"/>}
@@ -807,7 +806,6 @@
             <div className="min-h-screen w-full relative overflow-x-hidden font-sans pb-24 flex flex-col bg-brand-lightBg dark:bg-brand-darkBg text-slate-900 dark:text-slate-100 transition-colors duration-500">
               <PremiumBackground />
               
-              {/* Toast Animation */}
               {toastData.show && (
                 <div className="fixed top-6 left-1/2 -translate-x-1/2 z-[200] animate-slide-down w-[90%] sm:w-auto max-w-sm">
                   <div className="bg-white dark:bg-[#0f172a]/90 backdrop-blur-3xl border border-slate-200 dark:border-white/10 p-4 sm:px-6 sm:py-4 rounded-2xl shadow-2xl dark:shadow-[0_10px_40px_rgba(0,0,0,0.5)] flex items-center gap-3 w-full text-slate-800 dark:text-white">
@@ -817,7 +815,6 @@
                 </div>
               )}
 
-              {/* Clean Top Navigation (Main Header) */}
               <header className="sticky top-0 z-40 w-full bg-white/80 dark:bg-[#09090b]/80 backdrop-blur-2xl border-b border-slate-200 dark:border-white/5 shadow-sm dark:shadow-md transition-colors">
                 <div className="max-w-7xl mx-auto px-4 md:px-6 lg:px-8 h-16 sm:h-20 flex items-center justify-between w-full">
                   <div className="flex items-center gap-3 flex-shrink-0">
@@ -828,7 +825,6 @@
                   </div>
                   
                   <div className="flex items-center gap-2 sm:gap-4 md:gap-6 flex-shrink-0">
-                    
                     <button onClick={() => setIsDarkMode(!isDarkMode)} className="btn-animate p-2 sm:p-2.5 rounded-xl bg-slate-100 dark:bg-white/5 border border-slate-200 dark:border-white/10 text-slate-600 dark:text-slate-300 hover:text-amber-500 dark:hover:text-amber-400 transition-all flex items-center justify-center">
                         {isDarkMode ? <Sun className="w-4 h-4 sm:w-4 sm:h-4"/> : <Moon className="w-4 h-4 sm:w-4 sm:h-4"/>}
                     </button>
@@ -899,7 +895,6 @@
 
               <main className="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 mt-4 sm:mt-6 relative z-10 w-full flex-grow flex flex-col items-center gap-4 sm:gap-6 pb-6">
                 
-                {/* ✨ 1% Blur Glass Top Navigation Bar ✨ */}
                 <div className="w-full relative z-30 pt-1 pb-2">
                   <div className="bg-white/[0.6] dark:bg-white/[0.02] backdrop-blur-[4px] border border-slate-200 dark:border-white/10 rounded-2xl p-1.5 flex items-center justify-between gap-1 shadow-sm dark:shadow-[0_4px_20px_rgb(0,0,0,0.15)] w-full overflow-x-auto scrollbar-hide">
                     {(user.role === 'admin' ? ADMIN_TABS : CUSTOMER_TABS).map(tab => {
@@ -936,7 +931,7 @@
                   <CustomerDashboard 
                     user={user} balance={currentUserBalance} inventory={inventory} 
                     categories={categories} cart={cart} setCart={setCart} 
-                    purchases={purchases} // Fixed: Raw purchases passed directly
+                    purchases={purchases}
                     usersDB={usersDB} deposits={deposits} tier={currentUserTier}
                     triggerToast={triggerToast} addNotification={addNotification} db={db} appId={appId}
                     promoSettings={promoSettings} allOrders={allOrders}
@@ -972,7 +967,6 @@
           const [searchQuery, setSearchQuery] = useState('');
           const [previewStockModal, setPreviewStockModal] = useState({show: false, categoryId: null, name: ''});
 
-          // Profile Sub-tabs state (Overview, History, Support)
           const [profileSubTab, setProfileSubTab] = useState('overview');
 
           const [ticketSubject, setTicketSubject] = useState('');
@@ -982,7 +976,6 @@
           const BTC_ADDRESS = '1EgVdWyoCsWepg3TAowifuhoR81Lm1xEUd';
           const [depositAmountUsd, setDepositAmountUsd] = useState('');
           
-          // Live SMS Verification State
           const [isSmsLoading, setIsSmsLoading] = useState(false);
           const [selectedSmsService, setSelectedSmsService] = useState('go');
           const [dynamicPrices, setDynamicPrices] = useState({});
@@ -991,11 +984,8 @@
           const [showServiceDropdown, setShowServiceDropdown] = useState(false);
           const [smsTimeLeft, setSmsTimeLeft] = useState(0);
           
-          // NEW STATES FOR MULTI-SERVER
-          const [areaCode, setAreaCode] = useState(''); 
-          const [smsProvider, setSmsProvider] = useState('usa'); 
-          const [juicyCountry, setJuicyCountry] = useState('2');
-
+          // 🌟 NEW: Single Country State (12 = USA, 16 = UK) 🌟
+          const [smsCountry, setSmsCountry] = useState('12'); 
           const [cryptoMethod, setCryptoMethod] = useState('USDT TRC20');
 
           const [liveSmsOrder, setLiveSmsOrder] = useState(() => {
@@ -1023,11 +1013,12 @@
               }
           }, [liveSmsOrder, user]);
 
+          // 🌟 MASSIVE LIVE FETCH: Getting ALL USA & UK Products directly from our Backend via Grizzly API 🌟
           useEffect(() => {
-              if (smsSettings?.active && smsProvider === 'usa') {
+              if (smsSettings?.active) {
                   const fetchPrices = async () => {
                       try {
-                          const res = await fetch('https://voice-store-api.vercel.app/api/daisysms?action=getPrices');
+                          const res = await fetch(`https://voicestore-backend.onrender.com/api/grizzly/getPrices?country=${smsCountry}`);
                           const json = await res.json();
                           if (json.success && json.data) {
                               let newPrices = {};
@@ -1042,15 +1033,23 @@
                                       const finalPrice = basePrice + markup;
                                       newPrices[code] = finalPrice;
                                       
+                                      const sName = KNOWN_SERVICES[code] || String(code).toUpperCase() + " Service";
+                                      
                                       servicesList.push({
                                           code: code,
-                                          name: KNOWN_SERVICES[code] || code.toUpperCase(),
+                                          name: sName,
                                           count: parseInt(services[code].count || 0),
                                           finalPrice: finalPrice
                                       });
                                   }
                                   
-                                  servicesList.sort((a, b) => a.name.localeCompare(b.name));
+                                  servicesList.sort((a, b) => {
+                                      const aKnown = KNOWN_SERVICES[a.code] ? 1 : 0;
+                                      const bKnown = KNOWN_SERVICES[b.code] ? 1 : 0;
+                                      if (aKnown !== bKnown) return bKnown - aKnown;
+                                      return a.name.localeCompare(b.name);
+                                  });
+                                  
                                   setAvailableServices(servicesList);
                                   setDynamicPrices(newPrices);
                                   
@@ -1059,35 +1058,11 @@
                                   }
                               }
                           }
-                      } catch (e) {}
+                      } catch (e) { console.error("Error fetching Grizzly products:", e); }
                   };
                   fetchPrices();
-              } else if (smsSettings?.active && smsProvider === 'juicy') {
-                  // Fallback generic pricing for JuicySMS Premium (Flat Price System for reliability)
-                  const juicyMappedServices = [
-                    { code: 'go', name: 'Google Voice/Gmail', finalPrice: 2.50 },
-                    { code: 'wa', name: 'WhatsApp', finalPrice: 2.50 },
-                    { code: 'tg', name: 'Telegram', finalPrice: 2.50 },
-                    { code: 'fb', name: 'Facebook', finalPrice: 2.50 },
-                    { code: 'ig', name: 'Instagram', finalPrice: 2.50 },
-                    { code: 'tn', name: 'Tinder', finalPrice: 2.50 },
-                    { code: 'lf', name: 'TikTok', finalPrice: 2.50 },
-                    { code: 'di', name: 'Discord', finalPrice: 2.50 },
-                    { code: 'tw', name: 'Twitter', finalPrice: 2.50 },
-                    { code: 'sn', name: 'Snapchat', finalPrice: 2.50 },
-                    { code: 'rd', name: 'Yahoo', finalPrice: 2.50 },
-                    { code: 'mm', name: 'Microsoft/Apple', finalPrice: 2.50 },
-                    { code: 'ub', name: 'Uber', finalPrice: 2.50 }
-                  ];
-                  setAvailableServices(juicyMappedServices);
-                  const pMap = {};
-                  juicyMappedServices.forEach(s => pMap[s.code] = s.finalPrice);
-                  setDynamicPrices(pMap);
-                  if (juicyMappedServices.length > 0 && !juicyMappedServices.find(s => s.code === selectedSmsService)) {
-                      setSelectedSmsService(juicyMappedServices[0].code);
-                  }
               }
-          }, [smsSettings, smsProvider]);
+          }, [smsSettings, smsCountry]);
 
           const addToCart = (productWithState) => {
             const stockAvailable = inventory[productWithState.id] ? inventory[productWithState.id].length : 0;
@@ -1126,8 +1101,7 @@
             });
           };
 
-          const baseSmsPrice = dynamicPrices[selectedSmsService] || (1.00 + Number(smsSettings?.markup || 1.00));
-          const currentSmsPrice = smsProvider === 'juicy' ? 2.50 : (areaCode.length === 3 ? parseFloat((baseSmsPrice * 1.20).toFixed(2)) : parseFloat(baseSmsPrice.toFixed(2)));
+          const currentSmsPrice = dynamicPrices[selectedSmsService] ? parseFloat(dynamicPrices[selectedSmsService].toFixed(2)) : 0;
 
           const buySmsNumber = async () => {
               if (balance < currentSmsPrice) {
@@ -1150,42 +1124,15 @@
                       return;
                   }
 
-                  let data = {};
-                  if (smsProvider === 'usa') {
-                      let apiUrl = `https://voice-store-api.vercel.app/api/daisysms?action=getNumber&service=${selectedSmsService}`;
-                      if (areaCode && areaCode.length === 3) {
-                          apiUrl += `&areacode=${areaCode}`;
-                      }
-                      const res = await fetch(apiUrl);
-                      data = await res.json();
-                  } else {
-                      // Call our custom Render backend API for JuicySMS
-                      const res = await fetch('https://voicestore-backend.onrender.com/api/juicy/getNumber', {
-                          method: 'POST',
-                          headers: { 'Content-Type': 'application/json' },
-                          body: JSON.stringify({ serviceId: selectedSmsService, countryId: juicyCountry })
-                      });
-                      data = await res.json();
-                  }
+                  // 🌟 Unified secure request to our backend which handles Grizzly 🌟
+                  const res = await fetch('https://voicestore-backend.onrender.com/api/juicy/getNumber', {
+                      method: 'POST',
+                      headers: { 'Content-Type': 'application/json' },
+                      body: JSON.stringify({ serviceId: selectedSmsService, countryId: smsCountry })
+                  });
+                  const data = await res.json();
                   
                   if (data.success && data.phone) {
-                      // Area Code Verification for USA
-                      if (areaCode && areaCode.length === 3 && smsProvider === 'usa') {
-                          let cleanPhone = String(data.phone).replace(/\D/g, '');
-                          if(cleanPhone.length === 11 && cleanPhone.startsWith('1')) cleanPhone = cleanPhone.substring(1);
-                          
-                          if (!cleanPhone.startsWith(areaCode)) {
-                              await fetch(`https://voice-store-api.vercel.app/api/daisysms?action=setStatus&status=8&id=${data.orderId}`);
-                              await fetch('https://voicestore-backend.onrender.com/api/sms-refund', {
-                                  method: 'POST', headers: { 'Content-Type': 'application/json' },
-                                  body: JSON.stringify({ email: user.email, price: currentSmsPrice })
-                              });
-                              triggerToast("This area code is not available right now.");
-                              setIsSmsLoading(false);
-                              return;
-                          }
-                      }
-
                       const serviceName = availableServices.find(s => s.code === selectedSmsService)?.name || selectedSmsService.toUpperCase();
                       setLiveSmsOrder({ 
                           id: data.orderId, 
@@ -1194,7 +1141,7 @@
                           price: currentSmsPrice, 
                           status: 'ACTIVE', 
                           codes: [], 
-                          provider: smsProvider,
+                          provider: 'grizzly',
                           expiresAt: Date.now() + 700 * 1000 
                       }); 
                   } else {
@@ -1211,18 +1158,11 @@
               }
           };
 
-          const cancelSmsOrder = async (orderId, priceToRefund, provider) => {
+          const cancelSmsOrder = async (orderId, priceToRefund) => {
               setIsSmsLoading(true);
               try {
-                  // 1. Cancel race condition fix
-                  let checkData = {};
-                  if (provider === 'juicy') {
-                      const checkRes = await fetch(`https://voicestore-backend.onrender.com/api/juicy/getStatus?orderId=${orderId}`);
-                      checkData = await checkRes.json();
-                  } else {
-                      const checkRes = await fetch(`https://voice-store-api.vercel.app/api/daisysms?action=getStatus&id=${orderId}`);
-                      checkData = await checkRes.json();
-                  }
+                  const checkRes = await fetch(`https://voicestore-backend.onrender.com/api/juicy/getStatus?orderId=${orderId}`);
+                  const checkData = await checkRes.json();
 
                   if (checkData.success && checkData.status === 'OK' && checkData.code) {
                       setLiveSmsOrder(prev => {
@@ -1244,14 +1184,15 @@
                       return;
                   }
 
-                  // 2. Cancel
-                  if(provider === 'juicy') { 
-                      await fetch(`https://voicestore-backend.onrender.com/api/juicy/cancel`, { method: 'POST', headers: {'Content-Type':'application/json'}, body: JSON.stringify({orderId}) }); 
-                  } else { 
-                      await fetch(`https://voice-store-api.vercel.app/api/daisysms?action=setStatus&status=8&id=${orderId}`); 
+                  const cancelRes = await fetch(`https://voicestore-backend.onrender.com/api/juicy/cancel`, { method: 'POST', headers: {'Content-Type':'application/json'}, body: JSON.stringify({orderId}) }); 
+                  const cancelData = await cancelRes.json();
+                  
+                  if (!cancelData.success) {
+                      triggerToast(cancelData.message);
+                      setIsSmsLoading(false);
+                      return; 
                   }
                   
-                  // 3. User balance refund
                   await fetch('https://voicestore-backend.onrender.com/api/sms-refund', {
                       method: 'POST',
                       headers: { 'Content-Type': 'application/json' },
@@ -1264,42 +1205,7 @@
               finally { setIsSmsLoading(false); }
           };
 
-          const requestAnotherSms = async () => {
-             const extraPrice = 0.50; 
-             if (balance < extraPrice) {
-                  triggerToast(`Insufficient balance. $${extraPrice.toFixed(2)} required for another SMS.`);
-                  return;
-             }
-             
-             setIsSmsLoading(true);
-             try {
-                 const deductRes = await fetch('https://voicestore-backend.onrender.com/api/sms-deduct', {
-                      method: 'POST',
-                      headers: { 'Content-Type': 'application/json' },
-                      body: JSON.stringify({ email: user.email, price: extraPrice })
-                 });
-                 const deductData = await deductRes.json();
-                 
-                 if (!deductData.success) {
-                      triggerToast("Balance deduction failed.");
-                      setIsSmsLoading(false);
-                      return;
-                 }
-
-                 if(liveSmsOrder?.provider !== 'juicy') { 
-                     await fetch(`https://voice-store-api.vercel.app/api/daisysms?action=setStatus&status=3&id=${liveSmsOrder.id}`); 
-                 }
-                 triggerToast("Requested another SMS! $0.50 deducted.");
-             } catch(e) {} 
-             finally { setIsSmsLoading(false); }
-          };
-
           const finishSmsOrder = async () => {
-             try { 
-                 if(liveSmsOrder?.provider !== 'juicy') {
-                     await fetch(`https://voice-store-api.vercel.app/api/daisysms?action=setStatus&status=6&id=${liveSmsOrder.id}`); 
-                 }
-             } catch(e) {}
              setLiveSmsOrder(null);
              triggerToast("Order Finished & Saved to Vault!");
           };
@@ -1310,14 +1216,8 @@
               if (liveSmsOrder && liveSmsOrder.status === 'ACTIVE') {
                   interval = setInterval(async () => {
                       try {
-                          let data = {};
-                          if (liveSmsOrder?.provider === 'juicy') {
-                              const res = await fetch(`https://voicestore-backend.onrender.com/api/juicy/getStatus?orderId=${liveSmsOrder.id}`);
-                              data = await res.json();
-                          } else {
-                              const res = await fetch(`https://voice-store-api.vercel.app/api/daisysms?action=getStatus&id=${liveSmsOrder.id}`);
-                              data = await res.json();
-                          }
+                          const res = await fetch(`https://voicestore-backend.onrender.com/api/juicy/getStatus?orderId=${liveSmsOrder.id}`);
+                          const data = await res.json();
                           
                           if (data.success) {
                               if (data.status === 'OK' && data.code) {
@@ -1344,7 +1244,7 @@
                                       return prev;
                                   });
                               } else if (String(data.status).includes('CANCEL')) {
-                                  cancelSmsOrder(liveSmsOrder.id, liveSmsOrder.price, liveSmsOrder.provider);
+                                  cancelSmsOrder(liveSmsOrder.id, liveSmsOrder.price);
                               }
                           }
                       } catch(e) {}
@@ -1360,7 +1260,7 @@
                   const calcTime = () => {
                       const remaining = Math.floor((liveSmsOrder.expiresAt - Date.now()) / 1000);
                       if (remaining <= 0) {
-                           cancelSmsOrder(liveSmsOrder.id, liveSmsOrder.price, liveSmsOrder.provider);
+                           cancelSmsOrder(liveSmsOrder.id, liveSmsOrder.price);
                            setLiveSmsOrder(null);
                            setSmsTimeLeft(0);
                       } else {
@@ -1530,7 +1430,6 @@
             } catch(err) {}
           };
 
-          // 🌟 IMPORTANT: Explicit filtering to fix empty Vault bug 🌟
           const myPurchases = (purchases || []).filter(p => p.customer && p.customer.toLowerCase() === (user?.email || '').toLowerCase());
           const vaultAccounts = myPurchases.filter(p => !String(p.type || '').toLowerCase().includes('live sms'));
 
@@ -1588,7 +1487,6 @@
                 </div>
               )}
 
-              {/* Main Content Area */}
               <div className="w-full">
                 
                 {/* 1. Live SMS Verification Tab */}
@@ -1609,26 +1507,18 @@
                                         <Smartphone className="w-5 h-5 text-amber-500 dark:text-amber-400 drop-shadow-[0_0_5px_currentColor]"/> Select Service
                                     </h2>
                                     
+                                    {/* 🌟 New Dynamic Country Buttons (USA & UK All Services) 🌟 */}
                                     <div className="flex gap-3 mb-5 w-full">
-                                        <div onClick={() => !isSmsLoading && !liveSmsOrder && setSmsProvider('usa')} className={"flex-1 text-center py-2.5 text-xs font-bold rounded-xl cursor-pointer transition-all border " + (smsProvider === 'usa' ? "bg-amber-500 text-white border-amber-500 shadow-[0_4px_10px_rgba(245,158,11,0.4)]" : "bg-slate-100 dark:bg-white/5 text-slate-500 border-slate-200 dark:border-white/10")}>🇺🇸 USA (Standard)</div>
-                                        <div onClick={() => !isSmsLoading && !liveSmsOrder && setSmsProvider('juicy')} className={"flex-1 text-center py-2.5 text-xs font-bold rounded-xl cursor-pointer transition-all border " + (smsProvider === 'juicy' ? "bg-amber-500 text-white border-amber-500 shadow-[0_4px_10px_rgba(245,158,11,0.4)]" : "bg-slate-100 dark:bg-white/5 text-slate-500 border-slate-200 dark:border-white/10")}>🌍 Another Country</div>
+                                        <div onClick={() => !isSmsLoading && !liveSmsOrder && setSmsCountry('12')} className={"flex-1 text-center py-2.5 text-xs font-bold rounded-xl cursor-pointer transition-all border " + (smsCountry === '12' ? "bg-amber-500 text-white border-amber-500 shadow-[0_4px_10px_rgba(245,158,11,0.4)]" : "bg-slate-100 dark:bg-white/5 text-slate-500 border-slate-200 dark:border-white/10")}>🇺🇸 USA (All Apps)</div>
+                                        <div onClick={() => !isSmsLoading && !liveSmsOrder && setSmsCountry('16')} className={"flex-1 text-center py-2.5 text-xs font-bold rounded-xl cursor-pointer transition-all border " + (smsCountry === '16' ? "bg-amber-500 text-white border-amber-500 shadow-[0_4px_10px_rgba(245,158,11,0.4)]" : "bg-slate-100 dark:bg-white/5 text-slate-500 border-slate-200 dark:border-white/10")}>🇬🇧 UK (All Apps)</div>
                                     </div>
                                     
-                                    {smsProvider === 'juicy' && !liveSmsOrder && (
-                                        <div className="mb-4 w-full">
-                                            <label className="block text-[10px] font-bold text-slate-500 dark:text-slate-400 mb-1.5 uppercase tracking-wider">Select Country</label>
-                                            <select value={juicyCountry} onChange={e => setJuicyCountry(e.target.value)} disabled={isSmsLoading} className={uiInput + " !py-3 cursor-pointer"}>
-                                                {JUICY_COUNTRIES.map(c => <option key={c.id} value={c.id}>{c.name}</option>)}
-                                            </select>
-                                        </div>
-                                    )}
-
                                     <div className="relative">
                                         <div 
                                             onClick={() => !isSmsLoading && !liveSmsOrder && setShowServiceDropdown(!showServiceDropdown)}
                                             className={uiInput + ` flex justify-between items-center ${isSmsLoading || liveSmsOrder ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer hover:border-amber-500/50'}`}
                                         >
-                                            <span className="font-bold truncate text-slate-800 dark:text-white">{availableServices.find(s=>s.code===selectedSmsService)?.name || 'Select Service'}</span>
+                                            <span className="font-bold truncate text-slate-800 dark:text-white">{availableServices.find(s=>s.code===selectedSmsService)?.name || 'Loading Services...'}</span>
                                             <ChevronDown className="w-4 h-4 text-slate-500 dark:text-slate-400"/>
                                         </div>
 
@@ -1641,7 +1531,7 @@
                                                             <Search className="absolute left-3 top-2.5 w-4 h-4 text-slate-400 dark:text-slate-400"/>
                                                             <input 
                                                                 type="text" 
-                                                                placeholder="Search service..." 
+                                                                placeholder="Search 100+ services..." 
                                                                 value={serviceSearch}
                                                                 onChange={e => setServiceSearch(e.target.value)}
                                                                 onClick={e => e.stopPropagation()}
@@ -1656,7 +1546,10 @@
                                                                 onClick={() => { setSelectedSmsService(s.code); setShowServiceDropdown(false); setServiceSearch(''); }}
                                                                 className={`px-3 py-2.5 rounded-lg cursor-pointer flex justify-between items-center transition-colors ${selectedSmsService === s.code ? 'bg-amber-50 dark:bg-amber-500/20 border border-amber-200 dark:border-amber-500/30' : 'hover:bg-slate-50 dark:hover:bg-white/5 border border-transparent'}`}
                                                             >
-                                                                <span className={`text-sm font-medium ${selectedSmsService === s.code ? 'text-amber-700 dark:text-white font-bold' : 'text-slate-600 dark:text-slate-300'}`}>{s.name}</span>
+                                                                <div className="flex flex-col">
+                                                                    <span className={`text-sm font-medium ${selectedSmsService === s.code ? 'text-amber-700 dark:text-white font-bold' : 'text-slate-600 dark:text-slate-300'}`}>{s.name}</span>
+                                                                    <span className="text-[10px] text-slate-400 font-medium">{s.count > 0 ? `${s.count} pcs available` : 'Low Stock'}</span>
+                                                                </div>
                                                                 <span className="text-xs font-bold text-amber-600 dark:text-amber-400">${s.finalPrice.toFixed(2)}</span>
                                                             </div>
                                                         ))}
@@ -1669,21 +1562,6 @@
                                         )}
                                     </div>
                                     
-                                    {!liveSmsOrder && smsProvider === 'usa' && (
-                                        <div className="mt-5">
-                                            <label className="block text-[10px] font-bold text-slate-500 dark:text-slate-400 mb-1.5 uppercase tracking-wider">Specific Area Code (Optional)</label>
-                                            <input 
-                                                type="text" 
-                                                maxLength="3"
-                                                placeholder="e.g. 347" 
-                                                value={areaCode}
-                                                onChange={e => setAreaCode(e.target.value.replace(/\D/g, ''))}
-                                                className={uiInput}
-                                                disabled={isSmsLoading || liveSmsOrder}
-                                            />
-                                            {areaCode.length === 3 && <p className="text-[10px] text-amber-600 dark:text-amber-400 mt-1.5 font-bold flex items-center gap-1"><AlertTriangle className="w-3 h-3"/> +20% Price for specific area code.</p>}
-                                        </div>
-                                    )}
                                 </div>
                                 <div className="bg-slate-100 dark:bg-white/5 border border-slate-200 dark:border-white/10 px-6 py-4 rounded-2xl text-slate-800 dark:text-white font-black text-2xl whitespace-nowrap w-full md:w-auto text-center shadow-inner">
                                     {currentSmsPrice ? `$${currentSmsPrice.toFixed(2)}` : 'Loading...'}
@@ -1707,7 +1585,7 @@
                                         <p className="text-sm font-medium text-slate-500 dark:text-slate-400">Service: <span className="text-slate-800 dark:text-white font-bold">{liveSmsOrder.service}</span></p>
                                         <div className="flex items-center gap-3">
                                             <div className="text-2xl sm:text-4xl font-mono font-black text-slate-800 dark:text-white tracking-widest bg-white dark:bg-black/40 px-6 py-4 rounded-2xl border border-slate-200 dark:border-white/10 shadow-inner">
-                                                {String(liveSmsOrder.phone).replace(/(\d{1})(\d{3})(\d{3})(\d{4})/, '+$1 ($2) $3-$4')}
+                                                {String(liveSmsOrder.phone).replace(/(\d{1,2})(\d{3})(\d{3})(\d{4})/, '+$1 ($2) $3-$4')}
                                             </div>
                                             <button onClick={() => copyToClipboard10Digits(liveSmsOrder.phone)} className="btn-animate p-4 bg-slate-100 dark:bg-white/5 hover:bg-slate-200 dark:hover:bg-white/10 rounded-2xl text-amber-500 dark:text-amber-400 border border-slate-200 dark:border-white/5 shadow-sm transition-colors">
                                                 <Copy className="w-5 h-5 sm:w-6 sm:h-6"/>
@@ -1724,8 +1602,12 @@
                                                 
                                                 <div className="flex items-center justify-between w-full mt-2">
                                                     <p className="text-xs text-slate-500 dark:text-slate-400 font-mono font-bold"><Clock className="inline w-3 h-3 mb-0.5 mr-1"/>{Math.floor(smsTimeLeft / 60)}:{(smsTimeLeft % 60).toString().padStart(2, '0')} remaining</p>
-                                                    <button onClick={() => cancelSmsOrder(liveSmsOrder.id, liveSmsOrder.price, liveSmsOrder.provider)} disabled={isSmsLoading} className="text-xs text-rose-600 dark:text-rose-400 hover:text-rose-700 dark:hover:text-rose-300 font-bold px-4 py-2 bg-rose-50 dark:bg-rose-500/10 border border-rose-200 dark:border-rose-500/20 rounded-lg transition-colors">
-                                                        Cancel & Refund
+                                                    <button 
+                                                        onClick={() => cancelSmsOrder(liveSmsOrder.id, liveSmsOrder.price)} 
+                                                        disabled={isSmsLoading || smsTimeLeft > 580} 
+                                                        className={`text-xs font-bold px-4 py-2 rounded-lg transition-colors border ${smsTimeLeft > 580 ? 'bg-slate-100 dark:bg-slate-800 text-slate-400 border-slate-200 dark:border-slate-700 cursor-not-allowed' : 'text-rose-600 dark:text-rose-400 hover:text-rose-700 dark:hover:text-rose-300 bg-rose-50 dark:bg-rose-500/10 border-rose-200 dark:border-rose-500/20'}`}
+                                                    >
+                                                        {smsTimeLeft > 580 ? `Wait ${smsTimeLeft - 580}s to Cancel` : 'Cancel & Refund'}
                                                     </button>
                                                 </div>
                                             </>
@@ -1739,11 +1621,9 @@
                                                         </div>
                                                     ))}
                                                 </div>
-                                                <p className="text-[10px] sm:text-xs text-slate-500 dark:text-slate-400 mt-4 flex items-center gap-2 font-medium"><RefreshCw className="w-3 h-3 sm:w-3.5 sm:h-3.5 animate-spin"/> Listening for more SMS...</p>
                                                 
                                                 <div className="flex flex-col sm:flex-row items-center justify-center gap-3 w-full mt-6 pt-6 border-t border-slate-200 dark:border-white/5">
-                                                    {liveSmsOrder?.provider !== 'juicy' && <button onClick={requestAnotherSms} disabled={isSmsLoading} className={uiBtnSecondary + " !w-full sm:!w-auto !py-3 !px-5 !text-sm whitespace-nowrap"}>Get Another SMS ($0.50)</button>}
-                                                    <button onClick={finishSmsOrder} className={uiBtnPrimary + " !w-full sm:!w-auto !py-3 !px-8 !text-sm"}>Finish Order</button>
+                                                    <button onClick={finishSmsOrder} className={uiBtnPrimary + " !w-full sm:!w-auto !py-3 !px-8 !text-sm"}>Close & Save to Vault</button>
                                                 </div>
                                             </>
                                         )}
@@ -2646,7 +2526,7 @@
                         </div>
 
                         <div className="space-y-4 pt-6 border-t border-slate-200 dark:border-white/5">
-                           <h3 className="text-[10px] font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">API Settings (DaisySMS)</h3>
+                           <h3 className="text-[10px] font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">API Settings (Grizzly SMS)</h3>
                            <div className="grid grid-cols-1 gap-4">
                              <div>
                                <label className="block text-[10px] font-bold text-slate-700 dark:text-slate-300 mb-2">Markup per SMS ($) <span className="text-[8px] text-slate-500 ml-1">Profit added to original price</span></label>
