@@ -153,26 +153,110 @@
           { id: 'gv_bulk', name: 'Bulk Google Voice (10x)', description: 'Wholesale package of 10 fresh Google Voice accounts.', price: 45.00, icon: Users, color: 'text-yellow-500 dark:text-yellow-400' }
         ];
 
-        // 🌟 Massive Dictionary for Grizzly SMS Products 🌟
-        const KNOWN_SERVICES = {
-            'go': 'Google Voice / Gmail', 'wa': 'WhatsApp', 'tg': 'Telegram', 'ig': 'Instagram',
-            'fb': 'Facebook', 'tw': 'Twitter / X', 'vi': 'Viber', 'di': 'Discord',
-            'tn': 'Tinder', 'lf': 'TikTok / Douyin', 'am': 'Amazon', 'ts': 'PayPal',
-            'ew': 'Zelle', 'ot': 'Any Other App', 'nv': 'Naver', 'sn': 'Snapchat',
-            'ub': 'Uber', 'ly': 'Lyft', 'px': 'Paxful', 'mo': 'Bumble', 'rr': 'Deliveroo',
-            'vk': 'VKontakte', 'ya': 'Yandex', 'ma': 'Mail.ru', 'mm': 'Microsoft / Apple',
-            'uk': 'Airbnb', 'ka': 'Shopee', 'rd': 'Yahoo', 'zz': 'Drom', 'hx': 'Badoo',
-            'wb': 'WeChat', 'ki': 'Qiwi', 'nf': 'Netflix', 'st': 'Steam', 'ps': 'PlayStation',
-            'xb': 'Xbox', 'mc': 'Minecraft', 'rx': 'Roblox', 'pm': 'Pokemon', 'nk': 'Nike',
-            'ad': 'Adidas', 'ab': 'Alibaba', 'jd': 'JD.com', 'tb': 'Taobao', 'eb': 'eBay',
-            'cg': 'CashApp', 'co': 'Coinbase', 'rl': 'Revolut', 'df': 'Vinted', 'kf': 'KFC',
-            'bz': 'Blizzard', 'we': 'Weibo', 'ku': 'Kuaishou', 'xh': 'Xiaohongshu',
-            'mt': 'Meituan', 'dp': 'Dianping', 'ali': 'Alibaba', 'az': 'Amazon',
-            'ea': 'EA', 'ep': 'Epic Games', 'rg': 'Riot Games', 'up': 'Uplay', 'gg': 'GOG',
-            'nt': 'Nintendo', 'nso': 'Nintendo Switch Online', 'sg': 'Sega',
-            'pu': 'Puma', 'ua': 'Under Armour', 'lv': 'Louis Vuitton', 'gu': 'Gucci',
-            'yl': 'Yalla', 'hw': 'Huawei', 'za': 'Zalando', 'wx': 'Apple', 'mb': 'Yahoo',
-            'wc': 'Apple', 'oi': 'Tinder', 'dl': 'Bari', 'im': 'Imo', 'gr': 'Grover'
+        // 🌟 Massive Dictionary for JuicySMS Products (508 Apps) 🌟
+        const JUICYSMS_SERVICES = {
+            '1': 'Google', '2': 'Microsoft / Outlook', '3': 'Uber', '4': 'Twitter', '5': 'Telegram',
+            '6': 'Instagram', '7': 'Tinder', '8': 'WhatsApp', '9': 'Steam', '10': 'Discord',
+            '11': 'Yahoo', '12': 'Facebook', '13': 'ICQ', '15': 'QuickThoughts', '16': 'FaceIt',
+            '17': 'Netflix', '18': 'Vinted', '19': 'Deliveroo', '20': 'G2A', '21': 'SkyPrivate',
+            '22': 'ClassPass / InboxDollar / Swagbucks', '23': 'Plenty Of Fish', '24': 'Glovo', '25': 'S',
+            '26': 'Amazon', '27': 'PayPal', '28': 'Ebay', '29': 'Curve', '30': 'iCard',
+            '31': 'Esportal', '32': 'Plivo', '33': 'MiL.k', '34': 'Blizzard', '35': 'Ticketmaster',
+            '36': 'MeetMe', '37': 'Yubo', '38': 'xcoins', '39': 'Bitpanda', '40': 'Boon',
+            '41': 'Coinbase', '42': 'Lyft', '43': 'KaufMich', '44': 'Wirex', '45': 'Instant Gaming',
+            '46': 'Rvlt', '47': 'Qiwi', '48': 'Badoo', '49': 'Snapchat', '50': 'LinkedIn',
+            '51': 'Line', '52': 'Apple', '53': 'Imgur', '54': 'G2G', '55': 'Naver',
+            '56': 'LocalBitcoins', '57': 'Nike', '58': 'Bumble', '59': 'Listia', '60': 'Juul',
+            '61': 'WeChat', '62': 'Cabify', '63': 'SamenGezond', '64': 'Kinguin', '65': 'Riot Games',
+            '66': 'Wolt', '67': 'OkCupid', '68': 'Gameflip', '69': 'Sonetel', '70': 'Frichti',
+            '71': 'Protonmail', '72': 'LiteBit', '73': 'Sendinblue', '74': 'Ok.ru', '75': 'Webmoney',
+            '76': 'Tiktok', '77': 'Marktplaats / 2dehands', '78': 'Coinhouse', '79': 'VK', '80': 'Hinge',
+            '81': 'Tradingview', '82': 'Kamatera', '83': 'Simplex', '84': 'FedEx', '85': 'AOL',
+            '86': 'FoodPanda', '87': 'PlanetHoster', '88': 'Epicnpc', '89': 'Kotas', '90': 'Luno',
+            '91': 'Skout', '92': 'SMSto', '93': 'Wickr', '94': 'MillionVerifier', '95': 'Twilio',
+            '96': 'Esendex', '97': 'CommPeak', '98': 'Unisender', '99': 'Viber', '100': 'BulkGate',
+            '101': 'Rocketreach', '102': 'Yandex', '103': 'Mobile01', '104': 'Hunter.io', '105': 'mail.deGmbH',
+            '106': 'Bolt', '107': 'Fluz', '108': 'Depop', '109': 'FREE NOW', '110': 'Zalo',
+            '111': 'Tier', '112': 'KakaoTalk', '113': 'Swissborg', '114': 'Amuse', '115': 'Fiverr',
+            '116': 'Foodora', '117': 'Sneakersnstuff', '118': 'Ankama', '119': 'Tencent QQ', '120': 'Banxa',
+            '121': 'PUBG', '122': 'Signal', '123': 'Grailed', '124': 'kleiderkreisel', '125': 'PlayerAuctions',
+            '126': 'Parler', '127': 'Eneba', '128': 'Grindr', '129': 'Wink', '130': 'Paysend',
+            '131': 'Adidas', '132': 'PaySafeCard', '133': 'Reserved', '134': 'Twitch', '135': 'YooMoney',
+            '136': 'Alipay', '137': 'TamTam', '138': 'Zoho', '139': 'Vatera', '140': 'Taimi',
+            '141': 'MicroPayment', '142': 'Fineproxy', '143': 'DistroKid', '144': 'nbatopshot', '145': 'Nifty Gateway',
+            '146': 'myy app', '147': 'Gorillas', '148': 'ClubVPS', '149': 'Oracle', '150': 'Bitonic',
+            '151': 'Nextbike', '152': 'GoPuff', '153': 'Pruvit', '154': 'Triangle Of Love', '155': 'Reserved',
+            '156': 'HappyPancake', '157': 'Feeld', '158': 'Course Hero', '159': 'Epic Games / Go2Bank / Bet365 / IQOS', '160': 'LBRY',
+            '161': 'WIND', '162': 'Getir', '163': 'Sugarbook', '164': 'Lidl', '165': 'Shasso',
+            '166': 'Helbiz', '167': 'Purse', '168': 'SiS', '169': 'Nexmo', '170': 'Coindcx',
+            '171': 'Skrill', '172': 'AliExpress', '173': 'Samsung', '174': 'MessageBird', '175': 'Klarna',
+            '176': 'Zapp', '177': 'Poste', '178': 'Binance', '179': 'Verse', '180': 'Num2',
+            '181': 'Shpock', '182': 'Neteller', '183': 'Paperspace', '184': 'KuCoin', '185': 'Sticker Mule',
+            '186': 'Flink', '187': 'Cysend', '188': 'Airbnb', '189': 'EVGA', '190': 'GeeGee',
+            '191': 'Reservered', '192': 'Becharge', '193': 'Imo', '194': 'Reserved', '195': 'Felyx',
+            '196': 'Freejackpot', '197': 'Voi / Snaplii', '198': 'Bitnovo', '199': 'JD.com', '200': 'Cash App',
+            '201': 'Reserved', '202': 'Valora App', '203': 'Payoneer', '204': 'Green Giftcard', '205': 'Switchere',
+            '206': 'JD.com (USA)', '207': 'Craigslist', '208': 'Pret', '209': 'Venmo', '210': 'Thuisbezorgd',
+            '211': 'Coinflip', '212': 'Privacy com', '213': 'DoorDash', '214': 'Match.com / Fruitz', '215': 'Found.com',
+            '216': 'Survey Junkey', '217': 'Schwab', '218': 'Microcenter', '219': 'Gumtree', '220': 'Chispa',
+            '221': 'BLK', '222': 'Smore', '223': 'Reserved Spot', '224': 'Freelancer', '225': 'Flippa',
+            '226': 'Bluebird', '227': 'MoneyLion', '228': 'Affirm', '229': 'Roomster', '230': 'Walgreens',
+            '231': 'OpenAI / ChatGPT', '232': 'Ubisoft', '233': 'OpenPhone', '234': 'Chime', '235': 'Baidu',
+            '236': 'Wise', '237': 'Reserved', '238': 'Etsy', '239': 'Re-request from homepage', '240': 'Gemini',
+            '241': 'Vonage', '242': 'Dott', '243': 'Spinnup', '244': 'Ticketswap', '245': 'Zoosk',
+            '246': 'Ourtime', '247': 'Walmart', '248': 'Avail', '249': 'Upward', '250': 'Coffee Meets Bagel',
+            '251': 'Zelle', '252': 'Footlocker', '253': 'Sorare', '254': 'BlueVine', '255': 'Spruce',
+            '256': 'MoonPay', '257': 'OffGamers', '258': 'Zilch', '259': 'Kikoff', '260': 'Snagshout',
+            '261': 'Rebtel', '262': 'FreeCash', '263': '7-Eleven', '264': 'Trustpilot', '265': 'Nerwallet',
+            '266': 'NerdWallet', '267': 'Potato Chat', '268': 'ZoomInfo', '269': 'OfferUP', '270': 'Hily',
+            '271': 'Stash', '272': 'Steady', '273': 'Bright', '274': 'Crypto.com', '275': 'Aarp',
+            '276': 'Gavel', '277': 'Yotta', '278': 'Credit Karma', '279': 'Albert', '280': 'Zogo',
+            '281': 'Growfitter', '282': 'Go Sharing', '283': 'Weststein', '284': 'Pananames', '285': 'Ionos',
+            '286': 'Betfair', '287': 'Wallethub', '288': 'Dundle', '289': 'Ochama', '290': 'Re-request from home page',
+            '291': 'Muzz', '292': 'Shell', '293': 'Hetzner', '294': 'Upwork', '295': 'Strato',
+            '296': 'Audible', '297': 'Tixel', '298': 'Linode', '299': 'Fortunejack', '300': 'Iplum',
+            '301': 'CheckPoints', '302': 'Sofi', '303': 'Cinchbucks', '304': 'Alibaba', '305': 'Mtcgame',
+            '306': 'Aperol', '307': 'LuckyLand', '308': 'Tango', '309': 'Afterpay', '310': 'Wehkamp',
+            '311': 'Amigos', '312': 'Dialpad', '313': 'Grapedata', '314': 'Bigo', '315': 'YouGotAGift',
+            '316': 'Foodrocket', '317': 'Bovada', '318': 'WellsFargo', '319': 'Goldpanning', '320': 'DMV',
+            '321': 'Reserved', '322': 'DE', '323': 'Shopify', '324': 'Kamatera', '325': 'Pinterest',
+            '326': 'TapTap', '327': 'Leboncoin', '328': 'Castr', '329': 'Mjam', '330': 'Lieferando',
+            '331': 'Nandos', '332': 'Twig', '333': 'Infuse', '334': 'Barter', '335': 'Wheely',
+            '336': 'Cryptopay', '337': 'Telnyx', '338': 'TrainMore', '339': 'WorldRemit', '340': 'Wildeburg',
+            '341': 'Scanz', '342': 'Willhaben', '343': 'SlaJeSlag', '344': 'Weidian', '345': 'CheapVoIP',
+            '346': 'VakantieVeilingen', '347': 'Fitprime', '348': 'Microsoft Office', '349': 'Reserved',
+            '350': 'Bilt Rewards', '351': 'Temu', '352': 'Bol.com', '353': 'Square', '354': 'Dice',
+            '355': 'Fetch', '356': 'Thetenn', '357': 'Porkbun', '358': 'Kleinanzeigen', '359': 'Battle.net',
+            '360': 'Bitsa', '361': 'AXS', '362': 'Chevron', '363': 'TULU', '364': 'Vercel',
+            '365': 'Woolsocks', '366': 'Remotasks', '367': 'Seaters', '368': 'Claude', '369': 'Kwiff',
+            '370': 'Puppyplaats', '371': 'FreeAds', '372': 'Roblox', '373': 'Alchemy', '374': 'Zip.co',
+            '375': 'Just Eat', '376': 'Replit', '377': 'Blank Street', '378': 'Catawiki', '379': 'Arousr',
+            '380': 'Allegro', '381': 'Greggs', '382': 'CJS CD Keys', '383': 'GAIL\'s Bakery', '384': 'Brevo',
+            '385': 'Polly', '386': 'Odysee', '387': 'infobip', '388': 'Crisp', '389': 'Crypto.com',
+            '390': 'DoubleList', '391': 'Scoupy / Tuul', '392': 'NETEASE', '393': 'InstaReM', '394': 'Bungie',
+            '395': 'NewsBreak', '396': 'X World Wallet', '397': 'Poe', '398': 'Nexar', '399': 'Flip',
+            '400': 'Yik Yak', '401': 'Sony', '402': 'Vitacost', '403': 'Dr. Martens', '404': 'Bitrue',
+            '405': 'Outlier', '406': 'Sezzle', '407': 'iSay', '408': 'TLS contact', '409': 'Mail.com',
+            '410': 'fivesurveys', '411': 'Secret Benefits / BoyleSports / Happn', '412': 'Airtm', '413': 'LocalCoinSwap',
+            '414': 'Getemail.io', '415': 'Partiful', '416': 'Mexc', '417': 'Anthropic', '418': 'Lasol Diemen',
+            '419': 'Index / SideLine', '420': 'Boots', '421': 'Reserved', '422': 'Troostwijk', '423': 'Peekage',
+            '424': 'CleverCards', '425': 'Skeepers', '426': 'Vivastreet', '427': 'greeneking', '428': 'Model Management',
+            '429': 'Asda Rewards', '430': 'VCollective', '431': 'Paddy Power', '432': 'OneTable', '433': 'Freestyle Abbott',
+            '434': 'WooPlus', '435': 'Cryptonow', '436': 'Prsnt', '437': 'V', '438': 'Phrendly',
+            '439': 'Vivastreet', '440': '3Fun', '441': 'Grab Profile', '442': 'Together Price', '443': 'Sharesub',
+            '444': 'Welocalize', '445': 'Autodesk', '446': 'Express Pro Carwash', '447': 'HungryPanda', '448': 'Bland AI',
+            '449': 'Zocdoc', '450': 'Wonder', '451': 'JOE & THE JUICE', '452': 'Appen', '453': 'OleandSteen',
+            '454': 'Salams', '455': 'SticksSushi', '456': 'Google Messenger', '457': 'Mistral AI', '458': 'Farmers Fridge',
+            '459': 'Paxful', '460': 'Mercari', '461': 'Product Hunt', '462': 'KFC', '463': 'TheFork',
+            '464': 'Whatnot', '465': 'TELUS', '466': 'ClickSend', '467': 'KaartDirect', '468': 'Medium',
+            '469': 'Tesco', '470': 'Reonomy', '471': 'Fuel Forward', '472': 'Claim (app)', '473': 'GroupMe',
+            '474': 'Reddit', '475': 'Tortilla Co Uk', '476': 'Easypark', '477': 'Zndrke', '478': 'OpenRent',
+            '479': 'Сollaborator.pro', '480': '2ememain', '481': 'Favor Delivery', '482': 'UrbanSports', '483': 'DAtech',
+            '484': 'Respondent', '485': 'Shein', '486': 'Maya Mobile', '487': 'Userlytics', '488': 'ZoomBucks',
+            '489': 'PNC', '490': 'Skybet', '491': 'Manus', '492': 'Ditto Music', '493': 'Midnite',
+            '494': 'Esplay', '495': 'DAtech', '496': 'Pets4Homes', '497': 'Prograd', '498': 'Nala',
+            '499': 'Lendistry', '500': 'GentingCasi', '501': 'Dreamcash', '502': 'OnePay', '503': 'Flitsmeister',
+            '504': 'Dabble', '505': 'Imprint', '506': 'Apify', '507': 'Vodafone', '508': 'TurboTax'
         };
 
         const CUSTOMER_TABS = [
@@ -519,7 +603,6 @@
           const [featureSettings, setFeatureSettings] = useState({ dailyReward: false, referral: false });
           const [bankSettings, setBankSettings] = useState({ nairaRate: 1500, flutterwaveKey: '', flutterwaveActive: false });
           
-          // 🌟 Added targetPrices default value
           const [smsSettings, setSmsSettings] = useState({ active: true, markup: 1.00, targetPrices: "wa=2.50, tg=1.20" });
           const [categories, setCategories] = useState(PRODUCT_CATEGORIES);
           
@@ -981,7 +1064,7 @@
           const [depositAmountUsd, setDepositAmountUsd] = useState('');
           
           const [isSmsLoading, setIsSmsLoading] = useState(false);
-          const [selectedSmsService, setSelectedSmsService] = useState('go');
+          const [selectedSmsService, setSelectedSmsService] = useState('1'); // Changed to '1' (Google API ID for JuicySMS)
           
           const [availableServices, setAvailableServices] = useState([]);
           const [serviceSearch, setServiceSearch] = useState('');
@@ -999,7 +1082,6 @@
               if (saved) {
                   try {
                       const parsed = JSON.parse(saved);
-                      // Filter only active orders
                       return parsed.filter(o => o.status === 'ACTIVE' && o.expiresAt > Date.now());
                   } catch(e) {}
               }
@@ -1019,7 +1101,6 @@
               return () => clearInterval(int);
           }, []);
 
-          // 🌟 Auto-remove expired/cancelled orders from local state
           useEffect(() => {
               setActiveOrders(prev => {
                   let hasChanges = false;
@@ -1185,7 +1266,6 @@
                                   return o;
                               }));
                           } else if (String(data.status).includes('CANCEL')) {
-                              // If server/network cancelled it, remove it cleanly
                               setActiveOrders(prev => prev.filter(o => o.id !== order.id));
                           }
                       } catch(e) {}
@@ -1590,7 +1670,7 @@
                                 <div className="bg-rose-50 dark:bg-rose-500/10 p-4 rounded-xl border border-rose-200 dark:border-rose-500/20 text-left">
                                    <p className="text-xs text-rose-600 dark:text-rose-400 font-bold mb-1.5 flex items-center gap-1.5 uppercase tracking-wider"><AlertTriangle className="w-4 h-4"/> Critical Instruction</p>
                                    <p className="text-xs sm:text-sm text-slate-700 dark:text-slate-300 leading-relaxed font-medium">
-                                       You MUST send exactly <span className="font-bold text-slate-900 dark:text-white border-b border-rose-400">{autoPay.cryptoAmount} {autoPay.method === 'BTC' ? 'BTC' : 'USDT'}</span>. Different amounts will <span className="text-rose-600 dark:text-rose-400 font-bold">fail to auto-credit</span>.
+                                        You MUST send exactly <span className="font-bold text-slate-900 dark:text-white border-b border-rose-400">{autoPay.cryptoAmount} {autoPay.method === 'BTC' ? 'BTC' : 'USDT'}</span>. Different amounts will <span className="text-rose-600 dark:text-rose-400 font-bold">fail to auto-credit</span>.
                                    </p>
                                 </div>
                                 
