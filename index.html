@@ -719,24 +719,34 @@
           };
 
           const cancelSmsOrder = async (orderId, priceToRefund, isAuto = false) => {
+              // 🚀 FIX: টাইম আউট হলে সাথে সাথে স্ক্রিন থেকে নাম্বার গায়েব করে দেবে
+              if (isAuto) {
+                  setActiveOrders(prev => prev.filter(o => o.id !== orderId));
+                  triggerToast(`Time expired. Auto-cancelled & refunded.`);
+              }
+
               try {
                   const cancelRes = await fetch(`https://voicestore-backend.onrender.com/api/juicy/cancel`, { method: 'POST', headers: {'Content-Type':'application/json'}, body: JSON.stringify({orderId}) }); 
                   const cancelData = await cancelRes.json();
                   
                   if (!cancelData.success && !String(cancelData.message).includes('already closed')) {
-                      if (!isAuto) triggerToast(cancelData.message); 
-                      return; 
+                      // যদি ম্যানুয়ালি ক্যানসেল করে তবেই ব্লক হবে, অটো হলে রিফান্ড হবেই!
+                      if (!isAuto) {
+                          triggerToast(cancelData.message); 
+                          return; 
+                      }
                   }
                   
+                  // 🚀 ব্যাকগ্রাউন্ডে ব্যালেন্স রিফান্ড করে দেবে
                   await fetch('https://voicestore-backend.onrender.com/api/sms-refund', {
                       method: 'POST', headers: { 'Content-Type': 'application/json' },
                       body: JSON.stringify({ email: user.email, price: priceToRefund })
                   });
                   
-                  if(isAuto) triggerToast(`Time expired. Auto-cancelled & refunded.`);
-                  else triggerToast(`Cancelled. $${priceToRefund.toFixed(2)} refunded.`);
-                  
-                  setActiveOrders(prev => prev.filter(o => o.id !== orderId));
+                  if (!isAuto) {
+                      triggerToast(`Cancelled. $${priceToRefund.toFixed(2)} refunded.`);
+                      setActiveOrders(prev => prev.filter(o => o.id !== orderId));
+                  }
               } catch (e) {} 
           };
 
@@ -791,17 +801,30 @@
           };
 
           const formatPhoneDisplay = (phone, countryId) => {
-             const country = SMS_COUNTRIES.find(c => c.id === countryId);
+             const country = SMS_COUNTRIES.find(c => String(c.id) === String(countryId));
              let p = String(phone).replace(/\D/g, ''); 
-             if (country && p.startsWith(country.prefix)) return `+${country.prefix} ${p.substring(country.prefix.length)}`;
+             
+             if (country) {
+                 // যদি নম্বরের শুরুতে আগে থেকেই কান্ট্রি কোড থাকে
+                 if (p.startsWith(country.prefix)) {
+                     return `+${country.prefix} ${p.substring(country.prefix.length)}`;
+                 }
+                 // যদি কান্ট্রি কোড না থাকে, তবে জোর করে সামনে বসিয়ে দেবে
+                 return `+${country.prefix} ${p}`;
+             }
              return `+${p}`; 
           };
 
           const copyNumberOnly = (phone, countryId) => {
-             const country = SMS_COUNTRIES.find(c => c.id === countryId);
+             const country = SMS_COUNTRIES.find(c => String(c.id) === String(countryId));
              let p = String(phone).replace(/\D/g, ''); 
-             if (country && p.startsWith(country.prefix)) copyText(p.substring(country.prefix.length));
-             else copyText(p); 
+             
+             if (country) {
+                 if (p.startsWith(country.prefix)) copyText(p.substring(country.prefix.length));
+                 else copyText(p);
+             } else {
+                 copyText(p); 
+             }
           };
 
           if(!smsSettings?.active) return (
@@ -2208,4 +2231,4 @@
         root.render(<App />);
     </script>
 </body>
-</html>
+    </html>
