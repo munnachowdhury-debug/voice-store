@@ -245,67 +245,11 @@
           { id: '10227', name: 'Tonga' }, { id: '104', name: 'Trinidad and Tobago' }, { id: '89', name: 'Tunisia' },
           { id: '62', name: 'Turkey' }, { id: '161', name: 'Turkmenistan' },
           { id: '12', name: 'USA (virtual)' }, { id: '75', name: 'Uganda' }, { id: '1', name: 'Ukraine' },
-          { id: '95', name: 'United Arab Emirates' }, { id: '16', name: 'United Kingdom' }, { id: '156', name: 'Uruguay' },
+          { id: '95', name: 'United Arab Emirates' }, { id: '156', name: 'Uruguay' },
           { id: '40', name: 'Uzbekistan' }, { id: '1007', name: 'Vanuatu' }, { id: '70', name: 'Venezuela' },
           { id: '10', name: 'Vietnam' }, { id: '30', name: 'Yemen' }, { id: '147', name: 'Zambia' },
           { id: '96', name: 'Zimbabwe' }
-        ];
-
-        // 🚀 FULL GRIZZLY SMS SERVICE LIST 🚀
-        const GRIZZLY_SERVICE_NAMES = {
-          "tg": "Telegram", "wa": "Whatsapp", "go": "Google, Gmail, Youtube", "ts": "PayPal", "ot": "AnyOther",
-          "bz": "Blizzard - Battle.Net", "vi": "Viber", "ds": "Discord", "tw": "Twitter / X", "fb": "facebook",
-          "ig": "Instagram + Threads", "dr": "AI Chat", "oi": "Tinder", "ua": "Blablacar", "mm": "Microsoft",
-          "am": "Amazon", "ub": "Uber", "pf": "pof.com", "nv": "Naver", "me": "Line messenger", "gs": "Samsung",
-          "lf": "TikTok", "ew": "Nike", "hw": "AliPay", "hn": "1688", "wj": "1xbet", "an": "Adidas", "uk": "Airbnb",
-          "ab": "Alibaba", "pm": "AOL", "lt": "BitClout", "ls": "Careem", "re": "Coinbase", "wc": "Craigslist",
-          "zk": "Deliveroo", "zz": "DENT", "xk": "DiDi", "ak": "Douyu", "ve": "Dream11", "dh": "eBay", "nz": "Foodpanda",
-          "ul": "Getir", "bp": "GoFundMe", "gx": "Hepsiburada", "jl": "Hopi", "kp": "HQ Trivia", "pd": "IFood",
-          "im": "Imo", "kt": "KakaoTalk", "vp": "Kwai", "dl": "Lazada", "mc": "Michat", "nf": "Netflix", "cc": "Quipp",
-          "ka": "Shopee", "wg": "Skout", "mt": "Steam", "qd": "Taobao", "qq": "Tencent QQ", "pr": "Trendyol",
-          "wb": "WeChat", "mb": "Yahoo", "yl": "Yalla", "yi": "Yemeksepeti", "mj": "Zalo", "dy": "Zomato", "oz": "Poshmark",
-          "ip": "Burger King", "si": "Cita Previa", "hz": "Drom", "bv": "Metro", "yw": "Grindr", "ni": "Gojek",
-          "xs": "GroupMe", "ae": "Glovo", "ol": "KazanExpress", "fz": "KFC", "zo": "Kaggle", "ry": "McDonalds",
-          "py": "Monese", "vm": "Okcupid", "xh": "Ovo", "sn": "OLX", "fx": "Pgbonus", "jq": "Paysafecard", "dp": "ProtonMail",
-          "qi": "32Red", "hb": "Twitch", "gc": "TradingView", "nb": "Верный", "gt": "Gett", "ss": "Hezzl", "tn": "LinkedIN",
-          "vv": "Seospirit", "rz": "EasyPay", "ly": "Olacabs", "tl": "Truecaller", "tx": "Bolt", "kf": "Weibo",
-          "sq": "KuCoinPlay", "zl": "Airtel", "os": "Dhani", "wx": "Apple", "xf": "LightChat", "en": "Hermes",
-          "kc": "Vinted", "hk": "4Fun", "zs": "Bilibili", "fr": "Dana", "xd": "Tokopedia", "yy": "Venmo", "po": "premium.one",
-          "dg": "Mercari", "gf": "GoogleVoice", "zi": "Lovelocal", "bl": "BIGO LIVE", "gr_fx": "Ftx", "gr_gc": "Getcontact",
-          "gr_hb": "Humble bundle", "gr_im": "IMO messager", "gr_re": "Remit", "gr_sg": "Signal", "gr_tl": "Tilda",
-          "hx": "AliExpress", "st": "Auchan", "x5": "X5 Retail Group", "qv": "Badoo", "bf": "Buff.163", "bg": "Beget",
-          "gr_bl": "Biglion", "bt": "Battle", "bu": "BP — club", "cg": "cg.163", "gr_cn": "Coinut", "co": "Casino Online",
-          "cp": "Cupis", "dfb": "Diffbot", "ev": "MobileV", "ff": "FreedomFinance", "gg": "GoGym", "gr_gs": "Gorillas",
-          "gyi": "Ingalaxy", "is": "Herbihi.saku", "za": "Jingdong", "jt": "JumpTax", "gr_mi": "MICO", "gr_mo": "Move",
-          "mp": "Moteplassen", "mz": "Mozen", "gr_ox": "Onrealt", "ow": "Regru", "gr_sb": "ALLES Bonus", "sc": "Scruff",
-          "se": "Switchere", "sf": "Spotify", "vj": "Stormgain", "tu": "TalkU", "vd": "Vivaldi", "vr": "Vodorobot",
-          "wo": "Weco", "yd": "Yoshidrops", "gr_yo": "YoHo", "zu": "Zhihu", "gr_lv": "LOVE", "bs": "BLS-SPAIN",
-          "do": "Leboncoin", "vz": "Hinge", "lc": "Subito", "ju": "Indomaret", "ie": "bet365", "zx": "CommunityGaming",
-          "zh": "Zoho", "yu": "Xiaomi", "yo": "Amasia", "yg": "Coursehero", "yf": "Citymobil", "xx": "Joyride",
-          "xr": "Tango", "wh": "Tantan", "vg": "Shell", "rl": "inDriver", "ta": "Wink", "sz": "Pivko24", "rc": "Skype",
-          "qz": "Faceit", "qf": "RedBook (Xiaohongshu)", "pp": "Huyapp", "oh": "MapleSEA", "og": "Okko", "of": "Urent",
-          "nw": "Ximalaya", "nq": "Trip", "my": "CAIXA", "mo": "Bumble", "lx": "DewuPoison", "lv": "Megogo", "li": "Baidu",
-          "kz": "NimoTV", "kj": "YAPPY", "ki": "99app", "jf": "Likee", "iv": "Inboxlv", "il": "IQOS", "hg": "Switips",
-          "ha": "My11Circle", "gz": "LYKA", "gw": "CallApp", "gp": "Ticketmaster", "gm": "MocoSpace", "gb": "YouStar",
-          "fu": "Snapchat", "fi": "Dundle", "et": "Clubhouse", "es": "iQIYI", "eq": "Qoo10", "ee": "Twilio",
-          "dz": "Dominos Pizza", "dt": "Delivery Club", "dj": "LUKOIL-AZS", "df": "Happn", "de": "Karusel", "cr": "TenChat",
-          "cn": "Fiverr", "bn": "Alfagift", "aw": "Taikang", "ai": "CELEBe", "ac": "Doordash", "gr_ubox": "UBOX",
-          "gr_tp": "Taptap Send", "gr_sp": "Spartan Poker", "gr_sh": "Sahibinden", "gr_or": "Orbimed", "gr_py": "Happytuk",
-          "gr_tk": "Tanuki", "gr_sr": "Sravni", "gr_cf": "Stars Coffee", "gr_wn": "Winelab", "gr_zo": "Zoon",
-          "gr_ot": "Ostin", "gr_op": "Oppo", "gr_ex": "Novex", "gr_lo": "NationalLottery", "gr_bo": "My Beauty Bonus",
-          "gr_le": "Mobileproxy", "gr_dm": "Maxidom", "gr_ma": "Marlboro", "gr_bi": "LuckyBike", "gr_lb": "LocalBitcoins",
-          "gr_lm": "LiveMe", "gr_lc": "LikeCentre", "gr_kr": "Krasyar", "gr_kc": "Kopilkaclub", "gr_io": "InternetOpros",
-          "gr_og": "Огонь", "gr_ru": "Rumble", "gr_hf": "Hoff", "gr_hi": "Hiyachat", "gr_gr": "Grozd", "gr_fc": "Friendsclub",
-          "gr_fl": "Flor2U", "gr_fr": "Farpost", "gr_la": "Falla", "gr_eg": "EnticeGames", "gr_ds": "Dosmart",
-          "gr_cx": "Cofix", "gr_cs": "Chibbis", "gr_ch": "Checkscan", "gr_br": "Broadblue", "gr_bk": "Book24",
-          "gr_bz": "Bazar-store", "gr_az": "Azsirbis", "gr_as": "Atlasbus.by", "gr_st": "Artstation", "gr_ag": "Agoda",
-          "gr_ns": "2domains", "gr_aw": "AWS Amazon", "gr_ur": "Azure", "gr_sw": "Swagbucks", "gr_ob": "Botim",
-          "gr_ne": "Netease", "gr_pe": "Periscope", "gr_wg": "WOG", "fl": "4FunLite", "gr_ta": "Talabat", "gr_iy": "With IYC",
-          "gr_mu": "Multinet", "gr_oy": "Sneakerboy", "gr_yc": "IYC", "gr_ly": "Womply", "gr_en": "ClickEntregas",
-          "gr_ab": "Lootably", "qr": "MEGA", "gr_fw": "Flowwow", "gr_rd": "Chalkboard", "gr_dh": "Kleinanzeigen",
-          "gr_pp": "ParlayPlay", "vs": "WinzoGame", "mi": "Zupee", "gr_bf": "Beanfun", "us": "IRCTC", "gr_inv": "Investro",
-          "cz": "Claude"
-        };
+        ].sort((a,b) => a.name.localeCompare(b.name));
 
         const CUSTOMER_TABS = [
             { id: 'sms', label: 'Live SMS', icon: Smartphone },
@@ -781,21 +725,29 @@
           useEffect(() => { if (user?.email) localStorage.setItem(`smsOrders_${user.email}`, JSON.stringify(activeOrders)); }, [activeOrders, user]);
           useEffect(() => { const int = setInterval(() => setNow(Date.now()), 1000); return () => clearInterval(int); }, []);
 
+          // 🌟 Auto Error Handling & Robust Fetch 🌟
           useEffect(() => {
               if (smsSettings?.active) {
                   setIsFetchingServices(true);
                   fetch(`https://voicestore-backend.onrender.com/api/grizzly/getPrices`)
-                  .then(r => r.json()).then(json => { 
-                      if (json.success) {
+                  .then(r => r.json())
+                  .then(json => { 
+                      if (json.success && Array.isArray(json.data)) {
                           setAvailableServices(json.data); 
+                      } else {
+                          triggerToast("ডেটা লোড করতে সমস্যা হচ্ছে।");
                       }
                       setIsFetchingServices(false);
-                  }).catch(() => setIsFetchingServices(false));
+                  }).catch((err) => {
+                      console.error(err);
+                      setIsFetchingServices(false);
+                      triggerToast("সার্ভারে কানেক্ট করা যাচ্ছে না।");
+                  });
               }
           }, [smsSettings]);
 
           const filteredApps = availableServices.filter(s => 
-              String(s.countryId) === String(smsCountry) && s.name.toLowerCase().includes(appSearch.toLowerCase())
+              String(s.countryId) === String(smsCountry) && (s.name || '').toLowerCase().includes(appSearch.toLowerCase())
           );
 
           useEffect(() => {
