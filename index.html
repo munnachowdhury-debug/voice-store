@@ -315,6 +315,14 @@
           const [passwordInput, setPasswordInput] = useState('');
           const [isLoading, setIsLoading] = useState(false);
 
+          // 🛡️ SECURITY: Get Token for API Calls
+          const getAuthToken = async () => {
+              if (auth.currentUser) {
+                  return await auth.currentUser.getIdToken(true);
+              }
+              return null;
+          };
+
           useEffect(() => {
               if (isDarkMode) document.documentElement.classList.add('dark');
               else document.documentElement.classList.remove('dark');
@@ -686,15 +694,16 @@
               
               setIsSmsLoading(true);
               try {
+                  const token = await getAuthToken(); // 🛡️ GET TOKEN
                   const deductRes = await fetch('https://voicestore-backend.onrender.com/api/sms-deduct', {
-                      method: 'POST', headers: { 'Content-Type': 'application/json' },
+                      method: 'POST', headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
                       body: JSON.stringify({ email: user.email, price: currentSmsPrice })
                   });
                   const deductData = await deductRes.json();
                   if (!deductData.success) { triggerToast(deductData.message || "Balance deduction failed."); setIsSmsLoading(false); return; }
 
                   const res = await fetch('https://voicestore-backend.onrender.com/api/juicy/getNumber', {
-                      method: 'POST', headers: { 'Content-Type': 'application/json' },
+                      method: 'POST', headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
                       body: JSON.stringify({ serviceId: selectedSmsService, countryId: smsCountry })
                   });
                   const data = await res.json();
@@ -726,7 +735,8 @@
               }
 
               try {
-                  const cancelRes = await fetch(`https://voicestore-backend.onrender.com/api/juicy/cancel`, { method: 'POST', headers: {'Content-Type':'application/json'}, body: JSON.stringify({orderId}) }); 
+                  const token = await getAuthToken();
+                  const cancelRes = await fetch(`https://voicestore-backend.onrender.com/api/juicy/cancel`, { method: 'POST', headers: {'Content-Type':'application/json', 'Authorization': `Bearer ${token}`}, body: JSON.stringify({orderId}) }); 
                   const cancelData = await cancelRes.json();
                   
                   if (!cancelData.success && !String(cancelData.message).includes('already closed')) {
@@ -739,7 +749,7 @@
                   
                   // 🚀 ব্যাকগ্রাউন্ডে ব্যালেন্স রিফান্ড করে দেবে
                   await fetch('https://voicestore-backend.onrender.com/api/sms-refund', {
-                      method: 'POST', headers: { 'Content-Type': 'application/json' },
+                      method: 'POST', headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
                       body: JSON.stringify({ email: user.email, price: priceToRefund })
                   });
                   
@@ -778,11 +788,14 @@
                           if (data.success && data.status === 'OK' && data.code) {
                               setActiveOrders(prev => prev.map(o => {
                                   if (o.id === order.id && !o.codes.includes(data.code)) {
-                                      triggerToast(`New OTP Received!`);
+                                      triggerToast(`New SMS Received!`);
                                       
-                                      fetch('https://voicestore-backend.onrender.com/api/sms-save', {
-                                          method: 'POST', headers: { 'Content-Type': 'application/json' },
-                                          body: JSON.stringify({ email: user.email, type: `Live SMS (${o.service})`, data: `Phone: ${o.phone}\nOTP Code: ${data.code}` })
+                                      // 🛡️ GET TOKEN AND SAVE TO DATABASE 🛡️
+                                      getAuthToken().then(token => {
+                                          fetch('https://voicestore-backend.onrender.com/api/sms-save', {
+                                              method: 'POST', headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+                                              body: JSON.stringify({ email: user.email, type: `Live SMS (${o.service})`, data: `Phone: ${o.phone}\nOTP Code: ${data.code}` })
+                                          });
                                       });
                                       return { ...o, codes: [...o.codes, data.code] };
                                   }
@@ -2234,4 +2247,4 @@
         root.render(<App />);
     </script>
 </body>
-    </html>
+</html>
