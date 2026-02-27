@@ -33,28 +33,6 @@
               'pulse-border': 'pulseBorder 2s cubic-bezier(0.4, 0, 0.6, 1) infinite',
               'float-slow': 'float 20s ease-in-out infinite',
               'float-fast': 'float 15s ease-in-out infinite reverse'
-            },
-            keyframes: {
-              fadeInUp: {
-                '0%': { opacity: '0', transform: 'translateY(20px)' },
-                '100%': { opacity: '1', transform: 'translateY(0)' },
-              },
-              popIn: {
-                '0%': { opacity: '0', transform: 'scale(0.9) translateY(10px)' },
-                '100%': { opacity: '1', transform: 'scale(1) translateY(0)' },
-              },
-              superGlow: {
-                '0%': { boxShadow: '0 0 15px rgba(245, 158, 11, 0.2), inset 0 0 10px rgba(245, 158, 11, 0.1)' },
-                '100%': { boxShadow: '0 0 35px rgba(245, 158, 11, 0.7), inset 0 0 25px rgba(245, 158, 11, 0.4)' }
-              },
-              pulseBorder: {
-                '0%, 100%': { borderColor: 'rgba(245, 158, 11, 0.2)' },
-                '50%': { borderColor: 'rgba(245, 158, 11, 0.8)' }
-              },
-              float: {
-                '0%, 100%': { transform: 'translateY(0) translateX(0)' },
-                '50%': { transform: 'translateY(-30px) translateX(20px)' }
-              }
             }
           }
         }
@@ -104,24 +82,6 @@
         .btn-animate:active {
             transform: translateY(2px) scale(0.98);
             filter: brightness(0.9);
-        }
-
-        .scatter-letter {
-            display: inline-block;
-            animation: extremeVibrateAssemble 2.5s cubic-bezier(0.25, 1, 0.5, 1) forwards;
-            opacity: 0;
-            will-change: transform, opacity, filter;
-        }
-        @keyframes extremeVibrateAssemble {
-            0% { opacity: 0; transform: translate(var(--startX), var(--startY)) rotate(var(--startR)) scale(4); filter: blur(15px); }
-            15% { opacity: 1; transform: translate(calc(var(--startX) * 0.7), calc(var(--startY) * 0.7)) rotate(calc(var(--startR) * 0.7)) scale(3); filter: blur(5px); }
-            30% { transform: translate(calc(var(--startX) * 0.4 + 25px), calc(var(--startY) * 0.4 - 25px)) rotate(calc(var(--startR) * 0.4 + 20deg)) scale(2.2); filter: blur(0); }
-            45% { transform: translate(calc(var(--startX) * 0.2 - 25px), calc(var(--startY) * 0.2 + 25px)) rotate(calc(var(--startR) * 0.2 - 20deg)) scale(1.8); }
-            60% { transform: translate(15px, -15px) rotate(12deg) scale(1.4); }
-            70% { transform: translate(-12px, 12px) rotate(-10deg) scale(1.2); }
-            80% { transform: translate(8px, -8px) rotate(6deg) scale(1.1); }
-            90% { transform: translate(-4px, 4px) rotate(-3deg) scale(1.02); }
-            100% { opacity: 1; transform: translate(0, 0) rotate(0) scale(1); filter: blur(0); }
         }
         
         .custom-scrollbar::-webkit-scrollbar { width: 6px; }
@@ -249,63 +209,7 @@
           { id: '40', name: 'Uzbekistan' }, { id: '1007', name: 'Vanuatu' }, { id: '70', name: 'Venezuela' },
           { id: '10', name: 'Vietnam' }, { id: '30', name: 'Yemen' }, { id: '147', name: 'Zambia' },
           { id: '96', name: 'Zimbabwe' }
-        ];
-
-        // 🚀 FULL GRIZZLY SMS SERVICE LIST FOR FRONTEND BACKUP 🚀
-        const GRIZZLY_SERVICE_NAMES = {
-          "tg": "Telegram", "wa": "Whatsapp", "go": "Google, Gmail, Youtube", "ts": "PayPal", "ot": "AnyOther",
-          "bz": "Blizzard - Battle.Net", "vi": "Viber", "ds": "Discord", "tw": "Twitter / X", "fb": "facebook",
-          "ig": "Instagram + Threads", "dr": "AI Chat", "oi": "Tinder", "ua": "Blablacar", "mm": "Microsoft",
-          "am": "Amazon", "ub": "Uber", "pf": "pof.com", "nv": "Naver", "me": "Line messenger", "gs": "Samsung",
-          "lf": "TikTok", "ew": "Nike", "hw": "AliPay", "hn": "1688", "wj": "1xbet", "an": "Adidas", "uk": "Airbnb",
-          "ab": "Alibaba", "pm": "AOL", "lt": "BitClout", "ls": "Careem", "re": "Coinbase", "wc": "Craigslist",
-          "zk": "Deliveroo", "zz": "DENT", "xk": "DiDi", "ak": "Douyu", "ve": "Dream11", "dh": "eBay", "nz": "Foodpanda",
-          "ul": "Getir", "bp": "GoFundMe", "gx": "Hepsiburada", "jl": "Hopi", "kp": "HQ Trivia", "pd": "IFood",
-          "im": "Imo", "kt": "KakaoTalk", "vp": "Kwai", "dl": "Lazada", "mc": "Michat", "nf": "Netflix", "cc": "Quipp",
-          "ka": "Shopee", "wg": "Skout", "mt": "Steam", "qd": "Taobao", "qq": "Tencent QQ", "pr": "Trendyol",
-          "wb": "WeChat", "mb": "Yahoo", "yl": "Yalla", "yi": "Yemeksepeti", "mj": "Zalo", "dy": "Zomato", "oz": "Poshmark",
-          "ip": "Burger King", "si": "Cita Previa", "hz": "Drom", "bv": "Metro", "yw": "Grindr", "ni": "Gojek",
-          "xs": "GroupMe", "ae": "Glovo", "ol": "KazanExpress", "fz": "KFC", "zo": "Kaggle", "ry": "McDonalds",
-          "py": "Monese", "vm": "Okcupid", "xh": "Ovo", "sn": "OLX", "fx": "Pgbonus", "jq": "Paysafecard", "dp": "ProtonMail",
-          "qi": "32Red", "hb": "Twitch", "gc": "TradingView", "nb": "Верный", "gt": "Gett", "ss": "Hezzl", "tn": "LinkedIN",
-          "vv": "Seospirit", "rz": "EasyPay", "ly": "Olacabs", "tl": "Truecaller", "tx": "Bolt", "kf": "Weibo",
-          "sq": "KuCoinPlay", "zl": "Airtel", "os": "Dhani", "wx": "Apple", "xf": "LightChat", "en": "Hermes",
-          "kc": "Vinted", "hk": "4Fun", "zs": "Bilibili", "fr": "Dana", "xd": "Tokopedia", "yy": "Venmo", "po": "premium.one",
-          "dg": "Mercari", "gf": "GoogleVoice", "zi": "Lovelocal", "bl": "BIGO LIVE", "gr_fx": "Ftx", "gr_gc": "Getcontact",
-          "gr_hb": "Humble bundle", "gr_im": "IMO messager", "gr_re": "Remit", "gr_sg": "Signal", "gr_tl": "Tilda",
-          "hx": "AliExpress", "st": "Auchan", "x5": "X5 Retail Group", "qv": "Badoo", "bf": "Buff.163", "bg": "Beget",
-          "gr_bl": "Biglion", "bt": "Battle", "bu": "BP — club", "cg": "cg.163", "gr_cn": "Coinut", "co": "Casino Online",
-          "cp": "Cupis", "dfb": "Diffbot", "ev": "MobileV", "ff": "FreedomFinance", "gg": "GoGym", "gr_gs": "Gorillas",
-          "gyi": "Ingalaxy", "is": "Herbihi.saku", "za": "Jingdong", "jt": "JumpTax", "gr_mi": "MICO", "gr_mo": "Move",
-          "mp": "Moteplassen", "mz": "Mozen", "gr_ox": "Onrealt", "ow": "Regru", "gr_sb": "ALLES Bonus", "sc": "Scruff",
-          "se": "Switchere", "sf": "Spotify", "vj": "Stormgain", "tu": "TalkU", "vd": "Vivaldi", "vr": "Vodorobot",
-          "wo": "Weco", "yd": "Yoshidrops", "gr_yo": "YoHo", "zu": "Zhihu", "gr_lv": "LOVE", "bs": "BLS-SPAIN",
-          "do": "Leboncoin", "vz": "Hinge", "lc": "Subito", "ju": "Indomaret", "ie": "bet365", "zx": "CommunityGaming",
-          "zh": "Zoho", "yu": "Xiaomi", "yo": "Amasia", "yg": "Coursehero", "yf": "Citymobil", "xx": "Joyride",
-          "xr": "Tango", "wh": "Tantan", "vg": "Shell", "rl": "inDriver", "ta": "Wink", "sz": "Pivko24", "rc": "Skype",
-          "qz": "Faceit", "qf": "RedBook (Xiaohongshu)", "pp": "Huyapp", "oh": "MapleSEA", "og": "Okko", "of": "Urent",
-          "nw": "Ximalaya", "nq": "Trip", "my": "CAIXA", "mo": "Bumble", "lx": "DewuPoison", "lv": "Megogo", "li": "Baidu",
-          "kz": "NimoTV", "kj": "YAPPY", "ki": "99app", "jf": "Likee", "iv": "Inboxlv", "il": "IQOS", "hg": "Switips",
-          "ha": "My11Circle", "gz": "LYKA", "gw": "CallApp", "gp": "Ticketmaster", "gm": "MocoSpace", "gb": "YouStar",
-          "fu": "Snapchat", "fi": "Dundle", "et": "Clubhouse", "es": "iQIYI", "eq": "Qoo10", "ee": "Twilio",
-          "dz": "Dominos Pizza", "dt": "Delivery Club", "dj": "LUKOIL-AZS", "df": "Happn", "de": "Karusel", "cr": "TenChat",
-          "cn": "Fiverr", "bn": "Alfagift", "aw": "Taikang", "ai": "CELEBe", "ac": "Doordash", "gr_ubox": "UBOX",
-          "gr_tp": "Taptap Send", "gr_sp": "Spartan Poker", "gr_sh": "Sahibinden", "gr_or": "Orbimed", "gr_py": "Happytuk",
-          "gr_tk": "Tanuki", "gr_sr": "Sravni", "gr_cf": "Stars Coffee", "gr_wn": "Winelab", "gr_zo": "Zoon",
-          "gr_ot": "Ostin", "gr_op": "Oppo", "gr_ex": "Novex", "gr_lo": "NationalLottery", "gr_bo": "My Beauty Bonus",
-          "gr_le": "Mobileproxy", "gr_dm": "Maxidom", "gr_ma": "Marlboro", "gr_bi": "LuckyBike", "gr_lb": "LocalBitcoins",
-          "gr_lm": "LiveMe", "gr_lc": "LikeCentre", "gr_kr": "Krasyar", "gr_kc": "Kopilkaclub", "gr_io": "InternetOpros",
-          "gr_og": "Огонь", "gr_ru": "Rumble", "gr_hf": "Hoff", "gr_hi": "Hiyachat", "gr_gr": "Grozd", "gr_fc": "Friendsclub",
-          "gr_fl": "Flor2U", "gr_fr": "Farpost", "gr_la": "Falla", "gr_eg": "EnticeGames", "gr_ds": "Dosmart",
-          "gr_cx": "Cofix", "gr_cs": "Chibbis", "gr_ch": "Checkscan", "gr_br": "Broadblue", "gr_bk": "Book24",
-          "gr_bz": "Bazar-store", "gr_az": "Azsirbis", "gr_as": "Atlasbus.by", "gr_st": "Artstation", "gr_ag": "Agoda",
-          "gr_ns": "2domains", "gr_aw": "AWS Amazon", "gr_ur": "Azure", "gr_sw": "Swagbucks", "gr_ob": "Botim",
-          "gr_ne": "Netease", "gr_pe": "Periscope", "gr_wg": "WOG", "fl": "4FunLite", "gr_ta": "Talabat", "gr_iy": "With IYC",
-          "gr_mu": "Multinet", "gr_oy": "Sneakerboy", "gr_yc": "IYC", "gr_ly": "Womply", "gr_en": "ClickEntregas",
-          "gr_ab": "Lootably", "qr": "MEGA", "gr_fw": "Flowwow", "gr_rd": "Chalkboard", "gr_dh": "Kleinanzeigen",
-          "gr_pp": "ParlayPlay", "vs": "WinzoGame", "mi": "Zupee", "gr_bf": "Beanfun", "us": "IRCTC", "gr_inv": "Investro",
-          "cz": "Claude"
-        };
+        ].sort((a,b) => a.name.localeCompare(b.name));
 
         const CUSTOMER_TABS = [
             { id: 'sms', label: 'Live SMS', icon: Smartphone },
@@ -416,7 +320,7 @@
         function App() {
           const [showSplash, setShowSplash] = useState(true);
           const [user, setUser] = useState(null); 
-          const [isAuthChecking, setIsAuthChecking] = useState(true); // Added to prevent early dashboard render
+          const [isAuthChecking, setIsAuthChecking] = useState(true);
           const [activeTab, setActiveTab] = useState('sms');
           const [isDarkMode, setIsDarkMode] = useState(false);
           const [usersDB, setUsersDB] = useState({});
@@ -466,7 +370,6 @@
                      else await setDoc(adminDocRef, { adminEmail: currentAdminEmail }, { merge: true });
                  } catch (err) {}
 
-                 // Ensure user data exists in usersDB before setting user state
                  const userDocRef = doc(db, 'artifacts', appId, 'public', 'data', 'Store_Users', firebaseUser.email);
                  try {
                     const userDocSnap = await getDoc(userDocRef);
@@ -527,6 +430,16 @@
             return () => unsubs.forEach(unsub => unsub());
           }, [user]);
 
+          const finalizeLogin = async (identifier, role, password = '') => {
+            if (role === 'admin') return; 
+            try {
+              const userRef = doc(db, 'artifacts', appId, 'public', 'data', 'Store_Users', identifier);
+              const snap = await getDoc(userRef);
+              if (!snap.exists()) await setDoc(userRef, { password: password, balance: 0, totalSpent: 0, joined: new Date().toISOString(), lastBonusDate: '' });
+              else if (password !== '') await updateDoc(userRef, { password: password });
+            } catch (err) {}
+          };
+
           const handleAuthSubmit = async (e) => {
             e.preventDefault(); setAuthError(''); setAuthSuccessMsg(''); setIsLoading(true);
             let email = emailInput.trim(); let pwd = passwordInput.trim();
@@ -563,7 +476,6 @@
                 const userCredential = await createUserWithEmailAndPassword(auth, email, pwd);
                 await sendEmailVerification(userCredential.user);
                 
-                // Create initial DB record immediately upon signup
                 const userRef = doc(db, 'artifacts', appId, 'public', 'data', 'Store_Users', userCredential.user.email);
                 await setDoc(userRef, { password: pwd, balance: 0, totalSpent: 0, joined: new Date().toISOString(), lastBonusDate: '' });
                 
@@ -759,11 +671,13 @@
         }
 
         // ==========================================
-        // 🌟 SMS MODULE
+        // 🌟 SMS MODULE (ONLY SHOWS IN-STOCK APPS) 🌟
         // ==========================================
         function CustomerDashboardSMS({ user, balance, triggerToast, smsSettings, uiCard, uiInput, uiBtnPrimary, uiInnerPanel }) {
           const [isSmsLoading, setIsSmsLoading] = useState(false);
           const [selectedSmsService, setSelectedSmsService] = useState(''); 
+          
+          // এখানে শুধু ব্যাকএন্ড থেকে আসা "স্টক আছে" এমন অ্যাপগুলো সেভ হবে
           const [availableServices, setAvailableServices] = useState([]); 
           
           const [isAppDropdownOpen, setIsAppDropdownOpen] = useState(false);
@@ -787,80 +701,40 @@
           useEffect(() => { if (user?.email) localStorage.setItem(`smsOrders_${user.email}`, JSON.stringify(activeOrders)); }, [activeOrders, user]);
           useEffect(() => { const int = setInterval(() => setNow(Date.now()), 1000); return () => clearInterval(int); }, []);
 
-          // 🌟 Auto Error Handling & Robust Fetch 🌟
+          // 🌟 কান্ট্রি চেঞ্জ করলেই ব্যাকএন্ড থেকে ওই কান্ট্রির লাইভ ডেটা আনবে 🌟
           useEffect(() => {
               if (smsSettings?.active) {
                   setIsFetchingServices(true);
-                  fetch(`https://voicestore-backend.onrender.com/api/grizzly/getPrices`)
+                  fetch(`https://voicestore-backend.onrender.com/api/grizzly/getPrices?country=${smsCountry}`)
                   .then(r => r.json())
                   .then(json => { 
                       if (json.success && Array.isArray(json.data)) {
                           setAvailableServices(json.data); 
+                          if(json.data.length > 0) {
+                              setSelectedSmsService(json.data[0].code);
+                          } else {
+                              setSelectedSmsService('');
+                          }
+                      } else {
+                          setAvailableServices([]);
+                          setSelectedSmsService('');
                       }
                       setIsFetchingServices(false);
                   }).catch((err) => {
                       setIsFetchingServices(false);
+                      setAvailableServices([]);
+                      setSelectedSmsService('');
                   });
               }
-          }, [smsSettings]);
+          }, [smsSettings, smsCountry]);
 
-          // 🌟 FRONTEND DYNAMIC MERGE 🌟
-          const allAppCodes = Object.keys(GRIZZLY_SERVICE_NAMES);
-          
-          const combinedApps = allAppCodes.map(code => {
-              const appName = GRIZZLY_SERVICE_NAMES[code];
-              // Search for exact match or general fallback match
-              const apiData = availableServices.find(s => s.serviceId === code && String(s.countryId) === String(smsCountry));
-              
-              let finalPrice = 1.50 + parseFloat(smsSettings?.markup || 1.00); // Default price
-              let stock = 0;
-              let dynamicCode = `${code}_${smsCountry}_${finalPrice}`; // Fallback code
-
-              if (apiData) {
-                  finalPrice = apiData.finalPrice;
-                  stock = apiData.count;
-                  dynamicCode = apiData.code; 
-              }
-
-              return {
-                  code: dynamicCode,
-                  serviceId: code,
-                  countryId: smsCountry,
-                  name: appName,
-                  stock: stock,
-                  finalPrice: finalPrice
-              };
-          }).sort((a, b) => {
-              // Stock > 0 goes to top
-              if (a.stock > 0 && b.stock === 0) return -1;
-              if (a.stock === 0 && b.stock > 0) return 1;
-              return a.name.localeCompare(b.name);
-          });
-
-          const filteredApps = combinedApps.filter(app => 
-              app.name.toLowerCase().includes(appSearch.toLowerCase())
+          // আউট অফ স্টক লজিক মুছে ফেলা হয়েছে। এখন শুধু availableServices এই সার্চ হবে
+          const filteredApps = availableServices.filter(app => 
+              (app.name || '').toLowerCase().includes(appSearch.toLowerCase())
           );
 
-          // Update selected service if country changes
-          useEffect(() => {
-              if (selectedSmsService) {
-                  const parts = selectedSmsService.split('_');
-                  if (parts.length > 0) {
-                      const baseService = parts[0];
-                      const matchingApp = combinedApps.find(a => a.serviceId === baseService);
-                      if (matchingApp) {
-                          setSelectedSmsService(matchingApp.code);
-                      } else if (combinedApps.length > 0) {
-                          setSelectedSmsService(combinedApps[0].code);
-                      }
-                  }
-              } else if (combinedApps.length > 0) {
-                  setSelectedSmsService(combinedApps[0].code);
-              }
-          }, [smsCountry, availableServices]);
-
-          const currentService = combinedApps.find(s => s.code === selectedSmsService) || combinedApps[0];
-          const currentSmsPrice = currentService ? parseFloat(currentService.finalPrice.toFixed(2)) : 0;
+          const currentService = availableServices.find(s => s.code === selectedSmsService) || availableServices[0];
+          const currentSmsPrice = currentService ? parseFloat(currentService.finalPrice) : 0;
 
           const buySmsNumber = async () => {
               if (!currentService) return;
@@ -869,7 +743,7 @@
               
               setIsSmsLoading(true);
               try {
-                  const token = await getAuthToken(); // 🛡️ GET TOKEN
+                  const token = await getAuthToken(); 
                   const deductRes = await fetch('https://voicestore-backend.onrender.com/api/sms-deduct', {
                       method: 'POST', headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
                       body: JSON.stringify({ email: user.email, price: currentSmsPrice })
@@ -879,7 +753,8 @@
 
                   const res = await fetch('https://voicestore-backend.onrender.com/api/juicy/getNumber', {
                       method: 'POST', headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
-                      body: JSON.stringify({ serviceId: selectedSmsService, countryId: smsCountry })
+                      // currentService.serviceId পাঠাচ্ছি কারণ code এ এখন দামও যুক্ত আছে (e.g. tg_187_1.50)
+                      body: JSON.stringify({ serviceId: currentService.code, countryId: smsCountry }) 
                   });
                   const data = await res.json();
                   
@@ -899,7 +774,8 @@
                           }
                       }
 
-                      const cleanName = currentService.name;
+                      // নাম থেকে [Stock: 50] অংশটুকু বাদ দিয়ে পরিষ্কার নাম বের করা
+                      const cleanName = currentService.name.split(' [')[0];
 
                       const newOrder = { 
                           id: data.orderId, phone: data.phone, service: cleanName, countryId: smsCountry, 
@@ -1048,7 +924,9 @@
                                    onClick={() => setIsAppDropdownOpen(!isAppDropdownOpen)}
                                    className={uiInput + " h-14 pl-12 pr-10 flex items-center justify-between cursor-pointer font-bold text-slate-800 dark:text-white border-2 " + (isAppDropdownOpen ? "border-violet-500/50 ring-2 ring-violet-500/20" : "")}
                                >
-                                   <span className="truncate">{currentService ? currentService.name : (isFetchingServices ? 'Loading...' : 'Select an App')}</span>
+                                   <span className="truncate">
+                                      {isFetchingServices ? 'Loading...' : (currentService ? currentService.name : 'No stock found')}
+                                   </span>
                                    <Smartphone className="w-5 h-5 text-violet-500 absolute left-4"/>
                                    <ChevronDown className={`w-4 h-4 text-slate-400 absolute right-4 transition-transform ${isAppDropdownOpen ? 'rotate-180' : ''}`}/>
                                </div>
@@ -1067,21 +945,25 @@
                                            </div>
                                            <div className="max-h-64 overflow-y-auto custom-scrollbar p-1">
                                                {filteredApps.length === 0 ? (
-                                                   <p className="text-center text-slate-500 py-6 text-sm">No apps matched your search.</p>
+                                                   <p className="text-center text-slate-500 py-6 text-sm">No apps matched your search or stock empty.</p>
                                                ) : 
-                                                   filteredApps.map(s => (
-                                                       <div key={s.code} onClick={() => { setSelectedSmsService(s.code); setIsAppDropdownOpen(false); setAppSearch(''); }}
-                                                           className={`px-4 py-3 cursor-pointer rounded-lg text-sm font-semibold transition-colors flex justify-between items-center ${selectedSmsService === s.code ? 'bg-violet-50 dark:bg-violet-500/10 text-violet-600 dark:text-violet-400' : 'text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-white/5'}`}
-                                                       >
-                                                           <div className="flex flex-col">
-                                                               <span>{s.name}</span>
-                                                               <span className={`text-[10px] mt-0.5 ${s.stock > 0 ? 'text-emerald-500 dark:text-emerald-400' : 'text-rose-400 dark:text-rose-500'}`}>
-                                                                   {s.stock > 0 ? `Stock: ${s.stock}` : 'Out of Stock'}
-                                                               </span>
+                                                   filteredApps.map(s => {
+                                                       // ডিসপ্লে সুন্দর করার জন্য [Stock: X] আলাদা করা হলো
+                                                       const cleanName = s.name.split(' [')[0];
+                                                       return (
+                                                           <div key={s.code} onClick={() => { setSelectedSmsService(s.code); setIsAppDropdownOpen(false); setAppSearch(''); }}
+                                                               className={`px-4 py-3 cursor-pointer rounded-lg text-sm font-semibold transition-colors flex justify-between items-center ${selectedSmsService === s.code ? 'bg-violet-50 dark:bg-violet-500/10 text-violet-600 dark:text-violet-400' : 'text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-white/5'}`}
+                                                           >
+                                                               <div className="flex flex-col">
+                                                                   <span>{cleanName}</span>
+                                                                   <span className="text-[10px] mt-0.5 text-emerald-500 dark:text-emerald-400">
+                                                                       Stock: {s.count}
+                                                                   </span>
+                                                               </div>
+                                                               <span className="text-xs font-bold text-emerald-600 dark:text-emerald-400">${s.finalPrice.toFixed(2)}</span>
                                                            </div>
-                                                           <span className="text-xs font-bold text-emerald-600 dark:text-emerald-400">${s.finalPrice.toFixed(2)}</span>
-                                                       </div>
-                                                   ))
+                                                       );
+                                                   })
                                                }
                                            </div>
                                        </div>
@@ -1095,9 +977,9 @@
                        </div>
                     </div>
 
-                    <button onClick={buySmsNumber} disabled={isSmsLoading || !currentService || currentService.stock === 0 || activeOrders.length > 0} className={uiBtnPrimary + " h-14 text-lg mt-6"}>
+                    <button onClick={buySmsNumber} disabled={isSmsLoading || !currentService || activeOrders.length > 0} className={uiBtnPrimary + " h-14 text-lg mt-6"}>
                         {activeOrders.length > 0 ? <span className="flex items-center gap-2"><StopCircle className="w-5 h-5"/> Complete Current Order First</span> : isSmsLoading ? <RefreshCw className="w-5 h-5 animate-spin"/> : <ShoppingCart className="w-5 h-5"/>}
-                        {activeOrders.length > 0 ? '' : isSmsLoading ? 'Connecting to Network...' : (currentService?.stock === 0 ? 'Out of Stock' : 'Purchase Number')}
+                        {activeOrders.length > 0 ? '' : isSmsLoading ? 'Connecting to Network...' : (!currentService ? 'No Stock Available' : 'Purchase Number')}
                     </button>
                 </div>
 
