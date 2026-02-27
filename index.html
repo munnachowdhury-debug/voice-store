@@ -183,7 +183,7 @@
           { id: '144', name: 'Monaco' }, { id: '72', name: 'Mongolia' }, { id: '171', name: 'Montenegro' },
           { id: '180', name: 'Montserrat' }, { id: '37', name: 'Morocco' }, { id: '80', name: 'Mozambique' },
           { id: '5', name: 'Myanmar' }, { id: '138', name: 'Namibia' }, { id: '81', name: 'Nepal' },
-          { id: '185', name: 'New Caledonia' }, { id: '67', name: 'New Zealand' },
+          { id: '48', name: 'Netherlands' }, { id: '185', name: 'New Caledonia' }, { id: '67', name: 'New Zealand' },
           { id: '90', name: 'Nicaragua' }, { id: '139', name: 'Niger' }, { id: '19', name: 'Nigeria' },
           { id: '204', name: 'Niue' }, { id: '183', name: 'North Macedonia' }, { id: '174', name: 'Norway' },
           { id: '107', name: 'Oman' }, { id: '66', name: 'Pakistan' }, { id: '188', name: 'Palestine' },
@@ -710,30 +710,33 @@
                   .then(json => { 
                       if (json.success && Array.isArray(json.data)) {
                           setAvailableServices(json.data); 
-                          if(json.data.length > 0) {
-                              setSelectedSmsService(json.data[0].code);
-                          } else {
-                              setSelectedSmsService('');
-                          }
                       } else {
                           setAvailableServices([]);
-                          setSelectedSmsService('');
                       }
                       setIsFetchingServices(false);
                   }).catch((err) => {
                       setIsFetchingServices(false);
                       setAvailableServices([]);
-                      setSelectedSmsService('');
                   });
               }
           }, [smsSettings, smsCountry]);
 
-          // আউট অফ স্টক লজিক মুছে ফেলা হয়েছে। এখন শুধু availableServices এই সার্চ হবে
+          // শুধু availableServices এর উপরেই সার্চ ও ফিল্টার চলবে
           const filteredApps = availableServices.filter(app => 
               (app.name || '').toLowerCase().includes(appSearch.toLowerCase())
           );
 
-          const currentService = availableServices.find(s => s.code === selectedSmsService) || availableServices[0];
+          // Update selected service if country changes or data refreshes
+          useEffect(() => {
+              if (availableServices.length > 0) {
+                  const exists = availableServices.find(a => a.code === selectedSmsService);
+                  if(!exists) setSelectedSmsService(availableServices[0].code);
+              } else {
+                  setSelectedSmsService('');
+              }
+          }, [smsCountry, availableServices]);
+
+          const currentService = availableServices.find(s => s.code === selectedSmsService) || null;
           const currentSmsPrice = currentService ? parseFloat(currentService.finalPrice) : 0;
 
           const buySmsNumber = async () => {
@@ -753,7 +756,7 @@
 
                   const res = await fetch('https://voicestore-backend.onrender.com/api/juicy/getNumber', {
                       method: 'POST', headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
-                      // currentService.serviceId পাঠাচ্ছি কারণ code এ এখন দামও যুক্ত আছে (e.g. tg_187_1.50)
+                      // currentService.code পাঠানো হচ্ছে, কারণ এর মধ্যেই maxPrice লুকানো আছে
                       body: JSON.stringify({ serviceId: currentService.code, countryId: smsCountry }) 
                   });
                   const data = await res.json();
@@ -925,7 +928,7 @@
                                    className={uiInput + " h-14 pl-12 pr-10 flex items-center justify-between cursor-pointer font-bold text-slate-800 dark:text-white border-2 " + (isAppDropdownOpen ? "border-violet-500/50 ring-2 ring-violet-500/20" : "")}
                                >
                                    <span className="truncate">
-                                      {isFetchingServices ? 'Loading...' : (currentService ? currentService.name : 'No stock found')}
+                                      {isFetchingServices ? 'Syncing live prices...' : (currentService ? `${currentService.name.split(' [')[0]} (Stock: ${currentService.count})` : 'No apps available')}
                                    </span>
                                    <Smartphone className="w-5 h-5 text-violet-500 absolute left-4"/>
                                    <ChevronDown className={`w-4 h-4 text-slate-400 absolute right-4 transition-transform ${isAppDropdownOpen ? 'rotate-180' : ''}`}/>
@@ -938,17 +941,16 @@
                                            <div className="p-3 border-b border-slate-100 dark:border-white/5 relative bg-slate-50 dark:bg-black/20">
                                                <Search className="w-4 h-4 text-slate-400 absolute left-6 top-6"/>
                                                <input 
-                                                   type="text" autoFocus placeholder="Type to search app..." 
+                                                   type="text" autoFocus placeholder="Search app..." 
                                                    value={appSearch} onChange={(e) => setAppSearch(e.target.value)}
                                                    className="w-full bg-white dark:bg-black/50 border border-slate-200 dark:border-white/10 rounded-lg pl-10 pr-4 py-2.5 text-sm outline-none focus:border-violet-500/50 text-slate-900 dark:text-white"
                                                />
                                            </div>
                                            <div className="max-h-64 overflow-y-auto custom-scrollbar p-1">
                                                {filteredApps.length === 0 ? (
-                                                   <p className="text-center text-slate-500 py-6 text-sm">No apps matched your search or stock empty.</p>
+                                                   <p className="text-center text-slate-500 py-6 text-sm">No apps found for this region.</p>
                                                ) : 
                                                    filteredApps.map(s => {
-                                                       // ডিসপ্লে সুন্দর করার জন্য [Stock: X] আলাদা করা হলো
                                                        const cleanName = s.name.split(' [')[0];
                                                        return (
                                                            <div key={s.code} onClick={() => { setSelectedSmsService(s.code); setIsAppDropdownOpen(false); setAppSearch(''); }}
@@ -960,7 +962,7 @@
                                                                        Stock: {s.count}
                                                                    </span>
                                                                </div>
-                                                               <span className="text-xs font-bold text-emerald-600 dark:text-emerald-400">${s.finalPrice.toFixed(2)}</span>
+                                                               <span className="text-xs font-bold text-emerald-600 dark:text-emerald-400">${Number(s.finalPrice).toFixed(2)}</span>
                                                            </div>
                                                        );
                                                    })
