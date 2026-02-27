@@ -251,62 +251,6 @@
           { id: '96', name: 'Zimbabwe' }
         ].sort((a,b) => a.name.localeCompare(b.name));
 
-        // 🚀 FULL GRIZZLY SMS SERVICE LIST FOR FRONTEND BACKUP 🚀
-        const GRIZZLY_SERVICE_NAMES = {
-          "tg": "Telegram", "wa": "Whatsapp", "go": "Google, Gmail, Youtube", "ts": "PayPal", "ot": "AnyOther",
-          "bz": "Blizzard - Battle.Net", "vi": "Viber", "ds": "Discord", "tw": "Twitter / X", "fb": "facebook",
-          "ig": "Instagram + Threads", "dr": "AI Chat", "oi": "Tinder", "ua": "Blablacar", "mm": "Microsoft",
-          "am": "Amazon", "ub": "Uber", "pf": "pof.com", "nv": "Naver", "me": "Line messenger", "gs": "Samsung",
-          "lf": "TikTok", "ew": "Nike", "hw": "AliPay", "hn": "1688", "wj": "1xbet", "an": "Adidas", "uk": "Airbnb",
-          "ab": "Alibaba", "pm": "AOL", "lt": "BitClout", "ls": "Careem", "re": "Coinbase", "wc": "Craigslist",
-          "zk": "Deliveroo", "zz": "DENT", "xk": "DiDi", "ak": "Douyu", "ve": "Dream11", "dh": "eBay", "nz": "Foodpanda",
-          "ul": "Getir", "bp": "GoFundMe", "gx": "Hepsiburada", "jl": "Hopi", "kp": "HQ Trivia", "pd": "IFood",
-          "im": "Imo", "kt": "KakaoTalk", "vp": "Kwai", "dl": "Lazada", "mc": "Michat", "nf": "Netflix", "cc": "Quipp",
-          "ka": "Shopee", "wg": "Skout", "mt": "Steam", "qd": "Taobao", "qq": "Tencent QQ", "pr": "Trendyol",
-          "wb": "WeChat", "mb": "Yahoo", "yl": "Yalla", "yi": "Yemeksepeti", "mj": "Zalo", "dy": "Zomato", "oz": "Poshmark",
-          "ip": "Burger King", "si": "Cita Previa", "hz": "Drom", "bv": "Metro", "yw": "Grindr", "ni": "Gojek",
-          "xs": "GroupMe", "ae": "Glovo", "ol": "KazanExpress", "fz": "KFC", "zo": "Kaggle", "ry": "McDonalds",
-          "py": "Monese", "vm": "Okcupid", "xh": "Ovo", "sn": "OLX", "fx": "Pgbonus", "jq": "Paysafecard", "dp": "ProtonMail",
-          "qi": "32Red", "hb": "Twitch", "gc": "TradingView", "nb": "Верный", "gt": "Gett", "ss": "Hezzl", "tn": "LinkedIN",
-          "vv": "Seospirit", "rz": "EasyPay", "ly": "Olacabs", "tl": "Truecaller", "tx": "Bolt", "kf": "Weibo",
-          "sq": "KuCoinPlay", "zl": "Airtel", "os": "Dhani", "wx": "Apple", "xf": "LightChat", "en": "Hermes",
-          "kc": "Vinted", "hk": "4Fun", "zs": "Bilibili", "fr": "Dana", "xd": "Tokopedia", "yy": "Venmo", "po": "premium.one",
-          "dg": "Mercari", "gf": "GoogleVoice", "zi": "Lovelocal", "bl": "BIGO LIVE", "gr_fx": "Ftx", "gr_gc": "Getcontact",
-          "gr_hb": "Humble bundle", "gr_im": "IMO messager", "gr_re": "Remit", "gr_sg": "Signal", "gr_tl": "Tilda",
-          "hx": "AliExpress", "st": "Auchan", "x5": "X5 Retail Group", "qv": "Badoo", "bf": "Buff.163", "bg": "Beget",
-          "gr_bl": "Biglion", "bt": "Battle", "bu": "BP — club", "cg": "cg.163", "gr_cn": "Coinut", "co": "Casino Online",
-          "cp": "Cupis", "dfb": "Diffbot", "ev": "MobileV", "ff": "FreedomFinance", "gg": "GoGym", "gr_gs": "Gorillas",
-          "gyi": "Ingalaxy", "is": "Herbihi.saku", "za": "Jingdong", "jt": "JumpTax", "gr_mi": "MICO", "gr_mo": "Move",
-          "mp": "Moteplassen", "mz": "Mozen", "gr_ox": "Onrealt", "ow": "Regru", "gr_sb": "ALLES Bonus", "sc": "Scruff",
-          "se": "Switchere", "sf": "Spotify", "vj": "Stormgain", "tu": "TalkU", "vd": "Vivaldi", "vr": "Vodorobot",
-          "wo": "Weco", "yd": "Yoshidrops", "gr_yo": "YoHo", "zu": "Zhihu", "gr_lv": "LOVE", "bs": "BLS-SPAIN",
-          "do": "Leboncoin", "vz": "Hinge", "lc": "Subito", "ju": "Indomaret", "ie": "bet365", "zx": "CommunityGaming",
-          "zh": "Zoho", "yu": "Xiaomi", "yo": "Amasia", "yg": "Coursehero", "yf": "Citymobil", "xx": "Joyride",
-          "xr": "Tango", "wh": "Tantan", "vg": "Shell", "rl": "inDriver", "ta": "Wink", "sz": "Pivko24", "rc": "Skype",
-          "qz": "Faceit", "qf": "RedBook (Xiaohongshu)", "pp": "Huyapp", "oh": "MapleSEA", "og": "Okko", "of": "Urent",
-          "nw": "Ximalaya", "nq": "Trip", "my": "CAIXA", "mo": "Bumble", "lx": "DewuPoison", "lv": "Megogo", "li": "Baidu",
-          "kz": "NimoTV", "kj": "YAPPY", "ki": "99app", "jf": "Likee", "iv": "Inboxlv", "il": "IQOS", "hg": "Switips",
-          "ha": "My11Circle", "gz": "LYKA", "gw": "CallApp", "gp": "Ticketmaster", "gm": "MocoSpace", "gb": "YouStar",
-          "fu": "Snapchat", "fi": "Dundle", "et": "Clubhouse", "es": "iQIYI", "eq": "Qoo10", "ee": "Twilio",
-          "dz": "Dominos Pizza", "dt": "Delivery Club", "dj": "LUKOIL-AZS", "df": "Happn", "de": "Karusel", "cr": "TenChat",
-          "cn": "Fiverr", "bn": "Alfagift", "aw": "Taikang", "ai": "CELEBe", "ac": "Doordash", "gr_ubox": "UBOX",
-          "gr_tp": "Taptap Send", "gr_sp": "Spartan Poker", "gr_sh": "Sahibinden", "gr_or": "Orbimed", "gr_py": "Happytuk",
-          "gr_tk": "Tanuki", "gr_sr": "Sravni", "gr_cf": "Stars Coffee", "gr_wn": "Winelab", "gr_zo": "Zoon",
-          "gr_ot": "Ostin", "gr_op": "Oppo", "gr_ex": "Novex", "gr_lo": "NationalLottery", "gr_bo": "My Beauty Bonus",
-          "gr_le": "Mobileproxy", "gr_dm": "Maxidom", "gr_ma": "Marlboro", "gr_bi": "LuckyBike", "gr_lb": "LocalBitcoins",
-          "gr_lm": "LiveMe", "gr_lc": "LikeCentre", "gr_kr": "Krasyar", "gr_kc": "Kopilkaclub", "gr_io": "InternetOpros",
-          "gr_og": "Огонь", "gr_ru": "Rumble", "gr_hf": "Hoff", "gr_hi": "Hiyachat", "gr_gr": "Grozd", "gr_fc": "Friendsclub",
-          "gr_fl": "Flor2U", "gr_fr": "Farpost", "gr_la": "Falla", "gr_eg": "EnticeGames", "gr_ds": "Dosmart",
-          "gr_cx": "Cofix", "gr_cs": "Chibbis", "gr_ch": "Checkscan", "gr_br": "Broadblue", "gr_bk": "Book24",
-          "gr_bz": "Bazar-store", "gr_az": "Azsirbis", "gr_as": "Atlasbus.by", "gr_st": "Artstation", "gr_ag": "Agoda",
-          "gr_ns": "2domains", "gr_aw": "AWS Amazon", "gr_ur": "Azure", "gr_sw": "Swagbucks", "gr_ob": "Botim",
-          "gr_ne": "Netease", "gr_pe": "Periscope", "gr_wg": "WOG", "fl": "4FunLite", "gr_ta": "Talabat", "gr_iy": "With IYC",
-          "gr_mu": "Multinet", "gr_oy": "Sneakerboy", "gr_yc": "IYC", "gr_ly": "Womply", "gr_en": "ClickEntregas",
-          "gr_ab": "Lootably", "qr": "MEGA", "gr_fw": "Flowwow", "gr_rd": "Chalkboard", "gr_dh": "Kleinanzeigen",
-          "gr_pp": "ParlayPlay", "vs": "WinzoGame", "mi": "Zupee", "gr_bf": "Beanfun", "us": "IRCTC", "gr_inv": "Investro",
-          "cz": "Claude"
-        };
-
         const CUSTOMER_TABS = [
             { id: 'sms', label: 'Live SMS', icon: Smartphone },
             { id: 'store', label: 'Marketplace', icon: ShoppingCart },
@@ -696,16 +640,6 @@
                             <span className="font-bold text-sm">${Number(currentUserBalance).toFixed(2)}</span>
                         </div>
                     )}
-                    {user.role === 'customer' && (
-                        <button onClick={() => setShowCart(true)} className="relative p-2.5 bg-violet-50/80 dark:bg-violet-500/10 text-violet-600 dark:text-violet-400 rounded-xl border border-violet-200/50 dark:border-violet-500/20 transition-all hover:scale-105 shadow-sm">
-                            <ShoppingCart className="w-5 h-5 drop-shadow-[0_0_5px_currentColor]" />
-                            {cart.length > 0 && (
-                                <span className="absolute -top-1.5 -right-1.5 bg-rose-500 text-white text-[10px] font-black w-5 h-5 flex items-center justify-center rounded-full border-2 border-white dark:border-[#0f172a] shadow-md animate-pop-in">
-                                    {cart.length}
-                                </span>
-                            )}
-                        </button>
-                    )}
                     <button onClick={handleLogout} className="p-2.5 bg-rose-50/80 dark:bg-rose-500/10 text-rose-500 rounded-xl border border-rose-200/50 dark:border-rose-500/20"><LogOut className="w-5 h-5" /></button>
                   </div>
                 </div>
@@ -763,12 +697,12 @@
         }
 
         // ==========================================
-        // 🌟 SMS MODULE (UPDATED WITH FRONTEND MERGE)
+        // 🌟 SMS MODULE (UPDATED UI)
         // ==========================================
         function CustomerDashboardSMS({ user, balance, triggerToast, smsSettings, uiCard, uiInput, uiBtnPrimary, uiInnerPanel }) {
           const [isSmsLoading, setIsSmsLoading] = useState(false);
           const [selectedSmsService, setSelectedSmsService] = useState(''); 
-          const [availableServices, setAvailableServices] = useState([]); // Raw API data
+          const [availableServices, setAvailableServices] = useState([]); 
           
           const [isAppDropdownOpen, setIsAppDropdownOpen] = useState(false);
           const [appSearch, setAppSearch] = useState('');
@@ -810,12 +744,11 @@
               }
           }, [smsSettings]);
 
-          // 🌟 FRONTEND DYNAMIC MERGE: Always show all apps, attach live prices if available 🌟
+          // 🌟 FRONTEND DYNAMIC MERGE 🌟
           const allAppCodes = Object.keys(GRIZZLY_SERVICE_NAMES);
           
           const combinedApps = allAppCodes.map(code => {
               const appName = GRIZZLY_SERVICE_NAMES[code];
-              // Check if API gave us live data for this specific app + country combination
               const apiData = availableServices.find(s => s.serviceId === code && String(s.countryId) === String(smsCountry));
               
               let finalPrice = 1.50 + parseFloat(smsSettings?.markup || 1.00); // Default price
@@ -836,7 +769,11 @@
                   stock: stock,
                   finalPrice: finalPrice
               };
-          }).sort((a, b) => a.name.localeCompare(b.name)); // Sort alphabetically
+          }).sort((a, b) => {
+              if (a.stock > 0 && b.stock === 0) return -1;
+              if (a.stock === 0 && b.stock > 0) return 1;
+              return a.name.localeCompare(b.name);
+          });
 
           const filteredApps = combinedApps.filter(app => 
               app.name.toLowerCase().includes(appSearch.toLowerCase())
@@ -1041,7 +978,7 @@
                     </div>
 
                     <div className="bg-slate-50/50 dark:bg-black/20 p-5 rounded-2xl border border-slate-200 dark:border-white/5 mb-6">
-                       <label className="block text-[10px] font-bold text-slate-500 dark:text-slate-400 mb-2 uppercase tracking-wider">Search & Select App</label>
+                       <label className="block text-[10px] font-bold text-slate-500 dark:text-slate-400 mb-2 uppercase tracking-wider">Search & Select App (Live Prices)</label>
                        <div className="flex flex-col sm:flex-row gap-4 items-center">
                            
                            <div className="relative w-full">
@@ -1049,7 +986,7 @@
                                    onClick={() => setIsAppDropdownOpen(!isAppDropdownOpen)}
                                    className={uiInput + " h-14 pl-12 pr-10 flex items-center justify-between cursor-pointer font-bold text-slate-800 dark:text-white border-2 " + (isAppDropdownOpen ? "border-violet-500/50 ring-2 ring-violet-500/20" : "")}
                                >
-                                   <span className="truncate">{currentService ? currentService.name : 'Select an App'}</span>
+                                   <span className="truncate">{currentService ? currentService.name : (isFetchingServices ? 'Loading...' : 'Select an App')}</span>
                                    <Smartphone className="w-5 h-5 text-violet-500 absolute left-4"/>
                                    <ChevronDown className={`w-4 h-4 text-slate-400 absolute right-4 transition-transform ${isAppDropdownOpen ? 'rotate-180' : ''}`}/>
                                </div>
@@ -1068,7 +1005,7 @@
                                            </div>
                                            <div className="max-h-64 overflow-y-auto custom-scrollbar p-1">
                                                {filteredApps.length === 0 ? (
-                                                   <p className="text-center text-slate-500 py-6 text-sm">কোনো অ্যাপ পাওয়া যায়নি।</p>
+                                                   <p className="text-center text-slate-500 py-6 text-sm">No apps matched your search.</p>
                                                ) : 
                                                    filteredApps.map(s => (
                                                        <div key={s.code} onClick={() => { setSelectedSmsService(s.code); setIsAppDropdownOpen(false); setAppSearch(''); }}
@@ -1076,8 +1013,8 @@
                                                        >
                                                            <div className="flex flex-col">
                                                                <span>{s.name}</span>
-                                                               <span className={`text-[10px] mt-0.5 ${s.stock > 0 ? 'text-emerald-500 dark:text-emerald-400' : 'text-slate-400 dark:text-slate-500'}`}>
-                                                                   {s.stock > 0 ? `Stock: ${s.stock}` : 'Juicy Backup (Try)'}
+                                                               <span className={`text-[10px] mt-0.5 ${s.stock > 0 ? 'text-emerald-500 dark:text-emerald-400' : 'text-rose-400 dark:text-rose-500'}`}>
+                                                                   {s.stock > 0 ? `Stock: ${s.stock}` : 'Out of Stock'}
                                                                </span>
                                                            </div>
                                                            <span className="text-xs font-bold text-emerald-600 dark:text-emerald-400">${s.finalPrice.toFixed(2)}</span>
@@ -1096,9 +1033,9 @@
                        </div>
                     </div>
 
-                    <button onClick={buySmsNumber} disabled={isSmsLoading || !currentService || activeOrders.length > 0} className={uiBtnPrimary + " h-14 text-lg mt-6"}>
+                    <button onClick={buySmsNumber} disabled={isSmsLoading || !currentService || currentService.stock === 0 || activeOrders.length > 0} className={uiBtnPrimary + " h-14 text-lg mt-6"}>
                         {activeOrders.length > 0 ? <span className="flex items-center gap-2"><StopCircle className="w-5 h-5"/> Complete Current Order First</span> : isSmsLoading ? <RefreshCw className="w-5 h-5 animate-spin"/> : <ShoppingCart className="w-5 h-5"/>}
-                        {activeOrders.length > 0 ? '' : isSmsLoading ? 'Connecting to Network...' : 'Purchase Number'}
+                        {activeOrders.length > 0 ? '' : isSmsLoading ? 'Connecting to Network...' : (currentService?.stock === 0 ? 'Out of Stock' : 'Purchase Number')}
                     </button>
                 </div>
 
