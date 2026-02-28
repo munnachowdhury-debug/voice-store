@@ -670,7 +670,10 @@
           );
         }
 
- function CustomerDashboardSMS({ user, balance, triggerToast, smsSettings, uiCard, uiInput, uiBtnPrimary, uiInnerPanel }) {
+ // ==========================================
+        // 🌟 SMS MODULE (LIVE MULTI-TIER PRICES) 🌟
+        // ==========================================
+        function CustomerDashboardSMS({ user, balance, triggerToast, smsSettings, uiCard, uiInput, uiBtnPrimary, uiInnerPanel }) {
           const [isSmsLoading, setIsSmsLoading] = useState(false);
           const [selectedSmsService, setSelectedSmsService] = useState(''); 
           const [availableServices, setAvailableServices] = useState([]); 
@@ -679,15 +682,19 @@
           const [isFetchingServices, setIsFetchingServices] = useState(false);
           const [smsCountry, setSmsCountry] = useState('187'); 
           
-          // --- NEW STATES FOR MULTI-TIER PRICING ---
           const [priceTiers, setPriceTiers] = useState([]);
           const [selectedTier, setSelectedTier] = useState(null);
           const [isTiersLoading, setIsTiersLoading] = useState(false);
 
           const latestOrderRef = useRef(null);
           const [activeOrders, setActiveOrders] = useState(() => {
-              const saved = localStorage.getItem(`smsOrders_${user?.email}`);
-              if (saved) { try { return JSON.parse(saved).filter(o => o.status === 'ACTIVE'); } catch(e) {} }
+              try {
+                  const saved = localStorage.getItem(`smsOrders_${user?.email}`);
+                  if (saved) { 
+                      const parsed = JSON.parse(saved);
+                      if(Array.isArray(parsed)) return parsed.filter(o => o && o.status === 'ACTIVE'); 
+                  }
+              } catch(e) {}
               return [];
           });
           const [now, setNow] = useState(Date.now());
@@ -695,54 +702,71 @@
           useEffect(() => { if (user?.email) localStorage.setItem(`smsOrders_${user.email}`, JSON.stringify(activeOrders)); }, [activeOrders, user]);
           useEffect(() => { const int = setInterval(() => setNow(Date.now()), 1000); return () => clearInterval(int); }, []);
 
-          // Fetch Global App List
+          // Fetch Global App List safely
           useEffect(() => {
               if (smsSettings?.active) {
                   setIsFetchingServices(true);
                   fetch(`https://voicestore-backend.onrender.com/api/grizzly/getPrices?country=${smsCountry}`)
                   .then(r => r.json())
                   .then(json => { 
-                      if (json.success && Array.isArray(json.data)) { setAvailableServices(json.data); } 
-                      else { setAvailableServices([]); }
+                      if (json?.success && Array.isArray(json?.data)) { 
+                          setAvailableServices(json.data); 
+                      } else { 
+                          setAvailableServices([]); 
+                      }
                       setIsFetchingServices(false);
-                  }).catch((err) => { setIsFetchingServices(false); setAvailableServices([]); });
+                  }).catch((err) => { 
+                      setIsFetchingServices(false); 
+                      setAvailableServices([]); 
+                  });
               }
           }, [smsSettings, smsCountry]);
 
-          // --- NEW: Fetch Exact Price Tiers when an App is selected ---
+          // Fetch Exact Price Tiers safely
           useEffect(() => {
               if (selectedSmsService && smsCountry) {
                   setIsTiersLoading(true);
                   fetch(`https://voicestore-backend.onrender.com/api/grizzly/getServiceTiers?country=${smsCountry}&service=${selectedSmsService}`)
                   .then(res => res.json())
                   .then(data => {
-                      if (data.success && data.tiers && data.tiers.length > 0) {
+                      if (data?.success && Array.isArray(data?.tiers) && data.tiers.length > 0) {
                           setPriceTiers(data.tiers);
-                          setSelectedTier(data.tiers[0]); // Auto-select cheapest
+                          setSelectedTier(data.tiers[0]);
                       } else {
                           setPriceTiers([]);
                           setSelectedTier(null);
                       }
                       setIsTiersLoading(false);
-                  }).catch(() => { setPriceTiers([]); setSelectedTier(null); setIsTiersLoading(false); });
+                  }).catch(() => { 
+                      setPriceTiers([]); 
+                      setSelectedTier(null); 
+                      setIsTiersLoading(false); 
+                  });
+              } else {
+                  setPriceTiers([]);
+                  setSelectedTier(null);
               }
           }, [selectedSmsService, smsCountry]);
 
-          const filteredApps = availableServices.filter(app => (app.name || '').toLowerCase().includes(appSearch.toLowerCase()));
+          // Safe mapping for dropdowns
+          const filteredApps = Array.isArray(availableServices) ? availableServices.filter(app => (app?.name || '').toLowerCase().includes((appSearch || '').toLowerCase())) : [];
 
           useEffect(() => {
-              if (availableServices.length > 0) {
-                  const exists = availableServices.find(a => a.code === selectedSmsService);
-                  if(!exists) setSelectedSmsService(availableServices[0].code);
-              } else { setSelectedSmsService(''); }
+              if (Array.isArray(availableServices) && availableServices.length > 0) {
+                  const exists = availableServices.find(a => a?.code === selectedSmsService);
+                  if(!exists && availableServices[0]?.code) {
+                      setSelectedSmsService(availableServices[0].code);
+                  }
+              } else { 
+                  setSelectedSmsService(''); 
+              }
           }, [smsCountry, availableServices]);
 
-          const currentService = availableServices.find(s => s.code === selectedSmsService) || null;
-          const fallbackPrice = currentService ? parseFloat(currentService.finalPrice) : 0;
+          const currentService = (Array.isArray(availableServices) && availableServices.find(s => s?.code === selectedSmsService)) || null;
+          const fallbackPrice = currentService?.finalPrice ? parseFloat(currentService.finalPrice) : 0;
           
-          // The final price depends on what the user selected in the tier dropdown
-          const finalBuyPrice = selectedTier ? selectedTier.priceWithMarkup : fallbackPrice;
-          const exactMaxPrice = selectedTier ? selectedTier.originalPrice : null;
+          const finalBuyPrice = selectedTier?.priceWithMarkup ? parseFloat(selectedTier.priceWithMarkup) : fallbackPrice;
+          const exactMaxPrice = selectedTier?.originalPrice ? parseFloat(selectedTier.originalPrice) : null;
 
           const buySmsNumber = async () => {
               if (!currentService) return;
@@ -759,14 +783,13 @@
                   const deductData = await deductRes.json();
                   if (!deductData.success) { triggerToast(deductData.message || "Balance deduction failed."); setIsSmsLoading(false); return; }
 
-                  // Send EXACT maxPrice so Grizzly knows which stock to pull from
                   const res = await fetch('https://voicestore-backend.onrender.com/api/juicy/getNumber', {
                       method: 'POST', headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
                       body: JSON.stringify({ serviceId: currentService.code, countryId: smsCountry, maxPrice: exactMaxPrice }) 
                   });
                   const data = await res.json();
                   
-                  if (data.success && data.phone) {
+                  if (data?.success && data?.phone) {
                       let finalOrderPrice = finalBuyPrice;
                       if (data.exactCost !== undefined && data.exactCost !== null) {
                           const markup = parseFloat(smsSettings?.markup || 1.00);
@@ -781,7 +804,7 @@
                               finalOrderPrice = actualTotalCost; 
                           }
                       }
-                      const cleanName = currentService.name.split(' [')[0];
+                      const cleanName = (currentService.name || '').split(' [')[0];
                       const newOrder = { 
                           id: data.orderId, phone: data.phone, service: cleanName, countryId: smsCountry, 
                           price: finalOrderPrice, status: 'ACTIVE', codes: [], 
@@ -794,7 +817,7 @@
                           method: 'POST', headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
                           body: JSON.stringify({ email: user.email, price: finalBuyPrice })
                       });
-                      triggerToast(data.message || "Failed to get number.");
+                      triggerToast(data?.message || "Failed to get number.");
                   }
               } catch (e) { triggerToast("Connection Error"); } 
               finally { setIsSmsLoading(false); }
@@ -882,7 +905,7 @@
                        <div className="flex flex-col sm:flex-row gap-4 items-center">
                            <div className="relative w-full">
                                <div onClick={() => setIsAppDropdownOpen(!isAppDropdownOpen)} className={uiInput + " h-14 pl-12 pr-10 flex items-center justify-between cursor-pointer font-bold text-slate-800 dark:text-white border-2 " + (isAppDropdownOpen ? "border-violet-500/50 ring-2 ring-violet-500/20" : "")}>
-                                   <span className="truncate">{isFetchingServices ? 'Syncing live prices...' : (currentService ? `${currentService.name.split(' [')[0]} (Stock: ${currentService.count})` : 'No apps available')}</span>
+                                   <span className="truncate">{isFetchingServices ? 'Syncing live prices...' : (currentService ? `${(currentService?.name || '').split(' [')[0]} (Stock: ${currentService?.count || 0})` : 'No apps available')}</span>
                                    <Smartphone className="w-5 h-5 text-violet-500 absolute left-4"/>
                                    <ChevronDown className={`w-4 h-4 text-slate-400 absolute right-4 transition-transform ${isAppDropdownOpen ? 'rotate-180' : ''}`}/>
                                </div>
@@ -897,11 +920,12 @@
                                            <div className="max-h-64 overflow-y-auto custom-scrollbar p-1">
                                                {filteredApps.length === 0 ? (<p className="text-center text-slate-500 py-6 text-sm">No apps found for this region.</p>) : 
                                                    filteredApps.map(s => {
-                                                       const cleanName = s.name.split(' [')[0];
+                                                       if(!s) return null;
+                                                       const cleanName = (s?.name || '').split(' [')[0];
                                                        return (
                                                            <div key={s.code} onClick={() => { setSelectedSmsService(s.code); setIsAppDropdownOpen(false); setAppSearch(''); }} className={`px-4 py-3 cursor-pointer rounded-lg text-sm font-semibold transition-colors flex justify-between items-center ${selectedSmsService === s.code ? 'bg-violet-50 dark:bg-violet-500/10 text-violet-600 dark:text-violet-400' : 'text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-white/5'}`}>
-                                                               <div className="flex flex-col"><span>{cleanName}</span><span className="text-[10px] mt-0.5 text-emerald-500 dark:text-emerald-400">Stock: {s.count}</span></div>
-                                                               <span className="text-xs font-bold text-emerald-600 dark:text-emerald-400">${Number(s.finalPrice).toFixed(2)}</span>
+                                                               <div className="flex flex-col"><span>{cleanName}</span><span className="text-[10px] mt-0.5 text-emerald-500 dark:text-emerald-400">Stock: {s?.count || 0}</span></div>
+                                                               <span className="text-xs font-bold text-emerald-600 dark:text-emerald-400">${Number(s?.finalPrice || 0).toFixed(2)}</span>
                                                            </div>
                                                        );
                                                    })
@@ -915,25 +939,25 @@
                            {/* --- LIVE MULTI-TIER PRICE DROPDOWN --- */}
                            <div className="relative bg-white dark:bg-brand-darkBg border border-slate-200 dark:border-white/10 px-4 rounded-2xl text-slate-900 dark:text-white font-black text-lg h-14 flex items-center justify-center w-full sm:w-auto shadow-inner shrink-0 min-w-[200px]">
                                <select 
-                                   value={selectedTier ? selectedTier.originalPrice : ''}
+                                   value={selectedTier?.originalPrice ? String(selectedTier.originalPrice) : ''}
                                    onChange={(e) => {
-                                       const tier = priceTiers.find(t => t.originalPrice.toString() === e.target.value);
+                                       const tier = Array.isArray(priceTiers) ? priceTiers.find(t => String(t?.originalPrice) === e.target.value) : null;
                                        if(tier) setSelectedTier(tier);
                                    }}
-                                   disabled={isTiersLoading || (!priceTiers || priceTiers.length === 0)}
+                                   disabled={isTiersLoading || (!Array.isArray(priceTiers)) || priceTiers.length === 0}
                                    className="w-full bg-transparent outline-none appearance-none cursor-pointer text-center pr-6 disabled:opacity-50 disabled:cursor-not-allowed"
                                >
                                    {isTiersLoading ? (
                                        <option value="" className="text-sm bg-slate-100 dark:bg-slate-800 text-slate-900 dark:text-white">Loading...</option>
-                                   ) : (priceTiers && priceTiers.length > 0) ? (
+                                   ) : (Array.isArray(priceTiers) && priceTiers.length > 0) ? (
                                        priceTiers.map((tier, idx) => (
-                                           <option key={idx} value={tier.originalPrice} className="text-sm bg-slate-100 dark:bg-slate-800 text-slate-900 dark:text-white">
-                                               ${tier.priceWithMarkup.toFixed(2)} (Stock: {tier.quantity})
+                                           <option key={idx} value={tier?.originalPrice ? String(tier.originalPrice) : ''} className="text-sm bg-slate-100 dark:bg-slate-800 text-slate-900 dark:text-white">
+                                               ${Number(tier?.priceWithMarkup || 0).toFixed(2)} (Stock: {tier?.quantity || 0})
                                            </option>
                                        ))
                                    ) : (
                                        <option value="" className="text-sm bg-slate-100 dark:bg-slate-800 text-slate-900 dark:text-white">
-                                           ${fallbackPrice.toFixed(2)} (Stock: {currentService ? currentService.count : 0})
+                                           ${Number(fallbackPrice || 0).toFixed(2)} (Stock: {currentService?.count || 0})
                                        </option>
                                    )}
                                </select>
@@ -942,7 +966,7 @@
                        </div>
                     </div>
 
-                    <button onClick={buySmsNumber} disabled={isSmsLoading || !currentService || activeOrders.length > 0 || (priceTiers.length === 0 && fallbackPrice === 0)} className={uiBtnPrimary + " h-14 text-lg mt-6"}>
+                    <button onClick={buySmsNumber} disabled={isSmsLoading || !currentService || activeOrders.length > 0 || ((!priceTiers || priceTiers.length === 0) && fallbackPrice === 0)} className={uiBtnPrimary + " h-14 text-lg mt-6"}>
                         {activeOrders.length > 0 ? <span className="flex items-center gap-2"><StopCircle className="w-5 h-5"/> Complete Current Order First</span> : isSmsLoading ? <RefreshCw className="w-5 h-5 animate-spin"/> : <ShoppingCart className="w-5 h-5"/>}
                         {activeOrders.length > 0 ? '' : isSmsLoading ? 'Connecting to Network...' : (!currentService ? 'No Stock Available' : 'Purchase Number')}
                     </button>
@@ -982,11 +1006,8 @@
                 })}
             </div>
           );
-        }   
+        }
 
-        // ==========================================
-        // STORE MODULE
-        // ==========================================
         function CustomerDashboardStore({ inventory, categories, cart, setCart, allOrders, uiCard, uiInput, uiBtnPrimary, uiInnerPanel, triggerToast }) {
           const [searchQuery, setSearchQuery] = useState('');
           const [previewStockModal, setPreviewStockModal] = useState({show: false, categoryId: null, name: ''});
@@ -2280,4 +2301,4 @@
         root.render(<App />);
     </script>
 </body>
-    </html>
+</html>
