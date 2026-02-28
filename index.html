@@ -213,6 +213,62 @@
           { id: '96', name: 'Zimbabwe' }
         ].sort((a,b) => a.name.localeCompare(b.name));
 
+        // 🚀 FULL GRIZZLY SMS SERVICE LIST FOR FRONTEND BACKUP 🚀
+        const GRIZZLY_SERVICE_NAMES = {
+          "tg": "Telegram", "wa": "Whatsapp", "go": "Google, Gmail, Youtube", "ts": "PayPal", "ot": "AnyOther",
+          "bz": "Blizzard - Battle.Net", "vi": "Viber", "ds": "Discord", "tw": "Twitter / X", "fb": "facebook",
+          "ig": "Instagram + Threads", "dr": "AI Chat", "oi": "Tinder", "ua": "Blablacar", "mm": "Microsoft",
+          "am": "Amazon", "ub": "Uber", "pf": "pof.com", "nv": "Naver", "me": "Line messenger", "gs": "Samsung",
+          "lf": "TikTok", "ew": "Nike", "hw": "AliPay", "hn": "1688", "wj": "1xbet", "an": "Adidas", "uk": "Airbnb",
+          "ab": "Alibaba", "pm": "AOL", "lt": "BitClout", "ls": "Careem", "re": "Coinbase", "wc": "Craigslist",
+          "zk": "Deliveroo", "zz": "DENT", "xk": "DiDi", "ak": "Douyu", "ve": "Dream11", "dh": "eBay", "nz": "Foodpanda",
+          "ul": "Getir", "bp": "GoFundMe", "gx": "Hepsiburada", "jl": "Hopi", "kp": "HQ Trivia", "pd": "IFood",
+          "im": "Imo", "kt": "KakaoTalk", "vp": "Kwai", "dl": "Lazada", "mc": "Michat", "nf": "Netflix", "cc": "Quipp",
+          "ka": "Shopee", "wg": "Skout", "mt": "Steam", "qd": "Taobao", "qq": "Tencent QQ", "pr": "Trendyol",
+          "wb": "WeChat", "mb": "Yahoo", "yl": "Yalla", "yi": "Yemeksepeti", "mj": "Zalo", "dy": "Zomato", "oz": "Poshmark",
+          "ip": "Burger King", "si": "Cita Previa", "hz": "Drom", "bv": "Metro", "yw": "Grindr", "ni": "Gojek",
+          "xs": "GroupMe", "ae": "Glovo", "ol": "KazanExpress", "fz": "KFC", "zo": "Kaggle", "ry": "McDonalds",
+          "py": "Monese", "vm": "Okcupid", "xh": "Ovo", "sn": "OLX", "fx": "Pgbonus", "jq": "Paysafecard", "dp": "ProtonMail",
+          "qi": "32Red", "hb": "Twitch", "gc": "TradingView", "nb": "Верный", "gt": "Gett", "ss": "Hezzl", "tn": "LinkedIN",
+          "vv": "Seospirit", "rz": "EasyPay", "ly": "Olacabs", "tl": "Truecaller", "tx": "Bolt", "kf": "Weibo",
+          "sq": "KuCoinPlay", "zl": "Airtel", "os": "Dhani", "wx": "Apple", "xf": "LightChat", "en": "Hermes",
+          "kc": "Vinted", "hk": "4Fun", "zs": "Bilibili", "fr": "Dana", "xd": "Tokopedia", "yy": "Venmo", "po": "premium.one",
+          "dg": "Mercari", "gf": "GoogleVoice", "zi": "Lovelocal", "bl": "BIGO LIVE", "gr_fx": "Ftx", "gr_gc": "Getcontact",
+          "gr_hb": "Humble bundle", "gr_im": "IMO messager", "gr_re": "Remit", "gr_sg": "Signal", "gr_tl": "Tilda",
+          "hx": "AliExpress", "st": "Auchan", "x5": "X5 Retail Group", "qv": "Badoo", "bf": "Buff.163", "bg": "Beget",
+          "gr_bl": "Biglion", "bt": "Battle", "bu": "BP — club", "cg": "cg.163", "gr_cn": "Coinut", "co": "Casino Online",
+          "cp": "Cupis", "dfb": "Diffbot", "ev": "MobileV", "ff": "FreedomFinance", "gg": "GoGym", "gr_gs": "Gorillas",
+          "gyi": "Ingalaxy", "is": "Herbihi.saku", "za": "Jingdong", "jt": "JumpTax", "gr_mi": "MICO", "gr_mo": "Move",
+          "mp": "Moteplassen", "mz": "Mozen", "gr_ox": "Onrealt", "ow": "Regru", "gr_sb": "ALLES Bonus", "sc": "Scruff",
+          "se": "Switchere", "sf": "Spotify", "vj": "Stormgain", "tu": "TalkU", "vd": "Vivaldi", "vr": "Vodorobot",
+          "wo": "Weco", "yd": "Yoshidrops", "gr_yo": "YoHo", "zu": "Zhihu", "gr_lv": "LOVE", "bs": "BLS-SPAIN",
+          "do": "Leboncoin", "vz": "Hinge", "lc": "Subito", "ju": "Indomaret", "ie": "bet365", "zx": "CommunityGaming",
+          "zh": "Zoho", "yu": "Xiaomi", "yo": "Amasia", "yg": "Coursehero", "yf": "Citymobil", "xx": "Joyride",
+          "xr": "Tango", "wh": "Tantan", "vg": "Shell", "rl": "inDriver", "ta": "Wink", "sz": "Pivko24", "rc": "Skype",
+          "qz": "Faceit", "qf": "RedBook (Xiaohongshu)", "pp": "Huyapp", "oh": "MapleSEA", "og": "Okko", "of": "Urent",
+          "nw": "Ximalaya", "nq": "Trip", "my": "CAIXA", "mo": "Bumble", "lx": "DewuPoison", "lv": "Megogo", "li": "Baidu",
+          "kz": "NimoTV", "kj": "YAPPY", "ki": "99app", "jf": "Likee", "iv": "Inboxlv", "il": "IQOS", "hg": "Switips",
+          "ha": "My11Circle", "gz": "LYKA", "gw": "CallApp", "gp": "Ticketmaster", "gm": "MocoSpace", "gb": "YouStar",
+          "fu": "Snapchat", "fi": "Dundle", "et": "Clubhouse", "es": "iQIYI", "eq": "Qoo10", "ee": "Twilio",
+          "dz": "Dominos Pizza", "dt": "Delivery Club", "dj": "LUKOIL-AZS", "df": "Happn", "de": "Karusel", "cr": "TenChat",
+          "cn": "Fiverr", "bn": "Alfagift", "aw": "Taikang", "ai": "CELEBe", "ac": "Doordash", "gr_ubox": "UBOX",
+          "gr_tp": "Taptap Send", "gr_sp": "Spartan Poker", "gr_sh": "Sahibinden", "gr_or": "Orbimed", "gr_py": "Happytuk",
+          "gr_tk": "Tanuki", "gr_sr": "Sravni", "gr_cf": "Stars Coffee", "gr_wn": "Winelab", "gr_zo": "Zoon",
+          "gr_ot": "Ostin", "gr_op": "Oppo", "gr_ex": "Novex", "gr_lo": "NationalLottery", "gr_bo": "My Beauty Bonus",
+          "gr_le": "Mobileproxy", "gr_dm": "Maxidom", "gr_ma": "Marlboro", "gr_bi": "LuckyBike", "gr_lb": "LocalBitcoins",
+          "gr_lm": "LiveMe", "gr_lc": "LikeCentre", "gr_kr": "Krasyar", "gr_kc": "Kopilkaclub", "gr_io": "InternetOpros",
+          "gr_og": "Огонь", "gr_ru": "Rumble", "gr_hf": "Hoff", "gr_hi": "Hiyachat", "gr_gr": "Grozd", "gr_fc": "Friendsclub",
+          "gr_fl": "Flor2U", "gr_fr": "Farpost", "gr_la": "Falla", "gr_eg": "EnticeGames", "gr_ds": "Dosmart",
+          "gr_cx": "Cofix", "gr_cs": "Chibbis", "gr_ch": "Checkscan", "gr_br": "Broadblue", "gr_bk": "Book24",
+          "gr_bz": "Bazar-store", "gr_az": "Azsirbis", "gr_as": "Atlasbus.by", "gr_st": "Artstation", "gr_ag": "Agoda",
+          "gr_ns": "2domains", "gr_aw": "AWS Amazon", "gr_ur": "Azure", "gr_sw": "Swagbucks", "gr_ob": "Botim",
+          "gr_ne": "Netease", "gr_pe": "Periscope", "gr_wg": "WOG", "fl": "4FunLite", "gr_ta": "Talabat", "gr_iy": "With IYC",
+          "gr_mu": "Multinet", "gr_oy": "Sneakerboy", "gr_yc": "IYC", "gr_ly": "Womply", "gr_en": "ClickEntregas",
+          "gr_ab": "Lootably", "qr": "MEGA", "gr_fw": "Flowwow", "gr_rd": "Chalkboard", "gr_dh": "Kleinanzeigen",
+          "gr_pp": "ParlayPlay", "vs": "WinzoGame", "mi": "Zupee", "gr_bf": "Beanfun", "us": "IRCTC", "gr_inv": "Investro",
+          "cz": "Claude"
+        };
+
         const CUSTOMER_TABS = [
             { id: 'sms', label: 'Live SMS', icon: Smartphone },
             { id: 'store', label: 'Marketplace', icon: ShoppingCart },
@@ -319,6 +375,143 @@
           );
         };
 
+        // 🌟 Fix: Extracted Product Card to avoid hooks in loop crash 🌟
+        function ProductCard({ product, inventory, addToCart, setPreviewStockModal }) {
+            const [selectedState, setSelectedState] = useState('Any');
+            const stockList = inventory[product.id] || [];
+            const totalStock = stockList.length;
+            
+            const availableStates = [...new Set(stockList.map(acc => {
+                let state = "US";
+                const stateMatch = String(acc).match(/📍 STATE:\s*\n?([^\n]+)/i);
+                if (stateMatch) state = stateMatch[1].trim();
+                return state;
+            }))].sort();
+
+            const currentStockCount = selectedState === 'Any' ? totalStock : stockList.filter(acc => String(acc).includes(selectedState)).length;
+            const Icon = product.icon;
+
+            return (
+                <div className={uiCard + " p-6 flex flex-col group hover:-translate-y-1 hover:border-violet-500/30"}>
+                    {totalStock === 0 && <div className="absolute inset-0 bg-slate-900/80 dark:bg-brand-darkBg/80 z-20 flex items-center justify-center backdrop-blur-sm"><span className="bg-slate-800 dark:bg-slate-900 text-white px-4 py-2 rounded-xl text-xs font-bold uppercase tracking-widest shadow-xl border border-white/10">Out of Stock</span></div>}
+                    
+                    <div className="flex justify-between items-start mb-5">
+                        <div className="bg-slate-100 dark:bg-black/30 p-3.5 rounded-xl border border-slate-200 dark:border-white/5 shadow-inner group-hover:scale-110 transition-transform duration-300">
+                            <Icon className={`w-6 h-6 ${product.color} drop-shadow-[0_0_8px_currentColor]`} />
+                        </div>
+                        <div className="bg-white dark:bg-white/5 border border-slate-200 dark:border-white/10 px-3 py-1.5 rounded-xl flex items-center text-slate-800 dark:text-white text-sm font-bold shadow-sm">
+                            ${Number(product.price).toFixed(2)}
+                        </div>
+                    </div>
+                    
+                    <h3 className="text-lg font-bold text-slate-900 dark:text-white mb-2 break-words">{product.name}</h3>
+                    <p className="text-slate-600 dark:text-slate-400 text-xs leading-relaxed mb-4 flex-grow font-medium break-words">{product.description}</p>
+                    
+                    {totalStock > 0 && (
+                        <div className="mb-4">
+                            <label className="block text-[10px] font-bold text-slate-500 dark:text-slate-400 mb-1.5 uppercase tracking-wider">Select Preferred State</label>
+                            <select value={selectedState} onChange={(e) => setSelectedState(e.target.value)} className={uiInput + " !py-2.5 !text-xs cursor-pointer"}>
+                                <option value="Any">Any State (Random Delivery)</option>
+                                {availableStates.map(st => <option key={st} value={st}>{st} State</option>)}
+                            </select>
+                        </div>
+                    )}
+                    
+                    <div className="flex justify-between items-center mt-auto pt-4 border-t border-slate-200 dark:border-white/5 w-full">
+                        <div className="flex flex-col">
+                            <span className="text-[10px] text-slate-500 font-bold uppercase tracking-wider mb-1">Available</span>
+                            <span className={`text-sm font-black drop-shadow-sm ${currentStockCount > 5 ? 'text-slate-800 dark:text-white' : 'text-rose-500 dark:text-rose-400'}`}>{currentStockCount} pcs</span>
+                        </div>
+                        <button onClick={() => addToCart({...product, selectedState: selectedState === 'Any' ? null : selectedState})} disabled={currentStockCount === 0} className={uiBtnPrimary + " !w-auto !py-2.5 !px-5 text-sm"}>
+                            Add <Plus className="w-4 h-4" />
+                        </button>
+                    </div>
+                    
+                    {totalStock > 0 && (
+                        <div className="mt-4 pt-4 border-t border-slate-200 dark:border-white/5 w-full text-center">
+                            <p onClick={() => setPreviewStockModal({show: true, categoryId: product.id, name: product.name})} className="text-[10px] text-violet-600 dark:text-violet-400 cursor-pointer hover:text-violet-700 dark:hover:text-violet-300 font-bold tracking-wider uppercase flex items-center justify-center gap-1.5 transition-colors">
+                                <Eye className="w-3.5 h-3.5 text-violet-500 dark:text-violet-400 drop-shadow-[0_0_5px_currentColor]"/> View Full Live Stock Preview
+                            </p>
+                        </div>
+                    )}
+                </div>
+            );
+        }
+
+        // 🌟 Fix: Extracted Vault Card to avoid hooks in loop crash 🌟
+        function PurchasedAccountCard({ acc, triggerToast, db, appId, email }) {
+            const [totpCode, setTotpCode] = useState('');
+            const [timeLeft, setTimeLeft] = useState(30);
+            const [twoFaSecret, setTwoFaSecret] = useState(null);
+
+            useEffect(() => {
+                const rawData = String(acc.data || '');
+                const match = rawData.match(/🔐 2FA INFO:\s*\n?([a-zA-Z0-9\s]+)/i);
+                if (match) setTwoFaSecret(match[1].replace(/\s+/g, '').toUpperCase());
+            }, [acc.data]);
+
+            useEffect(() => {
+                if (!twoFaSecret) return;
+                const updateTotp = () => {
+                    if (typeof window.OTPAuth !== 'undefined') {
+                        try {
+                            let totp = new window.OTPAuth.TOTP({ algorithm: 'SHA1', digits: 6, period: 30, secret: window.OTPAuth.Secret.fromBase32(twoFaSecret) });
+                            setTotpCode(totp.generate());
+                            setTimeLeft(30 - (Math.floor(Date.now() / 1000) % 30));
+                        } catch(e) {}
+                    }
+                };
+                updateTotp();
+                const interval = setInterval(updateTotp, 1000);
+                return () => clearInterval(interval);
+            }, [twoFaSecret]);
+
+            return (
+                <div className={uiInnerPanel + " flex flex-col w-full relative group"}>
+                    <div className="flex justify-between items-start mb-3 sm:mb-4">
+                        <span className="text-xs sm:text-sm font-bold text-slate-800 dark:text-white flex items-center gap-1.5 sm:gap-2 break-words max-w-[70%]">
+                            <Package className="w-4 h-4 text-violet-500 dark:text-violet-400 shrink-0 drop-shadow-[0_0_5px_currentColor]"/> {acc.type}
+                        </span>
+                        <span className="text-[10px] text-slate-500 dark:text-slate-400 font-semibold px-2 py-1 bg-slate-200 dark:bg-black/30 rounded-md shrink-0 border border-slate-300 dark:border-white/5">
+                            {acc.date ? new Date(acc.date).toLocaleDateString() : ''}
+                        </span>
+                    </div>
+
+                    {twoFaSecret && (
+                        <div className="mb-4 bg-violet-50 dark:bg-violet-900/10 border border-violet-200 dark:border-violet-500/20 p-4 rounded-xl flex flex-col items-center justify-center relative overflow-hidden">
+                            <div className="absolute top-0 left-0 w-full h-1 bg-slate-300 dark:bg-slate-800">
+                                <div className="bg-violet-500 dark:bg-violet-400 h-full transition-all duration-1000 ease-linear shadow-[0_0_10px_currentColor]" style={{width: `${(timeLeft/30)*100}%`}}></div>
+                            </div>
+                            <p className="text-[10px] sm:text-xs text-violet-600 dark:text-violet-300 font-semibold mb-1 mt-1 uppercase tracking-widest">Live Authenticator Code</p>
+                            <div className="text-3xl sm:text-4xl font-black text-slate-900 dark:text-white tracking-widest font-mono drop-shadow-md">{totpCode || '------'}</div>
+                            <p className="text-[10px] text-slate-500 mt-2 font-medium">Valid for {timeLeft} seconds</p>
+                        </div>
+                    )}
+
+                    <div className="w-full bg-white dark:bg-black/40 border border-slate-200 dark:border-white/5 p-3 sm:p-4 rounded-xl mb-4 sm:mb-5 overflow-x-auto shadow-inner">
+                        <pre className="font-mono text-xs sm:text-sm text-emerald-600 dark:text-emerald-400 whitespace-pre-wrap break-words font-semibold">{String(acc.data || '')}</pre>
+                    </div>
+                    
+                    <div className="flex justify-end gap-3 mt-auto items-center">
+                        <button onClick={() => {
+                            const id = 'REP-' + Date.now();
+                            setDoc(doc(db, 'artifacts', appId, 'public', 'data', 'Store_Tickets', id), { email: email, subject: `Reported Account`, message: `Issue reported.`, status: 'Open', date: new Date().toISOString() });
+                            triggerToast('Report forwarded to admin.');
+                        }} className="btn-animate text-[11px] text-slate-500 dark:text-slate-400 hover:text-rose-500 dark:hover:text-rose-400 font-semibold px-3 py-2 transition-colors">Report Issue</button>
+                        <button onClick={() => {
+                            if (navigator.clipboard) navigator.clipboard.writeText(String(acc.data || '')).then(() => triggerToast("Copied!"));
+                            else { const t = document.createElement("textarea"); t.value = String(acc.data || ''); document.body.appendChild(t); t.select(); document.execCommand("copy"); document.body.removeChild(t); triggerToast("Copied!"); }
+                        }} className={uiBtnPrimary + " !w-auto !py-2 !px-4 !text-xs !rounded-lg"}>
+                            <Copy className="w-3.5 h-3.5 drop-shadow-sm"/> Copy Data
+                        </button>
+                    </div>
+                </div>
+            );
+        }
+
+        // ==========================================
+        // MAIN APP COMPONENT
+        // ==========================================
         function App() {
           const [showSplash, setShowSplash] = useState(true);
           const [user, setUser] = useState(null); 
@@ -383,10 +576,10 @@
                  if (firebaseUser.email.toLowerCase() === currentAdminEmail.toLowerCase()) {
                     setUser({ email: firebaseUser.email, role: 'admin' });
                     setActiveTab('inventory');
-                 } else if (firebaseUser.emailVerified || true) {
+                 } else {
                     setUser({ email: firebaseUser.email, role: 'customer' });
                     setActiveTab('sms');
-                 } else { setUser(null); }
+                 }
               } else { setUser(null); }
               setIsAuthChecking(false);
             });
@@ -432,16 +625,6 @@
             return () => unsubs.forEach(unsub => unsub());
           }, [user]);
 
-          const finalizeLogin = async (identifier, role, password = '') => {
-            if (role === 'admin') return; 
-            try {
-              const userRef = doc(db, 'artifacts', appId, 'public', 'data', 'Store_Users', identifier);
-              const snap = await getDoc(userRef);
-              if (!snap.exists()) await setDoc(userRef, { password: password, balance: 0, totalSpent: 0, joined: new Date().toISOString(), lastBonusDate: '' });
-              else if (password !== '') await updateDoc(userRef, { password: password });
-            } catch (err) {}
-          };
-
           const handleAuthSubmit = async (e) => {
             e.preventDefault(); setAuthError(''); setAuthSuccessMsg(''); setIsLoading(true);
             let email = emailInput.trim(); let pwd = passwordInput.trim();
@@ -476,20 +659,13 @@
             try {
               if (authMethod === 'signup') {
                 const userCredential = await createUserWithEmailAndPassword(auth, email, pwd);
-                await sendEmailVerification(userCredential.user);
                 
                 const userRef = doc(db, 'artifacts', appId, 'public', 'data', 'Store_Users', userCredential.user.email);
                 await setDoc(userRef, { password: pwd, balance: 0, totalSpent: 0, joined: new Date().toISOString(), lastBonusDate: '' });
                 
-                await auth.signOut(); 
-                setAuthSuccessMsg('Registration successful! Check email to verify.');
-                setAuthMethod('login'); 
+                setAuthSuccessMsg('Registration successful! Welcome to VoiceStore.');
               } else {
-                const userCredential = await signInWithEmailAndPassword(auth, email, pwd);
-                if (!userCredential.user.emailVerified) {
-                   await auth.signOut(); setAuthError('Email not verified. Check inbox.');
-                   setIsLoading(false); return;
-                }
+                await signInWithEmailAndPassword(auth, email, pwd);
                 setAuthSuccessMsg('Welcome back!');
               }
             } catch (error) { setAuthError(error.message); }
@@ -964,9 +1140,10 @@
                                 {selectedAppGroup.prices.map((p, i) => (
                                     <button key={i} 
                                         onClick={() => setSelectedSmsService(p.code)}
-                                        className={`px-4 py-2.5 rounded-xl text-sm font-bold transition-all border shadow-sm ${selectedSmsService === p.code ? 'bg-gradient-to-r from-violet-500 to-cyan-500 text-white border-transparent scale-105' : 'bg-white dark:bg-brand-darkBg text-slate-700 dark:text-slate-300 border-slate-200 dark:border-white/10 hover:bg-slate-50 dark:hover:bg-white/5'}`}
+                                        className={`px-4 py-2.5 rounded-xl text-sm font-bold transition-all border shadow-sm flex items-center gap-2 ${selectedSmsService === p.code ? 'bg-gradient-to-r from-violet-500 to-cyan-500 text-white border-transparent scale-105' : 'bg-white dark:bg-brand-darkBg text-slate-700 dark:text-slate-300 border-slate-200 dark:border-white/10 hover:bg-slate-50 dark:hover:bg-white/5'}`}
                                     >
                                         ${Number(p.finalPrice).toFixed(3)}
+                                        <span className={`text-[10px] px-1.5 py-0.5 rounded ${selectedSmsService === p.code ? 'bg-white/20' : 'bg-slate-100 dark:bg-slate-800'}`}>{p.count}</span>
                                     </button>
                                 ))}
                             </div>
@@ -976,7 +1153,7 @@
                                     setShowPriceModal(false);
                                     buySmsNumber(); 
                                 }} 
-                                disabled={isSmsLoading || activeOrders.length > 0} 
+                                disabled={isSmsLoading || activeOrders.length > 0 || !selectedSmsService} 
                                 className={uiBtnPrimary + " w-full h-12 !text-sm shadow-[0_4px_20px_rgba(139,92,246,0.4)]"}
                             >
                                 {isSmsLoading ? 'Processing...' : `Purchase (${selectedAppGroup.name})`}
@@ -984,7 +1161,6 @@
                         </div>
                     </div>
                 )}
-
 
                 <div className={uiCard + " p-6 sm:p-8"}>
                     <div className="mb-6">
@@ -1206,67 +1382,15 @@
 
                 <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 sm:gap-8 w-full">
                   <div className="lg:col-span-2 grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6 w-full">
-                    {filteredCategories.map((product) => {
-                        const [selectedState, setSelectedState] = useState('Any');
-                        const stockList = inventory[product.id] || [];
-                        const totalStock = stockList.length;
-                        
-                        const availableStates = [...new Set(stockList.map(acc => {
-                            let state = "US";
-                            const stateMatch = String(acc).match(/📍 STATE:\s*\n?([^\n]+)/i);
-                            if (stateMatch) state = stateMatch[1].trim();
-                            return state;
-                        }))].sort();
-
-                        const currentStockCount = selectedState === 'Any' ? totalStock : stockList.filter(acc => String(acc).includes(selectedState)).length;
-                        const Icon = product.icon;
-
-                        return (
-                            <div key={product.id} className={uiCard + " p-6 flex flex-col group hover:-translate-y-1 hover:border-violet-500/30"}>
-                                {totalStock === 0 && <div className="absolute inset-0 bg-slate-900/80 dark:bg-brand-darkBg/80 z-20 flex items-center justify-center backdrop-blur-sm"><span className="bg-slate-800 dark:bg-slate-900 text-white px-4 py-2 rounded-xl text-xs font-bold uppercase tracking-widest shadow-xl border border-white/10">Out of Stock</span></div>}
-                                
-                                <div className="flex justify-between items-start mb-5">
-                                    <div className="bg-slate-100 dark:bg-black/30 p-3.5 rounded-xl border border-slate-200 dark:border-white/5 shadow-inner group-hover:scale-110 transition-transform duration-300">
-                                        <Icon className={`w-6 h-6 ${product.color} drop-shadow-[0_0_8px_currentColor]`} />
-                                    </div>
-                                    <div className="bg-white dark:bg-white/5 border border-slate-200 dark:border-white/10 px-3 py-1.5 rounded-xl flex items-center text-slate-800 dark:text-white text-sm font-bold shadow-sm">
-                                        ${Number(product.price).toFixed(2)}
-                                    </div>
-                                </div>
-                                
-                                <h3 className="text-lg font-bold text-slate-900 dark:text-white mb-2 break-words">{product.name}</h3>
-                                <p className="text-slate-600 dark:text-slate-400 text-xs leading-relaxed mb-4 flex-grow font-medium break-words">{product.description}</p>
-                                
-                                {totalStock > 0 && (
-                                    <div className="mb-4">
-                                        <label className="block text-[10px] font-bold text-slate-500 dark:text-slate-400 mb-1.5 uppercase tracking-wider">Select Preferred State</label>
-                                        <select value={selectedState} onChange={(e) => setSelectedState(e.target.value)} className={uiInput + " !py-2.5 !text-xs cursor-pointer"}>
-                                            <option value="Any">Any State (Random Delivery)</option>
-                                            {availableStates.map(st => <option key={st} value={st}>{st} State</option>)}
-                                        </select>
-                                    </div>
-                                )}
-                                
-                                <div className="flex justify-between items-center mt-auto pt-4 border-t border-slate-200 dark:border-white/5 w-full">
-                                    <div className="flex flex-col">
-                                        <span className="text-[10px] text-slate-500 font-bold uppercase tracking-wider mb-1">Available</span>
-                                        <span className={`text-sm font-black drop-shadow-sm ${currentStockCount > 5 ? 'text-slate-800 dark:text-white' : 'text-rose-500 dark:text-rose-400'}`}>{currentStockCount} pcs</span>
-                                    </div>
-                                    <button onClick={() => addToCart({...product, selectedState: selectedState === 'Any' ? null : selectedState})} disabled={currentStockCount === 0} className={uiBtnPrimary + " !w-auto !py-2.5 !px-5 text-sm"}>
-                                        Add <Plus className="w-4 h-4" />
-                                    </button>
-                                </div>
-                                
-                                {totalStock > 0 && (
-                                    <div className="mt-4 pt-4 border-t border-slate-200 dark:border-white/5 w-full text-center">
-                                        <p onClick={() => setPreviewStockModal({show: true, categoryId: product.id, name: product.name})} className="text-[10px] text-violet-600 dark:text-violet-400 cursor-pointer hover:text-violet-700 dark:hover:text-violet-300 font-bold tracking-wider uppercase flex items-center justify-center gap-1.5 transition-colors">
-                                            <Eye className="w-3.5 h-3.5 text-violet-500 dark:text-violet-400 drop-shadow-[0_0_5px_currentColor]"/> View Full Live Stock Preview
-                                        </p>
-                                    </div>
-                                )}
-                            </div>
-                        );
-                    })}
+                    {filteredCategories.map((product) => (
+                        <ProductCard 
+                            key={product.id} 
+                            product={product} 
+                            inventory={inventory} 
+                            addToCart={addToCart} 
+                            setPreviewStockModal={setPreviewStockModal}
+                        />
+                    ))}
                     {filteredCategories.length === 0 && <div className="col-span-full py-20 text-center text-slate-500 font-medium"><Search className="w-12 h-12 mx-auto mb-4 opacity-20"/>No products match.</div>}
                   </div>
 
@@ -1293,9 +1417,6 @@
           );
         }
 
-        // ==========================================
-        // FUNDS MODULE
-        // ==========================================
         function CustomerDashboardFunds({ user, db, appId, triggerToast, addNotification, bankSettings, uiCard, uiInput, uiBtnPrimary, uiBtnSecondary, uiInnerPanel }) {
           const [autoPay, setAutoPay] = useState({ active: false, amount: 0, time: 900, checking: false, invoiceId: '' });
           const TRON_ADDRESS = 'TELRyMwDmdKzBRb7Uaw3zNvphrc8V3D5Mj';
@@ -1534,97 +1655,6 @@
                   <button onClick={() => copyToClipboard('406439321')} className={uiBtnSecondary + " mb-3"}><Copy className="w-4 h-4" /> Copy ID</button>
                   <p className="text-[10px] text-slate-500 text-center font-semibold uppercase tracking-wider">Requires manual approval. Open a ticket.</p>
                 </div>
-              </div>
-            </div>
-          );
-        }
-
-        // ==========================================
-        // VAULT MODULE
-        // ==========================================
-        function CustomerDashboardVault({ purchases, reportAccount, copyToClipboard, uiCard, uiBtnPrimary, uiInnerPanel }) {
-          return (
-            <div className="animate-fade-in-up w-full">
-              <div className={uiCard + " p-6 sm:p-8 min-h-[500px]"}>
-                <h2 className="text-xl sm:text-2xl font-bold text-slate-900 dark:text-white mb-6 flex items-center gap-3 pb-4 border-b border-slate-200 dark:border-white/5"><Package className="w-6 h-6 text-violet-500 dark:text-violet-400 drop-shadow-[0_0_5px_currentColor]"/> My Purchased Accounts</h2>
-                {purchases.length === 0 ? (
-                  <div className="text-center py-32 text-slate-500 flex flex-col items-center">
-                    <Lock className="w-16 h-16 mb-4 opacity-20" />
-                    <p className="text-base font-medium">You haven't purchased any accounts yet.</p>
-                  </div>
-                ) : (
-                  <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6 w-full">
-                    {purchases.map((acc, idx) => {
-                       const [totpCode, setTotpCode] = useState('');
-                       const [timeLeft, setTimeLeft] = useState(30);
-                       const [twoFaSecret, setTwoFaSecret] = useState(null);
-
-                       useEffect(() => {
-                           const rawData = String(acc.data || '');
-                           const match = rawData.match(/🔐 2FA INFO:\s*\n?([a-zA-Z0-9\s]+)/i);
-                           if (match) setTwoFaSecret(match[1].replace(/\s+/g, '').toUpperCase());
-                       }, [acc.data]);
-
-                       useEffect(() => {
-                           if (!twoFaSecret) return;
-                           const updateTotp = () => {
-                               if (typeof window.OTPAuth !== 'undefined') {
-                                   try {
-                                       let totp = new window.OTPAuth.TOTP({ algorithm: 'SHA1', digits: 6, period: 30, secret: window.OTPAuth.Secret.fromBase32(twoFaSecret) });
-                                       setTotpCode(totp.generate());
-                                       setTimeLeft(30 - (Math.floor(Date.now() / 1000) % 30));
-                                   } catch(e) {}
-                               }
-                           };
-                           updateTotp();
-                           const interval = setInterval(updateTotp, 1000);
-                           return () => clearInterval(interval);
-                       }, [twoFaSecret]);
-
-                       return (
-                           <div key={idx} className={uiInnerPanel + " flex flex-col w-full relative group"}>
-                               <div className="flex justify-between items-start mb-3 sm:mb-4">
-                                   <span className="text-xs sm:text-sm font-bold text-slate-800 dark:text-white flex items-center gap-1.5 sm:gap-2 break-words max-w-[70%]">
-                                       <Package className="w-4 h-4 text-violet-500 dark:text-violet-400 shrink-0 drop-shadow-[0_0_5px_currentColor]"/> {acc.type}
-                                   </span>
-                                   <span className="text-[10px] text-slate-500 dark:text-slate-400 font-semibold px-2 py-1 bg-slate-200 dark:bg-black/30 rounded-md shrink-0 border border-slate-300 dark:border-white/5">
-                                       {acc.date ? new Date(acc.date).toLocaleDateString() : ''}
-                                   </span>
-                               </div>
-
-                               {twoFaSecret && (
-                                   <div className="mb-4 bg-violet-50 dark:bg-violet-900/10 border border-violet-200 dark:border-violet-500/20 p-4 rounded-xl flex flex-col items-center justify-center relative overflow-hidden">
-                                       <div className="absolute top-0 left-0 w-full h-1 bg-slate-300 dark:bg-slate-800">
-                                           <div className="bg-violet-500 dark:bg-violet-400 h-full transition-all duration-1000 ease-linear shadow-[0_0_10px_currentColor]" style={{width: `${(timeLeft/30)*100}%`}}></div>
-                                       </div>
-                                       <p className="text-[10px] sm:text-xs text-violet-600 dark:text-violet-300 font-semibold mb-1 mt-1 uppercase tracking-widest">Live Authenticator Code</p>
-                                       <div className="text-3xl sm:text-4xl font-black text-slate-900 dark:text-white tracking-widest font-mono drop-shadow-md">{totpCode || '------'}</div>
-                                       <p className="text-[10px] text-slate-500 mt-2 font-medium">Valid for {timeLeft} seconds</p>
-                                   </div>
-                               )}
-
-                               <div className="w-full bg-white dark:bg-black/40 border border-slate-200 dark:border-white/5 p-3 sm:p-4 rounded-xl mb-4 sm:mb-5 overflow-x-auto shadow-inner">
-                                   <pre className="font-mono text-xs sm:text-sm text-emerald-600 dark:text-emerald-400 whitespace-pre-wrap break-words font-semibold">{String(acc.data || '')}</pre>
-                               </div>
-                               
-                               <div className="flex justify-end gap-3 mt-auto items-center">
-                                   <button onClick={() => {
-                                      const id = 'REP-' + Date.now();
-                                      setDoc(doc(db, 'artifacts', appId, 'public', 'data', 'Store_Tickets', id), { email: purchases[0].customer, subject: `Reported Account`, message: `Issue reported.`, status: 'Open', date: new Date().toISOString() });
-                                      triggerToast('Report forwarded to admin.');
-                                   }} className="btn-animate text-[11px] text-slate-500 dark:text-slate-400 hover:text-rose-500 dark:hover:text-rose-400 font-semibold px-3 py-2 transition-colors">Report Issue</button>
-                                   <button onClick={() => {
-                                      if (navigator.clipboard) navigator.clipboard.writeText(String(acc.data || '')).then(() => triggerToast("Copied!"));
-                                      else { const t = document.createElement("textarea"); t.value = String(acc.data || ''); document.body.appendChild(t); t.select(); document.execCommand("copy"); document.body.removeChild(t); triggerToast("Copied!"); }
-                                   }} className={uiBtnPrimary + " !w-auto !py-2 !px-4 !text-xs !rounded-lg"}>
-                                       <Copy className="w-3.5 h-3.5 drop-shadow-sm"/> Copy Data
-                                   </button>
-                               </div>
-                           </div>
-                       )
-                    })}
-                  </div>
-                )}
               </div>
             </div>
           );
@@ -2430,4 +2460,4 @@
         root.render(<App />);
     </script>
 </body>
-</html>
+    </html>
