@@ -123,8 +123,11 @@
         const db = getFirestore(app);
         const appId = typeof window.__app_id !== 'undefined' ? window.__app_id : 'voice-store-real';
 
+        // 🛡️ SECURITY GUARD: GLOBAL TOKEN GETTER 🛡️
         const getAuthToken = async () => {
-            if (auth.currentUser) return await auth.currentUser.getIdToken(true);
+            if (auth.currentUser) {
+                return await auth.currentUser.getIdToken(true);
+            }
             return null;
         };
 
@@ -135,27 +138,80 @@
           { id: 'gv_bulk', name: 'Bulk Google Voice (10x)', description: 'Wholesale package of 10 fresh Google Voice accounts.', price: 45.00, icon: Users, color: 'text-yellow-500 dark:text-yellow-400' }
         ];
 
+        // 🌍 FULL GRIZZLY SMS COUNTRY LIST WITH SOME FLAGS 🌍
         const GRIZZLY_COUNTRIES_LIST = [
           { id: '187', name: 'USA', flag: '🇺🇸' }, { id: '16', name: 'United Kingdom', flag: '🇬🇧' }, { id: '48', name: 'Netherlands', flag: '🇳🇱' },
           { id: '60', name: 'Bangladesh', flag: '🇧🇩' }, { id: '22', name: 'India', flag: '🇮🇳' }, { id: '4', name: 'Philippines', flag: '🇵🇭' },
           { id: '43', name: 'Germany', flag: '🇩🇪' }, { id: '78', name: 'France', flag: '🇫🇷' }, { id: '36', name: 'Canada', flag: '🇨🇦' },
           { id: '74', name: 'Afghanistan' }, { id: '155', name: 'Albania' }, { id: '58', name: 'Algeria' },
-          { id: '39', name: 'Argentina' }, { id: '175', name: 'Australia' }, { id: '50', name: 'Austria' },
-          { id: '73', name: 'Brazil' }, { id: '3', name: 'China', flag: '🇨🇳' }, { id: '21', name: 'Egypt' },
-          { id: '6', name: 'Indonesia', flag: '🇮🇩' }, { id: '86', name: 'Italy' }, { id: '182', name: 'Japan' },
-          { id: '7', name: 'Malaysia' }, { id: '66', name: 'Pakistan' }, { id: '56', name: 'Spain' },
-          { id: '46', name: 'Sweden' }, { id: '62', name: 'Turkey' }, { id: '10', name: 'Vietnam' },
-          { id: '1', name: 'Ukraine' }, { id: '12', name: 'USA (virtual)', flag: '🇺🇸' }
+          { id: '10161', name: 'American Samoa' }, { id: '1062', name: 'Andorra' }, { id: '76', name: 'Angola' },
+          { id: '181', name: 'Anguilla' }, { id: '169', name: 'Antigua and Barbuda' }, { id: '39', name: 'Argentina' },
+          { id: '148', name: 'Armenia' }, { id: '179', name: 'Aruba' }, { id: '175', name: 'Australia' },
+          { id: '50', name: 'Austria' }, { id: '35', name: 'Azerbaijan' }, { id: '122', name: 'Bahamas' },
+          { id: '145', name: 'Bahrain' }, { id: '118', name: 'Barbados' },
+          { id: '51', name: 'Belarus' }, { id: '82', name: 'Belgium' }, { id: '124', name: 'Belize' },
+          { id: '1003', name: 'Bermuda' }, { id: '120', name: 'Benin' }, { id: '158', name: 'Bhutan' },
+          { id: '92', name: 'Bolivia' }, { id: '108', name: 'Bosnia and Herzegovina' }, { id: '123', name: 'Botswana' },
+          { id: '73', name: 'Brazil' }, { id: '121', name: 'Brunei Darussalam' }, { id: '83', name: 'Bulgaria' },
+          { id: '152', name: 'Burkina Faso' }, { id: '119', name: 'Burundi' }, { id: '24', name: 'Cambodia' },
+          { id: '41', name: 'Cameroon' }, { id: '186', name: 'Cape Verde' },
+          { id: '170', name: 'Cayman islands' }, { id: '125', name: 'Central African Republic' }, { id: '42', name: 'Chad' },
+          { id: '151', name: 'Chile' }, { id: '3', name: 'China', flag: '🇨🇳' }, { id: '33', name: 'Colombia' },
+          { id: '133', name: 'Comoros' }, { id: '93', name: 'Costa Rica' }, { id: '45', name: 'Croatia' },
+          { id: '113', name: 'Cuba' }, { id: '77', name: 'Cyprus' }, { id: '63', name: 'Czech Republic' },
+          { id: '18', name: 'DR Congo' }, { id: '172', name: 'Denmark' }, { id: '168', name: 'Djibouti' },
+          { id: '126', name: 'Dominica' }, { id: '109', name: 'Dominican Republic' }, { id: '105', name: 'Ecuador' },
+          { id: '21', name: 'Egypt' }, { id: '167', name: 'Equatorial Guinea' }, { id: '176', name: 'Eritrea' },
+          { id: '34', name: 'Estonia' }, { id: '71', name: 'Ethiopia' }, { id: '163', name: 'Finland' },
+          { id: '162', name: 'French Guiana' }, { id: '154', name: 'Gabon' },
+          { id: '28', name: 'Gambia' }, { id: '128', name: 'Georgia' },
+          { id: '38', name: 'Ghana' }, { id: '201', name: 'Gibraltar' }, { id: '129', name: 'Greece' },
+          { id: '1008', name: 'Greenland' }, { id: '127', name: 'Grenada' }, { id: '160', name: 'Guadeloupe' },
+          { id: '94', name: 'Guatemala' }, { id: '68', name: 'Guinea' }, { id: '130', name: 'Guinea-Bissau' },
+          { id: '131', name: 'Guyana' }, { id: '26', name: 'Haiti' }, { id: '88', name: 'Honduras' },
+          { id: '14', name: 'Hong Kong' }, { id: '84', name: 'Hungary' }, { id: '132', name: 'Iceland' },
+          { id: '6', name: 'Indonesia', flag: '🇮🇩' }, { id: '10016', name: 'Iran' },
+          { id: '47', name: 'Iraq' }, { id: '23', name: 'Ireland' }, { id: '13', name: 'Israel' },
+          { id: '86', name: 'Italy' }, { id: '27', name: 'Ivory Coast' }, { id: '103', name: 'Jamaica' },
+          { id: '182', name: 'Japan' }, { id: '116', name: 'Jordan' }, { id: '2', name: 'Kazakhstan' },
+          { id: '8', name: 'Kenya' }, { id: '203', name: 'Kosovo' }, { id: '100', name: 'Kuwait' },
+          { id: '11', name: 'Kyrgyzstan' }, { id: '25', name: 'Laos' }, { id: '49', name: 'Latvia' },
+          { id: '153', name: 'Lebanon' }, { id: '136', name: 'Lesotho' }, { id: '135', name: 'Liberia' },
+          { id: '102', name: 'Libya' }, { id: '10348', name: 'Liechtenstein' }, { id: '44', name: 'Lithuania' },
+          { id: '165', name: 'Luxembourg' }, { id: '20', name: 'Macao' }, { id: '17', name: 'Madagascar' },
+          { id: '137', name: 'Malawi' }, { id: '7', name: 'Malaysia' }, { id: '159', name: 'Maldives' },
+          { id: '69', name: 'Mali' }, { id: '199', name: 'Malta' }, { id: '114', name: 'Mauritania' },
+          { id: '157', name: 'Mauritius' }, { id: '54', name: 'Mexico' }, { id: '85', name: 'Moldova' },
+          { id: '144', name: 'Monaco' }, { id: '72', name: 'Mongolia' }, { id: '171', name: 'Montenegro' },
+          { id: '180', name: 'Montserrat' }, { id: '37', name: 'Morocco' }, { id: '80', name: 'Mozambique' },
+          { id: '5', name: 'Myanmar' }, { id: '138', name: 'Namibia' }, { id: '81', name: 'Nepal' },
+          { id: '185', name: 'New Caledonia' }, { id: '67', name: 'New Zealand' },
+          { id: '90', name: 'Nicaragua' }, { id: '139', name: 'Niger' }, { id: '19', name: 'Nigeria' },
+          { id: '204', name: 'Niue' }, { id: '183', name: 'North Macedonia' }, { id: '174', name: 'Norway' },
+          { id: '107', name: 'Oman' }, { id: '66', name: 'Pakistan' }, { id: '188', name: 'Palestine' },
+          { id: '112', name: 'Panama' }, { id: '79', name: 'Papua New Guinea' }, { id: '87', name: 'Paraguay' },
+          { id: '65', name: 'Peru' }, { id: '15', name: 'Poland' },
+          { id: '117', name: 'Portugal' }, { id: '97', name: 'Puerto Rico' }, { id: '111', name: 'Qatar' },
+          { id: '150', name: 'Republic of the Congo' }, { id: '146', name: 'Reunion' }, { id: '32', name: 'Romania' },
+          { id: '140', name: 'Rwanda' }, { id: '134', name: 'Saint Kitts and Nevis' }, { id: '164', name: 'Saint Lucia' },
+          { id: '166', name: 'Saint Vincent' }, { id: '101', name: 'Salvador' }, { id: '10231', name: 'Samoa' },
+          { id: '178', name: 'Sao Tome and Principe' }, { id: '53', name: 'Saudi Arabia' }, { id: '61', name: 'Senegal' },
+          { id: '29', name: 'Serbia' }, { id: '184', name: 'Seychelles' }, { id: '115', name: 'Sierra Leone' },
+          { id: '10351', name: 'Singapore' }, { id: '10349', name: 'Sint Maarten' }, { id: '141', name: 'Slovakia' },
+          { id: '59', name: 'Slovenia' }, { id: '149', name: 'Somalia' }, { id: '31', name: 'South Africa' },
+          { id: '10350', name: 'South Korea' }, { id: '177', name: 'South Sudan' }, { id: '56', name: 'Spain' },
+          { id: '64', name: 'Sri Lanka' }, { id: '142', name: 'Suriname' }, { id: '106', name: 'Swaziland' },
+          { id: '46', name: 'Sweden' }, { id: '173', name: 'Switzerland' }, { id: '110', name: 'Syria' },
+          { id: '55', name: 'Taiwan' }, { id: '143', name: 'Tajikistan' }, { id: '9', name: 'Tanzania' },
+          { id: '52', name: 'Thailand' }, { id: '91', name: 'Timor-Leste' }, { id: '99', name: 'Togo' },
+          { id: '10227', name: 'Tonga' }, { id: '104', name: 'Trinidad and Tobago' }, { id: '89', name: 'Tunisia' },
+          { id: '62', name: 'Turkey' }, { id: '161', name: 'Turkmenistan' },
+          { id: '12', name: 'USA (virtual)' }, { id: '75', name: 'Uganda' }, { id: '1', name: 'Ukraine' },
+          { id: '95', name: 'United Arab Emirates' }, { id: '156', name: 'Uruguay' },
+          { id: '40', name: 'Uzbekistan' }, { id: '1007', name: 'Vanuatu' }, { id: '70', name: 'Venezuela' },
+          { id: '10', name: 'Vietnam' }, { id: '30', name: 'Yemen' }, { id: '147', name: 'Zambia' },
+          { id: '96', name: 'Zimbabwe' }
         ].sort((a,b) => a.name.localeCompare(b.name));
-
-        const GRIZZLY_SERVICE_NAMES = {
-          "tg": "Telegram", "wa": "Whatsapp", "go": "Google, Gmail, Youtube", "ts": "PayPal", "ot": "AnyOther",
-          "bz": "Blizzard - Battle.Net", "vi": "Viber", "ds": "Discord", "tw": "Twitter / X", "fb": "facebook",
-          "ig": "Instagram + Threads", "dr": "AI Chat", "oi": "Tinder", "ua": "Blablacar", "mm": "Microsoft",
-          "am": "Amazon", "ub": "Uber", "lf": "TikTok", "nf": "Netflix", "wb": "WeChat", "mb": "Yahoo", 
-          "yl": "Yalla", "mt": "Steam", "sf": "Spotify", "sn": "OLX", "dp": "ProtonMail", "wx": "Apple",
-          "cn": "Fiverr"
-        };
 
         const CUSTOMER_TABS = [
             { id: 'sms', label: 'Live SMS', icon: Smartphone },
@@ -205,18 +261,51 @@
 
         const SplashScreen = () => {
           const text = "Voice Store".split("");
+          
+          const animations = text.map((char, i) => {
+              if (char === " ") return null;
+              const side = Math.floor(Math.random() * 4);
+              let startX, startY;
+              if (side === 0) { startX = (Math.random() * 200 - 100) + 'vw'; startY = '-150vh'; }
+              else if (side === 1) { startX = '150vw'; startY = (Math.random() * 200 - 100) + 'vh'; }
+              else if (side === 2) { startX = (Math.random() * 200 - 100) + 'vw'; startY = '150vh'; }
+              else { startX = '-150vw'; startY = (Math.random() * 200 - 100) + 'vh'; }
+              const startR = (Math.random() * 1440 - 720) + 'deg';
+              
+              return `
+                @keyframes iosVibrateAssemble${i} {
+                    0% { opacity: 0; transform: translate(${startX}, ${startY}) rotate(${startR}) scale(4); filter: blur(10px); }
+                    15% { opacity: 1; transform: translate(calc(${startX} * 0.7), calc(${startY} * 0.7)) rotate(calc(${startR} * 0.7)) scale(3); filter: blur(5px); }
+                    30% { transform: translate(calc(${startX} * 0.4 + 20px), calc(${startY} * 0.4 - 20px)) rotate(calc(${startR} * 0.4 + 20deg)) scale(2.2); filter: blur(0); }
+                    45% { transform: translate(calc(${startX} * 0.2 - 20px), calc(${startY} * 0.2 + 20px)) rotate(calc(${startR} * 0.2 - 20deg)) scale(1.8); }
+                    60% { transform: translate(15px, -15px) rotate(12deg) scale(1.4); }
+                    70% { transform: translate(-12px, 12px) rotate(-10deg) scale(1.2); }
+                    80% { transform: translate(8px, -8px) rotate(6deg) scale(1.1); }
+                    90% { transform: translate(-4px, 4px) rotate(-3deg) scale(1.02); }
+                    100% { opacity: 1; transform: translate(0, 0) rotate(0) scale(1); filter: blur(0); }
+                }
+                .char-anim-${i} {
+                    display: inline-block;
+                    opacity: 0;
+                    animation: iosVibrateAssemble${i} 2.5s cubic-bezier(0.25, 1, 0.5, 1) forwards;
+                    animation-delay: ${i * 0.08}s;
+                    will-change: transform, opacity, filter;
+                }
+              `;
+          });
+
           return (
             <div className="fixed inset-0 z-[100] flex flex-col items-center justify-center bg-[#0f172a] transition-opacity duration-500 w-full h-full p-4 overflow-hidden">
+               <style dangerouslySetInnerHTML={{ __html: animations.filter(Boolean).join('\n') }} />
                <div className="relative z-10 flex flex-col items-center w-full px-2">
                   <h1 className="text-5xl sm:text-8xl md:text-9xl font-black tracking-tighter mb-8 flex justify-center flex-wrap w-full" style={{ lineHeight: '1.2' }}>
                     {text.map((char, i) => {
                         if (char === " ") return <span key={i} className="w-3 sm:w-6"></span>;
                         return (
-                          <span key={i} className="animate-fade-in-up" style={{
+                          <span key={i} className={`char-anim-${i}`} style={{
                               background: 'linear-gradient(to right bottom, #c084fc, #22d3ee)',
                               WebkitBackgroundClip: 'text',
                               WebkitTextFillColor: 'transparent',
-                              animationDelay: `${i * 0.1}s`,
                               filter: 'drop-shadow(0px 0px 15px rgba(139,92,246,0.6))'
                           }}>
                               {char}
@@ -224,147 +313,12 @@
                         )
                     })}
                   </h1>
-                  <p className="text-slate-500 dark:text-slate-400 font-bold text-[10px] sm:text-sm uppercase tracking-[0.4em] sm:tracking-[0.6em] animate-fade-in-up" style={{ animationDelay: '1.2s', opacity: 0, animationFillMode: 'forwards' }}>Premium Workspace</p>
+                  <p className="text-slate-500 dark:text-slate-400 font-bold text-[10px] sm:text-sm uppercase tracking-[0.4em] sm:tracking-[0.6em] animate-fade-in-up" style={{ animationDelay: '1.8s', opacity: 0, animationFillMode: 'forwards' }}>Premium Workspace</p>
                </div>
             </div>
           );
         };
 
-        // Extracted ProductCard
-        function ProductCard({ product, inventory, addToCart, setPreviewStockModal }) {
-            const [selectedState, setSelectedState] = useState('Any');
-            const stockList = inventory[product.id] || [];
-            const totalStock = stockList.length;
-            
-            const availableStates = [...new Set(stockList.map(acc => {
-                let state = "US";
-                const stateMatch = String(acc).match(/📍 STATE:\s*\n?([^\n]+)/i);
-                if (stateMatch) state = stateMatch[1].trim();
-                return state;
-            }))].sort();
-
-            const currentStockCount = selectedState === 'Any' ? totalStock : stockList.filter(acc => String(acc).includes(selectedState)).length;
-            const Icon = product.icon;
-
-            return (
-                <div className={uiCard + " p-6 flex flex-col group hover:-translate-y-1 hover:border-violet-500/30"}>
-                    {totalStock === 0 && <div className="absolute inset-0 bg-slate-900/80 dark:bg-brand-darkBg/80 z-20 flex items-center justify-center backdrop-blur-sm"><span className="bg-slate-800 dark:bg-slate-900 text-white px-4 py-2 rounded-xl text-xs font-bold uppercase tracking-widest shadow-xl border border-white/10">Out of Stock</span></div>}
-                    
-                    <div className="flex justify-between items-start mb-5">
-                        <div className="bg-slate-100 dark:bg-black/30 p-3.5 rounded-xl border border-slate-200 dark:border-white/5 shadow-inner group-hover:scale-110 transition-transform duration-300">
-                            <Icon className={`w-6 h-6 ${product.color} drop-shadow-[0_0_8px_currentColor]`} />
-                        </div>
-                        <div className="bg-white dark:bg-white/5 border border-slate-200 dark:border-white/10 px-3 py-1.5 rounded-xl flex items-center text-slate-800 dark:text-white text-sm font-bold shadow-sm">
-                            ${Number(product.price).toFixed(2)}
-                        </div>
-                    </div>
-                    
-                    <h3 className="text-lg font-bold text-slate-900 dark:text-white mb-2 break-words">{product.name}</h3>
-                    <p className="text-slate-600 dark:text-slate-400 text-xs leading-relaxed mb-4 flex-grow font-medium break-words">{product.description}</p>
-                    
-                    {totalStock > 0 && (
-                        <div className="mb-4">
-                            <label className="block text-[10px] font-bold text-slate-500 dark:text-slate-400 mb-1.5 uppercase tracking-wider">Select Preferred State</label>
-                            <select value={selectedState} onChange={(e) => setSelectedState(e.target.value)} className={uiInput + " !py-2.5 !text-xs cursor-pointer"}>
-                                <option value="Any">Any State (Random Delivery)</option>
-                                {availableStates.map(st => <option key={st} value={st}>{st} State</option>)}
-                            </select>
-                        </div>
-                    )}
-                    
-                    <div className="flex justify-between items-center mt-auto pt-4 border-t border-slate-200 dark:border-white/5 w-full">
-                        <div className="flex flex-col">
-                            <span className="text-[10px] text-slate-500 font-bold uppercase tracking-wider mb-1">Available</span>
-                            <span className={`text-sm font-black drop-shadow-sm ${currentStockCount > 5 ? 'text-slate-800 dark:text-white' : 'text-rose-500 dark:text-rose-400'}`}>{currentStockCount} pcs</span>
-                        </div>
-                        <button onClick={() => addToCart({...product, selectedState: selectedState === 'Any' ? null : selectedState})} disabled={currentStockCount === 0} className={uiBtnPrimary + " !w-auto !py-2.5 !px-5 text-sm"}>
-                            Add <Plus className="w-4 h-4" />
-                        </button>
-                    </div>
-                    
-                    {totalStock > 0 && (
-                        <div className="mt-4 pt-4 border-t border-slate-200 dark:border-white/5 w-full text-center">
-                            <p onClick={() => setPreviewStockModal({show: true, categoryId: product.id, name: product.name})} className="text-[10px] text-violet-600 dark:text-violet-400 cursor-pointer hover:text-violet-700 dark:hover:text-violet-300 font-bold tracking-wider uppercase flex items-center justify-center gap-1.5 transition-colors">
-                                <Eye className="w-3.5 h-3.5 text-violet-500 dark:text-violet-400 drop-shadow-[0_0_5px_currentColor]"/> View Full Live Stock Preview
-                            </p>
-                        </div>
-                    )}
-                </div>
-            );
-        }
-
-        // Extracted PurchasedAccountCard
-        function PurchasedAccountCard({ acc, triggerToast, db, appId, email }) {
-            const [totpCode, setTotpCode] = useState('');
-            const [timeLeft, setTimeLeft] = useState(30);
-            const [twoFaSecret, setTwoFaSecret] = useState(null);
-
-            useEffect(() => {
-                const rawData = String(acc.data || '');
-                const match = rawData.match(/🔐 2FA INFO:\s*\n?([a-zA-Z0-9\s]+)/i);
-                if (match) setTwoFaSecret(match[1].replace(/\s+/g, '').toUpperCase());
-            }, [acc.data]);
-
-            useEffect(() => {
-                if (!twoFaSecret) return;
-                const updateTotp = () => {
-                    if (typeof window.OTPAuth !== 'undefined') {
-                        try {
-                            let totp = new window.OTPAuth.TOTP({ algorithm: 'SHA1', digits: 6, period: 30, secret: window.OTPAuth.Secret.fromBase32(twoFaSecret) });
-                            setTotpCode(totp.generate());
-                            setTimeLeft(30 - (Math.floor(Date.now() / 1000) % 30));
-                        } catch(e) {}
-                    }
-                };
-                updateTotp();
-                const interval = setInterval(updateTotp, 1000);
-                return () => clearInterval(interval);
-            }, [twoFaSecret]);
-
-            return (
-                <div className={uiInnerPanel + " flex flex-col w-full relative group"}>
-                    <div className="flex justify-between items-start mb-3 sm:mb-4">
-                        <span className="text-xs sm:text-sm font-bold text-slate-800 dark:text-white flex items-center gap-1.5 sm:gap-2 break-words max-w-[70%]">
-                            <Package className="w-4 h-4 text-violet-500 dark:text-violet-400 shrink-0 drop-shadow-[0_0_5px_currentColor]"/> {acc.type}
-                        </span>
-                        <span className="text-[10px] text-slate-500 dark:text-slate-400 font-semibold px-2 py-1 bg-slate-200 dark:bg-black/30 rounded-md shrink-0 border border-slate-300 dark:border-white/5">
-                            {acc.date ? new Date(acc.date).toLocaleDateString() : ''}
-                        </span>
-                    </div>
-
-                    {twoFaSecret && (
-                        <div className="mb-4 bg-violet-50 dark:bg-violet-900/10 border border-violet-200 dark:border-violet-500/20 p-4 rounded-xl flex flex-col items-center justify-center relative overflow-hidden">
-                            <div className="absolute top-0 left-0 w-full h-1 bg-slate-300 dark:bg-slate-800">
-                                <div className="bg-violet-500 dark:bg-violet-400 h-full transition-all duration-1000 ease-linear shadow-[0_0_10px_currentColor]" style={{width: `${(timeLeft/30)*100}%`}}></div>
-                            </div>
-                            <p className="text-[10px] sm:text-xs text-violet-600 dark:text-violet-300 font-semibold mb-1 mt-1 uppercase tracking-widest">Live Authenticator Code</p>
-                            <div className="text-3xl sm:text-4xl font-black text-slate-900 dark:text-white tracking-widest font-mono drop-shadow-md">{totpCode || '------'}</div>
-                            <p className="text-[10px] text-slate-500 mt-2 font-medium">Valid for {timeLeft} seconds</p>
-                        </div>
-                    )}
-
-                    <div className="w-full bg-white dark:bg-black/40 border border-slate-200 dark:border-white/5 p-3 sm:p-4 rounded-xl mb-4 sm:mb-5 overflow-x-auto shadow-inner">
-                        <pre className="font-mono text-xs sm:text-sm text-emerald-600 dark:text-emerald-400 whitespace-pre-wrap break-words font-semibold">{String(acc.data || '')}</pre>
-                    </div>
-                    
-                    <div className="flex justify-end gap-3 mt-auto items-center">
-                        <button onClick={() => {
-                            const id = 'REP-' + Date.now();
-                            setDoc(doc(db, 'artifacts', appId, 'public', 'data', 'Store_Tickets', id), { email: email, subject: `Reported Account`, message: `Issue reported.`, status: 'Open', date: new Date().toISOString() });
-                            triggerToast('Report forwarded to admin.');
-                        }} className="btn-animate text-[11px] text-slate-500 dark:text-slate-400 hover:text-rose-500 dark:hover:text-rose-400 font-semibold px-3 py-2 transition-colors">Report Issue</button>
-                        <button onClick={() => {
-                            if (navigator.clipboard) navigator.clipboard.writeText(String(acc.data || '')).then(() => triggerToast("Copied!"));
-                            else { const t = document.createElement("textarea"); t.value = String(acc.data || ''); document.body.appendChild(t); t.select(); document.execCommand("copy"); document.body.removeChild(t); triggerToast("Copied!"); }
-                        }} className={uiBtnPrimary + " !w-auto !py-2 !px-4 !text-xs !rounded-lg"}>
-                            <Copy className="w-3.5 h-3.5 drop-shadow-sm"/> Copy Data
-                        </button>
-                    </div>
-                </div>
-            );
-        }
-
-        // MAIN APP COMPONENT
         function App() {
           const [showSplash, setShowSplash] = useState(true);
           const [user, setUser] = useState(null); 
@@ -429,10 +383,10 @@
                  if (firebaseUser.email.toLowerCase() === currentAdminEmail.toLowerCase()) {
                     setUser({ email: firebaseUser.email, role: 'admin' });
                     setActiveTab('inventory');
-                 } else {
+                 } else if (firebaseUser.emailVerified || true) {
                     setUser({ email: firebaseUser.email, role: 'customer' });
                     setActiveTab('sms');
-                 }
+                 } else { setUser(null); }
               } else { setUser(null); }
               setIsAuthChecking(false);
             });
@@ -478,6 +432,16 @@
             return () => unsubs.forEach(unsub => unsub());
           }, [user]);
 
+          const finalizeLogin = async (identifier, role, password = '') => {
+            if (role === 'admin') return; 
+            try {
+              const userRef = doc(db, 'artifacts', appId, 'public', 'data', 'Store_Users', identifier);
+              const snap = await getDoc(userRef);
+              if (!snap.exists()) await setDoc(userRef, { password: password, balance: 0, totalSpent: 0, joined: new Date().toISOString(), lastBonusDate: '' });
+              else if (password !== '') await updateDoc(userRef, { password: password });
+            } catch (err) {}
+          };
+
           const handleAuthSubmit = async (e) => {
             e.preventDefault(); setAuthError(''); setAuthSuccessMsg(''); setIsLoading(true);
             let email = emailInput.trim(); let pwd = passwordInput.trim();
@@ -512,13 +476,20 @@
             try {
               if (authMethod === 'signup') {
                 const userCredential = await createUserWithEmailAndPassword(auth, email, pwd);
+                await sendEmailVerification(userCredential.user);
                 
                 const userRef = doc(db, 'artifacts', appId, 'public', 'data', 'Store_Users', userCredential.user.email);
                 await setDoc(userRef, { password: pwd, balance: 0, totalSpent: 0, joined: new Date().toISOString(), lastBonusDate: '' });
                 
-                setAuthSuccessMsg('Registration successful! Welcome to VoiceStore.');
+                await auth.signOut(); 
+                setAuthSuccessMsg('Registration successful! Check email to verify.');
+                setAuthMethod('login'); 
               } else {
-                await signInWithEmailAndPassword(auth, email, pwd);
+                const userCredential = await signInWithEmailAndPassword(auth, email, pwd);
+                if (!userCredential.user.emailVerified) {
+                   await auth.signOut(); setAuthError('Email not verified. Check inbox.');
+                   setIsLoading(false); return;
+                }
                 setAuthSuccessMsg('Welcome back!');
               }
             } catch (error) { setAuthError(error.message); }
@@ -667,24 +638,24 @@
                     inventory={inventory} orders={allOrders} deposits={deposits} categories={categories} usersDB={usersDB}
                     triggerToast={triggerToast} db={db} appId={appId} promoSettings={promoSettings} globalNotice={globalNotice}
                     tickets={tickets} featureSettings={featureSettings} bankSettings={bankSettings} smsSettings={smsSettings}
-                    auth={auth} user={user} activeTab={activeTab}
+                    auth={auth} user={user} uiCard={uiCard} uiInput={uiInput} uiBtnPrimary={uiBtnPrimary} uiBtnSecondary={uiBtnSecondary} uiBtnAction={uiBtnAction} uiInnerPanel={uiInnerPanel} activeTab={activeTab}
                   />
                 ) : (
                   <>
                       {activeTab === 'sms' && (
-                        <CustomerDashboardSMS user={user} balance={currentUserBalance} triggerToast={triggerToast} smsSettings={smsSettings} />
+                        <CustomerDashboardSMS user={user} balance={currentUserBalance} triggerToast={triggerToast} smsSettings={smsSettings} uiCard={uiCard} uiInput={uiInput} uiBtnPrimary={uiBtnPrimary} uiInnerPanel={uiInnerPanel} />
                       )}
                       {activeTab === 'store' && (
-                        <CustomerDashboardStore inventory={inventory} categories={categories} cart={cart} setCart={setCart} allOrders={allOrders} triggerToast={triggerToast} />
+                        <CustomerDashboardStore inventory={inventory} categories={categories} cart={cart} setCart={setCart} allOrders={allOrders} uiCard={uiCard} uiInput={uiInput} uiBtnPrimary={uiBtnPrimary} uiInnerPanel={uiInnerPanel} triggerToast={triggerToast} />
                       )}
                       {activeTab === 'add_funds' && (
-                        <CustomerDashboardFunds user={user} db={db} appId={appId} triggerToast={triggerToast} addNotification={addNotification} bankSettings={bankSettings} />
+                        <CustomerDashboardFunds user={user} db={db} appId={appId} triggerToast={triggerToast} addNotification={addNotification} bankSettings={bankSettings} uiCard={uiCard} uiInput={uiInput} uiBtnPrimary={uiBtnPrimary} uiBtnSecondary={uiBtnSecondary} uiInnerPanel={uiInnerPanel} />
                       )}
                       {activeTab === 'my_accounts' && (
-                        <CustomerDashboardVault purchases={purchases} user={user} triggerToast={triggerToast} db={db} appId={appId} />
+                        <CustomerDashboardVault user={user} purchases={purchases} triggerToast={triggerToast} db={db} appId={appId} uiCard={uiCard} uiBtnPrimary={uiBtnPrimary} uiInnerPanel={uiInnerPanel} />
                       )}
                       {activeTab === 'profile' && (
-                        <CustomerDashboardProfile user={user} balance={currentUserBalance} tier={currentUserTier} userInfo={usersDB[user.email]} allOrders={allOrders} deposits={deposits} purchases={purchases} tickets={tickets.filter(t => t.email === user.email)} db={db} appId={appId} featureSettings={featureSettings} triggerToast={triggerToast} />
+                        <CustomerDashboardProfile user={user} balance={currentUserBalance} tier={currentUserTier} userInfo={usersDB[user.email]} allOrders={allOrders} deposits={deposits} purchases={purchases} tickets={tickets.filter(t => t.email === user.email)} db={db} appId={appId} featureSettings={featureSettings} triggerToast={triggerToast} uiCard={uiCard} uiInput={uiInput} uiBtnPrimary={uiBtnPrimary} uiBtnSecondary={uiBtnSecondary} uiInnerPanel={uiInnerPanel} />
                       )}
                   </>
                 )}
@@ -694,16 +665,19 @@
                 <CartModal 
                   cart={cart} setCart={setCart} setShowCart={setShowCart} balance={currentUserBalance}
                   user={user} promoSettings={promoSettings} addNotification={addNotification} triggerToast={triggerToast} 
+                  uiCard={uiCard} uiBtnPrimary={uiBtnPrimary} uiInnerPanel={uiInnerPanel}
                 />
               )}
             </div>
           );
         }
 
-        // SMS MODULE
-        function CustomerDashboardSMS({ user, balance, triggerToast, smsSettings }) {
+        // ==========================================
+        // 🌟 SMS MODULE (LIVE POPUP MULTI-PRICE TIER) 🌟
+        // ==========================================
+        function CustomerDashboardSMS({ user, balance, triggerToast, smsSettings, uiCard, uiInput, uiBtnPrimary, uiInnerPanel }) {
           const [isSmsLoading, setIsSmsLoading] = useState(false);
-          const [selectedSmsService, setSelectedSmsService] = useState(''); 
+          const [selectedSmsService, setSelectedSmsService] = useState(''); // Holds exact price code e.g. "tg_187_1.50"
           
           const [availableServices, setAvailableServices] = useState([]); 
           const [isAppDropdownOpen, setIsAppDropdownOpen] = useState(false);
@@ -750,7 +724,7 @@
               }
           }, [smsSettings, smsCountry]);
 
-          // Group API data by App for Dropdown & Popup
+          // 🌟 Group API data by App for Dropdown & Popup 🌟
           const groupedAPI = {};
           availableServices.forEach(item => {
               if (!groupedAPI[item.serviceId]) groupedAPI[item.serviceId] = [];
@@ -765,20 +739,20 @@
               // Sort low price to high price for the modal buttons
               apiPrices.sort((a, b) => a.finalPrice - b.finalPrice);
 
-              if (totalStock === 0) return null; // Filter out 0 stock
-
               return {
                   serviceId: code,
                   name: GRIZZLY_SERVICE_NAMES[code],
                   stock: totalStock,
                   prices: apiPrices
               };
-          }).filter(Boolean).sort((a, b) => a.name.localeCompare(b.name));
+          }).filter(app => app.stock > 0) // 🔥 ম্যাজিক: যেগুলোর স্টক ০, সেগুলো লিস্ট থেকেই বাদ!
+            .sort((a, b) => a.name.localeCompare(b.name));
 
           const filteredApps = combinedApps.filter(app => 
               app.name.toLowerCase().includes(appSearch.toLowerCase())
           );
 
+          // Update Selection automatically if data changes
           useEffect(() => {
               if (combinedApps.length > 0 && !selectedAppGroup) {
                   setSelectedAppGroup(combinedApps[0]);
@@ -867,7 +841,10 @@
                   const cancelData = await cancelRes.json();
                   
                   if (!cancelData.success && !String(cancelData.message).includes('already closed')) {
-                      if (!isAuto) { triggerToast(cancelData.message); return; }
+                      if (!isAuto) {
+                          triggerToast(cancelData.message); 
+                          return; 
+                      }
                   }
                   
                   await fetch('https://voicestore-backend.onrender.com/api/sms-refund', {
@@ -940,7 +917,9 @@
              return `+${p}`; 
           };
 
-          const copyNumberOnly = (phone) => { copyText(String(phone).replace(/\D/g, '')); };
+          const copyNumberOnly = (phone) => {
+             copyText(String(phone).replace(/\D/g, ''));
+          };
 
           if(!smsSettings?.active) return (
              <div className={uiCard + " text-center py-20 text-slate-500 font-medium w-full"}>
@@ -952,10 +931,10 @@
           return (
             <div className="w-full max-w-2xl mx-auto space-y-6 sm:space-y-8 animate-fade-in-up">
                 
-                {/* 🌟 MAGICAL PRICE POPUP MODAL (ORANGE DESIGN) 🌟 */}
+                {/* 🌟 MAGICAL PRICE POPUP MODAL 🌟 */}
                 {showPriceModal && selectedAppGroup && (
                     <div className="fixed inset-0 z-[150] flex items-center justify-center p-4 bg-slate-900/80 backdrop-blur-sm animate-fade-in-up">
-                        <div className={uiCard + " w-full max-w-sm p-6 relative overflow-visible border-t-4 border-t-orange-500"}>
+                        <div className={uiCard + " w-full max-w-sm p-6 relative overflow-visible border-t-4 border-t-violet-500"}>
                             <button onClick={() => setShowPriceModal(false)} className="absolute top-4 right-4 p-2 bg-slate-100 dark:bg-white/5 hover:bg-slate-200 dark:hover:bg-white/10 rounded-full text-slate-500 dark:text-slate-400 transition-colors"><X className="w-5 h-5" /></button>
                             
                             <div className="flex items-center justify-center gap-6 mb-6 mt-4">
@@ -965,10 +944,10 @@
                                     </div>
                                     <span className="text-[10px] sm:text-xs font-bold text-slate-600 dark:text-slate-300 max-w-[80px] text-center truncate">{GRIZZLY_COUNTRIES_LIST.find(c => c.id === smsCountry)?.name || 'Country'}</span>
                                 </div>
-                                <Plus className="w-6 h-6 text-orange-500/50"/>
+                                <Plus className="w-6 h-6 text-violet-500/50"/>
                                 <div className="flex flex-col items-center gap-2">
-                                    <div className="w-12 h-12 bg-orange-50 dark:bg-orange-500/20 rounded-full flex items-center justify-center border border-orange-200 dark:border-orange-500/30 shadow-inner">
-                                        <Smartphone className="w-6 h-6 text-orange-600 dark:text-orange-400"/>
+                                    <div className="w-12 h-12 bg-violet-50 dark:bg-violet-500/20 rounded-full flex items-center justify-center border border-violet-200 dark:border-violet-500/30 shadow-inner">
+                                        <Smartphone className="w-6 h-6 text-violet-600 dark:text-violet-400"/>
                                     </div>
                                     <span className="text-[10px] sm:text-xs font-bold text-slate-600 dark:text-slate-300 max-w-[80px] text-center truncate">{selectedAppGroup.name}</span>
                                 </div>
@@ -985,24 +964,27 @@
                                 {selectedAppGroup.prices.map((p, i) => (
                                     <button key={i} 
                                         onClick={() => setSelectedSmsService(p.code)}
-                                        className={`px-4 py-2.5 rounded-xl text-sm font-bold transition-all border shadow-sm flex items-center gap-2 ${selectedSmsService === p.code ? 'bg-orange-500/20 text-orange-500 border-orange-500/50 scale-105' : 'bg-white dark:bg-slate-800/50 text-slate-700 dark:text-orange-400/70 border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-800 hover:dark:text-orange-400'}`}
+                                        className={`px-4 py-2.5 rounded-xl text-sm font-bold transition-all border shadow-sm ${selectedSmsService === p.code ? 'bg-gradient-to-r from-violet-500 to-cyan-500 text-white border-transparent scale-105' : 'bg-white dark:bg-brand-darkBg text-slate-700 dark:text-slate-300 border-slate-200 dark:border-white/10 hover:bg-slate-50 dark:hover:bg-white/5'}`}
                                     >
                                         ${Number(p.finalPrice).toFixed(3)}
-                                        <span className={`text-[10px] px-1.5 py-0.5 rounded ${selectedSmsService === p.code ? 'bg-orange-500/20' : 'bg-slate-100 dark:bg-slate-700/50 text-slate-500 dark:text-slate-400'}`}>{p.count} qty</span>
                                     </button>
                                 ))}
                             </div>
 
                             <button 
-                                onClick={() => { setShowPriceModal(false); buySmsNumber(); }} 
-                                disabled={isSmsLoading || activeOrders.length > 0 || !selectedSmsService} 
-                                className="btn-animate w-full h-12 !text-sm font-bold rounded-xl text-white bg-gradient-to-r from-orange-500 to-amber-600 shadow-[0_4px_20px_rgba(249,115,22,0.4)] disabled:opacity-50"
+                                onClick={() => {
+                                    setShowPriceModal(false);
+                                    buySmsNumber(); 
+                                }} 
+                                disabled={isSmsLoading || activeOrders.length > 0} 
+                                className={uiBtnPrimary + " w-full h-12 !text-sm shadow-[0_4px_20px_rgba(139,92,246,0.4)]"}
                             >
                                 {isSmsLoading ? 'Processing...' : `Purchase (${selectedAppGroup.name})`}
                             </button>
                         </div>
                     </div>
                 )}
+
 
                 <div className={uiCard + " p-6 sm:p-8"}>
                     <div className="mb-6">
@@ -1060,10 +1042,10 @@
                                                            <div key={app.serviceId} 
                                                                onClick={() => { 
                                                                    setSelectedAppGroup(app); 
-                                                                   if(app.prices.length > 0) setSelectedSmsService(app.prices[0].code);
+                                                                   if(app.prices.length > 0) setSelectedSmsService(app.prices[0].code); // Select cheapest initially
                                                                    setIsAppDropdownOpen(false); 
                                                                    setAppSearch(''); 
-                                                                   setShowPriceModal(true);
+                                                                   setShowPriceModal(true); // 🔥 Magic: Opens the popup!
                                                                }}
                                                                className={`px-4 py-3 cursor-pointer rounded-lg text-sm font-semibold transition-colors flex justify-between items-center ${selectedAppGroup?.serviceId === app.serviceId ? 'bg-violet-50 dark:bg-violet-500/10 text-violet-600 dark:text-violet-400' : 'text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-white/5'}`}
                                                            >
@@ -1103,7 +1085,6 @@
                     </button>
                 </div>
 
-                {/* ACTIVE ORDERS DISPLAY */}
                 {activeOrders.map((order, index) => {
                     const timeLeft = Math.max(0, Math.floor((order.expiresAt - now) / 1000));
                     
@@ -1153,8 +1134,10 @@
           );
         }
 
+        // ==========================================
         // STORE MODULE
-        function CustomerDashboardStore({ inventory, categories, cart, setCart, allOrders, triggerToast }) {
+        // ==========================================
+        function CustomerDashboardStore({ inventory, categories, cart, setCart, allOrders, uiCard, uiInput, uiBtnPrimary, uiInnerPanel, triggerToast }) {
           const [searchQuery, setSearchQuery] = useState('');
           const [previewStockModal, setPreviewStockModal] = useState({show: false, categoryId: null, name: ''});
           const filteredCategories = categories.filter(c => c.name.toLowerCase().includes(searchQuery.toLowerCase()));
@@ -1223,15 +1206,67 @@
 
                 <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 sm:gap-8 w-full">
                   <div className="lg:col-span-2 grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6 w-full">
-                    {filteredCategories.map((product) => (
-                        <ProductCard 
-                            key={product.id} 
-                            product={product} 
-                            inventory={inventory} 
-                            addToCart={addToCart} 
-                            setPreviewStockModal={setPreviewStockModal}
-                        />
-                    ))}
+                    {filteredCategories.map((product) => {
+                        const [selectedState, setSelectedState] = useState('Any');
+                        const stockList = inventory[product.id] || [];
+                        const totalStock = stockList.length;
+                        
+                        const availableStates = [...new Set(stockList.map(acc => {
+                            let state = "US";
+                            const stateMatch = String(acc).match(/📍 STATE:\s*\n?([^\n]+)/i);
+                            if (stateMatch) state = stateMatch[1].trim();
+                            return state;
+                        }))].sort();
+
+                        const currentStockCount = selectedState === 'Any' ? totalStock : stockList.filter(acc => String(acc).includes(selectedState)).length;
+                        const Icon = product.icon;
+
+                        return (
+                            <div key={product.id} className={uiCard + " p-6 flex flex-col group hover:-translate-y-1 hover:border-violet-500/30"}>
+                                {totalStock === 0 && <div className="absolute inset-0 bg-slate-900/80 dark:bg-brand-darkBg/80 z-20 flex items-center justify-center backdrop-blur-sm"><span className="bg-slate-800 dark:bg-slate-900 text-white px-4 py-2 rounded-xl text-xs font-bold uppercase tracking-widest shadow-xl border border-white/10">Out of Stock</span></div>}
+                                
+                                <div className="flex justify-between items-start mb-5">
+                                    <div className="bg-slate-100 dark:bg-black/30 p-3.5 rounded-xl border border-slate-200 dark:border-white/5 shadow-inner group-hover:scale-110 transition-transform duration-300">
+                                        <Icon className={`w-6 h-6 ${product.color} drop-shadow-[0_0_8px_currentColor]`} />
+                                    </div>
+                                    <div className="bg-white dark:bg-white/5 border border-slate-200 dark:border-white/10 px-3 py-1.5 rounded-xl flex items-center text-slate-800 dark:text-white text-sm font-bold shadow-sm">
+                                        ${Number(product.price).toFixed(2)}
+                                    </div>
+                                </div>
+                                
+                                <h3 className="text-lg font-bold text-slate-900 dark:text-white mb-2 break-words">{product.name}</h3>
+                                <p className="text-slate-600 dark:text-slate-400 text-xs leading-relaxed mb-4 flex-grow font-medium break-words">{product.description}</p>
+                                
+                                {totalStock > 0 && (
+                                    <div className="mb-4">
+                                        <label className="block text-[10px] font-bold text-slate-500 dark:text-slate-400 mb-1.5 uppercase tracking-wider">Select Preferred State</label>
+                                        <select value={selectedState} onChange={(e) => setSelectedState(e.target.value)} className={uiInput + " !py-2.5 !text-xs cursor-pointer"}>
+                                            <option value="Any">Any State (Random Delivery)</option>
+                                            {availableStates.map(st => <option key={st} value={st}>{st} State</option>)}
+                                        </select>
+                                    </div>
+                                )}
+                                
+                                <div className="flex justify-between items-center mt-auto pt-4 border-t border-slate-200 dark:border-white/5 w-full">
+                                    <div className="flex flex-col">
+                                        <span className="text-[10px] text-slate-500 font-bold uppercase tracking-wider mb-1">Available</span>
+                                        <span className={`text-sm font-black drop-shadow-sm ${currentStockCount > 5 ? 'text-slate-800 dark:text-white' : 'text-rose-500 dark:text-rose-400'}`}>{currentStockCount} pcs</span>
+                                    </div>
+                                    <button onClick={() => addToCart({...product, selectedState: selectedState === 'Any' ? null : selectedState})} disabled={currentStockCount === 0} className={uiBtnPrimary + " !w-auto !py-2.5 !px-5 text-sm"}>
+                                        Add <Plus className="w-4 h-4" />
+                                    </button>
+                                </div>
+                                
+                                {totalStock > 0 && (
+                                    <div className="mt-4 pt-4 border-t border-slate-200 dark:border-white/5 w-full text-center">
+                                        <p onClick={() => setPreviewStockModal({show: true, categoryId: product.id, name: product.name})} className="text-[10px] text-violet-600 dark:text-violet-400 cursor-pointer hover:text-violet-700 dark:hover:text-violet-300 font-bold tracking-wider uppercase flex items-center justify-center gap-1.5 transition-colors">
+                                            <Eye className="w-3.5 h-3.5 text-violet-500 dark:text-violet-400 drop-shadow-[0_0_5px_currentColor]"/> View Full Live Stock Preview
+                                        </p>
+                                    </div>
+                                )}
+                            </div>
+                        );
+                    })}
                     {filteredCategories.length === 0 && <div className="col-span-full py-20 text-center text-slate-500 font-medium"><Search className="w-12 h-12 mx-auto mb-4 opacity-20"/>No products match.</div>}
                   </div>
 
@@ -1258,8 +1293,10 @@
           );
         }
 
+        // ==========================================
         // FUNDS MODULE
-        function CustomerDashboardFunds({ user, db, appId, triggerToast, addNotification, bankSettings }) {
+        // ==========================================
+        function CustomerDashboardFunds({ user, db, appId, triggerToast, addNotification, bankSettings, uiCard, uiInput, uiBtnPrimary, uiBtnSecondary, uiInnerPanel }) {
           const [autoPay, setAutoPay] = useState({ active: false, amount: 0, time: 900, checking: false, invoiceId: '' });
           const TRON_ADDRESS = 'TELRyMwDmdKzBRb7Uaw3zNvphrc8V3D5Mj';
           const BTC_ADDRESS = '1EgVdWyoCsWepg3TAowifuhoR81Lm1xEUd';
@@ -1502,8 +1539,101 @@
           );
         }
 
+        // ==========================================
+        // VAULT MODULE
+        // ==========================================
+        function CustomerDashboardVault({ purchases, reportAccount, copyToClipboard, uiCard, uiBtnPrimary, uiInnerPanel }) {
+          return (
+            <div className="animate-fade-in-up w-full">
+              <div className={uiCard + " p-6 sm:p-8 min-h-[500px]"}>
+                <h2 className="text-xl sm:text-2xl font-bold text-slate-900 dark:text-white mb-6 flex items-center gap-3 pb-4 border-b border-slate-200 dark:border-white/5"><Package className="w-6 h-6 text-violet-500 dark:text-violet-400 drop-shadow-[0_0_5px_currentColor]"/> My Purchased Accounts</h2>
+                {purchases.length === 0 ? (
+                  <div className="text-center py-32 text-slate-500 flex flex-col items-center">
+                    <Lock className="w-16 h-16 mb-4 opacity-20" />
+                    <p className="text-base font-medium">You haven't purchased any accounts yet.</p>
+                  </div>
+                ) : (
+                  <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6 w-full">
+                    {purchases.map((acc, idx) => {
+                       const [totpCode, setTotpCode] = useState('');
+                       const [timeLeft, setTimeLeft] = useState(30);
+                       const [twoFaSecret, setTwoFaSecret] = useState(null);
+
+                       useEffect(() => {
+                           const rawData = String(acc.data || '');
+                           const match = rawData.match(/🔐 2FA INFO:\s*\n?([a-zA-Z0-9\s]+)/i);
+                           if (match) setTwoFaSecret(match[1].replace(/\s+/g, '').toUpperCase());
+                       }, [acc.data]);
+
+                       useEffect(() => {
+                           if (!twoFaSecret) return;
+                           const updateTotp = () => {
+                               if (typeof window.OTPAuth !== 'undefined') {
+                                   try {
+                                       let totp = new window.OTPAuth.TOTP({ algorithm: 'SHA1', digits: 6, period: 30, secret: window.OTPAuth.Secret.fromBase32(twoFaSecret) });
+                                       setTotpCode(totp.generate());
+                                       setTimeLeft(30 - (Math.floor(Date.now() / 1000) % 30));
+                                   } catch(e) {}
+                               }
+                           };
+                           updateTotp();
+                           const interval = setInterval(updateTotp, 1000);
+                           return () => clearInterval(interval);
+                       }, [twoFaSecret]);
+
+                       return (
+                           <div key={idx} className={uiInnerPanel + " flex flex-col w-full relative group"}>
+                               <div className="flex justify-between items-start mb-3 sm:mb-4">
+                                   <span className="text-xs sm:text-sm font-bold text-slate-800 dark:text-white flex items-center gap-1.5 sm:gap-2 break-words max-w-[70%]">
+                                       <Package className="w-4 h-4 text-violet-500 dark:text-violet-400 shrink-0 drop-shadow-[0_0_5px_currentColor]"/> {acc.type}
+                                   </span>
+                                   <span className="text-[10px] text-slate-500 dark:text-slate-400 font-semibold px-2 py-1 bg-slate-200 dark:bg-black/30 rounded-md shrink-0 border border-slate-300 dark:border-white/5">
+                                       {acc.date ? new Date(acc.date).toLocaleDateString() : ''}
+                                   </span>
+                               </div>
+
+                               {twoFaSecret && (
+                                   <div className="mb-4 bg-violet-50 dark:bg-violet-900/10 border border-violet-200 dark:border-violet-500/20 p-4 rounded-xl flex flex-col items-center justify-center relative overflow-hidden">
+                                       <div className="absolute top-0 left-0 w-full h-1 bg-slate-300 dark:bg-slate-800">
+                                           <div className="bg-violet-500 dark:bg-violet-400 h-full transition-all duration-1000 ease-linear shadow-[0_0_10px_currentColor]" style={{width: `${(timeLeft/30)*100}%`}}></div>
+                                       </div>
+                                       <p className="text-[10px] sm:text-xs text-violet-600 dark:text-violet-300 font-semibold mb-1 mt-1 uppercase tracking-widest">Live Authenticator Code</p>
+                                       <div className="text-3xl sm:text-4xl font-black text-slate-900 dark:text-white tracking-widest font-mono drop-shadow-md">{totpCode || '------'}</div>
+                                       <p className="text-[10px] text-slate-500 mt-2 font-medium">Valid for {timeLeft} seconds</p>
+                                   </div>
+                               )}
+
+                               <div className="w-full bg-white dark:bg-black/40 border border-slate-200 dark:border-white/5 p-3 sm:p-4 rounded-xl mb-4 sm:mb-5 overflow-x-auto shadow-inner">
+                                   <pre className="font-mono text-xs sm:text-sm text-emerald-600 dark:text-emerald-400 whitespace-pre-wrap break-words font-semibold">{String(acc.data || '')}</pre>
+                               </div>
+                               
+                               <div className="flex justify-end gap-3 mt-auto items-center">
+                                   <button onClick={() => {
+                                      const id = 'REP-' + Date.now();
+                                      setDoc(doc(db, 'artifacts', appId, 'public', 'data', 'Store_Tickets', id), { email: purchases[0].customer, subject: `Reported Account`, message: `Issue reported.`, status: 'Open', date: new Date().toISOString() });
+                                      triggerToast('Report forwarded to admin.');
+                                   }} className="btn-animate text-[11px] text-slate-500 dark:text-slate-400 hover:text-rose-500 dark:hover:text-rose-400 font-semibold px-3 py-2 transition-colors">Report Issue</button>
+                                   <button onClick={() => {
+                                      if (navigator.clipboard) navigator.clipboard.writeText(String(acc.data || '')).then(() => triggerToast("Copied!"));
+                                      else { const t = document.createElement("textarea"); t.value = String(acc.data || ''); document.body.appendChild(t); t.select(); document.execCommand("copy"); document.body.removeChild(t); triggerToast("Copied!"); }
+                                   }} className={uiBtnPrimary + " !w-auto !py-2 !px-4 !text-xs !rounded-lg"}>
+                                       <Copy className="w-3.5 h-3.5 drop-shadow-sm"/> Copy Data
+                                   </button>
+                               </div>
+                           </div>
+                       )
+                    })}
+                  </div>
+                )}
+              </div>
+            </div>
+          );
+        }
+
+        // ==========================================
         // PROFILE MODULE
-        function CustomerDashboardProfile({ user, balance, tier, userInfo, allOrders, deposits, purchases, tickets, db, appId, featureSettings, triggerToast }) {
+        // ==========================================
+        function CustomerDashboardProfile({ user, balance, tier, userInfo, allOrders, deposits, purchases, tickets, db, appId, featureSettings, triggerToast, uiCard, uiInput, uiBtnPrimary, uiBtnSecondary, uiInnerPanel }) {
           const [profileSubTab, setProfileSubTab] = useState('overview');
           const [ticketSubject, setTicketSubject] = useState('');
           const [ticketMessage, setTicketMessage] = useState('');
@@ -1709,7 +1839,9 @@
           );
         }
 
+        // ==========================================
         // CART MODAL
+        // ==========================================
         function CartModal({ cart, setCart, setShowCart, balance, user, promoSettings, triggerToast, addNotification, db, appId, uiCard, uiBtnPrimary, uiInnerPanel }) {
             const [isCheckingOut, setIsCheckingOut] = useState(false);
             const totalAmount = cart.reduce((sum, item) => sum + item.price, 0);
@@ -1778,8 +1910,10 @@
             );
         }
 
+        // ==========================================
         // ADMIN DASHBOARD
-        function AdminDashboard({ inventory, orders, deposits, categories, usersDB, db, appId, promoSettings, globalNotice, tickets, featureSettings, bankSettings, smsSettings, auth, user, triggerToast, activeTab }) {
+        // ==========================================
+        function AdminDashboard({ inventory, orders, deposits, categories, usersDB, db, appId, promoSettings, globalNotice, tickets, featureSettings, bankSettings, smsSettings, auth, user, uiCard, uiInput, uiBtnPrimary, uiBtnSecondary, uiBtnAction, uiInnerPanel, triggerToast, activeTab }) {
           const [uploadCategory, setUploadCategory] = useState('new');
           const [uploadText, setUploadText] = useState('');
           const [customerSearch, setCustomerSearch] = useState('');
@@ -1930,7 +2064,7 @@
             <>
               {editUserModal.show && (
                 <div className="fixed inset-0 z-[150] flex items-center justify-center p-4 bg-slate-900/60 dark:bg-[#030712]/80 backdrop-blur-sm transition-all duration-300 w-full h-full">
-                  <div className="bg-white/10 dark:bg-black/10 border border-white/30 dark:border-white/10 shadow-[0_8px_32px_0_rgba(31,38,135,0.07)] dark:shadow-[0_8px_32px_0_rgba(0,0,0,0.3)] backdrop-blur-[1px] rounded-3xl relative overflow-hidden transition-all duration-300 w-full max-w-md p-6">
+                  <div className={uiCard + " w-full max-w-md p-6"}>
                      <div className="flex justify-between items-center mb-5 border-b border-slate-200 dark:border-white/10 pb-4">
                          <h3 className="text-lg font-bold text-slate-900 dark:text-white flex items-center gap-2"><Edit className="w-5 h-5 text-violet-500 dark:text-violet-400"/> Edit Customer</h3>
                          <button onClick={() => setEditUserModal({ show: false, email: '', password: '', balance: 0, totalSpent: 0 })} className="p-2 bg-slate-100 dark:bg-white/5 hover:bg-slate-200 dark:hover:bg-white/10 rounded-full text-slate-600 dark:text-slate-300 transition-colors"><X className="w-4 h-4" /></button>
@@ -1940,21 +2074,21 @@
                      <form onSubmit={submitEditUser} className="space-y-4">
                         <div>
                            <label className="block text-xs font-bold text-slate-500 dark:text-slate-400 mb-2 uppercase tracking-wider">Saved Password</label>
-                           <input type="text" placeholder="User's Password" value={editUserModal.password} onChange={e => setEditUserModal({...editUserModal, password: e.target.value})} className="w-full bg-white/10 dark:bg-black/20 backdrop-blur-[1px] border border-white/30 dark:border-white/10 rounded-xl px-4 py-3.5 text-sm text-slate-900 dark:text-slate-200 placeholder-slate-500 dark:placeholder-slate-400 outline-none focus:border-violet-500/50 focus:ring-2 focus:ring-violet-500/20 transition-all font-medium shadow-inner" />
+                           <input type="text" placeholder="User's Password" value={editUserModal.password} onChange={e => setEditUserModal({...editUserModal, password: e.target.value})} className={uiInput} />
                         </div>
                         <div className="grid grid-cols-2 gap-4">
                             <div>
                                <label className="block text-xs font-bold text-slate-500 dark:text-slate-400 mb-2 uppercase tracking-wider">Balance ($)</label>
-                               <input type="number" step="0.01" required value={editUserModal.balance} onChange={e => setEditUserModal({...editUserModal, balance: e.target.value})} className="w-full bg-white/10 dark:bg-black/20 backdrop-blur-[1px] border border-white/30 dark:border-white/10 rounded-xl px-4 py-3.5 text-sm text-slate-900 dark:text-slate-200 placeholder-slate-500 dark:placeholder-slate-400 outline-none focus:border-violet-500/50 focus:ring-2 focus:ring-violet-500/20 transition-all font-medium shadow-inner" />
+                               <input type="number" step="0.01" required value={editUserModal.balance} onChange={e => setEditUserModal({...editUserModal, balance: e.target.value})} className={uiInput} />
                             </div>
                             <div>
                                <label className="block text-xs font-bold text-slate-500 dark:text-slate-400 mb-2 uppercase tracking-wider">Total Spent ($)</label>
-                               <input type="number" step="0.01" required value={editUserModal.totalSpent} onChange={e => setEditUserModal({...editUserModal, totalSpent: e.target.value})} className="w-full bg-white/10 dark:bg-black/20 backdrop-blur-[1px] border border-white/30 dark:border-white/10 rounded-xl px-4 py-3.5 text-sm text-slate-900 dark:text-slate-200 placeholder-slate-500 dark:placeholder-slate-400 outline-none focus:border-violet-500/50 focus:ring-2 focus:ring-violet-500/20 transition-all font-medium shadow-inner" />
+                               <input type="number" step="0.01" required value={editUserModal.totalSpent} onChange={e => setEditUserModal({...editUserModal, totalSpent: e.target.value})} className={uiInput} />
                             </div>
                         </div>
                         <div className="pt-5 flex flex-col gap-3 border-t border-slate-200 dark:border-white/5 mt-4">
-                          <button type="submit" className="btn-animate w-full bg-gradient-to-r from-violet-500/70 via-cyan-500/70 to-violet-600/70 hover:opacity-100 text-white font-bold py-4 px-6 rounded-xl shadow-[0_4px_20px_rgba(139,92,246,0.3)] backdrop-blur-[1px] disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 transition-all border border-white/30 dark:border-white/10">Save Changes</button>
-                          <button type="button" onClick={() => sendResetLinkToUser(editUserModal.email)} className="btn-animate w-full bg-rose-50 dark:bg-rose-500/10 hover:bg-rose-100 dark:hover:bg-rose-500/20 backdrop-blur-[1px] border border-white/30 dark:border-white/10 text-rose-600 dark:text-rose-400 font-bold py-3.5 px-6 rounded-xl shadow-sm flex items-center justify-center gap-2 transition-all"><Mail className="w-4 h-4"/> Send Password Reset Link</button>
+                          <button type="submit" className={uiBtnPrimary}>Save Changes</button>
+                          <button type="button" onClick={() => sendResetLinkToUser(editUserModal.email)} className={uiBtnSecondary + " !bg-rose-50 dark:!bg-rose-500/10 hover:!bg-rose-100 dark:hover:!bg-rose-500/20 text-rose-600 dark:!text-rose-400"}><Mail className="w-4 h-4"/> Send Password Reset Link</button>
                         </div>
                      </form>
                   </div>
@@ -1965,25 +2099,25 @@
               <div className="flex-grow w-full min-w-0 mt-2 sm:mt-4">
                 {activeTab === 'inventory' && (
                   <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 sm:gap-8 w-full animate-fade-in-up">
-                    <div className="bg-white/10 dark:bg-black/10 border border-white/30 dark:border-white/10 shadow-[0_8px_32px_0_rgba(31,38,135,0.07)] dark:shadow-[0_8px_32px_0_rgba(0,0,0,0.3)] backdrop-blur-[1px] rounded-3xl relative overflow-hidden transition-all duration-300 hover:bg-white/20 dark:hover:bg-black/20 p-6 sm:p-8 h-fit lg:col-span-1">
+                    <div className={uiCard + " p-6 sm:p-8 h-fit lg:col-span-1"}>
                       <h2 className="text-lg font-bold mb-5 text-slate-900 dark:text-white border-b border-slate-200 dark:border-white/5 pb-4">Add Stock</h2>
                       <form onSubmit={handleUploadAccounts} className="flex flex-col space-y-4">
                         <div>
                           <label className="block text-[10px] font-bold text-slate-500 dark:text-slate-400 mb-2 uppercase tracking-wider">Category</label>
-                          <select value={uploadCategory} onChange={(e) => setUploadCategory(e.target.value)} className="w-full bg-white/10 dark:bg-black/20 backdrop-blur-[1px] border border-white/30 dark:border-white/10 rounded-xl px-4 py-3.5 text-sm text-slate-900 dark:text-slate-200 outline-none focus:border-violet-500/50">
+                          <select value={uploadCategory} onChange={(e) => setUploadCategory(e.target.value)} className={uiInput}>
                             {categories.map(cat => <option key={cat.id} value={cat.id} className="bg-slate-100 dark:bg-brand-darkBg text-slate-900 dark:text-white">{cat.name}</option>)}
                           </select>
                         </div>
                         <div>
                           <label className="block text-[10px] font-bold text-slate-500 dark:text-slate-400 mb-2 uppercase tracking-wider">Paste Data</label>
-                          <textarea value={uploadText} onChange={(e) => setUploadText(e.target.value)} placeholder="Paste accounts here..." className="w-full bg-white/10 dark:bg-black/20 backdrop-blur-[1px] border border-white/30 dark:border-white/10 rounded-xl px-4 py-3.5 text-sm text-slate-900 dark:text-slate-200 outline-none focus:border-violet-500/50 min-h-[150px] resize-none font-mono text-xs" required />
+                          <textarea value={uploadText} onChange={(e) => setUploadText(e.target.value)} placeholder="Paste accounts here..." className={uiInput + " min-h-[150px] resize-none font-mono text-xs"} required />
                         </div>
-                        <button type="submit" className="btn-animate w-full bg-gradient-to-r from-violet-500/70 via-cyan-500/70 to-violet-600/70 text-white font-bold py-4 px-6 rounded-xl">Upload Assets</button>
+                        <button type="submit" className={uiBtnPrimary}>Upload Assets</button>
                       </form>
                     </div>
 
                     <div className="lg:col-span-2 space-y-6 sm:space-y-8 w-full">
-                      <div className="bg-white/10 dark:bg-black/10 border border-white/30 dark:border-white/10 shadow-[0_8px_32px_0_rgba(31,38,135,0.07)] dark:shadow-[0_8px_32px_0_rgba(0,0,0,0.3)] backdrop-blur-[1px] rounded-3xl relative overflow-hidden transition-all duration-300 hover:bg-white/20 dark:hover:bg-black/20">
+                      <div className={uiCard}>
                         <div className="p-5 sm:p-6 border-b border-slate-200 dark:border-white/5 bg-slate-50 dark:bg-white/[0.02] backdrop-blur-sm"><h2 className="text-base font-bold text-slate-900 dark:text-white">Current Stock</h2></div>
                         <div className="w-full overflow-x-auto">
                           <table className="w-full text-left text-sm whitespace-nowrap">
@@ -2000,8 +2134,8 @@
                                   <td className="p-4 sm:p-5 text-center font-black text-violet-600 dark:text-violet-400 drop-shadow-[0_0_5px_currentColor]">{inventory[cat.id] ? inventory[cat.id].length : 0}</td>
                                   <td className="p-4 sm:p-5 text-right">
                                     <div className="flex justify-end gap-2">
-                                      <button onClick={() => setManageStockModal({ show: true, categoryId: cat.id })} className="btn-animate bg-white/10 dark:bg-white/5 hover:bg-white/20 dark:hover:bg-white/10 backdrop-blur-[1px] border border-white/30 dark:border-white/10 text-slate-800 dark:text-white font-semibold py-2 px-4 rounded-lg text-xs flex items-center gap-1.5 transition-all shadow-sm">Manage</button>
-                                      <button onClick={() => setEditProductModal({ show: true, product: { ...cat } })} className="btn-animate bg-violet-50 dark:bg-violet-500/10 border border-violet-200 dark:border-violet-500/20 text-violet-600 dark:text-violet-400 hover:bg-violet-100 hover:dark:bg-violet-500/20 font-semibold py-2 px-4 rounded-lg text-xs flex items-center gap-1.5 transition-all shadow-sm">Edit Info</button>
+                                      <button onClick={() => setManageStockModal({ show: true, categoryId: cat.id })} className={uiBtnAction}>Manage</button>
+                                      <button onClick={() => setEditProductModal({ show: true, product: { ...cat } })} className={uiBtnAction + " !bg-violet-50 dark:!bg-violet-500/10 border-violet-200 dark:!border-violet-500/20 text-violet-600 dark:!text-violet-400 hover:bg-violet-100 dark:hover:!bg-violet-500/20"}>Edit Info</button>
                                     </div>
                                   </td>
                                 </tr>
@@ -2016,24 +2150,24 @@
 
                 {editProductModal.show && (
                   <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 dark:bg-brand-darkBg/80 backdrop-blur-sm transition-all duration-300 w-full h-full">
-                    <div className="bg-white/10 dark:bg-black/10 border border-white/30 dark:border-white/10 shadow-[0_8px_32px_0_rgba(31,38,135,0.07)] dark:shadow-[0_8px_32px_0_rgba(0,0,0,0.3)] backdrop-blur-[1px] rounded-3xl relative overflow-hidden transition-all duration-300 w-full max-w-md p-6">
+                    <div className={uiCard + " w-full max-w-md p-6"}>
                        <h3 className="text-lg font-bold text-slate-900 dark:text-white mb-5 border-b border-slate-200 dark:border-white/5 pb-4">Edit Product Details</h3>
                        <form onSubmit={handleSaveProduct} className="space-y-4">
                           <div>
                             <label className="block text-[10px] font-bold text-slate-500 dark:text-slate-400 mb-2 uppercase tracking-wider">Product Name</label>
-                            <input type="text" required value={editProductModal.product.name} onChange={e => setEditProductModal({ ...editProductModal, product: { ...editProductModal.product, name: e.target.value } })} className="w-full bg-white/10 dark:bg-black/20 backdrop-blur-[1px] border border-white/30 dark:border-white/10 rounded-xl px-4 py-3.5 text-sm text-slate-900 dark:text-slate-200 outline-none focus:border-violet-500/50" />
+                            <input type="text" required value={editProductModal.product.name} onChange={e => setEditProductModal({ ...editProductModal, product: { ...editProductModal.product, name: e.target.value } })} className={uiInput} />
                           </div>
                           <div>
                             <label className="block text-[10px] font-bold text-slate-500 dark:text-slate-400 mb-2 uppercase tracking-wider">Description</label>
-                            <textarea rows="3" required value={editProductModal.product.description} onChange={e => setEditProductModal({ ...editProductModal, product: { ...editProductModal.product, description: e.target.value } })} className="w-full bg-white/10 dark:bg-black/20 backdrop-blur-[1px] border border-white/30 dark:border-white/10 rounded-xl px-4 py-3.5 text-sm text-slate-900 dark:text-slate-200 outline-none focus:border-violet-500/50 resize-none text-sm"></textarea>
+                            <textarea rows="3" required value={editProductModal.product.description} onChange={e => setEditProductModal({ ...editProductModal, product: { ...editProductModal.product, description: e.target.value } })} className={uiInput + " resize-none text-sm"}></textarea>
                           </div>
                           <div>
                             <label className="block text-[10px] font-bold text-slate-500 dark:text-slate-400 mb-2 uppercase tracking-wider">Price ($)</label>
-                            <input type="number" step="0.01" required value={editProductModal.product.price} onChange={e => setEditProductModal({ ...editProductModal, product: { ...editProductModal.product, price: parseFloat(e.target.value) } })} className="w-full bg-white/10 dark:bg-black/20 backdrop-blur-[1px] border border-white/30 dark:border-white/10 rounded-xl px-4 py-3.5 text-sm text-slate-900 dark:text-slate-200 outline-none focus:border-violet-500/50" />
+                            <input type="number" step="0.01" required value={editProductModal.product.price} onChange={e => setEditProductModal({ ...editProductModal, product: { ...editProductModal.product, price: parseFloat(e.target.value) } })} className={uiInput} />
                           </div>
                           <div className="flex gap-3 pt-5 border-t border-slate-200 dark:border-white/5 mt-4">
-                            <button type="button" onClick={() => setEditProductModal({ show: false, product: null })} className="btn-animate w-full bg-white/10 dark:bg-white/5 hover:bg-white/20 dark:hover:bg-white/10 backdrop-blur-[1px] border border-white/30 dark:border-white/10 text-slate-800 dark:text-white font-bold py-3.5 px-6 rounded-xl shadow-sm transition-all">Cancel</button>
-                            <button type="submit" className="btn-animate w-full bg-gradient-to-r from-violet-500/70 via-cyan-500/70 to-violet-600/70 hover:opacity-100 text-white font-bold py-4 px-6 rounded-xl shadow-[0_4px_20px_rgba(139,92,246,0.3)]">Save Changes</button>
+                            <button type="button" onClick={() => setEditProductModal({ show: false, product: null })} className={uiBtnSecondary}>Cancel</button>
+                            <button type="submit" className={uiBtnPrimary}>Save Changes</button>
                           </div>
                        </form>
                     </div>
@@ -2042,7 +2176,7 @@
 
                 {manageStockModal.show && (
                   <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 dark:bg-brand-darkBg/80 backdrop-blur-sm transition-all duration-300 w-full h-full">
-                    <div className="bg-white/10 dark:bg-black/10 border border-white/30 dark:border-white/10 shadow-[0_8px_32px_0_rgba(31,38,135,0.07)] dark:shadow-[0_8px_32px_0_rgba(0,0,0,0.3)] backdrop-blur-[1px] rounded-3xl relative overflow-hidden transition-all duration-300 w-full max-w-2xl p-6 flex flex-col max-h-[80vh]">
+                    <div className={uiCard + " w-full max-w-2xl p-6 flex flex-col max-h-[80vh]"}>
                        <div className="flex justify-between items-center mb-5 pb-4 border-b border-slate-200 dark:border-white/5 shrink-0">
                          <h3 className="text-lg font-bold text-slate-900 dark:text-white flex items-center gap-2"><Package className="w-5 h-5 text-violet-500 dark:text-violet-400 drop-shadow-[0_0_5px_currentColor]"/> Manage Accounts</h3>
                          <button onClick={() => setManageStockModal({ show: false, categoryId: null })} className="p-2 bg-slate-100 dark:bg-white/5 hover:bg-slate-200 dark:hover:bg-white/10 rounded-full text-slate-500 dark:text-slate-300 transition-colors"><X className="w-5 h-5" /></button>
@@ -2052,7 +2186,7 @@
                               <p className="text-center text-slate-500 dark:text-slate-400 font-medium py-10">No accounts in stock.</p>
                           ) : (
                               inventory[manageStockModal.categoryId].map((acc, index) => (
-                                  <div key={index} className="bg-white/5 dark:bg-black/10 border border-white/20 dark:border-white/5 backdrop-blur-[1px] rounded-2xl p-5 w-full transition-all flex justify-between items-center">
+                                  <div key={index} className={uiInnerPanel + " flex justify-between items-center w-full"}>
                                       <pre className="text-xs text-slate-700 dark:text-slate-300 font-mono font-medium truncate max-w-[75%]">{acc}</pre>
                                       <button onClick={() => handleDeleteAccount(manageStockModal.categoryId, index)} className="p-2 bg-rose-50 dark:bg-rose-500/10 text-rose-600 dark:text-rose-400 hover:bg-rose-100 dark:hover:bg-rose-500/20 rounded-lg transition-colors shrink-0 shadow-sm border border-rose-200 dark:border-rose-500/20">
                                           <Trash2 className="w-4 h-4" />
@@ -2066,13 +2200,13 @@
                 )}
 
                 {activeTab === 'users' && (
-                  <div className="bg-white/10 dark:bg-black/10 border border-white/30 dark:border-white/10 shadow-[0_8px_32px_0_rgba(31,38,135,0.07)] dark:shadow-[0_8px_32px_0_rgba(0,0,0,0.3)] backdrop-blur-[1px] rounded-3xl relative overflow-hidden transition-all duration-300 animate-fade-in-up w-full">
+                  <div className={uiCard + " animate-fade-in-up w-full"}>
                     <div className="p-5 sm:p-6 border-b border-slate-200 dark:border-white/5 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 bg-slate-50 dark:bg-white/[0.02] backdrop-blur-sm">
                       <h2 className="text-base font-bold text-slate-900 dark:text-white">Customer Database</h2>
                       <div className="flex items-center gap-3 w-full sm:w-auto">
                         <div className="relative flex-grow sm:flex-grow-0 sm:w-64">
                            <Search className="w-4 h-4 text-slate-400 absolute left-3 top-3" />
-                           <input type="text" placeholder="Search email..." value={customerSearch} onChange={(e)=>setCustomerSearch(e.target.value)} className="w-full bg-white/10 dark:bg-black/20 backdrop-blur-[1px] border border-white/30 dark:border-white/10 rounded-xl px-4 py-3.5 text-sm text-slate-900 dark:text-slate-200 outline-none focus:border-violet-500/50 !py-2 !pl-9" />
+                           <input type="text" placeholder="Search email..." value={customerSearch} onChange={(e)=>setCustomerSearch(e.target.value)} className={uiInput + " !py-2 !pl-9"} />
                         </div>
                         <span className="text-xs font-bold text-slate-700 dark:text-slate-300 whitespace-nowrap bg-slate-200 dark:bg-black/40 px-3 py-1.5 rounded-lg border border-slate-300 dark:border-white/5">{filteredUsers.length} Users</span>
                       </div>
@@ -2092,7 +2226,7 @@
                               <td className="p-4 sm:p-5 font-semibold text-slate-700 dark:text-slate-300">${Number(usersDB[email].totalSpent || 0).toFixed(2)}</td>
                               <td className="p-4 sm:p-5 font-black text-emerald-600 dark:text-emerald-400 drop-shadow-sm">${Number(usersDB[email].balance || 0).toFixed(2)}</td>
                               <td className="p-4 sm:p-5 text-right">
-                                <button onClick={() => setEditUserModal({ show: true, email: email, password: usersDB[email].password || '', balance: usersDB[email].balance || 0, totalSpent: usersDB[email].totalSpent || 0 })} className="btn-animate bg-violet-50 dark:bg-violet-500/10 border border-violet-200 dark:border-violet-500/20 text-violet-600 dark:text-violet-400 hover:bg-violet-100 hover:dark:bg-violet-500/20 font-semibold py-2 px-4 rounded-lg text-xs flex items-center gap-1.5 transition-all shadow-sm !w-auto !ml-auto"><Edit className="w-4 h-4"/> Edit Profile</button>
+                                <button onClick={() => setEditUserModal({ show: true, email: email, password: usersDB[email].password || '', balance: usersDB[email].balance || 0, totalSpent: usersDB[email].totalSpent || 0 })} className={uiBtnAction + " !w-auto !ml-auto !bg-violet-50 dark:!bg-violet-500/10 border-violet-200 dark:!border-violet-500/20 text-violet-600 dark:!text-violet-400 hover:bg-violet-100 dark:hover:!bg-violet-500/20"}><Edit className="w-4 h-4"/> Edit Profile</button>
                               </td>
                             </tr>
                           ))}
@@ -2104,7 +2238,7 @@
                 )}
 
                 {activeTab === 'support' && (
-                  <div className="bg-white/10 dark:bg-black/10 border border-white/30 dark:border-white/10 shadow-[0_8px_32px_0_rgba(31,38,135,0.07)] dark:shadow-[0_8px_32px_0_rgba(0,0,0,0.3)] backdrop-blur-[1px] rounded-3xl relative overflow-hidden transition-all duration-300 animate-fade-in-up w-full">
+                  <div className={uiCard + " animate-fade-in-up w-full"}>
                     <div className="p-5 sm:p-6 border-b border-slate-200 dark:border-white/5 flex items-center justify-between bg-slate-50 dark:bg-white/[0.02] backdrop-blur-sm">
                        <h2 className="text-base font-bold text-slate-900 dark:text-white">Support Tickets</h2>
                        {pendingTickets.length > 0 && <span className="bg-violet-50 dark:bg-violet-500/10 text-violet-600 dark:text-violet-400 px-3 py-1 rounded-lg text-xs font-bold border border-violet-200 dark:border-violet-500/20 shadow-[0_0_5px_currentColor]">{pendingTickets.length} Open</span>}
@@ -2125,7 +2259,7 @@
                               <td className="p-4 sm:p-5 text-slate-500 dark:text-slate-400 font-semibold text-[10px]">{new Date(t.date).toLocaleDateString()}</td>
                               <td className="p-4 sm:p-5 text-right">
                                 {t.status === 'Open' ? (
-                                  <button onClick={() => handleResolveTicket(t.id)} className="btn-animate bg-white/10 dark:bg-white/5 hover:bg-white/20 dark:hover:bg-white/10 text-slate-800 dark:text-white font-semibold py-2 px-4 rounded-lg text-xs transition-all shadow-sm !w-auto !ml-auto">Resolve</button>
+                                  <button onClick={() => handleResolveTicket(t.id)} className={uiBtnAction + " !w-auto !ml-auto"}>Resolve</button>
                                 ) : (
                                   <span className="text-[10px] text-emerald-600 dark:text-emerald-400 font-bold">Closed</span>
                                 )}
@@ -2143,15 +2277,15 @@
                   <div className="animate-fade-in-up w-full">
                     <h2 className="text-xl font-bold mb-6 text-slate-900 dark:text-white drop-shadow-md">Overview</h2>
                     <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 w-full">
-                      <div className="bg-white/10 dark:bg-black/10 border border-white/30 dark:border-white/10 shadow-[0_8px_32px_0_rgba(31,38,135,0.07)] dark:shadow-[0_8px_32px_0_rgba(0,0,0,0.3)] backdrop-blur-[1px] rounded-3xl relative overflow-hidden transition-all duration-300 hover:bg-white/20 dark:hover:bg-black/20 p-6 sm:p-8">
+                      <div className={uiCard + " p-6 sm:p-8"}>
                         <p className="text-slate-500 dark:text-slate-400 text-[10px] font-bold mb-2 uppercase tracking-widest">Gross Volume</p>
                         <h3 className="text-3xl sm:text-4xl font-black text-slate-900 dark:text-white drop-shadow-md">${Number(totalSales || 0).toFixed(2)}</h3>
                       </div>
-                      <div className="bg-white/10 dark:bg-black/10 border border-white/30 dark:border-white/10 shadow-[0_8px_32px_0_rgba(31,38,135,0.07)] dark:shadow-[0_8px_32px_0_rgba(0,0,0,0.3)] backdrop-blur-[1px] rounded-3xl relative overflow-hidden transition-all duration-300 hover:bg-white/20 dark:hover:bg-black/20 p-6 sm:p-8">
+                      <div className={uiCard + " p-6 sm:p-8"}>
                         <p className="text-slate-500 dark:text-slate-400 text-[10px] font-bold mb-2 uppercase tracking-widest">Total Customers</p>
                         <h3 className="text-3xl sm:text-4xl font-black text-slate-900 dark:text-white drop-shadow-md">{Object.keys(usersDB).length}</h3>
                       </div>
-                      <div className="bg-white/10 dark:bg-black/10 border border-white/30 dark:border-white/10 shadow-[0_8px_32px_0_rgba(31,38,135,0.07)] dark:shadow-[0_8px_32px_0_rgba(0,0,0,0.3)] backdrop-blur-[1px] rounded-3xl relative overflow-hidden transition-all duration-300 hover:bg-white/20 dark:hover:bg-black/20 p-6 sm:p-8">
+                      <div className={uiCard + " p-6 sm:p-8"}>
                         <p className="text-slate-500 dark:text-slate-400 text-[10px] font-bold mb-2 uppercase tracking-widest">Completed Orders</p>
                         <h3 className="text-3xl sm:text-4xl font-black text-slate-900 dark:text-white drop-shadow-md">{orders.length}</h3>
                       </div>
@@ -2160,7 +2294,7 @@
                 )}
 
                 {activeTab === 'deposits' && (
-                  <div className="bg-white/10 dark:bg-black/10 border border-white/30 dark:border-white/10 shadow-[0_8px_32px_0_rgba(31,38,135,0.07)] dark:shadow-[0_8px_32px_0_rgba(0,0,0,0.3)] backdrop-blur-[1px] rounded-3xl relative overflow-hidden transition-all duration-300 animate-fade-in-up w-full">
+                  <div className={uiCard + " animate-fade-in-up w-full"}>
                     <div className="p-5 sm:p-6 border-b border-slate-200 dark:border-white/5 flex items-center justify-between bg-slate-50 dark:bg-white/[0.02] backdrop-blur-sm">
                       <h2 className="text-base font-bold text-slate-900 dark:text-white">Deposit Ledger</h2>
                       {pendingDeposits.length > 0 && <span className="bg-violet-50 dark:bg-violet-500/10 border border-violet-200 dark:border-violet-500/20 text-violet-600 dark:text-violet-400 px-3 py-1 rounded-lg text-[10px] sm:text-xs font-bold">{pendingDeposits.length} Pending</span>}
@@ -2206,17 +2340,17 @@
 
                 {activeTab === 'settings' && (
                   <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 sm:gap-8 w-full animate-fade-in-up">
-                    <div className="bg-white/10 dark:bg-black/10 border border-white/30 dark:border-white/10 shadow-[0_8px_32px_0_rgba(31,38,135,0.07)] dark:shadow-[0_8px_32px_0_rgba(0,0,0,0.3)] backdrop-blur-[1px] rounded-3xl relative overflow-hidden transition-all duration-300 w-full p-6 sm:p-8">
+                    <div className={uiCard + " p-6 sm:p-8 w-full"}>
                       <h2 className="text-lg font-bold text-slate-900 dark:text-white mb-6 border-b border-slate-200 dark:border-white/5 pb-4">Store Configuration</h2>
                       
                       <form onSubmit={handleSaveSettings} className="space-y-6">
                         <div className="space-y-4">
                            <h3 className="text-[10px] font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">Feature Flags</h3>
-                           <label className="bg-white/5 dark:bg-black/10 border border-white/20 dark:border-white/5 backdrop-blur-[1px] rounded-2xl p-5 w-full transition-all flex items-center justify-between cursor-pointer hover:bg-slate-100 dark:hover:bg-white/10">
+                           <label className={uiInnerPanel + " flex items-center justify-between cursor-pointer hover:bg-slate-100 dark:hover:bg-white/10"}>
                              <span className="text-sm font-bold text-slate-800 dark:text-slate-200">Daily Login Bonus</span>
                              <input type="checkbox" checked={dailyRewardActive} onChange={(e) => setDailyRewardActive(e.target.checked)} className="w-4 h-4 rounded text-violet-500 focus:ring-violet-500" />
                            </label>
-                           <label className="bg-white/5 dark:bg-black/10 border border-white/20 dark:border-white/5 backdrop-blur-[1px] rounded-2xl p-5 w-full transition-all flex items-center justify-between cursor-pointer hover:bg-slate-100 dark:hover:bg-white/10">
+                           <label className={uiInnerPanel + " flex items-center justify-between cursor-pointer hover:bg-slate-100 dark:hover:bg-white/10"}>
                              <span className="text-sm font-bold text-slate-800 dark:text-slate-200">Affiliate Program</span>
                              <input type="checkbox" checked={referralActive} onChange={(e) => setReferralActive(e.target.checked)} className="w-4 h-4 rounded text-violet-500 focus:ring-violet-500" />
                            </label>
@@ -2227,7 +2361,7 @@
                            <div className="grid grid-cols-1 gap-4">
                              <div>
                                <label className="block text-[10px] font-bold text-slate-700 dark:text-slate-300 mb-2">Markup per SMS ($)</label>
-                               <input type="number" step="0.01" value={smsMarkupInput} onChange={(e) => setSmsMarkupInput(e.target.value)} placeholder="1.00" className="w-full bg-white/10 dark:bg-black/20 backdrop-blur-[1px] border border-white/30 dark:border-white/10 rounded-xl px-4 py-3.5 text-sm text-slate-900 dark:text-slate-200 outline-none focus:border-violet-500/50" />
+                               <input type="number" step="0.01" value={smsMarkupInput} onChange={(e) => setSmsMarkupInput(e.target.value)} placeholder="1.00" className={uiInput} />
                              </div>
                            </div>
                            <label className="flex items-center gap-2.5 cursor-pointer mt-2 pl-1">
@@ -2241,11 +2375,11 @@
                            <div className="grid grid-cols-2 gap-4">
                              <div>
                                <label className="block text-[10px] font-bold text-slate-700 dark:text-slate-300 mb-2">Code</label>
-                               <input type="text" value={promoInput} onChange={(e) => setPromoInput(e.target.value)} placeholder="DISCOUNT20" className="w-full bg-white/10 dark:bg-black/20 backdrop-blur-[1px] border border-white/30 dark:border-white/10 rounded-xl px-4 py-3.5 text-sm text-slate-900 dark:text-slate-200 outline-none focus:border-violet-500/50 uppercase" />
+                               <input type="text" value={promoInput} onChange={(e) => setPromoInput(e.target.value)} placeholder="DISCOUNT20" className={uiInput + " uppercase"} />
                              </div>
                              <div>
                                <label className="block text-[10px] font-bold text-slate-700 dark:text-slate-300 mb-2">Discount (%)</label>
-                               <input type="number" min="0" max="100" value={discountInput} onChange={(e) => setDiscountInput(e.target.value)} className="w-full bg-white/10 dark:bg-black/20 backdrop-blur-[1px] border border-white/30 dark:border-white/10 rounded-xl px-4 py-3.5 text-sm text-slate-900 dark:text-slate-200 outline-none focus:border-violet-500/50" />
+                               <input type="number" min="0" max="100" value={discountInput} onChange={(e) => setDiscountInput(e.target.value)} className={uiInput} />
                              </div>
                            </div>
                            <label className="flex items-center gap-2.5 cursor-pointer mt-2 pl-1">
@@ -2258,7 +2392,7 @@
                            <h3 className="text-[10px] font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">Announcement</h3>
                            <div>
                              <label className="block text-[10px] font-bold text-slate-700 dark:text-slate-300 mb-2">Marquee Bar Text</label>
-                             <input type="text" value={noticeInput} onChange={(e) => setNoticeInput(e.target.value)} placeholder="Store wide announcement..." className="w-full bg-white/10 dark:bg-black/20 backdrop-blur-[1px] border border-white/30 dark:border-white/10 rounded-xl px-4 py-3.5 text-sm text-slate-900 dark:text-slate-200 outline-none focus:border-violet-500/50" />
+                             <input type="text" value={noticeInput} onChange={(e) => setNoticeInput(e.target.value)} placeholder="Store wide announcement..." className={uiInput} />
                            </div>
                         </div>
 
@@ -2266,7 +2400,7 @@
                            <h3 className="text-[10px] font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">Bank Transfer (Naira)</h3>
                            <div>
                              <label className="block text-[10px] font-bold text-slate-700 dark:text-slate-300 mb-2">Naira Exchange Rate (1 USD = ? NGN)</label>
-                             <input type="number" value={nairaRateInput} onChange={(e) => setNairaRateInput(e.target.value)} placeholder="1500" className="w-full bg-white/10 dark:bg-black/20 backdrop-blur-[1px] border border-white/30 dark:border-white/10 rounded-xl px-4 py-3.5 text-sm text-slate-900 dark:text-slate-200 outline-none focus:border-violet-500/50" />
+                             <input type="number" value={nairaRateInput} onChange={(e) => setNairaRateInput(e.target.value)} placeholder="1500" className={uiInput} />
                            </div>
                         </div>
 
@@ -2274,7 +2408,7 @@
                            <h3 className="text-[10px] font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">Flutterwave API (Automated)</h3>
                            <div>
                              <label className="block text-[10px] font-bold text-slate-700 dark:text-slate-300 mb-2">Flutterwave Public Key</label>
-                             <input type="text" value={flutterwaveKeyInput} onChange={(e) => setFlutterwaveKeyInput(e.target.value)} placeholder="FLWPUBK_TEST-xxxxxxxxx" className="w-full bg-white/10 dark:bg-black/20 backdrop-blur-[1px] border border-white/30 dark:border-white/10 rounded-xl px-4 py-3.5 text-sm text-slate-900 dark:text-slate-200 outline-none focus:border-violet-500/50" />
+                             <input type="text" value={flutterwaveKeyInput} onChange={(e) => setFlutterwaveKeyInput(e.target.value)} placeholder="FLWPUBK_TEST-xxxxxxxxx" className={uiInput} />
                            </div>
                            <label className="flex items-center gap-2.5 cursor-pointer mt-2 pl-1">
                              <input type="checkbox" checked={flutterwaveActiveInput} onChange={(e) => setFlutterwaveActiveInput(e.target.checked)} className="w-4 h-4 rounded text-violet-500 focus:ring-violet-500" />
@@ -2282,7 +2416,7 @@
                            </label>
                         </div>
 
-                        <div className="pt-4"><button type="submit" className="btn-animate w-full bg-gradient-to-r from-violet-500/70 via-cyan-500/70 to-violet-600/70 hover:opacity-100 text-white font-bold py-4 px-6 rounded-xl shadow-[0_4px_20px_rgba(139,92,246,0.3)] backdrop-blur-[1px]">Save Changes</button></div>
+                        <div className="pt-4"><button type="submit" className={uiBtnPrimary}>Save Changes</button></div>
                       </form>
                     </div>
                   </div>
