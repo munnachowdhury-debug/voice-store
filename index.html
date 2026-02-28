@@ -920,12 +920,12 @@
                                        const tier = priceTiers.find(t => t.originalPrice.toString() === e.target.value);
                                        if(tier) setSelectedTier(tier);
                                    }}
-                                   disabled={isTiersLoading || priceTiers.length === 0}
+                                   disabled={isTiersLoading || (!priceTiers || priceTiers.length === 0)}
                                    className="w-full bg-transparent outline-none appearance-none cursor-pointer text-center pr-6 disabled:opacity-50 disabled:cursor-not-allowed"
                                >
                                    {isTiersLoading ? (
                                        <option value="" className="text-sm bg-slate-100 dark:bg-slate-800 text-slate-900 dark:text-white">Loading...</option>
-                                   ) : priceTiers.length > 0 ? (
+                                   ) : (priceTiers && priceTiers.length > 0) ? (
                                        priceTiers.map((tier, idx) => (
                                            <option key={idx} value={tier.originalPrice} className="text-sm bg-slate-100 dark:bg-slate-800 text-slate-900 dark:text-white">
                                                ${tier.priceWithMarkup.toFixed(2)} (Stock: {tier.quantity})
@@ -2280,4 +2280,4 @@
         root.render(<App />);
     </script>
 </body>
-</html>
+    </html>
