@@ -973,8 +973,26 @@
                                )}
                            </div>
                            
-                           <div className="bg-white dark:bg-brand-darkBg border border-slate-200 dark:border-white/10 px-6 rounded-2xl text-slate-900 dark:text-white font-black text-2xl h-14 flex items-center justify-center w-full sm:w-auto shadow-inner shrink-0 min-w-[140px]">
-                               ${currentSmsPrice.toFixed(2)}
+                           <div className="relative bg-white dark:bg-brand-darkBg border border-slate-200 dark:border-white/10 px-4 rounded-2xl text-slate-900 dark:text-white font-black text-lg h-14 flex items-center justify-center w-full sm:w-auto shadow-inner shrink-0 min-w-[180px]">
+                               <select 
+                                   className="w-full bg-transparent outline-none appearance-none cursor-pointer text-center pr-6"
+                                   onChange={(e) => {
+                                       console.log("Selected Price:", e.target.value);
+                                   }}
+                               >
+                                   {currentService && currentService.prices && currentService.prices.length > 0 ? (
+                                       currentService.prices.map((p, idx) => (
+                                           <option key={idx} value={p.value} className="text-sm bg-slate-100 dark:bg-slate-800 text-slate-900 dark:text-white">
+                                               ${Number(p.value).toFixed(2)} (Stock: {p.quantity})
+                                           </option>
+                                       ))
+                                   ) : (
+                                       <option value={currentSmsPrice} className="text-sm bg-slate-100 dark:bg-slate-800 text-slate-900 dark:text-white">
+                                           ${currentSmsPrice.toFixed(2)}
+                                       </option>
+                                   )}
+                               </select>
+                               <ChevronDown className="w-5 h-5 text-slate-400 absolute right-3 pointer-events-none"/>
                            </div>
                        </div>
                     </div>
@@ -2330,4 +2348,4 @@
         root.render(<App />);
     </script>
 </body>
-</html>
+    </html>
