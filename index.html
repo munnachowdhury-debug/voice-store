@@ -123,11 +123,8 @@
         const db = getFirestore(app);
         const appId = typeof window.__app_id !== 'undefined' ? window.__app_id : 'voice-store-real';
 
-        // 🛡️ SECURITY GUARD: GLOBAL TOKEN GETTER 🛡️
         const getAuthToken = async () => {
-            if (auth.currentUser) {
-                return await auth.currentUser.getIdToken(true);
-            }
+            if (auth.currentUser) return await auth.currentUser.getIdToken(true);
             return null;
         };
 
@@ -138,135 +135,26 @@
           { id: 'gv_bulk', name: 'Bulk Google Voice (10x)', description: 'Wholesale package of 10 fresh Google Voice accounts.', price: 45.00, icon: Users, color: 'text-yellow-500 dark:text-yellow-400' }
         ];
 
-        // 🌍 FULL GRIZZLY SMS COUNTRY LIST WITH SOME FLAGS 🌍
         const GRIZZLY_COUNTRIES_LIST = [
           { id: '187', name: 'USA', flag: '🇺🇸' }, { id: '16', name: 'United Kingdom', flag: '🇬🇧' }, { id: '48', name: 'Netherlands', flag: '🇳🇱' },
           { id: '60', name: 'Bangladesh', flag: '🇧🇩' }, { id: '22', name: 'India', flag: '🇮🇳' }, { id: '4', name: 'Philippines', flag: '🇵🇭' },
           { id: '43', name: 'Germany', flag: '🇩🇪' }, { id: '78', name: 'France', flag: '🇫🇷' }, { id: '36', name: 'Canada', flag: '🇨🇦' },
           { id: '74', name: 'Afghanistan' }, { id: '155', name: 'Albania' }, { id: '58', name: 'Algeria' },
-          { id: '10161', name: 'American Samoa' }, { id: '1062', name: 'Andorra' }, { id: '76', name: 'Angola' },
-          { id: '181', name: 'Anguilla' }, { id: '169', name: 'Antigua and Barbuda' }, { id: '39', name: 'Argentina' },
-          { id: '148', name: 'Armenia' }, { id: '179', name: 'Aruba' }, { id: '175', name: 'Australia' },
-          { id: '50', name: 'Austria' }, { id: '35', name: 'Azerbaijan' }, { id: '122', name: 'Bahamas' },
-          { id: '145', name: 'Bahrain' }, { id: '118', name: 'Barbados' },
-          { id: '51', name: 'Belarus' }, { id: '82', name: 'Belgium' }, { id: '124', name: 'Belize' },
-          { id: '1003', name: 'Bermuda' }, { id: '120', name: 'Benin' }, { id: '158', name: 'Bhutan' },
-          { id: '92', name: 'Bolivia' }, { id: '108', name: 'Bosnia and Herzegovina' }, { id: '123', name: 'Botswana' },
-          { id: '73', name: 'Brazil' }, { id: '121', name: 'Brunei Darussalam' }, { id: '83', name: 'Bulgaria' },
-          { id: '152', name: 'Burkina Faso' }, { id: '119', name: 'Burundi' }, { id: '24', name: 'Cambodia' },
-          { id: '41', name: 'Cameroon' }, { id: '186', name: 'Cape Verde' },
-          { id: '170', name: 'Cayman islands' }, { id: '125', name: 'Central African Republic' }, { id: '42', name: 'Chad' },
-          { id: '151', name: 'Chile' }, { id: '3', name: 'China', flag: '🇨🇳' }, { id: '33', name: 'Colombia' },
-          { id: '133', name: 'Comoros' }, { id: '93', name: 'Costa Rica' }, { id: '45', name: 'Croatia' },
-          { id: '113', name: 'Cuba' }, { id: '77', name: 'Cyprus' }, { id: '63', name: 'Czech Republic' },
-          { id: '18', name: 'DR Congo' }, { id: '172', name: 'Denmark' }, { id: '168', name: 'Djibouti' },
-          { id: '126', name: 'Dominica' }, { id: '109', name: 'Dominican Republic' }, { id: '105', name: 'Ecuador' },
-          { id: '21', name: 'Egypt' }, { id: '167', name: 'Equatorial Guinea' }, { id: '176', name: 'Eritrea' },
-          { id: '34', name: 'Estonia' }, { id: '71', name: 'Ethiopia' }, { id: '163', name: 'Finland' },
-          { id: '162', name: 'French Guiana' }, { id: '154', name: 'Gabon' },
-          { id: '28', name: 'Gambia' }, { id: '128', name: 'Georgia' },
-          { id: '38', name: 'Ghana' }, { id: '201', name: 'Gibraltar' }, { id: '129', name: 'Greece' },
-          { id: '1008', name: 'Greenland' }, { id: '127', name: 'Grenada' }, { id: '160', name: 'Guadeloupe' },
-          { id: '94', name: 'Guatemala' }, { id: '68', name: 'Guinea' }, { id: '130', name: 'Guinea-Bissau' },
-          { id: '131', name: 'Guyana' }, { id: '26', name: 'Haiti' }, { id: '88', name: 'Honduras' },
-          { id: '14', name: 'Hong Kong' }, { id: '84', name: 'Hungary' }, { id: '132', name: 'Iceland' },
-          { id: '6', name: 'Indonesia', flag: '🇮🇩' }, { id: '10016', name: 'Iran' },
-          { id: '47', name: 'Iraq' }, { id: '23', name: 'Ireland' }, { id: '13', name: 'Israel' },
-          { id: '86', name: 'Italy' }, { id: '27', name: 'Ivory Coast' }, { id: '103', name: 'Jamaica' },
-          { id: '182', name: 'Japan' }, { id: '116', name: 'Jordan' }, { id: '2', name: 'Kazakhstan' },
-          { id: '8', name: 'Kenya' }, { id: '203', name: 'Kosovo' }, { id: '100', name: 'Kuwait' },
-          { id: '11', name: 'Kyrgyzstan' }, { id: '25', name: 'Laos' }, { id: '49', name: 'Latvia' },
-          { id: '153', name: 'Lebanon' }, { id: '136', name: 'Lesotho' }, { id: '135', name: 'Liberia' },
-          { id: '102', name: 'Libya' }, { id: '10348', name: 'Liechtenstein' }, { id: '44', name: 'Lithuania' },
-          { id: '165', name: 'Luxembourg' }, { id: '20', name: 'Macao' }, { id: '17', name: 'Madagascar' },
-          { id: '137', name: 'Malawi' }, { id: '7', name: 'Malaysia' }, { id: '159', name: 'Maldives' },
-          { id: '69', name: 'Mali' }, { id: '199', name: 'Malta' }, { id: '114', name: 'Mauritania' },
-          { id: '157', name: 'Mauritius' }, { id: '54', name: 'Mexico' }, { id: '85', name: 'Moldova' },
-          { id: '144', name: 'Monaco' }, { id: '72', name: 'Mongolia' }, { id: '171', name: 'Montenegro' },
-          { id: '180', name: 'Montserrat' }, { id: '37', name: 'Morocco' }, { id: '80', name: 'Mozambique' },
-          { id: '5', name: 'Myanmar' }, { id: '138', name: 'Namibia' }, { id: '81', name: 'Nepal' },
-          { id: '185', name: 'New Caledonia' }, { id: '67', name: 'New Zealand' },
-          { id: '90', name: 'Nicaragua' }, { id: '139', name: 'Niger' }, { id: '19', name: 'Nigeria' },
-          { id: '204', name: 'Niue' }, { id: '183', name: 'North Macedonia' }, { id: '174', name: 'Norway' },
-          { id: '107', name: 'Oman' }, { id: '66', name: 'Pakistan' }, { id: '188', name: 'Palestine' },
-          { id: '112', name: 'Panama' }, { id: '79', name: 'Papua New Guinea' }, { id: '87', name: 'Paraguay' },
-          { id: '65', name: 'Peru' }, { id: '15', name: 'Poland' },
-          { id: '117', name: 'Portugal' }, { id: '97', name: 'Puerto Rico' }, { id: '111', name: 'Qatar' },
-          { id: '150', name: 'Republic of the Congo' }, { id: '146', name: 'Reunion' }, { id: '32', name: 'Romania' },
-          { id: '140', name: 'Rwanda' }, { id: '134', name: 'Saint Kitts and Nevis' }, { id: '164', name: 'Saint Lucia' },
-          { id: '166', name: 'Saint Vincent' }, { id: '101', name: 'Salvador' }, { id: '10231', name: 'Samoa' },
-          { id: '178', name: 'Sao Tome and Principe' }, { id: '53', name: 'Saudi Arabia' }, { id: '61', name: 'Senegal' },
-          { id: '29', name: 'Serbia' }, { id: '184', name: 'Seychelles' }, { id: '115', name: 'Sierra Leone' },
-          { id: '10351', name: 'Singapore' }, { id: '10349', name: 'Sint Maarten' }, { id: '141', name: 'Slovakia' },
-          { id: '59', name: 'Slovenia' }, { id: '149', name: 'Somalia' }, { id: '31', name: 'South Africa' },
-          { id: '10350', name: 'South Korea' }, { id: '177', name: 'South Sudan' }, { id: '56', name: 'Spain' },
-          { id: '64', name: 'Sri Lanka' }, { id: '142', name: 'Suriname' }, { id: '106', name: 'Swaziland' },
-          { id: '46', name: 'Sweden' }, { id: '173', name: 'Switzerland' }, { id: '110', name: 'Syria' },
-          { id: '55', name: 'Taiwan' }, { id: '143', name: 'Tajikistan' }, { id: '9', name: 'Tanzania' },
-          { id: '52', name: 'Thailand' }, { id: '91', name: 'Timor-Leste' }, { id: '99', name: 'Togo' },
-          { id: '10227', name: 'Tonga' }, { id: '104', name: 'Trinidad and Tobago' }, { id: '89', name: 'Tunisia' },
-          { id: '62', name: 'Turkey' }, { id: '161', name: 'Turkmenistan' },
-          { id: '12', name: 'USA (virtual)' }, { id: '75', name: 'Uganda' }, { id: '1', name: 'Ukraine' },
-          { id: '95', name: 'United Arab Emirates' }, { id: '156', name: 'Uruguay' },
-          { id: '40', name: 'Uzbekistan' }, { id: '1007', name: 'Vanuatu' }, { id: '70', name: 'Venezuela' },
-          { id: '10', name: 'Vietnam' }, { id: '30', name: 'Yemen' }, { id: '147', name: 'Zambia' },
-          { id: '96', name: 'Zimbabwe' }
+          { id: '39', name: 'Argentina' }, { id: '175', name: 'Australia' }, { id: '50', name: 'Austria' },
+          { id: '73', name: 'Brazil' }, { id: '3', name: 'China', flag: '🇨🇳' }, { id: '21', name: 'Egypt' },
+          { id: '6', name: 'Indonesia', flag: '🇮🇩' }, { id: '86', name: 'Italy' }, { id: '182', name: 'Japan' },
+          { id: '7', name: 'Malaysia' }, { id: '66', name: 'Pakistan' }, { id: '56', name: 'Spain' },
+          { id: '46', name: 'Sweden' }, { id: '62', name: 'Turkey' }, { id: '10', name: 'Vietnam' },
+          { id: '1', name: 'Ukraine' }, { id: '12', name: 'USA (virtual)', flag: '🇺🇸' }
         ].sort((a,b) => a.name.localeCompare(b.name));
 
-        // 🚀 FULL GRIZZLY SMS SERVICE LIST FOR FRONTEND BACKUP 🚀
         const GRIZZLY_SERVICE_NAMES = {
           "tg": "Telegram", "wa": "Whatsapp", "go": "Google, Gmail, Youtube", "ts": "PayPal", "ot": "AnyOther",
           "bz": "Blizzard - Battle.Net", "vi": "Viber", "ds": "Discord", "tw": "Twitter / X", "fb": "facebook",
           "ig": "Instagram + Threads", "dr": "AI Chat", "oi": "Tinder", "ua": "Blablacar", "mm": "Microsoft",
-          "am": "Amazon", "ub": "Uber", "pf": "pof.com", "nv": "Naver", "me": "Line messenger", "gs": "Samsung",
-          "lf": "TikTok", "ew": "Nike", "hw": "AliPay", "hn": "1688", "wj": "1xbet", "an": "Adidas", "uk": "Airbnb",
-          "ab": "Alibaba", "pm": "AOL", "lt": "BitClout", "ls": "Careem", "re": "Coinbase", "wc": "Craigslist",
-          "zk": "Deliveroo", "zz": "DENT", "xk": "DiDi", "ak": "Douyu", "ve": "Dream11", "dh": "eBay", "nz": "Foodpanda",
-          "ul": "Getir", "bp": "GoFundMe", "gx": "Hepsiburada", "jl": "Hopi", "kp": "HQ Trivia", "pd": "IFood",
-          "im": "Imo", "kt": "KakaoTalk", "vp": "Kwai", "dl": "Lazada", "mc": "Michat", "nf": "Netflix", "cc": "Quipp",
-          "ka": "Shopee", "wg": "Skout", "mt": "Steam", "qd": "Taobao", "qq": "Tencent QQ", "pr": "Trendyol",
-          "wb": "WeChat", "mb": "Yahoo", "yl": "Yalla", "yi": "Yemeksepeti", "mj": "Zalo", "dy": "Zomato", "oz": "Poshmark",
-          "ip": "Burger King", "si": "Cita Previa", "hz": "Drom", "bv": "Metro", "yw": "Grindr", "ni": "Gojek",
-          "xs": "GroupMe", "ae": "Glovo", "ol": "KazanExpress", "fz": "KFC", "zo": "Kaggle", "ry": "McDonalds",
-          "py": "Monese", "vm": "Okcupid", "xh": "Ovo", "sn": "OLX", "fx": "Pgbonus", "jq": "Paysafecard", "dp": "ProtonMail",
-          "qi": "32Red", "hb": "Twitch", "gc": "TradingView", "nb": "Верный", "gt": "Gett", "ss": "Hezzl", "tn": "LinkedIN",
-          "vv": "Seospirit", "rz": "EasyPay", "ly": "Olacabs", "tl": "Truecaller", "tx": "Bolt", "kf": "Weibo",
-          "sq": "KuCoinPlay", "zl": "Airtel", "os": "Dhani", "wx": "Apple", "xf": "LightChat", "en": "Hermes",
-          "kc": "Vinted", "hk": "4Fun", "zs": "Bilibili", "fr": "Dana", "xd": "Tokopedia", "yy": "Venmo", "po": "premium.one",
-          "dg": "Mercari", "gf": "GoogleVoice", "zi": "Lovelocal", "bl": "BIGO LIVE", "gr_fx": "Ftx", "gr_gc": "Getcontact",
-          "gr_hb": "Humble bundle", "gr_im": "IMO messager", "gr_re": "Remit", "gr_sg": "Signal", "gr_tl": "Tilda",
-          "hx": "AliExpress", "st": "Auchan", "x5": "X5 Retail Group", "qv": "Badoo", "bf": "Buff.163", "bg": "Beget",
-          "gr_bl": "Biglion", "bt": "Battle", "bu": "BP — club", "cg": "cg.163", "gr_cn": "Coinut", "co": "Casino Online",
-          "cp": "Cupis", "dfb": "Diffbot", "ev": "MobileV", "ff": "FreedomFinance", "gg": "GoGym", "gr_gs": "Gorillas",
-          "gyi": "Ingalaxy", "is": "Herbihi.saku", "za": "Jingdong", "jt": "JumpTax", "gr_mi": "MICO", "gr_mo": "Move",
-          "mp": "Moteplassen", "mz": "Mozen", "gr_ox": "Onrealt", "ow": "Regru", "gr_sb": "ALLES Bonus", "sc": "Scruff",
-          "se": "Switchere", "sf": "Spotify", "vj": "Stormgain", "tu": "TalkU", "vd": "Vivaldi", "vr": "Vodorobot",
-          "wo": "Weco", "yd": "Yoshidrops", "gr_yo": "YoHo", "zu": "Zhihu", "gr_lv": "LOVE", "bs": "BLS-SPAIN",
-          "do": "Leboncoin", "vz": "Hinge", "lc": "Subito", "ju": "Indomaret", "ie": "bet365", "zx": "CommunityGaming",
-          "zh": "Zoho", "yu": "Xiaomi", "yo": "Amasia", "yg": "Coursehero", "yf": "Citymobil", "xx": "Joyride",
-          "xr": "Tango", "wh": "Tantan", "vg": "Shell", "rl": "inDriver", "ta": "Wink", "sz": "Pivko24", "rc": "Skype",
-          "qz": "Faceit", "qf": "RedBook (Xiaohongshu)", "pp": "Huyapp", "oh": "MapleSEA", "og": "Okko", "of": "Urent",
-          "nw": "Ximalaya", "nq": "Trip", "my": "CAIXA", "mo": "Bumble", "lx": "DewuPoison", "lv": "Megogo", "li": "Baidu",
-          "kz": "NimoTV", "kj": "YAPPY", "ki": "99app", "jf": "Likee", "iv": "Inboxlv", "il": "IQOS", "hg": "Switips",
-          "ha": "My11Circle", "gz": "LYKA", "gw": "CallApp", "gp": "Ticketmaster", "gm": "MocoSpace", "gb": "YouStar",
-          "fu": "Snapchat", "fi": "Dundle", "et": "Clubhouse", "es": "iQIYI", "eq": "Qoo10", "ee": "Twilio",
-          "dz": "Dominos Pizza", "dt": "Delivery Club", "dj": "LUKOIL-AZS", "df": "Happn", "de": "Karusel", "cr": "TenChat",
-          "cn": "Fiverr", "bn": "Alfagift", "aw": "Taikang", "ai": "CELEBe", "ac": "Doordash", "gr_ubox": "UBOX",
-          "gr_tp": "Taptap Send", "gr_sp": "Spartan Poker", "gr_sh": "Sahibinden", "gr_or": "Orbimed", "gr_py": "Happytuk",
-          "gr_tk": "Tanuki", "gr_sr": "Sravni", "gr_cf": "Stars Coffee", "gr_wn": "Winelab", "gr_zo": "Zoon",
-          "gr_ot": "Ostin", "gr_op": "Oppo", "gr_ex": "Novex", "gr_lo": "NationalLottery", "gr_bo": "My Beauty Bonus",
-          "gr_le": "Mobileproxy", "gr_dm": "Maxidom", "gr_ma": "Marlboro", "gr_bi": "LuckyBike", "gr_lb": "LocalBitcoins",
-          "gr_lm": "LiveMe", "gr_lc": "LikeCentre", "gr_kr": "Krasyar", "gr_kc": "Kopilkaclub", "gr_io": "InternetOpros",
-          "gr_og": "Огонь", "gr_ru": "Rumble", "gr_hf": "Hoff", "gr_hi": "Hiyachat", "gr_gr": "Grozd", "gr_fc": "Friendsclub",
-          "gr_fl": "Flor2U", "gr_fr": "Farpost", "gr_la": "Falla", "gr_eg": "EnticeGames", "gr_ds": "Dosmart",
-          "gr_cx": "Cofix", "gr_cs": "Chibbis", "gr_ch": "Checkscan", "gr_br": "Broadblue", "gr_bk": "Book24",
-          "gr_bz": "Bazar-store", "gr_az": "Azsirbis", "gr_as": "Atlasbus.by", "gr_st": "Artstation", "gr_ag": "Agoda",
-          "gr_ns": "2domains", "gr_aw": "AWS Amazon", "gr_ur": "Azure", "gr_sw": "Swagbucks", "gr_ob": "Botim",
-          "gr_ne": "Netease", "gr_pe": "Periscope", "gr_wg": "WOG", "fl": "4FunLite", "gr_ta": "Talabat", "gr_iy": "With IYC",
-          "gr_mu": "Multinet", "gr_oy": "Sneakerboy", "gr_yc": "IYC", "gr_ly": "Womply", "gr_en": "ClickEntregas",
-          "gr_ab": "Lootably", "qr": "MEGA", "gr_fw": "Flowwow", "gr_rd": "Chalkboard", "gr_dh": "Kleinanzeigen",
-          "gr_pp": "ParlayPlay", "vs": "WinzoGame", "mi": "Zupee", "gr_bf": "Beanfun", "us": "IRCTC", "gr_inv": "Investro",
-          "cz": "Claude"
+          "am": "Amazon", "ub": "Uber", "lf": "TikTok", "nf": "Netflix", "wb": "WeChat", "mb": "Yahoo", 
+          "yl": "Yalla", "mt": "Steam", "sf": "Spotify", "sn": "OLX", "dp": "ProtonMail", "wx": "Apple",
+          "cn": "Fiverr"
         };
 
         const CUSTOMER_TABS = [
@@ -317,51 +205,18 @@
 
         const SplashScreen = () => {
           const text = "Voice Store".split("");
-          
-          const animations = text.map((char, i) => {
-              if (char === " ") return null;
-              const side = Math.floor(Math.random() * 4);
-              let startX, startY;
-              if (side === 0) { startX = (Math.random() * 200 - 100) + 'vw'; startY = '-150vh'; }
-              else if (side === 1) { startX = '150vw'; startY = (Math.random() * 200 - 100) + 'vh'; }
-              else if (side === 2) { startX = (Math.random() * 200 - 100) + 'vw'; startY = '150vh'; }
-              else { startX = '-150vw'; startY = (Math.random() * 200 - 100) + 'vh'; }
-              const startR = (Math.random() * 1440 - 720) + 'deg';
-              
-              return `
-                @keyframes iosVibrateAssemble${i} {
-                    0% { opacity: 0; transform: translate(${startX}, ${startY}) rotate(${startR}) scale(4); filter: blur(10px); }
-                    15% { opacity: 1; transform: translate(calc(${startX} * 0.7), calc(${startY} * 0.7)) rotate(calc(${startR} * 0.7)) scale(3); filter: blur(5px); }
-                    30% { transform: translate(calc(${startX} * 0.4 + 20px), calc(${startY} * 0.4 - 20px)) rotate(calc(${startR} * 0.4 + 20deg)) scale(2.2); filter: blur(0); }
-                    45% { transform: translate(calc(${startX} * 0.2 - 20px), calc(${startY} * 0.2 + 20px)) rotate(calc(${startR} * 0.2 - 20deg)) scale(1.8); }
-                    60% { transform: translate(15px, -15px) rotate(12deg) scale(1.4); }
-                    70% { transform: translate(-12px, 12px) rotate(-10deg) scale(1.2); }
-                    80% { transform: translate(8px, -8px) rotate(6deg) scale(1.1); }
-                    90% { transform: translate(-4px, 4px) rotate(-3deg) scale(1.02); }
-                    100% { opacity: 1; transform: translate(0, 0) rotate(0) scale(1); filter: blur(0); }
-                }
-                .char-anim-${i} {
-                    display: inline-block;
-                    opacity: 0;
-                    animation: iosVibrateAssemble${i} 2.5s cubic-bezier(0.25, 1, 0.5, 1) forwards;
-                    animation-delay: ${i * 0.08}s;
-                    will-change: transform, opacity, filter;
-                }
-              `;
-          });
-
           return (
             <div className="fixed inset-0 z-[100] flex flex-col items-center justify-center bg-[#0f172a] transition-opacity duration-500 w-full h-full p-4 overflow-hidden">
-               <style dangerouslySetInnerHTML={{ __html: animations.filter(Boolean).join('\n') }} />
                <div className="relative z-10 flex flex-col items-center w-full px-2">
                   <h1 className="text-5xl sm:text-8xl md:text-9xl font-black tracking-tighter mb-8 flex justify-center flex-wrap w-full" style={{ lineHeight: '1.2' }}>
                     {text.map((char, i) => {
                         if (char === " ") return <span key={i} className="w-3 sm:w-6"></span>;
                         return (
-                          <span key={i} className={`char-anim-${i}`} style={{
+                          <span key={i} className="animate-fade-in-up" style={{
                               background: 'linear-gradient(to right bottom, #c084fc, #22d3ee)',
                               WebkitBackgroundClip: 'text',
                               WebkitTextFillColor: 'transparent',
+                              animationDelay: `${i * 0.1}s`,
                               filter: 'drop-shadow(0px 0px 15px rgba(139,92,246,0.6))'
                           }}>
                               {char}
@@ -369,13 +224,13 @@
                         )
                     })}
                   </h1>
-                  <p className="text-slate-500 dark:text-slate-400 font-bold text-[10px] sm:text-sm uppercase tracking-[0.4em] sm:tracking-[0.6em] animate-fade-in-up" style={{ animationDelay: '1.8s', opacity: 0, animationFillMode: 'forwards' }}>Premium Workspace</p>
+                  <p className="text-slate-500 dark:text-slate-400 font-bold text-[10px] sm:text-sm uppercase tracking-[0.4em] sm:tracking-[0.6em] animate-fade-in-up" style={{ animationDelay: '1.2s', opacity: 0, animationFillMode: 'forwards' }}>Premium Workspace</p>
                </div>
             </div>
           );
         };
 
-        // 🌟 Fix: Extracted Product Card to avoid hooks in loop crash 🌟
+        // Extracted ProductCard
         function ProductCard({ product, inventory, addToCart, setPreviewStockModal }) {
             const [selectedState, setSelectedState] = useState('Any');
             const stockList = inventory[product.id] || [];
@@ -438,7 +293,7 @@
             );
         }
 
-        // 🌟 Fix: Extracted Vault Card to avoid hooks in loop crash 🌟
+        // Extracted PurchasedAccountCard
         function PurchasedAccountCard({ acc, triggerToast, db, appId, email }) {
             const [totpCode, setTotpCode] = useState('');
             const [timeLeft, setTimeLeft] = useState(30);
@@ -509,9 +364,7 @@
             );
         }
 
-        // ==========================================
         // MAIN APP COMPONENT
-        // ==========================================
         function App() {
           const [showSplash, setShowSplash] = useState(true);
           const [user, setUser] = useState(null); 
@@ -819,19 +672,19 @@
                 ) : (
                   <>
                       {activeTab === 'sms' && (
-                        <CustomerDashboardSMS user={user} balance={currentUserBalance} triggerToast={triggerToast} smsSettings={smsSettings} uiCard={uiCard} uiInput={uiInput} uiBtnPrimary={uiBtnPrimary} uiInnerPanel={uiInnerPanel} />
+                        <CustomerDashboardSMS user={user} balance={currentUserBalance} triggerToast={triggerToast} smsSettings={smsSettings} />
                       )}
                       {activeTab === 'store' && (
-                        <CustomerDashboardStore inventory={inventory} categories={categories} cart={cart} setCart={setCart} allOrders={allOrders} uiCard={uiCard} uiInput={uiInput} uiBtnPrimary={uiBtnPrimary} uiInnerPanel={uiInnerPanel} triggerToast={triggerToast} />
+                        <CustomerDashboardStore inventory={inventory} categories={categories} cart={cart} setCart={setCart} allOrders={allOrders} triggerToast={triggerToast} />
                       )}
                       {activeTab === 'add_funds' && (
-                        <CustomerDashboardFunds user={user} db={db} appId={appId} triggerToast={triggerToast} addNotification={addNotification} bankSettings={bankSettings} uiCard={uiCard} uiInput={uiInput} uiBtnPrimary={uiBtnPrimary} uiBtnSecondary={uiBtnSecondary} uiInnerPanel={uiInnerPanel} />
+                        <CustomerDashboardFunds user={user} db={db} appId={appId} triggerToast={triggerToast} addNotification={addNotification} bankSettings={bankSettings} />
                       )}
                       {activeTab === 'my_accounts' && (
-                        <CustomerDashboardVault user={user} purchases={purchases} triggerToast={triggerToast} db={db} appId={appId} uiCard={uiCard} uiBtnPrimary={uiBtnPrimary} uiInnerPanel={uiInnerPanel} />
+                        <CustomerDashboardVault user={user} purchases={purchases} triggerToast={triggerToast} db={db} appId={appId} uiCard={uiCard} />
                       )}
                       {activeTab === 'profile' && (
-                        <CustomerDashboardProfile user={user} balance={currentUserBalance} tier={currentUserTier} userInfo={usersDB[user.email]} allOrders={allOrders} deposits={deposits} purchases={purchases} tickets={tickets.filter(t => t.email === user.email)} db={db} appId={appId} featureSettings={featureSettings} triggerToast={triggerToast} uiCard={uiCard} uiInput={uiInput} uiBtnPrimary={uiBtnPrimary} uiBtnSecondary={uiBtnSecondary} uiInnerPanel={uiInnerPanel} />
+                        <CustomerDashboardProfile user={user} balance={currentUserBalance} tier={currentUserTier} userInfo={usersDB[user.email]} allOrders={allOrders} deposits={deposits} purchases={purchases} tickets={tickets.filter(t => t.email === user.email)} db={db} appId={appId} featureSettings={featureSettings} triggerToast={triggerToast} />
                       )}
                   </>
                 )}
@@ -841,19 +694,16 @@
                 <CartModal 
                   cart={cart} setCart={setCart} setShowCart={setShowCart} balance={currentUserBalance}
                   user={user} promoSettings={promoSettings} addNotification={addNotification} triggerToast={triggerToast} 
-                  uiCard={uiCard} uiBtnPrimary={uiBtnPrimary} uiInnerPanel={uiInnerPanel}
                 />
               )}
             </div>
           );
         }
 
-        // ==========================================
-        // 🌟 SMS MODULE (LIVE POPUP MULTI-PRICE TIER) 🌟
-        // ==========================================
-        function CustomerDashboardSMS({ user, balance, triggerToast, smsSettings, uiCard, uiInput, uiBtnPrimary, uiInnerPanel }) {
+        // SMS MODULE
+        function CustomerDashboardSMS({ user, balance, triggerToast, smsSettings }) {
           const [isSmsLoading, setIsSmsLoading] = useState(false);
-          const [selectedSmsService, setSelectedSmsService] = useState(''); // Holds exact price code e.g. "tg_187_1.50"
+          const [selectedSmsService, setSelectedSmsService] = useState(''); 
           
           const [availableServices, setAvailableServices] = useState([]); 
           const [isAppDropdownOpen, setIsAppDropdownOpen] = useState(false);
@@ -900,7 +750,7 @@
               }
           }, [smsSettings, smsCountry]);
 
-          // 🌟 Group API data by App for Dropdown & Popup 🌟
+          // Group API data by App for Dropdown & Popup
           const groupedAPI = {};
           availableServices.forEach(item => {
               if (!groupedAPI[item.serviceId]) groupedAPI[item.serviceId] = [];
@@ -915,20 +765,20 @@
               // Sort low price to high price for the modal buttons
               apiPrices.sort((a, b) => a.finalPrice - b.finalPrice);
 
+              if (totalStock === 0) return null; // Filter out 0 stock
+
               return {
                   serviceId: code,
                   name: GRIZZLY_SERVICE_NAMES[code],
                   stock: totalStock,
                   prices: apiPrices
               };
-          }).filter(app => app.stock > 0) // 🔥 ম্যাজিক: যেগুলোর স্টক ০, সেগুলো লিস্ট থেকেই বাদ!
-            .sort((a, b) => a.name.localeCompare(b.name));
+          }).filter(Boolean).sort((a, b) => a.name.localeCompare(b.name));
 
           const filteredApps = combinedApps.filter(app => 
               app.name.toLowerCase().includes(appSearch.toLowerCase())
           );
 
-          // Update Selection automatically if data changes
           useEffect(() => {
               if (combinedApps.length > 0 && !selectedAppGroup) {
                   setSelectedAppGroup(combinedApps[0]);
@@ -1017,10 +867,7 @@
                   const cancelData = await cancelRes.json();
                   
                   if (!cancelData.success && !String(cancelData.message).includes('already closed')) {
-                      if (!isAuto) {
-                          triggerToast(cancelData.message); 
-                          return; 
-                      }
+                      if (!isAuto) { triggerToast(cancelData.message); return; }
                   }
                   
                   await fetch('https://voicestore-backend.onrender.com/api/sms-refund', {
@@ -1093,9 +940,7 @@
              return `+${p}`; 
           };
 
-          const copyNumberOnly = (phone) => {
-             copyText(String(phone).replace(/\D/g, ''));
-          };
+          const copyNumberOnly = (phone) => { copyText(String(phone).replace(/\D/g, '')); };
 
           if(!smsSettings?.active) return (
              <div className={uiCard + " text-center py-20 text-slate-500 font-medium w-full"}>
@@ -1149,10 +994,7 @@
                             </div>
 
                             <button 
-                                onClick={() => {
-                                    setShowPriceModal(false);
-                                    buySmsNumber(); 
-                                }} 
+                                onClick={() => { setShowPriceModal(false); buySmsNumber(); }} 
                                 disabled={isSmsLoading || activeOrders.length > 0 || !selectedSmsService} 
                                 className={uiBtnPrimary + " w-full h-12 !text-sm shadow-[0_4px_20px_rgba(139,92,246,0.4)]"}
                             >
@@ -1218,10 +1060,10 @@
                                                            <div key={app.serviceId} 
                                                                onClick={() => { 
                                                                    setSelectedAppGroup(app); 
-                                                                   if(app.prices.length > 0) setSelectedSmsService(app.prices[0].code); // Select cheapest initially
+                                                                   if(app.prices.length > 0) setSelectedSmsService(app.prices[0].code);
                                                                    setIsAppDropdownOpen(false); 
                                                                    setAppSearch(''); 
-                                                                   setShowPriceModal(true); // 🔥 Magic: Opens the popup!
+                                                                   setShowPriceModal(true);
                                                                }}
                                                                className={`px-4 py-3 cursor-pointer rounded-lg text-sm font-semibold transition-colors flex justify-between items-center ${selectedAppGroup?.serviceId === app.serviceId ? 'bg-violet-50 dark:bg-violet-500/10 text-violet-600 dark:text-violet-400' : 'text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-white/5'}`}
                                                            >
@@ -1261,6 +1103,7 @@
                     </button>
                 </div>
 
+                {/* ACTIVE ORDERS DISPLAY */}
                 {activeOrders.map((order, index) => {
                     const timeLeft = Math.max(0, Math.floor((order.expiresAt - now) / 1000));
                     
@@ -1310,9 +1153,7 @@
           );
         }
 
-        // ==========================================
         // STORE MODULE
-        // ==========================================
         function CustomerDashboardStore({ inventory, categories, cart, setCart, allOrders, uiCard, uiInput, uiBtnPrimary, uiInnerPanel, triggerToast }) {
           const [searchQuery, setSearchQuery] = useState('');
           const [previewStockModal, setPreviewStockModal] = useState({show: false, categoryId: null, name: ''});
@@ -1389,6 +1230,10 @@
                             inventory={inventory} 
                             addToCart={addToCart} 
                             setPreviewStockModal={setPreviewStockModal}
+                            uiCard={uiCard}
+                            uiInnerPanel={uiInnerPanel}
+                            uiBtnPrimary={uiBtnPrimary}
+                            uiInput={uiInput}
                         />
                     ))}
                     {filteredCategories.length === 0 && <div className="col-span-full py-20 text-center text-slate-500 font-medium"><Search className="w-12 h-12 mx-auto mb-4 opacity-20"/>No products match.</div>}
@@ -1417,6 +1262,7 @@
           );
         }
 
+        // FUNDS MODULE
         function CustomerDashboardFunds({ user, db, appId, triggerToast, addNotification, bankSettings, uiCard, uiInput, uiBtnPrimary, uiBtnSecondary, uiInnerPanel }) {
           const [autoPay, setAutoPay] = useState({ active: false, amount: 0, time: 900, checking: false, invoiceId: '' });
           const TRON_ADDRESS = 'TELRyMwDmdKzBRb7Uaw3zNvphrc8V3D5Mj';
@@ -1660,9 +1506,7 @@
           );
         }
 
-        // ==========================================
         // PROFILE MODULE
-        // ==========================================
         function CustomerDashboardProfile({ user, balance, tier, userInfo, allOrders, deposits, purchases, tickets, db, appId, featureSettings, triggerToast, uiCard, uiInput, uiBtnPrimary, uiBtnSecondary, uiInnerPanel }) {
           const [profileSubTab, setProfileSubTab] = useState('overview');
           const [ticketSubject, setTicketSubject] = useState('');
@@ -1869,9 +1713,7 @@
           );
         }
 
-        // ==========================================
         // CART MODAL
-        // ==========================================
         function CartModal({ cart, setCart, setShowCart, balance, user, promoSettings, triggerToast, addNotification, db, appId, uiCard, uiBtnPrimary, uiInnerPanel }) {
             const [isCheckingOut, setIsCheckingOut] = useState(false);
             const totalAmount = cart.reduce((sum, item) => sum + item.price, 0);
@@ -1940,9 +1782,7 @@
             );
         }
 
-        // ==========================================
         // ADMIN DASHBOARD
-        // ==========================================
         function AdminDashboard({ inventory, orders, deposits, categories, usersDB, db, appId, promoSettings, globalNotice, tickets, featureSettings, bankSettings, smsSettings, auth, user, uiCard, uiInput, uiBtnPrimary, uiBtnSecondary, uiBtnAction, uiInnerPanel, triggerToast, activeTab }) {
           const [uploadCategory, setUploadCategory] = useState('new');
           const [uploadText, setUploadText] = useState('');
