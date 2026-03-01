@@ -34,7 +34,6 @@
     </script>
     
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;700;800&display=swap" rel="stylesheet">
-    
     <script async src="https://unpkg.com/es-module-shims@1.10.0/dist/es-module-shims.js"></script>
 
     <script type="importmap">
@@ -54,27 +53,10 @@
     <style>
         .scrollbar-hide::-webkit-scrollbar { display: none; }
         .scrollbar-hide { -ms-overflow-style: none; scrollbar-width: none; }
-        
-        body {
-            transition: background-color 0.5s ease, color 0.5s ease;
-            -webkit-user-select: none; -moz-user-select: none; -ms-user-select: none; user-select: none;
-            font-family: 'Inter', sans-serif;
-            overflow-x: hidden;
-            scroll-behavior: smooth;
-        }
-        
-        input, textarea, pre, select {
-            -webkit-user-select: text; -moz-user-select: text; -ms-user-select: text; user-select: text;
-        }
-
-        .btn-animate {
-            transition: transform 0.2s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.2s ease, filter 0.2s ease;
-        }
-        .btn-animate:active {
-            transform: translateY(2px) scale(0.98);
-            filter: brightness(0.9);
-        }
-        
+        body { transition: background-color 0.5s ease, color 0.5s ease; -webkit-user-select: none; -moz-user-select: none; -ms-user-select: none; user-select: none; font-family: 'Inter', sans-serif; overflow-x: hidden; scroll-behavior: smooth; }
+        input, textarea, pre, select { -webkit-user-select: text; -moz-user-select: text; -ms-user-select: text; user-select: text; }
+        .btn-animate { transition: transform 0.2s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.2s ease, filter 0.2s ease; }
+        .btn-animate:active { transform: translateY(2px) scale(0.98); filter: brightness(0.9); }
         .custom-scrollbar::-webkit-scrollbar { width: 6px; }
         .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
         .custom-scrollbar::-webkit-scrollbar-thumb { background-color: rgba(139, 92, 246, 0.4); border-radius: 10px; }
@@ -120,10 +102,10 @@
         };
 
         const PRODUCT_CATEGORIES = [
-          { id: 'new', name: 'New Google Voice', description: 'Freshly configured account. Ideal for personal operations.', price: 5.00, icon: Package, color: 'text-violet-500 dark:text-violet-400' },
-          { id: 'old', name: 'Legacy Google Voice', description: 'Aged and highly trusted account (2012-2020 generation).', price: 15.00, icon: Sparkles, color: 'text-rose-500 dark:text-rose-400' },
-          { id: 'textplus', name: 'TextPlus Network', description: 'Verified USA entity for unlimited encrypted texting.', price: 2.50, icon: Smartphone, color: 'text-cyan-500 dark:text-cyan-400' },
-          { id: 'gv_bulk', name: 'Enterprise Bundle (10x)', description: 'Wholesale allocation of 10 fresh secure accounts.', price: 45.00, icon: Users, color: 'text-yellow-500 dark:text-yellow-400' }
+          { id: 'new', name: 'New Google Voice', description: 'Freshly configured account. Ideal for personal operations.', price: 5.00, icon: Package, color: 'text-violet-500' },
+          { id: 'old', name: 'Legacy Google Voice', description: 'Aged and highly trusted account (2012-2020 generation).', price: 15.00, icon: Sparkles, color: 'text-rose-500' },
+          { id: 'textplus', name: 'TextPlus Network', description: 'Verified USA entity for unlimited encrypted texting.', price: 2.50, icon: Smartphone, color: 'text-cyan-500' },
+          { id: 'gv_bulk', name: 'Enterprise Bundle (10x)', description: 'Wholesale allocation of 10 fresh secure accounts.', price: 45.00, icon: Users, color: 'text-yellow-500' }
         ];
 
         // 🌍 Secure Regions 🌍
@@ -242,13 +224,16 @@
           const [tickets, setTickets] = useState([]);
           
           const [promoSettings, setPromoSettings] = useState({ code: '', discount: 0, isActive: false });
+          const [globalNotice, setGlobalNotice] = useState('');
           const [featureSettings, setFeatureSettings] = useState({ dailyReward: false, referral: false });
           const [bankSettings, setBankSettings] = useState({ nairaRate: 1500, flutterwaveKey: '', flutterwaveActive: false });
+          
           const [smsSettings, setSmsSettings] = useState({ active: true, markup: 1.00 });
           const [categories, setCategories] = useState(PRODUCT_CATEGORIES);
           
           const [cart, setCart] = useState([]);
           const [showCart, setShowCart] = useState(false);
+          const [notifications, setNotifications] = useState([]);
           const [toastData, setToastData] = useState({ show: false, msg: '', id: 0 });
 
           const [authMethod, setAuthMethod] = useState('login');
@@ -297,6 +282,7 @@
             
             unsubs.push(onSnapshot(doc(db, 'artifacts', appId, 'public', 'data', 'Store_Inventory', 'Stock'), (snap) => { if (snap.exists()) setInventory(snap.data()); }, errLog));
             unsubs.push(onSnapshot(doc(db, 'artifacts', appId, 'public', 'data', 'Store_Settings', 'PromoCode'), (snap) => { if (snap.exists()) setPromoSettings(snap.data()); }, errLog));
+            unsubs.push(onSnapshot(doc(db, 'artifacts', appId, 'public', 'data', 'Store_Settings', 'Notice'), (snap) => { if (snap.exists()) setGlobalNotice(snap.data().text); }, errLog));
             unsubs.push(onSnapshot(doc(db, 'artifacts', appId, 'public', 'data', 'Store_Settings', 'Features'), (snap) => { if (snap.exists()) setFeatureSettings(snap.data()); }, errLog));
             unsubs.push(onSnapshot(doc(db, 'artifacts', appId, 'public', 'data', 'Store_Settings', 'Bank'), (snap) => { if (snap.exists()) setBankSettings(snap.data()); }, errLog));
             unsubs.push(onSnapshot(doc(db, 'artifacts', appId, 'public', 'data', 'Store_Settings', 'SMS'), (snap) => { if (snap.exists()) setSmsSettings(snap.data()); }, errLog));
@@ -347,8 +333,8 @@
 
           const handleLogout = () => { signOut(auth).then(() => { setUser(null); setCart([]); setShowCart(false); setEmailInput(''); setPasswordInput(''); }); };
           const triggerToast = (msg) => { const id = Date.now(); setToastData({ show: true, msg, id }); setTimeout(() => { setToastData(prev => prev.id === id ? { ...prev, show: false } : prev); }, 3500); };
+          const addNotification = (title, text) => { setNotifications(prev => [{ id: Date.now(), title, text, time: 'Just now' }, ...prev].slice(0, 5)); };
 
-          if (showSplash) return <SplashScreen />;
           if (isAuthChecking) return <div className="min-h-screen flex items-center justify-center bg-[#0f172a]"><RefreshCw className="w-8 h-8 text-violet-500 animate-spin"/></div>;
 
           if (!user) {
@@ -454,13 +440,13 @@
                 </div>
 
                 {user.role === 'admin' ? (
-                  <AdminDashboard inventory={inventory} orders={allOrders} deposits={deposits} categories={categories} usersDB={usersDB} triggerToast={triggerToast} db={db} appId={appId} promoSettings={promoSettings} tickets={tickets} featureSettings={featureSettings} bankSettings={bankSettings} smsSettings={smsSettings} auth={auth} user={user} uiCard={uiCard} uiInput={uiInput} uiBtnPrimary={uiBtnPrimary} uiBtnSecondary={uiBtnSecondary} uiBtnAction={uiBtnAction} uiInnerPanel={uiInnerPanel} activeTab={activeTab} />
+                  <AdminDashboard inventory={inventory} orders={allOrders} deposits={deposits} categories={categories} usersDB={usersDB} triggerToast={triggerToast} db={db} appId={appId} promoSettings={promoSettings} tickets={tickets} featureSettings={featureSettings} bankSettings={bankSettings} smsSettings={smsSettings} auth={auth} user={user} activeTab={activeTab} uiCard={uiCard} uiInput={uiInput} uiBtnPrimary={uiBtnPrimary} uiBtnSecondary={uiBtnSecondary} uiBtnAction={uiBtnAction} uiInnerPanel={uiInnerPanel} />
                 ) : (
                   <>
                       {activeTab === 'sms' && <CustomerDashboardSMS user={user} balance={currentUserBalance} triggerToast={triggerToast} smsSettings={smsSettings} uiCard={uiCard} uiInput={uiInput} uiBtnPrimary={uiBtnPrimary} uiInnerPanel={uiInnerPanel} />}
                       {activeTab === 'store' && <CustomerDashboardStore inventory={inventory} categories={categories} cart={cart} setCart={setCart} allOrders={allOrders} uiCard={uiCard} uiInput={uiInput} uiBtnPrimary={uiBtnPrimary} uiInnerPanel={uiInnerPanel} triggerToast={triggerToast} />}
                       {activeTab === 'add_funds' && <CustomerDashboardFunds user={user} db={db} appId={appId} triggerToast={triggerToast} bankSettings={bankSettings} uiCard={uiCard} uiInput={uiInput} uiBtnPrimary={uiBtnPrimary} uiBtnSecondary={uiBtnSecondary} uiInnerPanel={uiInnerPanel} />}
-                      {activeTab === 'my_accounts' && <CustomerDashboardVault purchases={purchases} triggerToast={triggerToast} db={db} appId={appId} uiCard={uiCard} uiBtnPrimary={uiBtnPrimary} uiInnerPanel={uiInnerPanel} />}
+                      {activeTab === 'my_accounts' && <CustomerDashboardVault purchases={purchases} db={db} appId={appId} triggerToast={triggerToast} uiCard={uiCard} uiBtnPrimary={uiBtnPrimary} uiInnerPanel={uiInnerPanel} />}
                       {activeTab === 'profile' && <CustomerDashboardProfile user={user} balance={currentUserBalance} tier={currentUserTier} userInfo={usersDB[user.email]} allOrders={allOrders} deposits={deposits} purchases={purchases} tickets={tickets.filter(t => t.email === user.email)} db={db} appId={appId} featureSettings={featureSettings} triggerToast={triggerToast} uiCard={uiCard} uiInput={uiInput} uiBtnPrimary={uiBtnPrimary} uiBtnSecondary={uiBtnSecondary} uiInnerPanel={uiInnerPanel} />}
                   </>
                 )}
@@ -543,7 +529,6 @@
               } catch (e) { triggerToast("Network Error."); } finally { setIsSmsLoading(false); }
           };
 
-          // Actual Executions
           const performCancel = async (orderId, priceToRefund) => {
               try {
                   const token = await getAuthToken();
@@ -646,7 +631,7 @@
                         <label className="block text-[10px] font-bold text-slate-400 mb-2.5 uppercase tracking-wider">Select Server Region</label>
                         <div className="relative">
                             <select value={smsCountry} onChange={e => setSmsCountry(e.target.value)} className={uiInput + " appearance-none cursor-pointer pr-10"}>
-                                {JUICY_COUNTRIES_LIST.map(c => <option key={c.id} value={c.id} className="bg-slate-800">{c.name}</option>)}
+                                {NETWORK_REGIONS.map(c => <option key={c.id} value={c.id} className="bg-slate-800">{c.name}</option>)}
                             </select>
                             <ChevronDown className="w-5 h-5 text-slate-500 absolute right-4 top-3.5 pointer-events-none" />
                         </div>
@@ -841,7 +826,7 @@
         // ==========================================
         // FUNDS MODULE
         // ==========================================
-        function CustomerDashboardFunds({ user, db, appId, triggerToast, addNotification, bankSettings, uiCard, uiInput, uiBtnPrimary, uiBtnSecondary, uiInnerPanel }) {
+        function CustomerDashboardFunds({ user, db, appId, triggerToast, bankSettings, uiCard, uiInput, uiBtnPrimary, uiBtnSecondary, uiInnerPanel }) {
           const [autoPay, setAutoPay] = useState({ active: false, amount: 0, time: 900, checking: false, invoiceId: '' });
           const TRON_ADDRESS = 'TELRyMwDmdKzBRb7Uaw3zNvphrc8V3D5Mj';
           const BTC_ADDRESS = '1EgVdWyoCsWepg3TAowifuhoR81Lm1xEUd';
@@ -888,7 +873,6 @@
                               setAutoPay(prev => ({...prev, checking: false})); 
                               triggerToast(`Funds Verified! $${autoPay.amount} credited.`);
                               setAutoPay({ active: false, amount: 0, cryptoAmount: 0, time: 0, checking: false, invoiceId: '' });
-                              addNotification('Deposit Successful', `$${autoPay.amount} secured in vault.`);
                           }
                       } catch (err) {}
                   }, 15000); 
@@ -902,7 +886,7 @@
                   }
               }, 1000);
               return () => { clearInterval(interval); clearInterval(timer); };
-          }, [autoPay, db, appId, user.email, addNotification]);
+          }, [autoPay, db, appId, user.email]);
 
           const copyToClipboard = (text) => {
              if (navigator.clipboard) navigator.clipboard.writeText(text).then(() => triggerToast("Address Secured!"));
@@ -1002,7 +986,7 @@
         // ==========================================
         // VAULT MODULE
         // ==========================================
-        function CustomerDashboardVault({ purchases, uiCard, uiBtnPrimary, uiInnerPanel, triggerToast }) {
+        function CustomerDashboardVault({ purchases, db, appId, uiCard, uiBtnPrimary, uiInnerPanel, triggerToast }) {
           return (
             <div className="animate-fade-in-up w-full">
               <div className={uiCard + " p-6 sm:p-8 min-h-[500px]"}>
@@ -1068,6 +1052,11 @@
                                </div>
                                
                                <div className="flex justify-end gap-3 mt-auto items-center">
+                                   <button onClick={() => {
+                                      const id = 'REP-' + Date.now();
+                                      setDoc(doc(db, 'artifacts', appId, 'public', 'data', 'Store_Tickets', id), { email: purchases[0].customer, subject: `Reported Asset`, message: `Data integrity issue.`, status: 'Open', date: new Date().toISOString() });
+                                      triggerToast('Report dispatched to admins.');
+                                   }} className="btn-animate text-[11px] text-slate-400 hover:text-rose-400 font-semibold px-3 py-2 transition-colors">Flag Issue</button>
                                    <button onClick={() => {
                                       if (navigator.clipboard) navigator.clipboard.writeText(String(acc.data || '')).then(() => triggerToast("Payload Secured!"));
                                       else { const t = document.createElement("textarea"); t.value = String(acc.data || ''); document.body.appendChild(t); t.select(); document.execCommand("copy"); document.body.removeChild(t); triggerToast("Payload Secured!"); }
@@ -1321,7 +1310,7 @@
         // ==========================================
         // ADMIN DASHBOARD
         // ==========================================
-        function AdminDashboard({ inventory, orders, deposits, categories, usersDB, db, appId, promoSettings, tickets, featureSettings, bankSettings, smsSettings, auth, uiCard, uiInput, uiBtnPrimary, uiBtnSecondary, uiBtnAction, uiInnerPanel, triggerToast }) {
+        function AdminDashboard({ inventory, orders, deposits, categories, usersDB, db, appId, promoSettings, tickets, featureSettings, bankSettings, smsSettings, auth, uiCard, uiInput, uiBtnPrimary, uiBtnSecondary, uiBtnAction, uiInnerPanel, triggerToast, activeTab }) {
           const [uploadCategory, setUploadCategory] = useState('new');
           const [uploadText, setUploadText] = useState('');
           const [customerSearch, setCustomerSearch] = useState('');
@@ -1366,7 +1355,6 @@
           }, [promoSettings, bankSettings, smsSettings]);
 
           const pendingDeposits = deposits.filter(d => d.status === 'Pending' || d.status === 'Verifying...' || d.status === 'Pending Review' || d.status === 'Awaiting Payment');
-          const pendingTickets = (tickets || []).filter(t => t.status === 'Open');
           const totalSales = orders.filter(o => o.status === 'Completed').reduce((sum, order) => sum + Number(order.total || 0), 0);
           const filteredUsers = Object.keys(usersDB).filter(email => email.toLowerCase().includes(customerSearch.toLowerCase()));
 
