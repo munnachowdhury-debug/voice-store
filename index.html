@@ -34,6 +34,7 @@
     </script>
     
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;700;800&display=swap" rel="stylesheet">
+    
     <script async src="https://unpkg.com/es-module-shims@1.10.0/dist/es-module-shims.js"></script>
 
     <script type="importmap">
@@ -53,10 +54,27 @@
     <style>
         .scrollbar-hide::-webkit-scrollbar { display: none; }
         .scrollbar-hide { -ms-overflow-style: none; scrollbar-width: none; }
-        body { transition: background-color 0.5s ease, color 0.5s ease; -webkit-user-select: none; -moz-user-select: none; -ms-user-select: none; user-select: none; font-family: 'Inter', sans-serif; overflow-x: hidden; scroll-behavior: smooth; }
-        input, textarea, pre, select { -webkit-user-select: text; -moz-user-select: text; -ms-user-select: text; user-select: text; }
-        .btn-animate { transition: transform 0.2s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.2s ease, filter 0.2s ease; }
-        .btn-animate:active { transform: translateY(2px) scale(0.98); filter: brightness(0.9); }
+        
+        body {
+            transition: background-color 0.5s ease, color 0.5s ease;
+            -webkit-user-select: none; -moz-user-select: none; -ms-user-select: none; user-select: none;
+            font-family: 'Inter', sans-serif;
+            overflow-x: hidden;
+            scroll-behavior: smooth;
+        }
+        
+        input, textarea, pre, select {
+            -webkit-user-select: text; -moz-user-select: text; -ms-user-select: text; user-select: text;
+        }
+
+        .btn-animate {
+            transition: transform 0.2s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.2s ease, filter 0.2s ease;
+        }
+        .btn-animate:active {
+            transform: translateY(2px) scale(0.98);
+            filter: brightness(0.9);
+        }
+        
         .custom-scrollbar::-webkit-scrollbar { width: 6px; }
         .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
         .custom-scrollbar::-webkit-scrollbar-thumb { background-color: rgba(139, 92, 246, 0.4); border-radius: 10px; }
@@ -102,10 +120,10 @@
         };
 
         const PRODUCT_CATEGORIES = [
-          { id: 'new', name: 'New Google Voice', description: 'Freshly configured account. Ideal for personal operations.', price: 5.00, icon: Package, color: 'text-violet-500' },
-          { id: 'old', name: 'Legacy Google Voice', description: 'Aged and highly trusted account (2012-2020 generation).', price: 15.00, icon: Sparkles, color: 'text-rose-500' },
-          { id: 'textplus', name: 'TextPlus Network', description: 'Verified USA entity for unlimited encrypted texting.', price: 2.50, icon: Smartphone, color: 'text-cyan-500' },
-          { id: 'gv_bulk', name: 'Enterprise Bundle (10x)', description: 'Wholesale allocation of 10 fresh secure accounts.', price: 45.00, icon: Users, color: 'text-yellow-500' }
+          { id: 'new', name: 'New Google Voice', description: 'Freshly configured account. Ideal for personal operations.', price: 5.00, icon: Package, color: 'text-violet-500 dark:text-violet-400' },
+          { id: 'old', name: 'Legacy Google Voice', description: 'Aged and highly trusted account (2012-2020 generation).', price: 15.00, icon: Sparkles, color: 'text-rose-500 dark:text-rose-400' },
+          { id: 'textplus', name: 'TextPlus Network', description: 'Verified USA entity for unlimited encrypted texting.', price: 2.50, icon: Smartphone, color: 'text-cyan-500 dark:text-cyan-400' },
+          { id: 'gv_bulk', name: 'Enterprise Bundle (10x)', description: 'Wholesale allocation of 10 fresh secure accounts.', price: 45.00, icon: Users, color: 'text-yellow-500 dark:text-yellow-400' }
         ];
 
         // 🌍 Secure Regions 🌍
@@ -200,9 +218,12 @@
                <style dangerouslySetInnerHTML={{ __html: animations.filter(Boolean).join('\n') }} />
                <div className="relative z-10 flex flex-col items-center w-full px-2">
                   <h1 className="text-5xl sm:text-8xl md:text-9xl font-black tracking-tighter mb-8 flex justify-center flex-wrap w-full" style={{ lineHeight: '1.2' }}>
-                    {text.map((char, i) => (
-                        <span key={i} className={`char-anim-${i}`} style={{ background: 'linear-gradient(to right bottom, #c084fc, #22d3ee)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', filter: 'drop-shadow(0px 0px 15px rgba(139,92,246,0.6))' }}>{char}</span>
-                    ))}
+                    {text.map((char, i) => {
+                        if (char === " ") return <span key={i} className="w-3 sm:w-6"></span>;
+                        return (
+                          <span key={i} className={`char-anim-${i}`} style={{ background: 'linear-gradient(to right bottom, #c084fc, #22d3ee)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', filter: 'drop-shadow(0px 0px 15px rgba(139,92,246,0.6))' }}>{char}</span>
+                        )
+                    })}
                   </h1>
                   <p className="text-slate-400 font-bold text-[10px] sm:text-sm uppercase tracking-[0.4em] sm:tracking-[0.6em] animate-fade-in-up" style={{ animationDelay: '1.8s', opacity: 0, animationFillMode: 'forwards' }}>Secure Cloud Network</p>
                </div>
@@ -440,19 +461,19 @@
                 </div>
 
                 {user.role === 'admin' ? (
-                  <AdminDashboard inventory={inventory} orders={allOrders} deposits={deposits} categories={categories} usersDB={usersDB} triggerToast={triggerToast} db={db} appId={appId} promoSettings={promoSettings} tickets={tickets} featureSettings={featureSettings} bankSettings={bankSettings} smsSettings={smsSettings} auth={auth} user={user} activeTab={activeTab} uiCard={uiCard} uiInput={uiInput} uiBtnPrimary={uiBtnPrimary} uiBtnSecondary={uiBtnSecondary} uiBtnAction={uiBtnAction} uiInnerPanel={uiInnerPanel} />
+                  <AdminDashboard inventory={inventory} orders={allOrders} deposits={deposits} categories={categories} usersDB={usersDB} triggerToast={triggerToast} db={db} appId={appId} promoSettings={promoSettings} globalNotice={globalNotice} tickets={tickets} featureSettings={featureSettings} bankSettings={bankSettings} smsSettings={smsSettings} auth={auth} user={user} uiCard={uiCard} uiInput={uiInput} uiBtnPrimary={uiBtnPrimary} uiBtnSecondary={uiBtnSecondary} uiBtnAction={uiBtnAction} uiInnerPanel={uiInnerPanel} activeTab={activeTab} />
                 ) : (
                   <>
                       {activeTab === 'sms' && <CustomerDashboardSMS user={user} balance={currentUserBalance} triggerToast={triggerToast} smsSettings={smsSettings} uiCard={uiCard} uiInput={uiInput} uiBtnPrimary={uiBtnPrimary} uiInnerPanel={uiInnerPanel} />}
                       {activeTab === 'store' && <CustomerDashboardStore inventory={inventory} categories={categories} cart={cart} setCart={setCart} allOrders={allOrders} uiCard={uiCard} uiInput={uiInput} uiBtnPrimary={uiBtnPrimary} uiInnerPanel={uiInnerPanel} triggerToast={triggerToast} />}
-                      {activeTab === 'add_funds' && <CustomerDashboardFunds user={user} db={db} appId={appId} triggerToast={triggerToast} bankSettings={bankSettings} uiCard={uiCard} uiInput={uiInput} uiBtnPrimary={uiBtnPrimary} uiBtnSecondary={uiBtnSecondary} uiInnerPanel={uiInnerPanel} />}
-                      {activeTab === 'my_accounts' && <CustomerDashboardVault purchases={purchases} db={db} appId={appId} triggerToast={triggerToast} uiCard={uiCard} uiBtnPrimary={uiBtnPrimary} uiInnerPanel={uiInnerPanel} />}
+                      {activeTab === 'add_funds' && <CustomerDashboardFunds user={user} db={db} appId={appId} triggerToast={triggerToast} addNotification={addNotification} bankSettings={bankSettings} uiCard={uiCard} uiInput={uiInput} uiBtnPrimary={uiBtnPrimary} uiBtnSecondary={uiBtnSecondary} uiInnerPanel={uiInnerPanel} />}
+                      {activeTab === 'my_accounts' && <CustomerDashboardVault purchases={purchases} triggerToast={triggerToast} db={db} appId={appId} uiCard={uiCard} uiBtnPrimary={uiBtnPrimary} uiInnerPanel={uiInnerPanel} />}
                       {activeTab === 'profile' && <CustomerDashboardProfile user={user} balance={currentUserBalance} tier={currentUserTier} userInfo={usersDB[user.email]} allOrders={allOrders} deposits={deposits} purchases={purchases} tickets={tickets.filter(t => t.email === user.email)} db={db} appId={appId} featureSettings={featureSettings} triggerToast={triggerToast} uiCard={uiCard} uiInput={uiInput} uiBtnPrimary={uiBtnPrimary} uiBtnSecondary={uiBtnSecondary} uiInnerPanel={uiInnerPanel} />}
                   </>
                 )}
               </main>
 
-              {showCart && user.role === 'customer' && <CartModal cart={cart} setCart={setCart} setShowCart={setShowCart} balance={currentUserBalance} user={user} promoSettings={promoSettings} triggerToast={triggerToast} uiCard={uiCard} uiBtnPrimary={uiBtnPrimary} uiInnerPanel={uiInnerPanel} />}
+              {showCart && user.role === 'customer' && <CartModal cart={cart} setCart={setCart} setShowCart={setShowCart} balance={currentUserBalance} user={user} promoSettings={promoSettings} triggerToast={triggerToast} addNotification={addNotification} db={db} appId={appId} uiCard={uiCard} uiBtnPrimary={uiBtnPrimary} uiInnerPanel={uiInnerPanel} />}
             </div>
           );
         }
@@ -529,6 +550,7 @@
               } catch (e) { triggerToast("Network Error."); } finally { setIsSmsLoading(false); }
           };
 
+          // Actual Executions
           const performCancel = async (orderId, priceToRefund) => {
               try {
                   const token = await getAuthToken();
@@ -826,7 +848,7 @@
         // ==========================================
         // FUNDS MODULE
         // ==========================================
-        function CustomerDashboardFunds({ user, db, appId, triggerToast, bankSettings, uiCard, uiInput, uiBtnPrimary, uiBtnSecondary, uiInnerPanel }) {
+        function CustomerDashboardFunds({ user, db, appId, triggerToast, addNotification, bankSettings, uiCard, uiInput, uiBtnPrimary, uiBtnSecondary, uiInnerPanel }) {
           const [autoPay, setAutoPay] = useState({ active: false, amount: 0, time: 900, checking: false, invoiceId: '' });
           const TRON_ADDRESS = 'TELRyMwDmdKzBRb7Uaw3zNvphrc8V3D5Mj';
           const BTC_ADDRESS = '1EgVdWyoCsWepg3TAowifuhoR81Lm1xEUd';
@@ -873,6 +895,7 @@
                               setAutoPay(prev => ({...prev, checking: false})); 
                               triggerToast(`Funds Verified! $${autoPay.amount} credited.`);
                               setAutoPay({ active: false, amount: 0, cryptoAmount: 0, time: 0, checking: false, invoiceId: '' });
+                              addNotification('Deposit Successful', `$${autoPay.amount} secured in vault.`);
                           }
                       } catch (err) {}
                   }, 15000); 
@@ -886,7 +909,7 @@
                   }
               }, 1000);
               return () => { clearInterval(interval); clearInterval(timer); };
-          }, [autoPay, db, appId, user.email]);
+          }, [autoPay, db, appId, user.email, addNotification]);
 
           const copyToClipboard = (text) => {
              if (navigator.clipboard) navigator.clipboard.writeText(text).then(() => triggerToast("Address Secured!"));
@@ -1239,7 +1262,7 @@
         // ==========================================
         // CART MODAL
         // ==========================================
-        function CartModal({ cart, setCart, setShowCart, balance, user, promoSettings, triggerToast, uiCard, uiBtnPrimary, uiInnerPanel }) {
+        function CartModal({ cart, setCart, setShowCart, balance, user, promoSettings, triggerToast, addNotification, db, appId, uiCard, uiBtnPrimary, uiInnerPanel }) {
             const [isCheckingOut, setIsCheckingOut] = useState(false);
             const totalAmount = cart.reduce((sum, item) => sum + item.price, 0);
             const discountAmount = promoSettings?.isActive ? (totalAmount * (promoSettings.discount / 100)) : 0;
@@ -1259,6 +1282,7 @@
                     const result = await response.json();
                     if (result.success) {
                         triggerToast(`Secure execution: ${cart.length} asset(s) deployed.`);
+                        addNotification("Purchase Complete", `You bought ${cart.length} item(s).`);
                         setCart([]); setShowCart(false);
                     } else triggerToast("Error: " + result.message);
                 } catch(e) { clearTimeout(serverWakeTimer); triggerToast("Secure execution failed. Network anomaly detected."); } 
@@ -1310,7 +1334,7 @@
         // ==========================================
         // ADMIN DASHBOARD
         // ==========================================
-        function AdminDashboard({ inventory, orders, deposits, categories, usersDB, db, appId, promoSettings, tickets, featureSettings, bankSettings, smsSettings, auth, uiCard, uiInput, uiBtnPrimary, uiBtnSecondary, uiBtnAction, uiInnerPanel, triggerToast, activeTab }) {
+        function AdminDashboard({ inventory, orders, deposits, categories, usersDB, db, appId, promoSettings, globalNotice, tickets, featureSettings, bankSettings, smsSettings, auth, user, uiCard, uiInput, uiBtnPrimary, uiBtnSecondary, uiBtnAction, uiInnerPanel, triggerToast, activeTab }) {
           const [uploadCategory, setUploadCategory] = useState('new');
           const [uploadText, setUploadText] = useState('');
           const [customerSearch, setCustomerSearch] = useState('');
@@ -1318,8 +1342,15 @@
           const [promoInput, setPromoInput] = useState('');
           const [discountInput, setDiscountInput] = useState(0);
           const [promoActive, setPromoActive] = useState(false);
+          const [noticeInput, setNoticeInput] = useState('');
           const [nairaRateInput, setNairaRateInput] = useState(1500);
           
+          const [flutterwaveKeyInput, setFlutterwaveKeyInput] = useState('');
+          const [flutterwaveActiveInput, setFlutterwaveActiveInput] = useState(false);
+          
+          const [dailyRewardActive, setDailyRewardActive] = useState(false);
+          const [referralActive, setReferralActive] = useState(false);
+
           const [smsMarkupInput, setSmsMarkupInput] = useState(1.00);
           const [smsActiveInput, setSmsActiveInput] = useState(true);
 
@@ -1350,12 +1381,23 @@
 
           useEffect(() => {
             if (promoSettings) { setPromoInput(promoSettings.code || ''); setDiscountInput(promoSettings.discount || 0); setPromoActive(promoSettings.isActive || false); }
-            if (bankSettings) { setNairaRateInput(bankSettings.nairaRate || 1500); }
-            if (smsSettings) { setSmsMarkupInput(smsSettings.markup !== undefined ? smsSettings.markup : 1.00); setSmsActiveInput(smsSettings.active ?? true); }
-          }, [promoSettings, bankSettings, smsSettings]);
+            if (globalNotice) setNoticeInput(globalNotice);
+            if (featureSettings) { setDailyRewardActive(featureSettings.dailyReward || false); setReferralActive(featureSettings.referral || false); }
+            if (bankSettings) { 
+                setNairaRateInput(bankSettings.nairaRate || 1500); 
+                setFlutterwaveKeyInput(bankSettings.flutterwaveKey || '');
+                setFlutterwaveActiveInput(bankSettings.flutterwaveActive || false);
+            }
+            if (smsSettings) {
+                setSmsMarkupInput(smsSettings.markup !== undefined ? smsSettings.markup : 1.00);
+                setSmsActiveInput(smsSettings.active ?? true);
+            }
+          }, [promoSettings, globalNotice, featureSettings, bankSettings, smsSettings]);
 
           const pendingDeposits = deposits.filter(d => d.status === 'Pending' || d.status === 'Verifying...' || d.status === 'Pending Review' || d.status === 'Awaiting Payment');
+          const pendingTickets = (tickets || []).filter(t => t.status === 'Open');
           const totalSales = orders.filter(o => o.status === 'Completed').reduce((sum, order) => sum + Number(order.total || 0), 0);
+          
           const filteredUsers = Object.keys(usersDB).filter(email => email.toLowerCase().includes(customerSearch.toLowerCase()));
 
           const handleUploadAccounts = async (e) => {
@@ -1395,6 +1437,11 @@
             } catch (err) { triggerToast('Connection failed.'); }
           };
 
+          const sendResetLinkToUser = async (userEmail) => {
+              try { await sendPasswordResetEmail(auth, userEmail); triggerToast(`Password reset link sent to ${userEmail}`); } 
+              catch (err) { triggerToast('Failed to send reset link.'); }
+          };
+
           const handleManualApprove = async (depId) => {
             const dep = deposits.find(d => d.id === depId);
             if(!dep) return;
@@ -1406,11 +1453,21 @@
             } catch (err) { triggerToast("Action failed."); }
           };
 
+          const handleResolveTicket = async (ticketId) => {
+            try { await updateDoc(doc(db, 'artifacts', appId, 'public', 'data', 'Store_Tickets', ticketId), { status: 'Resolved' }); triggerToast('Ticket resolved.'); } 
+            catch(err) { triggerToast('Failed to close ticket.'); }
+          };
+
           const handleSaveSettings = async (e) => {
             e.preventDefault();
             try {
+              await setDoc(doc(db, 'artifacts', appId, 'public', 'data', 'Store_Settings', 'PromoCode'), { code: String(promoInput).toUpperCase(), discount: parseFloat(discountInput), isActive: promoActive });
+              await setDoc(doc(db, 'artifacts', appId, 'public', 'data', 'Store_Settings', 'Notice'), { text: noticeInput });
+              await setDoc(doc(db, 'artifacts', appId, 'public', 'data', 'Store_Settings', 'Features'), { dailyReward: dailyRewardActive, referral: referralActive });
               await setDoc(doc(db, 'artifacts', appId, 'public', 'data', 'Store_Settings', 'SMS'), { markup: parseFloat(smsMarkupInput), active: smsActiveInput });
-              await setDoc(doc(db, 'artifacts', appId, 'public', 'data', 'Store_Settings', 'Bank'), { nairaRate: parseFloat(nairaRateInput) || 1500 });
+              await setDoc(doc(db, 'artifacts', appId, 'public', 'data', 'Store_Settings', 'Bank'), { 
+                  nairaRate: parseFloat(nairaRateInput) || 1500, flutterwaveKey: flutterwaveKeyInput, flutterwaveActive: flutterwaveActiveInput
+              });
               triggerToast("Global configuration updated.");
             } catch (error) { triggerToast("Sync error."); }
           };
