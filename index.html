@@ -82,8 +82,8 @@
         
         .custom-scrollbar::-webkit-scrollbar { width: 6px; }
         .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
-        .custom-scrollbar::-webkit-scrollbar-thumb { background-color: rgba(245, 158, 11, 0.4); border-radius: 10px; }
-        .custom-scrollbar::-webkit-scrollbar-thumb:hover { background-color: rgba(245, 158, 11, 0.8); }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background-color: rgba(139, 92, 246, 0.4); border-radius: 10px; }
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover { background-color: rgba(139, 92, 246, 0.8); }
     </style>
 </head>
 <body class="antialiased bg-[#0f172a] text-white transition-colors duration-500">
@@ -643,7 +643,7 @@
                         <CustomerDashboardStore inventory={inventory} categories={categories} cart={cart} setCart={setCart} allOrders={allOrders} uiCard={uiCard} uiInput={uiInput} uiBtnPrimary={uiBtnPrimary} uiInnerPanel={uiInnerPanel} triggerToast={triggerToast} />
                       )}
                       {activeTab === 'add_funds' && (
-                        <CustomerDashboardFunds user={user} db={db} appId={appId} triggerToast={triggerToast} addNotification={addNotification} bankSettings={bankSettings} uiCard={uiCard} uiInput={uiInput} uiBtnPrimary={uiBtnPrimary} uiBtnSecondary={uiInnerPanel} uiInnerPanel={uiInnerPanel} />
+                        <CustomerDashboardFunds user={user} db={db} appId={appId} triggerToast={triggerToast} addNotification={addNotification} bankSettings={bankSettings} uiCard={uiCard} uiInput={uiInput} uiBtnPrimary={uiBtnPrimary} uiBtnSecondary={uiBtnSecondary} uiInnerPanel={uiInnerPanel} />
                       )}
                       {activeTab === 'my_accounts' && (
                         <CustomerDashboardVault user={user} purchases={purchases} triggerToast={triggerToast} db={db} appId={appId} uiCard={uiCard} uiBtnPrimary={uiBtnPrimary} uiInnerPanel={uiInnerPanel} />
@@ -667,7 +667,7 @@
         }
 
         // ==========================================
-        // 🌟 SMS MODULE (LIVE MULTI-TIER PRICES) 🌟
+        // 🌟 SMS MODULE (STOCK COMPLETELY HIDDEN) 🌟
         // ==========================================
         function CustomerDashboardSMS({ user, balance, triggerToast, smsSettings, uiCard, uiInput, uiBtnPrimary, uiInnerPanel }) {
           const [isSmsLoading, setIsSmsLoading] = useState(false);
@@ -744,7 +744,6 @@
               }
           }, [selectedSmsService, smsCountry]);
 
-          // Safe mapping for dropdowns
           const filteredApps = Array.isArray(availableServices) ? availableServices.filter(app => (app?.name || '').toLowerCase().includes((appSearch || '').toLowerCase())) : [];
 
           useEffect(() => {
@@ -763,6 +762,8 @@
           
           const finalBuyPrice = selectedTier?.priceWithMarkup ? parseFloat(selectedTier.priceWithMarkup) : fallbackPrice;
           const exactMaxPrice = selectedTier?.originalPrice ? parseFloat(selectedTier.originalPrice) : null;
+          
+          // 🎯 Sending exactProviderId correctly to backend
           const exactProviderId = selectedTier?.providerId || null;
 
           const buySmsNumber = async () => {
@@ -879,7 +880,7 @@
                        <div className="flex flex-col sm:flex-row gap-4 items-center">
                            <div className="relative w-full">
                                <div onClick={() => setIsAppDropdownOpen(!isAppDropdownOpen)} className={uiInput + " h-14 pl-12 pr-10 flex items-center justify-between cursor-pointer font-bold text-slate-800 dark:text-white border-2 " + (isAppDropdownOpen ? "border-violet-500/50 ring-2 ring-violet-500/20" : "")}>
-                                   <span className="truncate">{isFetchingServices ? 'Syncing live prices...' : (currentService ? `${(currentService?.name || '').split(' [')[0]} (Stock: ${currentService?.count || 0})` : 'No apps available')}</span>
+                                   <span className="truncate">{isFetchingServices ? 'Syncing live prices...' : (currentService ? `${(currentService?.name || '').split(' [')[0]}` : 'No apps available')}</span>
                                    <Smartphone className="w-5 h-5 text-violet-500 absolute left-4"/>
                                    <ChevronDown className={`w-4 h-4 text-slate-400 absolute right-4 transition-transform ${isAppDropdownOpen ? 'rotate-180' : ''}`}/>
                                </div>
@@ -898,8 +899,7 @@
                                                        const cleanName = (s?.name || '').split(' [')[0];
                                                        return (
                                                            <div key={s.code} onClick={() => { setSelectedSmsService(s.code); setIsAppDropdownOpen(false); setAppSearch(''); }} className={`px-4 py-3 cursor-pointer rounded-lg text-sm font-semibold transition-colors flex justify-between items-center ${selectedSmsService === s.code ? 'bg-violet-50 dark:bg-violet-500/10 text-violet-600 dark:text-violet-400' : 'text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-white/5'}`}>
-                                                               <div className="flex flex-col"><span>{cleanName}</span><span className="text-[10px] mt-0.5 text-emerald-500 dark:text-emerald-400">Stock: {s?.count || 0}</span></div>
-                                                               <span className="text-xs font-bold text-emerald-600 dark:text-emerald-400">${Number(s?.finalPrice || 0).toFixed(2)}</span>
+                                                               <div className="flex flex-col"><span>{cleanName}</span></div>
                                                            </div>
                                                        );
                                                    })
@@ -911,7 +911,7 @@
                            </div>
                            
                            {/* --- LIVE MULTI-TIER PRICE DROPDOWN --- */}
-                           <div className="relative bg-white dark:bg-brand-darkBg border border-slate-200 dark:border-white/10 px-4 rounded-2xl text-slate-900 dark:text-white font-black text-lg h-14 flex items-center justify-center w-full sm:w-auto shadow-inner shrink-0 min-w-[200px]">
+                           <div className="relative bg-white dark:bg-brand-darkBg border border-slate-200 dark:border-white/10 px-4 rounded-2xl text-slate-900 dark:text-white font-black text-lg h-14 flex items-center justify-center w-full sm:w-auto shadow-inner shrink-0 min-w-[120px]">
                                <select 
                                    value={selectedTier?.originalPrice ? String(selectedTier.originalPrice) : ''}
                                    onChange={(e) => {
@@ -922,16 +922,16 @@
                                    className="w-full bg-transparent outline-none appearance-none cursor-pointer text-center pr-6 disabled:opacity-50 disabled:cursor-not-allowed"
                                >
                                    {isTiersLoading ? (
-                                       <option value="" className="text-sm bg-slate-100 dark:bg-slate-800 text-slate-900 dark:text-white">Loading...</option>
+                                       <option value="" className="text-sm bg-slate-100 dark:bg-slate-800 text-slate-900 dark:text-white">...</option>
                                    ) : (Array.isArray(priceTiers) && priceTiers.length > 0) ? (
                                        priceTiers.map((tier, idx) => (
                                            <option key={idx} value={tier?.originalPrice ? String(tier.originalPrice) : ''} className="text-sm bg-slate-100 dark:bg-slate-800 text-slate-900 dark:text-white">
-                                               ${Number(tier?.priceWithMarkup || 0).toFixed(2)} (Stock: {tier?.quantity || 0})
+                                               ${Number(tier?.priceWithMarkup || 0).toFixed(2)}
                                            </option>
                                        ))
                                    ) : (
                                        <option value="" className="text-sm bg-slate-100 dark:bg-slate-800 text-slate-900 dark:text-white">
-                                           ${Number(fallbackPrice || 0).toFixed(2)} (Stock: {currentService?.count || 0})
+                                           ${Number(fallbackPrice || 0).toFixed(2)}
                                        </option>
                                    )}
                                </select>
