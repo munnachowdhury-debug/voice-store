@@ -39,7 +39,6 @@
     </script>
     
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;700;800&display=swap" rel="stylesheet">
-    
     <script async src="https://unpkg.com/es-module-shims@1.10.0/dist/es-module-shims.js"></script>
 
     <script type="importmap">
@@ -59,27 +58,10 @@
     <style>
         .scrollbar-hide::-webkit-scrollbar { display: none; }
         .scrollbar-hide { -ms-overflow-style: none; scrollbar-width: none; }
-        
-        body {
-            transition: background-color 0.5s ease, color 0.5s ease;
-            -webkit-user-select: none; -moz-user-select: none; -ms-user-select: none; user-select: none;
-            font-family: 'Inter', sans-serif;
-            overflow-x: hidden;
-            scroll-behavior: smooth;
-        }
-        
-        input, textarea, pre, select {
-            -webkit-user-select: text; -moz-user-select: text; -ms-user-select: text; user-select: text;
-        }
-
-        .btn-animate {
-            transition: transform 0.2s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.2s ease, filter 0.2s ease;
-        }
-        .btn-animate:active {
-            transform: translateY(2px) scale(0.98);
-            filter: brightness(0.9);
-        }
-        
+        body { transition: background-color 0.5s ease, color 0.5s ease; -webkit-user-select: none; -moz-user-select: none; -ms-user-select: none; user-select: none; font-family: 'Inter', sans-serif; overflow-x: hidden; scroll-behavior: smooth; }
+        input, textarea, pre, select { -webkit-user-select: text; -moz-user-select: text; -ms-user-select: text; user-select: text; }
+        .btn-animate { transition: transform 0.2s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.2s ease, filter 0.2s ease; }
+        .btn-animate:active { transform: translateY(2px) scale(0.98); filter: brightness(0.9); }
         .custom-scrollbar::-webkit-scrollbar { width: 6px; }
         .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
         .custom-scrollbar::-webkit-scrollbar-thumb { background-color: rgba(139, 92, 246, 0.4); border-radius: 10px; }
@@ -119,13 +101,7 @@
         const db = getFirestore(app);
         const appId = typeof window.__app_id !== 'undefined' ? window.__app_id : 'voice-store-real';
 
-        // 🛡️ SECURITY GUARD: GLOBAL TOKEN GETTER 🛡️
-        const getAuthToken = async () => {
-            if (auth.currentUser) {
-                return await auth.currentUser.getIdToken(true);
-            }
-            return null;
-        };
+        const getAuthToken = async () => { if (auth.currentUser) return await auth.currentUser.getIdToken(true); return null; };
 
         const PRODUCT_CATEGORIES = [
           { id: 'new', name: 'New Google Voice', description: 'Fresh account with recovery email. Ideal for personal use.', price: 5.00, icon: Package, color: 'text-violet-500 dark:text-violet-400' },
@@ -134,78 +110,12 @@
           { id: 'gv_bulk', name: 'Bulk Google Voice (10x)', description: 'Wholesale package of 10 fresh Google Voice accounts.', price: 45.00, icon: Users, color: 'text-yellow-500 dark:text-yellow-400' }
         ];
 
-        // 🌍 FULL GRIZZLY SMS COUNTRY LIST 🌍
-        const GRIZZLY_COUNTRIES_LIST = [
-          { id: '187', name: 'USA' }, { id: '16', name: 'United Kingdom' }, { id: '48', name: 'Netherlands' },
-          { id: '74', name: 'Afghanistan' }, { id: '155', name: 'Albania' }, { id: '58', name: 'Algeria' },
-          { id: '10161', name: 'American Samoa' }, { id: '1062', name: 'Andorra' }, { id: '76', name: 'Angola' },
-          { id: '181', name: 'Anguilla' }, { id: '169', name: 'Antigua and Barbuda' }, { id: '39', name: 'Argentina' },
-          { id: '148', name: 'Armenia' }, { id: '179', name: 'Aruba' }, { id: '175', name: 'Australia' },
-          { id: '50', name: 'Austria' }, { id: '35', name: 'Azerbaijan' }, { id: '122', name: 'Bahamas' },
-          { id: '145', name: 'Bahrain' }, { id: '60', name: 'Bangladesh' }, { id: '118', name: 'Barbados' },
-          { id: '51', name: 'Belarus' }, { id: '82', name: 'Belgium' }, { id: '124', name: 'Belize' },
-          { id: '1003', name: 'Bermuda' }, { id: '120', name: 'Benin' }, { id: '158', name: 'Bhutan' },
-          { id: '92', name: 'Bolivia' }, { id: '108', name: 'Bosnia and Herzegovina' }, { id: '123', name: 'Botswana' },
-          { id: '73', name: 'Brazil' }, { id: '121', name: 'Brunei Darussalam' }, { id: '83', name: 'Bulgaria' },
-          { id: '152', name: 'Burkina Faso' }, { id: '119', name: 'Burundi' }, { id: '24', name: 'Cambodia' },
-          { id: '41', name: 'Cameroon' }, { id: '36', name: 'Canada' }, { id: '186', name: 'Cape Verde' },
-          { id: '170', name: 'Cayman islands' }, { id: '125', name: 'Central African Republic' }, { id: '42', name: 'Chad' },
-          { id: '151', name: 'Chile' }, { id: '3', name: 'China' }, { id: '33', name: 'Colombia' },
-          { id: '133', name: 'Comoros' }, { id: '93', name: 'Costa Rica' }, { id: '45', name: 'Croatia' },
-          { id: '113', name: 'Cuba' }, { id: '77', name: 'Cyprus' }, { id: '63', name: 'Czech Republic' },
-          { id: '18', name: 'DR Congo' }, { id: '172', name: 'Denmark' }, { id: '168', name: 'Djibouti' },
-          { id: '126', name: 'Dominica' }, { id: '109', name: 'Dominican Republic' }, { id: '105', name: 'Ecuador' },
-          { id: '21', name: 'Egypt' }, { id: '167', name: 'Equatorial Guinea' }, { id: '176', name: 'Eritrea' },
-          { id: '34', name: 'Estonia' }, { id: '71', name: 'Ethiopia' }, { id: '163', name: 'Finland' },
-          { id: '78', name: 'France' }, { id: '162', name: 'French Guiana' }, { id: '154', name: 'Gabon' },
-          { id: '28', name: 'Gambia' }, { id: '128', name: 'Georgia' }, { id: '43', name: 'Germany' },
-          { id: '38', name: 'Ghana' }, { id: '201', name: 'Gibraltar' }, { id: '129', name: 'Greece' },
-          { id: '1008', name: 'Greenland' }, { id: '127', name: 'Grenada' }, { id: '160', name: 'Guadeloupe' },
-          { id: '94', name: 'Guatemala' }, { id: '68', name: 'Guinea' }, { id: '130', name: 'Guinea-Bissau' },
-          { id: '131', name: 'Guyana' }, { id: '26', name: 'Haiti' }, { id: '88', name: 'Honduras' },
-          { id: '14', name: 'Hong Kong' }, { id: '84', name: 'Hungary' }, { id: '132', name: 'Iceland' },
-          { id: '22', name: 'India' }, { id: '6', name: 'Indonesia' }, { id: '10016', name: 'Iran' },
-          { id: '47', name: 'Iraq' }, { id: '23', name: 'Ireland' }, { id: '13', name: 'Israel' },
-          { id: '86', name: 'Italy' }, { id: '27', name: 'Ivory Coast' }, { id: '103', name: 'Jamaica' },
-          { id: '182', name: 'Japan' }, { id: '116', name: 'Jordan' }, { id: '2', name: 'Kazakhstan' },
-          { id: '8', name: 'Kenya' }, { id: '203', name: 'Kosovo' }, { id: '100', name: 'Kuwait' },
-          { id: '11', name: 'Kyrgyzstan' }, { id: '25', name: 'Laos' }, { id: '49', name: 'Latvia' },
-          { id: '153', name: 'Lebanon' }, { id: '136', name: 'Lesotho' }, { id: '135', name: 'Liberia' },
-          { id: '102', name: 'Libya' }, { id: '10348', name: 'Liechtenstein' }, { id: '44', name: 'Lithuania' },
-          { id: '165', name: 'Luxembourg' }, { id: '20', name: 'Macao' }, { id: '17', name: 'Madagascar' },
-          { id: '137', name: 'Malawi' }, { id: '7', name: 'Malaysia' }, { id: '159', name: 'Maldives' },
-          { id: '69', name: 'Mali' }, { id: '199', name: 'Malta' }, { id: '114', name: 'Mauritania' },
-          { id: '157', name: 'Mauritius' }, { id: '54', name: 'Mexico' }, { id: '85', name: 'Moldova' },
-          { id: '144', name: 'Monaco' }, { id: '72', name: 'Mongolia' }, { id: '171', name: 'Montenegro' },
-          { id: '180', name: 'Montserrat' }, { id: '37', name: 'Morocco' }, { id: '80', name: 'Mozambique' },
-          { id: '5', name: 'Myanmar' }, { id: '138', name: 'Namibia' }, { id: '81', name: 'Nepal' },
-          { id: '48', name: 'Netherlands' }, { id: '185', name: 'New Caledonia' }, { id: '67', name: 'New Zealand' },
-          { id: '90', name: 'Nicaragua' }, { id: '139', name: 'Niger' }, { id: '19', name: 'Nigeria' },
-          { id: '204', name: 'Niue' }, { id: '183', name: 'North Macedonia' }, { id: '174', name: 'Norway' },
-          { id: '107', name: 'Oman' }, { id: '66', name: 'Pakistan' }, { id: '188', name: 'Palestine' },
-          { id: '112', name: 'Panama' }, { id: '79', name: 'Papua New Guinea' }, { id: '87', name: 'Paraguay' },
-          { id: '65', name: 'Peru' }, { id: '4', name: 'Philippines' }, { id: '15', name: 'Poland' },
-          { id: '117', name: 'Portugal' }, { id: '97', name: 'Puerto Rico' }, { id: '111', name: 'Qatar' },
-          { id: '150', name: 'Republic of the Congo' }, { id: '146', name: 'Reunion' }, { id: '32', name: 'Romania' },
-          { id: '140', name: 'Rwanda' }, { id: '134', name: 'Saint Kitts and Nevis' }, { id: '164', name: 'Saint Lucia' },
-          { id: '166', name: 'Saint Vincent' }, { id: '101', name: 'Salvador' }, { id: '10231', name: 'Samoa' },
-          { id: '178', name: 'Sao Tome and Principe' }, { id: '53', name: 'Saudi Arabia' }, { id: '61', name: 'Senegal' },
-          { id: '29', name: 'Serbia' }, { id: '184', name: 'Seychelles' }, { id: '115', name: 'Sierra Leone' },
-          { id: '10351', name: 'Singapore' }, { id: '10349', name: 'Sint Maarten' }, { id: '141', name: 'Slovakia' },
-          { id: '59', name: 'Slovenia' }, { id: '149', name: 'Somalia' }, { id: '31', name: 'South Africa' },
-          { id: '10350', name: 'South Korea' }, { id: '177', name: 'South Sudan' }, { id: '56', name: 'Spain' },
-          { id: '64', name: 'Sri Lanka' }, { id: '142', name: 'Suriname' }, { id: '106', name: 'Swaziland' },
-          { id: '46', name: 'Sweden' }, { id: '173', name: 'Switzerland' }, { id: '110', name: 'Syria' },
-          { id: '55', name: 'Taiwan' }, { id: '143', name: 'Tajikistan' }, { id: '9', name: 'Tanzania' },
-          { id: '52', name: 'Thailand' }, { id: '91', name: 'Timor-Leste' }, { id: '99', name: 'Togo' },
-          { id: '10227', name: 'Tonga' }, { id: '104', name: 'Trinidad and Tobago' }, { id: '89', name: 'Tunisia' },
-          { id: '62', name: 'Turkey' }, { id: '161', name: 'Turkmenistan' },
-          { id: '12', name: 'USA (virtual)' }, { id: '75', name: 'Uganda' }, { id: '1', name: 'Ukraine' },
-          { id: '95', name: 'United Arab Emirates' }, { id: '156', name: 'Uruguay' },
-          { id: '40', name: 'Uzbekistan' }, { id: '1007', name: 'Vanuatu' }, { id: '70', name: 'Venezuela' },
-          { id: '10', name: 'Vietnam' }, { id: '30', name: 'Yemen' }, { id: '147', name: 'Zambia' },
-          { id: '96', name: 'Zimbabwe' }
-        ].sort((a,b) => a.name.localeCompare(b.name));
+        // 🌍 JUICYSMS ONLY HAS 3 COUNTRIES 🌍
+        const COUNTRIES_LIST = [
+          { id: 'NL', name: 'Netherlands' },
+          { id: 'USA', name: 'United States' },
+          { id: 'UK', name: 'United Kingdom' }
+        ];
 
         const CUSTOMER_TABS = [
             { id: 'sms', label: 'Live SMS', icon: Smartphone },
@@ -255,7 +165,6 @@
 
         const SplashScreen = () => {
           const text = "Voice Store".split("");
-          
           const animations = text.map((char, i) => {
               if (char === " ") return null;
               const side = Math.floor(Math.random() * 4);
@@ -296,14 +205,7 @@
                     {text.map((char, i) => {
                         if (char === " ") return <span key={i} className="w-3 sm:w-6"></span>;
                         return (
-                          <span key={i} className={`char-anim-${i}`} style={{
-                              background: 'linear-gradient(to right bottom, #c084fc, #22d3ee)',
-                              WebkitBackgroundClip: 'text',
-                              WebkitTextFillColor: 'transparent',
-                              filter: 'drop-shadow(0px 0px 15px rgba(139,92,246,0.6))'
-                          }}>
-                              {char}
-                          </span>
+                          <span key={i} className={`char-anim-${i}`} style={{ background: 'linear-gradient(to right bottom, #c084fc, #22d3ee)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', filter: 'drop-shadow(0px 0px 15px rgba(139,92,246,0.6))' }}>{char}</span>
                         )
                     })}
                   </h1>
@@ -375,11 +277,9 @@
                  } catch(e) {}
 
                  if (firebaseUser.email.toLowerCase() === currentAdminEmail.toLowerCase()) {
-                    setUser({ email: firebaseUser.email, role: 'admin' });
-                    setActiveTab('inventory');
+                    setUser({ email: firebaseUser.email, role: 'admin' }); setActiveTab('inventory');
                  } else if (firebaseUser.emailVerified || true) {
-                    setUser({ email: firebaseUser.email, role: 'customer' });
-                    setActiveTab('sms');
+                    setUser({ email: firebaseUser.email, role: 'customer' }); setActiveTab('sms');
                  } else { setUser(null); }
               } else { setUser(null); }
               setIsAuthChecking(false);
@@ -391,7 +291,6 @@
             if (!user) return;
             const errLog = (e) => { if (e.code !== 'permission-denied') console.error(e); };
             const unsubs = [];
-            
             unsubs.push(onSnapshot(doc(db, 'artifacts', appId, 'public', 'data', 'Store_Inventory', 'Stock'), (snap) => { if (snap.exists()) setInventory(snap.data()); }, errLog));
             unsubs.push(onSnapshot(doc(db, 'artifacts', appId, 'public', 'data', 'Store_Settings', 'PromoCode'), (snap) => { if (snap.exists()) setPromoSettings(snap.data()); }, errLog));
             unsubs.push(onSnapshot(doc(db, 'artifacts', appId, 'public', 'data', 'Store_Settings', 'Notice'), (snap) => { if (snap.exists()) setGlobalNotice(snap.data().text); }, errLog));
@@ -401,40 +300,18 @@
             unsubs.push(onSnapshot(doc(db, 'artifacts', appId, 'public', 'data', 'Store_Settings', 'Products'), (snap) => { if (snap.exists() && snap.data().list) { const fetchedProducts = snap.data().list; const mergedCategories = fetchedProducts.map(fetchedItem => { const originalItem = PRODUCT_CATEGORIES.find(p => p.id === fetchedItem.id); return { ...fetchedItem, icon: originalItem ? originalItem.icon : Package }; }); setCategories(mergedCategories); } }, errLog));
 
             if (user.role === 'admin') {
-                unsubs.push(onSnapshot(collection(db, 'artifacts', appId, 'public', 'data', 'Store_Users'), (snap) => {
-                  const u = {}; snap.forEach(d => u[d.id] = d.data()); setUsersDB(u);
-                }, errLog));
+                unsubs.push(onSnapshot(collection(db, 'artifacts', appId, 'public', 'data', 'Store_Users'), (snap) => { const u = {}; snap.forEach(d => u[d.id] = d.data()); setUsersDB(u); }, errLog));
             } else {
-                unsubs.push(onSnapshot(doc(db, 'artifacts', appId, 'public', 'data', 'Store_Users', user.email), (docSnap) => {
-                    if (docSnap.exists()) setUsersDB(prev => ({...prev, [user.email]: docSnap.data()}));
-                }, errLog));
+                unsubs.push(onSnapshot(doc(db, 'artifacts', appId, 'public', 'data', 'Store_Users', user.email), (docSnap) => { if (docSnap.exists()) setUsersDB(prev => ({...prev, [user.email]: docSnap.data()})); }, errLog));
             }
 
-            unsubs.push(onSnapshot(collection(db, 'artifacts', appId, 'public', 'data', 'Store_Orders'), (snap) => {
-              const o = []; snap.forEach(d => o.push({ id: d.id, ...d.data() })); setAllOrders(o.sort((a,b) => new Date(b.date) - new Date(a.date)));
-            }, errLog));
-            unsubs.push(onSnapshot(collection(db, 'artifacts', appId, 'public', 'data', 'Store_Deposits'), (snap) => {
-              const dep = []; snap.forEach(d => dep.push({ id: d.id, ...d.data() })); setDeposits(dep.sort((a,b) => new Date(b.date) - new Date(a.date)));
-            }, errLog));
-            unsubs.push(onSnapshot(collection(db, 'artifacts', appId, 'public', 'data', 'Store_Purchases'), (snap) => {
-              const p = []; snap.forEach(d => p.push({ id: d.id, ...d.data() })); setPurchases(p.sort((a,b) => new Date(b.date) - new Date(a.date)));
-            }, errLog));
-            unsubs.push(onSnapshot(collection(db, 'artifacts', appId, 'public', 'data', 'Store_Tickets'), (snap) => {
-              const t = []; snap.forEach(d => t.push({ id: d.id, ...d.data() })); setTickets(t.sort((a,b) => new Date(b.date) - new Date(a.date)));
-            }, errLog));
+            unsubs.push(onSnapshot(collection(db, 'artifacts', appId, 'public', 'data', 'Store_Orders'), (snap) => { const o = []; snap.forEach(d => o.push({ id: d.id, ...d.data() })); setAllOrders(o.sort((a,b) => new Date(b.date) - new Date(a.date))); }, errLog));
+            unsubs.push(onSnapshot(collection(db, 'artifacts', appId, 'public', 'data', 'Store_Deposits'), (snap) => { const dep = []; snap.forEach(d => dep.push({ id: d.id, ...d.data() })); setDeposits(dep.sort((a,b) => new Date(b.date) - new Date(a.date))); }, errLog));
+            unsubs.push(onSnapshot(collection(db, 'artifacts', appId, 'public', 'data', 'Store_Purchases'), (snap) => { const p = []; snap.forEach(d => p.push({ id: d.id, ...d.data() })); setPurchases(p.sort((a,b) => new Date(b.date) - new Date(a.date))); }, errLog));
+            unsubs.push(onSnapshot(collection(db, 'artifacts', appId, 'public', 'data', 'Store_Tickets'), (snap) => { const t = []; snap.forEach(d => t.push({ id: d.id, ...d.data() })); setTickets(t.sort((a,b) => new Date(b.date) - new Date(a.date))); }, errLog));
             
             return () => unsubs.forEach(unsub => unsub());
           }, [user]);
-
-          const finalizeLogin = async (identifier, role, password = '') => {
-            if (role === 'admin') return; 
-            try {
-              const userRef = doc(db, 'artifacts', appId, 'public', 'data', 'Store_Users', identifier);
-              const snap = await getDoc(userRef);
-              if (!snap.exists()) await setDoc(userRef, { password: password, balance: 0, totalSpent: 0, joined: new Date().toISOString(), lastBonusDate: '' });
-              else if (password !== '') await updateDoc(userRef, { password: password });
-            } catch (err) {}
-          };
 
           const handleAuthSubmit = async (e) => {
             e.preventDefault(); setAuthError(''); setAuthSuccessMsg(''); setIsLoading(true);
@@ -444,24 +321,14 @@
             if (authMethod === 'admin') {
               const adminDocRef = doc(db, 'artifacts', appId, 'public', 'data', 'Store_Settings', 'AdminConfig');
               let currentAdminEmail = 'mdmunnachowdhury0003817@gmail.com'; 
-              try {
-                  const adminDoc = await getDoc(adminDocRef);
-                  if (adminDoc.exists()) currentAdminEmail = adminDoc.data().adminEmail || currentAdminEmail;
-              } catch (e) {}
+              try { const adminDoc = await getDoc(adminDocRef); if (adminDoc.exists()) currentAdminEmail = adminDoc.data().adminEmail || currentAdminEmail; } catch (e) {}
 
-              if (email.toLowerCase() !== currentAdminEmail.toLowerCase()) {
-                  setAuthError('Access Denied: Unauthorized Admin email.'); setIsLoading(false); return;
-              }
+              if (email.toLowerCase() !== currentAdminEmail.toLowerCase()) { setAuthError('Access Denied: Unauthorized Admin email.'); setIsLoading(false); return; }
 
-              try {
-                  await signInWithEmailAndPassword(auth, email, pwd);
-                  setAuthSuccessMsg('Admin Login successful!');
-              } catch (error) {
+              try { await signInWithEmailAndPassword(auth, email, pwd); setAuthSuccessMsg('Admin Login successful!'); } 
+              catch (error) {
                   if (error.code === 'auth/user-not-found' || error.code === 'auth/invalid-credential') {
-                      try {
-                          await createUserWithEmailAndPassword(auth, email, pwd);
-                          setAuthSuccessMsg('Admin Account Initialized!');
-                      } catch (createErr) { setAuthError(createErr.message); }
+                      try { await createUserWithEmailAndPassword(auth, email, pwd); setAuthSuccessMsg('Admin Account Initialized!'); } catch (createErr) { setAuthError(createErr.message); }
                   } else setAuthError('Login failed: ' + error.message);
               }
               setIsLoading(false); return;
@@ -471,52 +338,29 @@
               if (authMethod === 'signup') {
                 const userCredential = await createUserWithEmailAndPassword(auth, email, pwd);
                 await sendEmailVerification(userCredential.user);
-                
                 const userRef = doc(db, 'artifacts', appId, 'public', 'data', 'Store_Users', userCredential.user.email);
                 await setDoc(userRef, { password: pwd, balance: 0, totalSpent: 0, joined: new Date().toISOString(), lastBonusDate: '' });
-                
-                await auth.signOut(); 
-                setAuthSuccessMsg('Registration successful! Check email to verify.');
-                setAuthMethod('login'); 
+                await auth.signOut(); setAuthSuccessMsg('Registration successful! Check email to verify.'); setAuthMethod('login'); 
               } else {
                 const userCredential = await signInWithEmailAndPassword(auth, email, pwd);
-                if (!userCredential.user.emailVerified) {
-                   await auth.signOut(); setAuthError('Email not verified. Check inbox.');
-                   setIsLoading(false); return;
-                }
+                if (!userCredential.user.emailVerified) { await auth.signOut(); setAuthError('Email not verified. Check inbox.'); setIsLoading(false); return; }
                 setAuthSuccessMsg('Welcome back!');
               }
-            } catch (error) { setAuthError(error.message); }
-            finally { setIsLoading(false); }
+            } catch (error) { setAuthError(error.message); } finally { setIsLoading(false); }
           };
 
           const handleForgotPassword = async () => {
             if (!emailInput.trim()) { setAuthError('Enter your email to receive a password reset link.'); return; }
             setIsLoading(true);
-            try {
-              await sendPasswordResetEmail(auth, emailInput.trim());
-              setAuthError(''); setAuthSuccessMsg('Password reset link sent! Check your inbox.');
-            } catch (error) { setAuthError(error.message); } 
-            finally { setIsLoading(false); }
+            try { await sendPasswordResetEmail(auth, emailInput.trim()); setAuthError(''); setAuthSuccessMsg('Password reset link sent! Check your inbox.'); } catch (error) { setAuthError(error.message); } finally { setIsLoading(false); }
           };
 
-          const handleLogout = () => {
-            signOut(auth).then(() => {
-              setUser(null); setCart([]); setShowCart(false); setEmailInput(''); setPasswordInput('');
-            });
-          };
+          const handleLogout = () => { signOut(auth).then(() => { setUser(null); setCart([]); setShowCart(false); setEmailInput(''); setPasswordInput(''); }); };
 
-          const triggerToast = (msg) => {
-              const id = Date.now(); setToastData({ show: true, msg, id });
-              setTimeout(() => { setToastData(prev => prev.id === id ? { ...prev, show: false } : prev); }, 3500);
-          };
-
-          const addNotification = (title, text) => {
-            setNotifications(prev => [{ id: Date.now(), title, text, time: 'Just now' }, ...prev].slice(0, 5));
-          };
+          const triggerToast = (msg) => { const id = Date.now(); setToastData({ show: true, msg, id }); setTimeout(() => { setToastData(prev => prev.id === id ? { ...prev, show: false } : prev); }, 3500); };
+          const addNotification = (title, text) => { setNotifications(prev => [{ id: Date.now(), title, text, time: 'Just now' }, ...prev].slice(0, 5)); };
 
           if (showSplash) return <SplashScreen />;
-          
           if (isAuthChecking) return <div className="min-h-screen flex items-center justify-center bg-[#0f172a]"><RefreshCw className="w-8 h-8 text-violet-500 animate-spin"/></div>;
 
           if (!user) {
@@ -676,7 +520,7 @@
           const [isAppDropdownOpen, setIsAppDropdownOpen] = useState(false);
           const [appSearch, setAppSearch] = useState('');
           const [isFetchingServices, setIsFetchingServices] = useState(false);
-          const [smsCountry, setSmsCountry] = useState('187'); 
+          const [smsCountry, setSmsCountry] = useState('NL'); 
           
           const [priceTiers, setPriceTiers] = useState([]);
           const [selectedTier, setSelectedTier] = useState(null);
@@ -758,12 +602,8 @@
           }, [smsCountry, availableServices]);
 
           const currentService = (Array.isArray(availableServices) && availableServices.find(s => s?.code === selectedSmsService)) || null;
-          const fallbackPrice = currentService?.finalPrice ? parseFloat(currentService.finalPrice) : 0;
           
-          const finalBuyPrice = selectedTier?.priceWithMarkup ? parseFloat(selectedTier.priceWithMarkup) : fallbackPrice;
-          const exactMaxPrice = selectedTier?.originalPrice ? parseFloat(selectedTier.originalPrice) : null;
-          
-          // 🎯 Sending exactProviderId correctly to backend
+          const finalBuyPrice = selectedTier?.priceWithMarkup ? parseFloat(selectedTier.priceWithMarkup) : 0;
           const exactProviderId = selectedTier?.providerId || null;
 
           const buySmsNumber = async () => {
@@ -777,7 +617,7 @@
                   
                   const res = await fetch('https://voicestore-backend.onrender.com/api/juicy/getNumber', {
                       method: 'POST', headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
-                      body: JSON.stringify({ serviceId: currentService.code, countryId: smsCountry, maxPrice: exactMaxPrice, exactProviderId: exactProviderId }) 
+                      body: JSON.stringify({ serviceId: currentService.code, countryId: smsCountry }) 
                   });
                   const data = await res.json();
                   
@@ -869,7 +709,7 @@
                         <label className="block text-[10px] font-bold text-slate-500 dark:text-slate-400 mb-2.5 uppercase tracking-wider">Select Network Region</label>
                         <div className="relative">
                             <select value={smsCountry} onChange={e => setSmsCountry(e.target.value)} className={uiInput + " appearance-none cursor-pointer pr-10"}>
-                                {GRIZZLY_COUNTRIES_LIST.map(c => <option key={c.id} value={c.id} className="bg-slate-100 dark:bg-brand-darkBg text-slate-900 dark:text-white">{c.name}</option>)}
+                                {COUNTRIES_LIST.map(c => <option key={c.id} value={c.id} className="bg-slate-100 dark:bg-brand-darkBg text-slate-900 dark:text-white">{c.name}</option>)}
                             </select>
                             <ChevronDown className="w-5 h-5 text-slate-400 absolute right-4 top-3.5 pointer-events-none" />
                         </div>
@@ -910,7 +750,7 @@
                                )}
                            </div>
                            
-                           {/* --- LIVE MULTI-TIER PRICE DROPDOWN --- */}
+                           {/* --- LIVE MULTI-TIER PRICE DROPDOWN (STOCK HIDDEN) --- */}
                            <div className="relative bg-white dark:bg-brand-darkBg border border-slate-200 dark:border-white/10 px-4 rounded-2xl text-slate-900 dark:text-white font-black text-lg h-14 flex items-center justify-center w-full sm:w-auto shadow-inner shrink-0 min-w-[120px]">
                                <select 
                                    value={selectedTier?.originalPrice ? String(selectedTier.originalPrice) : ''}
@@ -931,7 +771,7 @@
                                        ))
                                    ) : (
                                        <option value="" className="text-sm bg-slate-100 dark:bg-slate-800 text-slate-900 dark:text-white">
-                                           ${Number(fallbackPrice || 0).toFixed(2)}
+                                           $0.00
                                        </option>
                                    )}
                                </select>
@@ -940,7 +780,7 @@
                        </div>
                     </div>
 
-                    <button onClick={buySmsNumber} disabled={isSmsLoading || !currentService || activeOrders.length > 0 || ((!priceTiers || priceTiers.length === 0) && fallbackPrice === 0)} className={uiBtnPrimary + " h-14 text-lg mt-6"}>
+                    <button onClick={buySmsNumber} disabled={isSmsLoading || !currentService || activeOrders.length > 0 || !selectedTier} className={uiBtnPrimary + " h-14 text-lg mt-6"}>
                         {activeOrders.length > 0 ? <span className="flex items-center gap-2"><StopCircle className="w-5 h-5"/> Complete Current Order First</span> : isSmsLoading ? <RefreshCw className="w-5 h-5 animate-spin"/> : <ShoppingCart className="w-5 h-5"/>}
                         {activeOrders.length > 0 ? '' : isSmsLoading ? 'Connecting to Network...' : (!currentService ? 'No Stock Available' : 'Purchase Number')}
                     </button>
