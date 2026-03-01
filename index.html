@@ -144,7 +144,7 @@
         const CUSTOMER_TABS = [
             { id: 'sms', label: 'Live Network', icon: Smartphone },
             { id: 'store', label: 'Asset Store', icon: ShoppingCart },
-            { id: 'add_funds', label: 'Deposit', icon: Wallet },
+            { id: 'add_funds', label: 'Add Funds', icon: Wallet },
             { id: 'my_accounts', label: 'My Vault', icon: Package },
             { id: 'profile', label: 'Profile', icon: UserIcon } 
         ];
@@ -225,9 +225,12 @@
                <style dangerouslySetInnerHTML={{ __html: animations.filter(Boolean).join('\n') }} />
                <div className="relative z-10 flex flex-col items-center w-full px-2">
                   <h1 className="text-5xl sm:text-8xl md:text-9xl font-black tracking-tighter mb-8 flex justify-center flex-wrap w-full" style={{ lineHeight: '1.2' }}>
-                    {text.map((char, i) => (
-                        <span key={i} className={`char-anim-${i}`} style={{ background: 'linear-gradient(to right bottom, #c084fc, #22d3ee)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', filter: 'drop-shadow(0px 0px 15px rgba(139,92,246,0.6))' }}>{char}</span>
-                    ))}
+                    {text.map((char, i) => {
+                        if (char === " ") return <span key={i} className="w-3 sm:w-6"></span>;
+                        return (
+                          <span key={i} className={`char-anim-${i}`} style={{ background: 'linear-gradient(to right bottom, #c084fc, #22d3ee)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', filter: 'drop-shadow(0px 0px 15px rgba(139,92,246,0.6))' }}>{char}</span>
+                        )
+                    })}
                   </h1>
                   <p className="text-slate-400 font-bold text-[10px] sm:text-sm uppercase tracking-[0.4em] sm:tracking-[0.6em] animate-fade-in-up" style={{ animationDelay: '1.8s', opacity: 0, animationFillMode: 'forwards' }}>Secure Cloud Network</p>
                </div>
@@ -240,6 +243,7 @@
           const [user, setUser] = useState(null); 
           const [isAuthChecking, setIsAuthChecking] = useState(true);
           const [activeTab, setActiveTab] = useState('sms');
+          const [isDarkMode, setIsDarkMode] = useState(false);
           const [usersDB, setUsersDB] = useState({});
           
           const [inventory, setInventory] = useState({ new: [], old: [], textplus: [], gv_bulk: [] });
@@ -267,6 +271,11 @@
           const [emailInput, setEmailInput] = useState('');
           const [passwordInput, setPasswordInput] = useState('');
           const [isLoading, setIsLoading] = useState(false);
+
+          useEffect(() => {
+              if (isDarkMode) document.documentElement.classList.add('dark');
+              else document.documentElement.classList.remove('dark');
+          }, [isDarkMode]);
 
           useEffect(() => { setTimeout(() => setShowSplash(false), 3500); }, []);
 
@@ -371,13 +380,13 @@
                     <div onDoubleClick={() => setAuthMethod(authMethod === 'admin' ? 'login' : 'admin')} className="w-20 h-20 rounded-[1.5rem] bg-white/5 backdrop-blur-xl border border-slate-700 flex items-center justify-center mb-5 shadow-xl relative overflow-hidden">
                       <Lock className="w-8 h-8 text-violet-500 relative z-10" strokeWidth={2.5}/>
                     </div>
-                    <h2 className="text-4xl font-black text-transparent bg-clip-text bg-gradient-to-r from-violet-500 via-cyan-500 to-violet-600 text-center tracking-tight">VoiceStore</h2>
+                    <h2 className="text-4xl font-black text-transparent bg-clip-text bg-gradient-to-r from-violet-400 via-cyan-400 to-violet-500 text-center tracking-tight">VoiceStore</h2>
                   </div>
                   <div className={uiCard + " p-8 border-t-4 border-t-violet-500"}>
                     {authMethod !== 'admin' && (
                         <div className="flex bg-[#0f172a] p-1.5 rounded-xl mb-8 border border-slate-700 shadow-inner">
-                             <button type="button" onClick={() => { setAuthMethod('login'); setAuthError(''); setAuthSuccessMsg(''); }} className={`flex-1 flex items-center justify-center py-2.5 rounded-lg text-sm font-bold transition-all duration-300 ${authMethod === 'login' ? 'bg-violet-600/20 text-violet-400 border border-violet-500/30' : 'text-slate-500 hover:text-white'}`}>Authenticate</button>
-                             <button type="button" onClick={() => { setAuthMethod('signup'); setAuthError(''); setAuthSuccessMsg(''); }} className={`flex-1 flex items-center justify-center py-2.5 rounded-lg text-sm font-bold transition-all duration-300 ${authMethod === 'signup' ? 'bg-violet-600/20 text-violet-400 border border-violet-500/30' : 'text-slate-500 hover:text-white'}`}>Register</button>
+                             <button type="button" onClick={() => { setAuthMethod('login'); setAuthError(''); setAuthSuccessMsg(''); }} className={`flex-1 flex items-center justify-center py-2.5 rounded-lg text-sm font-bold transition-all duration-300 ${authMethod === 'login' ? 'bg-slate-800 text-violet-400 shadow-sm border border-slate-600' : 'text-slate-500 hover:text-slate-300'}`}>Sign In</button>
+                             <button type="button" onClick={() => { setAuthMethod('signup'); setAuthError(''); setAuthSuccessMsg(''); }} className={`flex-1 flex items-center justify-center py-2.5 rounded-lg text-sm font-bold transition-all duration-300 ${authMethod === 'signup' ? 'bg-slate-800 text-violet-400 shadow-sm border border-slate-600' : 'text-slate-500 hover:text-slate-300'}`}>Sign Up</button>
                         </div>
                     )}
                     {authMethod === 'admin' && <div className="text-center mb-8 pb-4 border-b border-slate-700"><span className="text-xs font-black text-rose-500 uppercase tracking-widest flex items-center justify-center gap-1.5"><ShieldAlert className="w-4 h-4"/> Security Clearance Required</span></div>}
@@ -425,10 +434,10 @@
                 </div>
               )}
 
-              <header className="sticky top-0 z-40 w-full bg-[#0f172a]/80 backdrop-blur-md border-b border-slate-800 shadow-sm">
+              <header className="sticky top-0 z-40 w-full bg-[#0f172a]/80 backdrop-blur-md border-b border-slate-800 shadow-sm transition-colors">
                 <div className="max-w-7xl mx-auto px-4 h-16 sm:h-20 flex items-center justify-between">
                   <div className="flex items-center gap-3">
-                      <div className="w-10 h-10 rounded-xl bg-violet-500/10 border border-violet-500/30 flex items-center justify-center shadow-inner">
+                      <div className="w-10 h-10 rounded-xl bg-violet-600/20 border border-violet-500/30 flex items-center justify-center">
                         <Lock className="w-5 h-5 text-violet-400" />
                       </div>
                       <span className="text-lg sm:text-xl font-black text-transparent bg-clip-text bg-gradient-to-r from-violet-400 to-cyan-400 hidden sm:block tracking-wide">VoiceStore Secure</span>
@@ -437,8 +446,8 @@
                     {/* CART ICON RESTORED HERE */}
                     {user.role === 'customer' && (
                         <button onClick={() => setShowCart(true)} className="relative p-2.5 rounded-xl bg-slate-800 border border-slate-700 text-slate-300 hover:text-violet-400 transition-colors shadow-sm">
-                            <ShoppingCart className="w-4 h-4" />
-                            {cart.length > 0 && <span className="absolute -top-1.5 -right-1.5 bg-rose-500 text-white text-[9px] font-black px-1.5 py-0.5 rounded-full shadow-md animate-pop-in">{cart.length}</span>}
+                            <ShoppingCart className="w-5 h-5" />
+                            {cart.length > 0 && <span className="absolute -top-1.5 -right-1.5 bg-rose-500 text-white text-[10px] font-black px-1.5 py-0.5 rounded-full shadow-md animate-pop-in">{cart.length}</span>}
                         </button>
                     )}
                     {user.role === 'customer' && (
@@ -470,7 +479,7 @@
                   <>
                       {activeTab === 'sms' && <CustomerDashboardSMS user={user} balance={currentUserBalance} triggerToast={triggerToast} smsSettings={smsSettings} uiCard={uiCard} uiInput={uiInput} uiBtnPrimary={uiBtnPrimary} uiInnerPanel={uiInnerPanel} />}
                       {activeTab === 'store' && <CustomerDashboardStore inventory={inventory} categories={categories} cart={cart} setCart={setCart} allOrders={allOrders} uiCard={uiCard} uiInput={uiInput} uiBtnPrimary={uiBtnPrimary} uiInnerPanel={uiInnerPanel} triggerToast={triggerToast} />}
-                      {activeTab === 'add_funds' && <CustomerDashboardFunds user={user} db={db} appId={appId} triggerToast={triggerToast} bankSettings={bankSettings} uiCard={uiCard} uiInput={uiInput} uiBtnPrimary={uiBtnPrimary} uiBtnSecondary={uiBtnSecondary} uiInnerPanel={uiInnerPanel} />}
+                      {activeTab === 'add_funds' && <CustomerDashboardFunds user={user} db={db} appId={appId} triggerToast={triggerToast} addNotification={addNotification} bankSettings={bankSettings} uiCard={uiCard} uiInput={uiInput} uiBtnPrimary={uiBtnPrimary} uiBtnSecondary={uiBtnSecondary} uiInnerPanel={uiInnerPanel} />}
                       {activeTab === 'my_accounts' && <CustomerDashboardVault purchases={purchases} db={db} appId={appId} uiCard={uiCard} uiBtnPrimary={uiBtnPrimary} uiInnerPanel={uiInnerPanel} triggerToast={triggerToast} />}
                       {activeTab === 'profile' && <CustomerDashboardProfile user={user} balance={currentUserBalance} tier={currentUserTier} userInfo={usersDB[user.email]} allOrders={allOrders} deposits={deposits} purchases={purchases} tickets={tickets.filter(t => t.email === user.email)} db={db} appId={appId} featureSettings={featureSettings} triggerToast={triggerToast} uiCard={uiCard} uiInput={uiInput} uiBtnPrimary={uiBtnPrimary} uiBtnSecondary={uiBtnSecondary} uiInnerPanel={uiInnerPanel} />}
                   </>
@@ -555,15 +564,15 @@
           };
 
           // Actual Executions
-          const performCancel = async (orderId, priceToRefund) => {
+          const performCancel = async (orderId, priceToRefund, isAuto = false) => {
+              if (isAuto) { setActiveOrders(prev => prev.filter(o => o.id !== orderId)); triggerToast(`Session expired. Auto-refunded.`); }
               try {
                   const token = await getAuthToken();
                   const cancelRes = await fetch(`https://voicestore-backend.onrender.com/api/juicy/cancel`, { method: 'POST', headers: {'Content-Type':'application/json', 'Authorization': `Bearer ${token}`}, body: JSON.stringify({orderId}) }); 
                   const cancelData = await cancelRes.json();
-                  if (!cancelData.success && !String(cancelData.message).includes('already')) { triggerToast(cancelData.message); return; }
+                  if (!cancelData.success && !String(cancelData.message).includes('already')) { if (!isAuto) { triggerToast(cancelData.message); return; } }
                   await fetch('https://voicestore-backend.onrender.com/api/sms-refund', { method: 'POST', headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` }, body: JSON.stringify({ email: user.email, price: priceToRefund }) });
-                  triggerToast(`Session Terminated. $${priceToRefund.toFixed(2)} securely refunded.`); 
-                  setActiveOrders(prev => prev.filter(o => o.id !== orderId));
+                  if (!isAuto) { triggerToast(`Session Terminated. $${priceToRefund.toFixed(2)} securely refunded.`); setActiveOrders(prev => prev.filter(o => o.id !== orderId)); }
               } catch (e) {} 
           };
 
@@ -595,7 +604,7 @@
                               order.isCancelling = true;
                               setActiveOrders(prev => prev.filter(o => o.id !== order.id));
                               triggerToast(`Session expired. Auto-refunded.`);
-                              performCancel(order.id, order.price);
+                              performCancel(order.id, order.price, true);
                           }
                           return;
                       }
@@ -668,7 +677,7 @@
                        <label className="block text-[10px] font-bold text-slate-400 mb-3 uppercase tracking-wider">Select Service Ecosystem</label>
                        <div className="flex flex-col sm:flex-row gap-4 items-center">
                            
-                           {/* 🎯 APP DROPDOWN */}
+                           {/* 🎯 APP DROPDOWN (STOCK HIDDEN) */}
                            <div className="relative w-full">
                                <div onClick={() => setIsAppDropdownOpen(!isAppDropdownOpen)} className={uiInput + " h-14 pl-12 pr-10 flex items-center justify-between cursor-pointer border-slate-600 hover:border-violet-500/50"}>
                                    <span className="truncate text-white font-bold">{isFetchingServices ? 'Ecosystem Syncing...' : (currentService ? `${currentService.name}` : 'No services available')}</span>
@@ -683,24 +692,29 @@
                                                <input type="text" autoFocus placeholder="Filter ecosystem..." value={appSearch} onChange={(e) => setAppSearch(e.target.value)} className="w-full bg-[#0f172a] text-slate-200 text-sm font-medium rounded-lg px-4 py-2.5 outline-none border border-slate-700 focus:border-violet-500/50"/>
                                            </div>
                                            <div className="max-h-60 overflow-y-auto custom-scrollbar">
-                                               {filteredApps.map(s => (
-                                                   <div key={s.code} onClick={() => { setSelectedSmsService(s.code); setIsAppDropdownOpen(false); }} className="px-5 py-3 cursor-pointer hover:bg-slate-700 font-semibold text-sm border-b border-slate-700/50 text-slate-300 hover:text-white transition-colors">
-                                                       {s.name}
-                                                   </div>
-                                               ))}
+                                               {filteredApps.length === 0 ? (<p className="text-center text-slate-500 py-6 text-sm">No services matched.</p>) : 
+                                                   filteredApps.map(s => {
+                                                       if(!s) return null;
+                                                       return (
+                                                           <div key={s.code} onClick={() => { setSelectedSmsService(s.code); setIsAppDropdownOpen(false); setAppSearch(''); }} className={`px-5 py-3 cursor-pointer text-sm font-semibold transition-colors border-b border-slate-700/50 ${selectedSmsService === s.code ? 'bg-violet-600/20 text-violet-400' : 'text-slate-300 hover:text-white hover:bg-slate-700'}`}>
+                                                               {s.name}
+                                                           </div>
+                                                       );
+                                                   })
+                                               }
                                            </div>
                                        </div>
                                    </>
                                )}
                            </div>
                            
-                           {/* 🎯 PRICE DROPDOWN */}
+                           {/* 🎯 PRICE DROPDOWN (STOCK HIDDEN) */}
                            <div className="relative w-full sm:w-auto shrink-0 min-w-[130px]">
                                <select 
                                    value={selectedTier?.originalPrice ? String(selectedTier.originalPrice) : ''}
                                    onChange={(e) => { const tier = priceTiers.find(t => String(t?.originalPrice) === e.target.value); if(tier) setSelectedTier(tier); }}
                                    disabled={isTiersLoading || priceTiers.length === 0}
-                                   className={uiInput + " h-14 pl-10 appearance-none cursor-pointer text-lg font-black text-emerald-400 border-slate-600"}
+                                   className={uiInput + " h-14 pl-10 appearance-none cursor-pointer text-lg font-black text-emerald-400 border-slate-600 disabled:opacity-50"}
                                >
                                    {isTiersLoading ? <option value="">...</option> : priceTiers.length > 0 ? priceTiers.map((tier, idx) => (
                                        <option key={idx} value={String(tier.originalPrice)} className="bg-slate-800 text-white text-base">${Number(tier.priceWithMarkup || 0).toFixed(2)}</option>
@@ -718,50 +732,54 @@
                     </button>
                 </div>
 
-                {/* 🎯 ACTIVE ORDER UI */}
-                {activeOrders.map(order => {
+                {/* 🎯 ACTIVE ORDER UI WITH SKIP/CANCEL BUTTONS */}
+                {activeOrders.map((order, index) => {
                     const timeLeft = Math.max(0, Math.floor((order.expiresAt - now) / 1000));
                     return (
-                        <div key={order.id} className={uiCard + " border-violet-500/50 bg-[#0f172a] flex flex-col items-center py-8 px-5 shadow-[0_0_30px_rgba(139,92,246,0.15)]"}>
-                            <div className="absolute top-0 left-0 w-full h-1.5 bg-slate-800"><div className="bg-gradient-to-r from-violet-500 to-cyan-400 h-full transition-all ease-linear" style={{width: `${(timeLeft / 240) * 100}%`}}></div></div>
+                        <div key={order.id} ref={index === 0 ? latestOrderRef : null} className={uiCard + " border-violet-500/50 bg-[#0f172a] flex flex-col items-center py-8 px-5 shadow-[0_0_30px_rgba(139,92,246,0.15)] " + (order.isNew ? "animate-super-glow" : "")}>
+                            <div className="absolute top-0 left-0 w-full h-1.5 bg-slate-800"><div className="bg-gradient-to-r from-violet-500 to-cyan-400 h-full transition-all ease-linear shadow-[0_0_10px_rgba(139,92,246,0.8)]" style={{width: `${(timeLeft / 240) * 100}%`}}></div></div>
                             
                             <div className="flex items-center gap-2 mb-4">
                                 <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse shadow-[0_0_8px_currentColor]"></span>
                                 <p className="text-violet-400 font-bold uppercase tracking-[0.2em] text-xs">{order.service} Routing Active</p>
                             </div>
-                            
-                            <div className="text-3xl sm:text-4xl font-mono font-black tracking-widest bg-[#1e293b] px-6 py-5 rounded-2xl w-full text-center border border-slate-700 shadow-inner mb-6 flex justify-between items-center text-white">
-                                <span className="drop-shadow-md">+{String(order.phone).replace(/\D/g, '')}</span>
-                                <button onClick={() => copyNumberOnly(order.phone)} className="p-2 bg-slate-800 hover:bg-slate-700 rounded-xl text-slate-400 hover:text-white transition-colors border border-slate-600 shadow-sm"><Copy className="w-5 h-5 sm:w-6 sm:h-6"/></button>
+
+                            <div className="flex items-center gap-3 w-full max-w-md mb-8">
+                                <div className="text-3xl sm:text-4xl font-mono font-black text-white bg-[#1e293b] px-6 py-5 rounded-2xl border border-slate-700 shadow-inner flex-grow text-center whitespace-nowrap overflow-hidden text-ellipsis drop-shadow-md">
+                                    {formatPhoneDisplay(order.phone)}
+                                </div>
+                                <button onClick={() => copyNumberOnly(order.phone)} title="Copy number only" className="btn-animate p-4 bg-slate-800 hover:bg-slate-700 rounded-2xl text-slate-400 hover:text-white border border-slate-600 shadow-sm transition-colors shrink-0">
+                                    <Copy className="w-6 h-6"/>
+                                </button>
                             </div>
                             
                             {order.codes.length === 0 ? (
-                                <div className="w-full">
+                                <div className="w-full max-w-md">
                                     <p className="text-slate-400 font-medium mb-5 flex justify-center items-center gap-2 text-sm"><RefreshCw className="w-4 h-4 animate-spin text-violet-400"/> Awaiting Secure Transmission...</p>
                                     <div className="flex justify-between items-center bg-[#1e293b] p-3 sm:p-4 rounded-2xl border border-slate-700 shadow-inner">
                                         <div className="flex items-center gap-2">
                                             <Clock className="w-4 h-4 text-slate-500 hidden sm:block"/>
-                                            <span className="font-mono text-lg font-bold text-slate-300 tracking-wider">{Math.floor(timeLeft / 60)}:{(timeLeft % 60).toString().padStart(2, '0')}</span>
+                                            <span className="font-mono text-lg font-bold text-slate-300 tracking-wider ml-1 sm:ml-0">{Math.floor(timeLeft / 60)}:{(timeLeft % 60).toString().padStart(2, '0')}</span>
                                         </div>
                                         
                                         {/* 🎯 SKIP & CANCEL BUTTONS */}
                                         {timeLeft > 220 ? (
-                                            <span className="text-[10px] sm:text-xs text-slate-500 font-bold px-4 py-2 bg-slate-800 rounded-lg flex items-center gap-1.5"><Lock className="w-3 h-3"/> Verification Lock: {timeLeft - 220}s</span>
+                                            <span className="text-[10px] sm:text-xs text-slate-500 font-bold px-4 py-2 bg-slate-800 rounded-lg flex items-center gap-1.5 border border-slate-700"><Lock className="w-3 h-3"/> Verification Lock: {timeLeft - 220}s</span>
                                         ) : (
                                             <div className="flex gap-2">
-                                                <button onClick={() => setConfirmAction({show: true, type: 'cancel', orderId: order.id, price: order.price})} className="bg-slate-800 hover:bg-slate-700 border border-slate-600 text-slate-300 px-3 sm:px-4 py-2 rounded-xl text-xs font-bold transition-all shadow-sm">Cancel</button>
-                                                <button onClick={() => setConfirmAction({show: true, type: 'skip', orderId: order.id, price: order.price})} className="bg-rose-500/10 hover:bg-rose-500/20 border border-rose-500/30 text-rose-400 hover:text-rose-300 px-3 sm:px-4 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 shadow-sm"><Ban className="w-3.5 h-3.5"/> Skip</button>
+                                                <button onClick={() => setConfirmAction({show: true, type: 'cancel', orderId: order.id, price: order.price})} className="btn-animate bg-slate-800 hover:bg-slate-700 border border-slate-600 text-slate-300 px-3 sm:px-4 py-2 rounded-xl text-xs font-bold transition-all shadow-sm flex items-center gap-1"><X className="w-3.5 h-3.5"/> Cancel</button>
+                                                <button onClick={() => setConfirmAction({show: true, type: 'skip', orderId: order.id, price: order.price})} className="btn-animate bg-rose-500/10 hover:bg-rose-500/20 border border-rose-500/30 text-rose-400 hover:text-rose-300 px-3 sm:px-4 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-1 shadow-sm"><Ban className="w-3.5 h-3.5"/> Skip</button>
                                             </div>
                                         )}
                                     </div>
                                 </div>
                             ) : (
-                                <div className="w-full space-y-3 animate-pop-in">
+                                <div className="w-full max-w-md space-y-4 animate-pop-in">
                                     <p className="text-xs text-emerald-400 font-bold uppercase tracking-widest text-center mb-2">Transmission Decrypted</p>
                                     {order.codes.map((c, i) => (
-                                        <div key={i} className="bg-emerald-500/10 border border-emerald-500/30 p-4 sm:p-5 rounded-2xl flex justify-between items-center shadow-[inset_0_0_15px_rgba(16,185,129,0.1)]">
-                                            <div className="text-xl sm:text-2xl text-emerald-400 font-mono font-black tracking-widest drop-shadow-md">{c}</div>
-                                            <button onClick={() => copyText(c)} className="p-2.5 bg-emerald-500/20 hover:bg-emerald-500/30 rounded-xl text-emerald-400 transition-colors border border-emerald-500/30"><Copy className="w-5 h-5"/></button>
+                                        <div key={i} className="flex items-center justify-between gap-3 sm:gap-4 bg-emerald-500/10 border border-emerald-500/30 p-4 sm:p-5 rounded-2xl shadow-[inset_0_0_15px_rgba(16,185,129,0.1)]">
+                                            <div className="text-xl sm:text-2xl text-emerald-400 font-mono font-black tracking-widest flex-grow drop-shadow-md">{c}</div>
+                                            <button onClick={() => copyText(c)} className="btn-animate p-3 bg-emerald-500/20 hover:bg-emerald-500/30 rounded-xl text-emerald-400 transition-colors border border-emerald-500/30 shrink-0"><Copy className="w-5 h-5"/></button>
                                         </div>
                                     ))}
                                     <button onClick={() => setActiveOrders([])} className={uiBtnPrimary + " mt-6"}>Acknowledge & Close Session</button>
@@ -853,7 +871,7 @@
         // ==========================================
         // FUNDS MODULE
         // ==========================================
-        function CustomerDashboardFunds({ user, db, appId, triggerToast, bankSettings, uiCard, uiInput, uiBtnPrimary, uiBtnSecondary, uiInnerPanel }) {
+        function CustomerDashboardFunds({ user, db, appId, triggerToast, addNotification, bankSettings, uiCard, uiInput, uiBtnPrimary, uiBtnSecondary, uiInnerPanel }) {
           const [autoPay, setAutoPay] = useState({ active: false, amount: 0, time: 900, checking: false, invoiceId: '' });
           const TRON_ADDRESS = 'TELRyMwDmdKzBRb7Uaw3zNvphrc8V3D5Mj';
           const BTC_ADDRESS = '1EgVdWyoCsWepg3TAowifuhoR81Lm1xEUd';
@@ -935,6 +953,7 @@
                               setAutoPay(prev => ({...prev, checking: false})); 
                               triggerToast(`Funds Verified! $${autoPay.amount} credited.`);
                               setAutoPay({ active: false, amount: 0, cryptoAmount: 0, time: 0, checking: false, invoiceId: '' });
+                              addNotification('Deposit Successful', `$${autoPay.amount} secured in vault.`);
                           }
                       } catch (err) {}
                   }, 15000); 
@@ -948,7 +967,7 @@
                   }
               }, 1000);
               return () => { clearInterval(interval); clearInterval(timer); };
-          }, [autoPay, db, appId, user.email]);
+          }, [autoPay, db, appId, user.email, addNotification]);
 
           const copyToClipboard = (text) => {
              if (navigator.clipboard) navigator.clipboard.writeText(text).then(() => triggerToast("Address Secured!"));
