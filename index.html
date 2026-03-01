@@ -643,7 +643,7 @@
                         <CustomerDashboardStore inventory={inventory} categories={categories} cart={cart} setCart={setCart} allOrders={allOrders} uiCard={uiCard} uiInput={uiInput} uiBtnPrimary={uiBtnPrimary} uiInnerPanel={uiInnerPanel} triggerToast={triggerToast} />
                       )}
                       {activeTab === 'add_funds' && (
-                        <CustomerDashboardFunds user={user} db={db} appId={appId} triggerToast={triggerToast} addNotification={addNotification} bankSettings={bankSettings} uiCard={uiCard} uiInput={uiInput} uiBtnPrimary={uiBtnPrimary} uiBtnSecondary={uiBtnSecondary} uiInnerPanel={uiInnerPanel} />
+                        <CustomerDashboardFunds user={user} db={db} appId={appId} triggerToast={triggerToast} addNotification={addNotification} bankSettings={bankSettings} uiCard={uiCard} uiInput={uiInput} uiBtnPrimary={uiBtnPrimary} uiBtnSecondary={uiInnerPanel} uiInnerPanel={uiInnerPanel} />
                       )}
                       {activeTab === 'my_accounts' && (
                         <CustomerDashboardVault user={user} purchases={purchases} triggerToast={triggerToast} db={db} appId={appId} uiCard={uiCard} uiBtnPrimary={uiBtnPrimary} uiInnerPanel={uiInnerPanel} />
@@ -773,13 +773,7 @@
               setIsSmsLoading(true);
               try {
                   const token = await getAuthToken(); 
-                  const deductRes = await fetch('https://voicestore-backend.onrender.com/api/sms-deduct', {
-                      method: 'POST', headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
-                      body: JSON.stringify({ email: user.email, price: finalBuyPrice })
-                  });
-                  const deductData = await deductRes.json();
-                  if (!deductData.success) { triggerToast(deductData.message || "Balance deduction failed."); setIsSmsLoading(false); return; }
-
+                  
                   const res = await fetch('https://voicestore-backend.onrender.com/api/juicy/getNumber', {
                       method: 'POST', headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
                       body: JSON.stringify({ serviceId: currentService.code, countryId: smsCountry, maxPrice: exactMaxPrice, exactProviderId: exactProviderId }) 
@@ -787,33 +781,16 @@
                   const data = await res.json();
                   
                   if (data?.success && data?.phone) {
-                      let finalOrderPrice = finalBuyPrice;
-                      if (data.exactCost !== undefined && data.exactCost !== null) {
-                          const markup = parseFloat(smsSettings?.markup || 1.00);
-                          const actualTotalCost = parseFloat(data.exactCost) + markup;
-                          const diff = parseFloat((finalBuyPrice - actualTotalCost).toFixed(2));
-                          
-                          if (diff > 0) {
-                              fetch('https://voicestore-backend.onrender.com/api/sms-refund', {
-                                  method: 'POST', headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
-                                  body: JSON.stringify({ email: user.email, price: diff })
-                              }).catch(()=>{});
-                              finalOrderPrice = actualTotalCost; 
-                          }
-                      }
                       const cleanName = (currentService.name || '').split(' [')[0];
                       const newOrder = { 
                           id: data.orderId, phone: data.phone, service: cleanName, countryId: smsCountry, 
-                          price: finalOrderPrice, status: 'ACTIVE', codes: [], 
+                          price: data.exactCost, 
+                          status: 'ACTIVE', codes: [], 
                           expiresAt: Date.now() + 180 * 1000, isCancelling: false, isNew: true
                       };
                       setActiveOrders(prev => [newOrder, ...prev]); 
-                      triggerToast("Number assigned successfully!");
+                      triggerToast(`Number assigned! Deducted: $${data.exactCost}`);
                   } else {
-                      await fetch('https://voicestore-backend.onrender.com/api/sms-refund', {
-                          method: 'POST', headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
-                          body: JSON.stringify({ email: user.email, price: finalBuyPrice })
-                      });
                       triggerToast(data?.message || "Failed to get number.");
                   }
               } catch (e) { triggerToast("Connection Error"); } 
