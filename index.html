@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>VoiceStore Premium Dashboard</title>
     
-    <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
       tailwind.config = {
@@ -39,12 +38,10 @@
       }
     </script>
     
-    <!-- Google Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;700;800&display=swap" rel="stylesheet">
     
     <script async src="https://unpkg.com/es-module-shims@1.10.0/dist/es-module-shims.js"></script>
 
-    <!-- Import Maps for React and Lucide -->
     <script type="importmap">
       {
         "imports": {
@@ -55,7 +52,6 @@
       }
     </script>
     
-    <!-- Babel & Libraries -->
     <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/otpauth/9.2.2/otpauth.umd.min.js"></script>
     <script src="https://checkout.flutterwave.com/v3.js"></script>
@@ -670,7 +666,7 @@
           );
         }
 
- // ==========================================
+        // ==========================================
         // 🌟 SMS MODULE (LIVE MULTI-TIER PRICES) 🌟
         // ==========================================
         function CustomerDashboardSMS({ user, balance, triggerToast, smsSettings, uiCard, uiInput, uiBtnPrimary, uiInnerPanel }) {
@@ -767,6 +763,7 @@
           
           const finalBuyPrice = selectedTier?.priceWithMarkup ? parseFloat(selectedTier.priceWithMarkup) : fallbackPrice;
           const exactMaxPrice = selectedTier?.originalPrice ? parseFloat(selectedTier.originalPrice) : null;
+          const exactProviderId = selectedTier?.providerId || null;
 
           const buySmsNumber = async () => {
               if (!currentService) return;
@@ -785,7 +782,7 @@
 
                   const res = await fetch('https://voicestore-backend.onrender.com/api/juicy/getNumber', {
                       method: 'POST', headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
-                      body: JSON.stringify({ serviceId: currentService.code, countryId: smsCountry, maxPrice: exactMaxPrice }) 
+                      body: JSON.stringify({ serviceId: currentService.code, countryId: smsCountry, maxPrice: exactMaxPrice, exactProviderId: exactProviderId }) 
                   });
                   const data = await res.json();
                   
