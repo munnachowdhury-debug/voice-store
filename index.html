@@ -38,7 +38,6 @@
               'pulse-slow': 'pulseSlow 6s ease-in-out infinite',
               'shimmer': 'shimmer 2.5s linear infinite',
               'float': 'float 8s ease-in-out infinite',
-              'float-logo': 'floatLogo 20s linear infinite',
             },
             keyframes: {
               shimmer: {
@@ -72,12 +71,6 @@
               float: {
                 '0%, 100%': { transform: 'translateY(0)' },
                 '50%': { transform: 'translateY(-25px)' }
-              },
-              floatLogo: {
-                '0%': { transform: 'translateY(0) rotate(0deg) scale(1)' },
-                '33%': { transform: 'translateY(-40px) rotate(15deg) scale(1.1)' },
-                '66%': { transform: 'translateY(20px) rotate(-10deg) scale(0.9)' },
-                '100%': { transform: 'translateY(0) rotate(0deg) scale(1)' }
               }
             }
           }
@@ -199,36 +192,36 @@
             animation: slideInNotify 5s cubic-bezier(0.16, 1, 0.3, 1) forwards;
         }
 
-        /* 🌟 OUTSIDE FLYING ANIMATIONS FOR LOGOS 🌟 */
+        /* 🌟 OUTSIDE FLYING ANIMATIONS FOR LOGOS (SUPER SLOW) 🌟 */
         @keyframes fly1 {
-            0% { transform: translate(-30vw, 130vh) rotate(0deg) scale(0.5); opacity: 0; }
+            0% { transform: translate(-40vw, 130vh) rotate(0deg) scale(0.5); opacity: 0; }
             10% { opacity: 0.8; }
             90% { opacity: 0.8; }
-            100% { transform: translate(130vw, -30vh) rotate(360deg) scale(1.5); opacity: 0; }
+            100% { transform: translate(140vw, -30vh) rotate(360deg) scale(1.5); opacity: 0; }
         }
         @keyframes fly2 {
-            0% { transform: translate(130vw, 110vh) rotate(0deg) scale(1); opacity: 0; }
+            0% { transform: translate(140vw, 110vh) rotate(0deg) scale(1); opacity: 0; }
             10% { opacity: 0.7; }
             90% { opacity: 0.7; }
-            100% { transform: translate(-30vw, -30vh) rotate(-360deg) scale(0.8); opacity: 0; }
+            100% { transform: translate(-40vw, -30vh) rotate(-360deg) scale(0.8); opacity: 0; }
         }
         @keyframes fly3 {
             0% { transform: translate(50vw, 130vh) rotate(0deg) scale(1.2); opacity: 0; }
             10% { opacity: 0.9; }
             90% { opacity: 0.9; }
-            100% { transform: translate(-30vw, -50vh) rotate(180deg) scale(0.5); opacity: 0; }
+            100% { transform: translate(-40vw, -50vh) rotate(180deg) scale(0.5); opacity: 0; }
         }
         @keyframes fly4 {
-            0% { transform: translate(-30vw, 30vh) rotate(0deg) scale(0.8); opacity: 0; }
+            0% { transform: translate(-40vw, 30vh) rotate(0deg) scale(0.8); opacity: 0; }
             10% { opacity: 0.7; }
             90% { opacity: 0.7; }
-            100% { transform: translate(130vw, 90vh) rotate(270deg) scale(1.2); opacity: 0; }
+            100% { transform: translate(140vw, 90vh) rotate(270deg) scale(1.2); opacity: 0; }
         }
         @keyframes fly5 {
-            0% { transform: translate(130vw, 20vh) rotate(0deg) scale(1); opacity: 0; }
+            0% { transform: translate(140vw, 20vh) rotate(0deg) scale(1); opacity: 0; }
             10% { opacity: 0.8; }
             90% { opacity: 0.8; }
-            100% { transform: translate(-30vw, 110vh) rotate(-180deg) scale(1.5); opacity: 0; }
+            100% { transform: translate(-40vw, 110vh) rotate(-180deg) scale(1.5); opacity: 0; }
         }
     </style>
 </head>
@@ -243,7 +236,7 @@
             ShoppingCart, LogOut, Package, Users, DollarSign, Settings, Plus, Trash2, CheckCircle, 
             X, Wallet, CreditCard, Clock, Copy, ArrowRight, Bell, User as UserIcon, 
             Activity, BarChart, Eye, Lock, Search, Megaphone, Award, Zap, Headset, 
-            Star, AlertTriangle, Smartphone, ShieldCheck, Moon, HelpCircle, History, TrendingUp, Sparkles, Building, Edit, RefreshCw, ChevronDown, StopCircle, Ban, Info, Key, MessageSquare, Send, BookOpen, MessageCircle, Fingerprint, Radar
+            Star, AlertTriangle, Smartphone, ShieldCheck, Moon, HelpCircle, History, TrendingUp, Sparkles, Building, Edit, RefreshCw, ChevronDown, StopCircle, Ban, Info, Key, MessageSquare, Send, BookOpen, MessageCircle, Radar
         } from 'lucide-react';
 
         // Firebase Imports
@@ -301,8 +294,8 @@
             { id: 'settings', label: 'Settings', icon: Settings }
         ];
 
-        // 🟢 UI VARIABLES DEFINED HERE SO ALL COMPONENTS CAN USE THEM 🟢
-        const uiCard = "glass-effect rounded-3xl relative overflow-hidden transition-all duration-500 w-full";
+        // 🟢 UI VARIABLES 🟢
+        const uiCard = "glass-effect rounded-3xl relative transition-all duration-500 w-full";
         const uiInput = "glass-input";
         const uiBtnPrimary = "btn-animate w-full bg-white text-black font-bold py-4 px-6 rounded-2xl flex items-center justify-center gap-2 transition-all disabled:opacity-50 shadow-[0_5px_20px_rgba(255,255,255,0.2)] tracking-widest uppercase text-xs";
         const uiBtnSecondary = "btn-animate w-full glass-panel hover:bg-white/20 text-white font-bold py-3.5 px-6 rounded-2xl transition-all flex items-center justify-center gap-2 uppercase text-xs tracking-widest shadow-md";
@@ -317,6 +310,17 @@
           return { threshold: 0, name: 'Standard', next: 20, color: 'text-gray-400', icon: Award };
         };
 
+        // 🛡️ SAFE DATE FORMATTER
+        const safeFormatDate = (d) => {
+            try {
+                if (!d) return '';
+                if (d.toDate) return d.toDate().toLocaleDateString();
+                const dateObj = new Date(d);
+                if (isNaN(dateObj.getTime())) return '';
+                return dateObj.toLocaleDateString();
+            } catch(e) { return ''; }
+        };
+
         const PremiumBackground = () => (
           <div className="fixed inset-0 z-[-1] pointer-events-none overflow-hidden flex items-center justify-center bg-transparent">
              <div className="absolute top-[-15%] right-[-10%] w-[60vw] h-[60vw] min-w-[600px] min-h-[600px] bg-[#06b6d4] opacity-[0.06] rounded-full blur-[120px] animate-float pointer-events-none"></div>
@@ -324,7 +328,7 @@
           </div>
         );
 
-        // 🌟 CRYSTAL CLEAR COLORFUL FLOATING LOGOS 🌟
+        // 🌟 CRYSTAL CLEAR COLORFUL FLOATING LOGOS (Super Slow) 🌟
         const FloatingLogos = () => {
             const baseLogos = [
                 // WhatsApp (Green)
@@ -345,8 +349,9 @@
                 for(let i=0; i<15; i++) {
                     const logo = baseLogos[i % baseLogos.length];
                     const randomSize = Math.floor(Math.random() * 40) + 40;
-                    const randomDelay = Math.random() * -30; 
-                    const randomDuration = Math.floor(Math.random() * 15) + 20; 
+                    const randomDelay = Math.random() * -40; 
+                    // 🟢 INCREASED DURATION FOR SUPER SLOW FLYING (60s to 120s) 🟢
+                    const randomDuration = Math.floor(Math.random() * 60) + 60; 
                     const animationName = animationsList[i % animationsList.length];
                     
                     arr.push(
@@ -422,17 +427,21 @@
             );
         };
 
-        // 🌟 VAULT ITEM COMPONENT (SAFE HOOKS) 🌟
+        // 🌟 VAULT ITEM COMPONENT (SAFE HOOKS & SAFE RENDER) 🌟
         const VaultItem = ({ acc, idx, db, appId, triggerToast }) => {
             const [totpCode, setTotpCode] = useState('');
             const [timeLeft, setTimeLeft] = useState(30);
             const [twoFaSecret, setTwoFaSecret] = useState(null);
 
             useEffect(() => {
-                const rawData = String(acc.data || '');
-                const match = rawData.match(/🔐 2FA INFO:\s*\n?([a-zA-Z0-9\s]+)/i);
-                if (match) setTwoFaSecret(match[1].replace(/\s+/g, '').toUpperCase());
-            }, [acc.data]);
+                try {
+                    const rawData = String(acc?.data || '');
+                    const match = rawData.match(/🔐 2FA INFO:\s*\n?([a-zA-Z0-9\s]+)/i);
+                    if (match && match[1]) {
+                        setTwoFaSecret(match[1].replace(/\s+/g, '').toUpperCase());
+                    }
+                } catch(e) {}
+            }, [acc]);
 
             useEffect(() => {
                 if (!twoFaSecret) return;
@@ -450,14 +459,16 @@
                 return () => clearInterval(interval);
             }, [twoFaSecret]);
 
+            if (!acc) return null; // Ultimate safety
+
             return (
                 <div className="bg-black/40 backdrop-blur-xl border border-white/10 hover:border-white/30 transition-all duration-300 rounded-3xl p-6 flex flex-col animate-scale-up hover:shadow-[0_10px_30px_rgba(255,255,255,0.05)]" style={{animationDelay: `${idx * 0.05}s`, opacity: 0, animationFillMode: 'forwards'}}>
                     <div className="flex justify-between items-start mb-5 pb-4 border-b border-white/10">
                         <span className="text-xs font-bold text-white uppercase tracking-wider flex items-center gap-2">
-                            <Package className="w-4 h-4 text-gray-300"/> {acc.type}
+                            <Package className="w-4 h-4 text-gray-300"/> {acc.type || 'Account'}
                         </span>
                         <span className="text-[8px] font-mono text-gray-400 uppercase tracking-widest bg-white/5 px-2.5 py-1 rounded border border-white/10">
-                            {acc.date ? new Date(acc.date).toLocaleDateString() : ''}
+                            {safeFormatDate(acc.date)}
                         </span>
                     </div>
 
@@ -478,8 +489,12 @@
                     <div className="flex justify-between mt-auto items-center pt-2">
                         <button onClick={() => {
                            const id = 'REP-' + Date.now();
-                           setDoc(doc(db, 'artifacts', appId, 'public', 'data', 'Store_Tickets', id), { email: acc.customer, subject: `Reported Account`, message: `I have an issue with this account.`, status: 'Open', date: new Date().toISOString() });
-                           triggerToast('Report sent to admin.');
+                           if(db && appId && acc.customer) {
+                               try {
+                                   setDoc(doc(db, 'artifacts', appId, 'public', 'data', 'Store_Tickets', id), { email: acc.customer, subject: `Reported Account`, message: `I have an issue with this account.`, status: 'Open', date: new Date().toISOString() });
+                                   triggerToast('Report sent to admin.');
+                               } catch(e) {}
+                           }
                         }} className="text-[9px] font-mono text-gray-500 hover:text-red-400 uppercase tracking-widest transition-colors">Report Issue</button>
                         <button onClick={() => {
                            if (navigator.clipboard) navigator.clipboard.writeText(String(acc.data || '')).then(() => triggerToast("Copied!"));
@@ -553,11 +568,13 @@
                     }
                  } catch(e) {}
 
-                 // 🟢 FIXED: Removed forced verification, guaranteeing login directly to Dashboard
+                 // 🟢 STRICT EMAIL VERIFICATION RULE APPLIED 🟢
                  if (firebaseUser.email.toLowerCase() === currentAdminEmail.toLowerCase()) {
                     setUser({ email: firebaseUser.email, role: 'admin' }); setActiveTab('inventory');
-                 } else { 
+                 } else if (firebaseUser.emailVerified) { 
                     setUser({ email: firebaseUser.email, role: 'customer' }); setActiveTab('sms');
+                 } else { 
+                    setUser(null); // Must verify to login
                  }
               } else { setUser(null); }
               setIsAuthChecking(false);
@@ -618,22 +635,39 @@
             unsubs.push(onSnapshot(collection(db, 'artifacts', appId, 'public', 'data', 'Store_Orders'), (snap) => { 
                 const o = []; 
                 snap.forEach((d) => { o.push({ id: d.id, ...d.data() }); }); 
-                setAllOrders(o.sort((a,b) => (new Date(b.date || 0)).getTime() - (new Date(a.date || 0)).getTime())); 
+                // Using safer sort for dates
+                setAllOrders(o.sort((a,b) => {
+                    const da = a.date ? new Date(a.date).getTime() : 0;
+                    const db = b.date ? new Date(b.date).getTime() : 0;
+                    return isNaN(db) || isNaN(da) ? 0 : db - da;
+                })); 
             }, errLog));
             unsubs.push(onSnapshot(collection(db, 'artifacts', appId, 'public', 'data', 'Store_Deposits'), (snap) => { 
                 const dep = []; 
                 snap.forEach((d) => { dep.push({ id: d.id, ...d.data() }); }); 
-                setDeposits(dep.sort((a,b) => (new Date(b.date || 0)).getTime() - (new Date(a.date || 0)).getTime())); 
+                setDeposits(dep.sort((a,b) => {
+                    const da = a.date ? new Date(a.date).getTime() : 0;
+                    const db = b.date ? new Date(b.date).getTime() : 0;
+                    return isNaN(db) || isNaN(da) ? 0 : db - da;
+                })); 
             }, errLog));
             unsubs.push(onSnapshot(collection(db, 'artifacts', appId, 'public', 'data', 'Store_Purchases'), (snap) => { 
                 const p = []; 
                 snap.forEach((d) => { p.push({ id: d.id, ...d.data() }); }); 
-                setPurchases(p.sort((a,b) => (new Date(b.date || 0)).getTime() - (new Date(a.date || 0)).getTime())); 
+                setPurchases(p.sort((a,b) => {
+                    const da = a.date ? new Date(a.date).getTime() : 0;
+                    const db = b.date ? new Date(b.date).getTime() : 0;
+                    return isNaN(db) || isNaN(da) ? 0 : db - da;
+                })); 
             }, errLog));
             unsubs.push(onSnapshot(collection(db, 'artifacts', appId, 'public', 'data', 'Store_Tickets'), (snap) => { 
                 const t = []; 
                 snap.forEach((d) => { t.push({ id: d.id, ...d.data() }); }); 
-                setTickets(t.sort((a,b) => (new Date(b.date || 0)).getTime() - (new Date(a.date || 0)).getTime())); 
+                setTickets(t.sort((a,b) => {
+                    const da = a.date ? new Date(a.date).getTime() : 0;
+                    const db = b.date ? new Date(b.date).getTime() : 0;
+                    return isNaN(db) || isNaN(da) ? 0 : db - da;
+                })); 
             }, errLog));
             
             return () => unsubs.forEach(unsub => { if(typeof unsub === 'function') unsub(); });
@@ -660,11 +694,20 @@
                 const userCredential = await createUserWithEmailAndPassword(auth, email, pwd);
                 const userRef = doc(db, 'artifacts', appId, 'public', 'data', 'Store_Users', userCredential.user.email);
                 await setDoc(userRef, { password: pwd, balance: 0, totalSpent: 0, joined: new Date().toISOString(), lastBonusDate: '' });
-                // We let them login immediately without verifying block.
-                setAuthSuccessMsg('Account created successfully!'); 
+                // 🟢 MANDATORY VERIFICATION RE-ENABLED 🟢
+                await sendEmailVerification(userCredential.user);
+                await auth.signOut(); 
+                setAuthSuccessMsg('Account created! Please verify your email inbox before logging in.'); 
                 setAuthMethod('login'); 
               } else {
                 const userCredential = await signInWithEmailAndPassword(auth, email, pwd);
+                // 🟢 MANDATORY VERIFICATION RE-ENABLED 🟢
+                if (!userCredential.user.emailVerified) {
+                   await auth.signOut(); 
+                   setAuthError('Please verify your email inbox first!');
+                   setIsLoading(false); 
+                   return;
+                }
                 setAuthSuccessMsg('Login Successful.');
               }
             } catch (error) { setAuthError("Error: " + error.message); } finally { setIsLoading(false); }
@@ -690,6 +733,7 @@
             return (
               <div className="min-h-screen flex items-center justify-center p-4 relative font-sans w-full bg-transparent text-white">
                 <PremiumBackground />
+                {/* 🟢 FLOATING LOGOS ONLY IN LOGIN/INTRO 🟢 */}
                 <FloatingLogos />
                 <div className="w-full max-w-[400px] animate-scale-up z-10">
                   <div className="flex flex-col items-center mb-8">
@@ -721,7 +765,7 @@
                         <input type="password" value={passwordInput} onChange={e=>setPasswordInput(e.target.value)} placeholder="••••••••" required className="glass-input" />
                       </div>
                       <div className="pt-6">
-                        <button type="submit" disabled={isLoading} className="minimal-btn-primary !py-4 !text-sm tracking-widest">
+                        <button type="submit" disabled={isLoading} className="btn-animate w-full glass-effect hover:bg-white text-white hover:text-black border border-white/20 font-bold py-4 rounded-2xl transition-all duration-300 text-xs tracking-widest uppercase shadow-[0_0_20px_rgba(255,255,255,0.1)] flex items-center justify-center gap-2">
                             {isLoading ? <span className="flex items-center gap-2"><RefreshCw className="w-4 h-4 animate-spin"/> Processing...</span> : (authMethod === 'signup' ? 'Create Account' : authMethod === 'login' ? 'Access Terminal' : 'Admin Login')}
                         </button>
                       </div>
@@ -738,7 +782,6 @@
           return (
             <div className="min-h-screen w-full relative overflow-x-hidden font-sans pb-24 flex flex-col bg-transparent text-white">
               <PremiumBackground />
-              <FloatingLogos />
               <MessageNotification msg={incomingMsg} onClose={() => setIncomingMsg(null)} />
               
               {toastData.show && (
@@ -802,20 +845,20 @@
 
                 <div className="w-full relative tab-transition-enter" key={activeTab}>
                     {user.role === 'admin' ? (
-                      <AdminDashboard inventory={inventory} orders={allOrders} deposits={deposits} categories={categories} usersDB={usersDB} triggerToast={triggerToast} db={db} appId={appId} promoSettings={promoSettings} tickets={tickets} featureSettings={featureSettings} bankSettings={bankSettings} smsSettings={smsSettings} activeChats={activeChats} auth={auth} user={user} activeTab={activeTab} setActiveTab={setActiveTab} />
+                      <AdminDashboard inventory={inventory} orders={allOrders} deposits={deposits} categories={categories} usersDB={usersDB} triggerToast={triggerToast} db={db} appId={appId} promoSettings={promoSettings} tickets={tickets} featureSettings={featureSettings} bankSettings={bankSettings} smsSettings={smsSettings} activeChats={activeChats} auth={auth} user={user} activeTab={activeTab} setActiveTab={setActiveTab} globalNotice={globalNotice} uiCard={uiCard} uiInput={uiInput} uiBtnPrimary={uiBtnPrimary} uiBtnSecondary={uiBtnSecondary} uiBtnAction={uiBtnAction} uiInnerPanel={uiInnerPanel} />
                     ) : (
                       <>
-                          {activeTab === 'sms' && <CustomerDashboardSMS user={user} balance={currentUserBalance} triggerToast={triggerToast} smsSettings={smsSettings} />}
-                          {activeTab === 'store' && <CustomerDashboardStore inventory={inventory} categories={categories} cart={cart} setCart={setCart} allOrders={allOrders} triggerToast={triggerToast} />}
-                          {activeTab === 'add_funds' && <CustomerDashboardFunds user={user} db={db} appId={appId} triggerToast={triggerToast} addNotification={addNotification} bankSettings={bankSettings} />}
+                          {activeTab === 'sms' && <CustomerDashboardSMS user={user} balance={currentUserBalance} triggerToast={triggerToast} smsSettings={smsSettings} uiCard={uiCard} uiInput={uiInput} uiBtnPrimary={uiBtnPrimary} uiInnerPanel={uiInnerPanel} />}
+                          {activeTab === 'store' && <CustomerDashboardStore inventory={inventory} categories={categories} cart={cart} setCart={setCart} allOrders={allOrders} uiCard={uiCard} uiInput={uiInput} uiBtnPrimary={uiBtnPrimary} uiBtnSecondary={uiBtnSecondary} uiInnerPanel={uiInnerPanel} triggerToast={triggerToast} />}
+                          {activeTab === 'add_funds' && <CustomerDashboardFunds user={user} db={db} appId={appId} triggerToast={triggerToast} addNotification={addNotification} bankSettings={bankSettings} uiCard={uiCard} uiInput={uiInput} uiBtnPrimary={uiBtnPrimary} uiBtnSecondary={uiBtnSecondary} uiInnerPanel={uiInnerPanel} />}
                           {activeTab === 'my_accounts' && <CustomerDashboardVault user={user} purchases={purchases} db={db} appId={appId} triggerToast={triggerToast} />}
-                          {activeTab === 'profile' && <CustomerDashboardProfile user={user} balance={currentUserBalance} tier={currentUserTier} userInfo={usersDB[user.email]} allOrders={allOrders} deposits={deposits} purchases={purchases} tickets={tickets.filter(t => t.email === user.email)} db={db} appId={appId} featureSettings={featureSettings} triggerToast={triggerToast} />}
+                          {activeTab === 'profile' && <CustomerDashboardProfile user={user} balance={currentUserBalance} tier={currentUserTier} userInfo={usersDB[user.email]} allOrders={allOrders} deposits={deposits} purchases={purchases} tickets={tickets.filter(t => t.email === user.email)} db={db} appId={appId} featureSettings={featureSettings} triggerToast={triggerToast} uiCard={uiCard} uiInput={uiInput} uiBtnPrimary={uiBtnPrimary} uiBtnSecondary={uiBtnSecondary} uiInnerPanel={uiInnerPanel} />}
                       </>
                     )}
                 </div>
               </main>
 
-              {showCart && user.role === 'customer' && <CartModal cart={cart} setCart={setCart} setShowCart={setShowCart} balance={currentUserBalance} user={user} promoSettings={promoSettings} triggerToast={triggerToast} addNotification={addNotification} db={db} appId={appId} />}
+              {showCart && user.role === 'customer' && <CartModal cart={cart} setCart={setCart} setShowCart={setShowCart} balance={currentUserBalance} user={user} promoSettings={promoSettings} triggerToast={triggerToast} addNotification={addNotification} db={db} appId={appId} uiBtnPrimary={uiBtnPrimary} uiInnerPanel={uiInnerPanel} />}
               
               {/* LIVE CHAT WIDGET FOR CUSTOMERS */}
               {user && user.role === 'customer' && <LiveChatWidget user={user} db={db} appId={appId} setIncomingMsg={setIncomingMsg} />}
@@ -899,7 +942,7 @@
                             <div className="flex-grow overflow-y-auto p-5 space-y-4 custom-scrollbar bg-transparent">
                                 {chatMessages.length === 0 ? (
                                     <div className="h-full flex flex-col items-center justify-center opacity-40 animate-pulse">
-                                        <Headset className="w-12 h-12 mb-4 text-white" strokeWidth={1} />
+                                        <Headset className="w-12 h-12 mb-4 text-white" strokeWidth={1.5} />
                                         <p className="text-[10px] text-gray-300 font-mono text-center uppercase tracking-widest">Encrypted Channel Open</p>
                                     </div>
                                 ) : (
@@ -929,7 +972,7 @@
         // ==========================================
         // 🌟 SMS MODULE (ULTRA PREMIUM) 🌟
         // ==========================================
-        function CustomerDashboardSMS({ user, balance, triggerToast, smsSettings }) {
+        function CustomerDashboardSMS({ user, balance, triggerToast, smsSettings, uiCard, uiInput, uiBtnPrimary, uiInnerPanel }) {
           const [isSmsLoading, setIsSmsLoading] = useState(false);
           const [selectedSmsService, setSelectedSmsService] = useState(''); 
           const [availableServices, setAvailableServices] = useState([]); 
@@ -1087,7 +1130,7 @@
           const formatPhoneDisplay = (phone) => { return `+${String(phone).replace(/\D/g, '')}`; };
           const copyNumberOnly = (phone) => { copyText(String(phone).replace(/\D/g, '')); };
 
-          if(!smsSettings?.active) return <div className="glass-effect rounded-3xl w-full text-center py-32 text-gray-500 font-mono text-sm uppercase tracking-widest border border-white/10"><Smartphone className="w-12 h-12 mx-auto mb-4 opacity-30" strokeWidth={1.5}/> Service Offline.</div>;
+          if(!smsSettings?.active) return <div className={uiCard + " text-center py-32 text-gray-500 font-mono text-sm uppercase tracking-widest border border-white/10"}><Smartphone className="w-12 h-12 mx-auto mb-4 opacity-30" strokeWidth={1.5}/> Service Offline.</div>;
 
           return (
             <div className="w-full max-w-3xl mx-auto space-y-6 sm:space-y-8 relative animate-fade-in-up">
@@ -1113,7 +1156,7 @@
                     </div>
                 )}
 
-                <div className="glass-effect rounded-3xl w-full p-6 sm:p-8 border border-white/10">
+                <div className={uiCard + " p-6 sm:p-8 border border-white/10"}>
                     <div className="flex items-center justify-between mb-8 pb-5 border-b border-white/10 relative z-10">
                         <h2 className="text-lg sm:text-xl font-light tracking-[0.2em] text-white flex items-center gap-3 uppercase">
                             <div className="w-10 h-10 rounded-xl glass-panel flex items-center justify-center shadow-inner backdrop-blur-md">
@@ -1131,7 +1174,7 @@
                         <div className="glass-panel p-4 rounded-2xl shadow-inner hover:border-brand-primary/30 transition-colors backdrop-blur-sm">
                             <label className="block text-[9px] font-bold text-gray-400 mb-2.5 uppercase tracking-[0.2em] ml-1">Select Region</label>
                             <div className="relative">
-                                <select value={smsCountry} onChange={e => setSmsCountry(e.target.value)} className="glass-input appearance-none cursor-pointer pr-10 text-white h-12 bg-black/40">
+                                <select value={smsCountry} onChange={e => setSmsCountry(e.target.value)} className={uiInput + " appearance-none cursor-pointer pr-10 text-white h-12 bg-black/40"}>
                                     {NETWORK_REGIONS.map(c => <option key={c.id} value={c.id} className="bg-[#121212]">{c.name}</option>)}
                                 </select>
                                 <ChevronDown className="w-4 h-4 text-white absolute right-4 top-4 pointer-events-none" />
@@ -1145,7 +1188,7 @@
                                     value={selectedTier?.originalPrice ? String(selectedTier.originalPrice) : ''}
                                     onChange={(e) => { const tier = Array.isArray(priceTiers) ? priceTiers.find(t => String(t?.originalPrice) === e.target.value) : null; if(tier) setSelectedTier(tier); }}
                                     disabled={isTiersLoading || (!Array.isArray(priceTiers)) || priceTiers.length === 0}
-                                    className="glass-input h-12 pl-10 appearance-none cursor-pointer text-[13px] font-mono text-white bg-black/40 disabled:opacity-50"
+                                    className={uiInput + " h-12 pl-10 appearance-none cursor-pointer text-[13px] font-mono text-white bg-black/40 disabled:opacity-50"}
                                 >
                                     {isTiersLoading ? (
                                         <option value="" className="text-xs bg-[#121212] text-gray-500">...</option>
@@ -1166,38 +1209,44 @@
                     <div className="glass-panel p-5 sm:p-6 rounded-3xl mb-8 shadow-inner relative z-10 backdrop-blur-sm hover:border-brand-primary/30 transition-all">
                        <label className="block text-[10px] font-bold text-gray-400 mb-3 uppercase tracking-[0.2em] ml-1">Select Application</label>
                        <div className="relative w-full">
-                           <div onClick={() => setIsAppDropdownOpen(!isAppDropdownOpen)} className="glass-input h-14 pl-12 pr-10 flex items-center justify-between cursor-pointer bg-black/50 shadow-md hover:border-white/40">
+                           <div onClick={() => setIsAppDropdownOpen(!isAppDropdownOpen)} className={uiInput + " h-14 pl-12 pr-10 flex items-center justify-between cursor-pointer bg-black/50 shadow-md hover:border-white/40"}>
                                <span className="truncate text-white font-bold text-[13px] tracking-wide">{isFetchingServices ? 'Loading Apps...' : (currentService ? `${currentService.name}` : (availableServices.length > 0 ? 'Select App' : 'No services found'))}</span>
                                {isFetchingServices ? <RefreshCw className="w-4 h-4 text-brand-primary absolute left-4 animate-spin"/> : <Smartphone className="w-4 h-4 text-brand-primary absolute left-4"/>}
                                <ChevronDown className={`w-4 h-4 text-gray-400 absolute right-4 transition-transform ${isAppDropdownOpen ? 'rotate-180' : ''}`}/>
                            </div>
+                           
+                           {/* 🟢 FIXED: MODAL INSTEAD OF ABSOLUTE DROPDOWN 🟢 */}
                            {isAppDropdownOpen && (
-                               <>
-                                   <div className="fixed inset-0 z-30" onClick={() => setIsAppDropdownOpen(false)}></div>
-                                   <div className="absolute top-full left-0 mt-3 w-full glass-effect border border-white/20 rounded-2xl shadow-[0_20px_50px_rgba(0,0,0,0.9)] z-40 overflow-hidden animate-pop-in">
-                                       <div className="p-3.5 border-b border-white/10 bg-black/60 backdrop-blur-md">
-                                           <input type="text" autoFocus placeholder="Search app..." value={appSearch} onChange={(e) => setAppSearch(e.target.value)} className="glass-input !py-3"/>
+                               <div className="fixed inset-0 z-[500] flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm animate-fade-in-up">
+                                   <div className="glass-effect border border-white/20 w-full max-w-sm rounded-3xl flex flex-col h-[70vh] shadow-[0_20px_50px_rgba(0,0,0,0.9)] overflow-hidden">
+                                       <div className="p-4 border-b border-white/10 flex justify-between items-center bg-black/60 backdrop-blur-md">
+                                           <h3 className="font-bold text-white text-xs tracking-widest uppercase">Select Application</h3>
+                                           <button onClick={() => setIsAppDropdownOpen(false)} className="text-gray-400 hover:text-white transition-colors"><X className="w-5 h-5"/></button>
                                        </div>
-                                       <div className="max-h-[300px] overflow-y-auto custom-scrollbar bg-black/40 p-2 backdrop-blur-md">
-                                           {filteredApps.length === 0 ? (<p className="text-center text-gray-500 py-8 text-[10px] font-mono uppercase tracking-widest">{isFetchingServices ? 'Fetching...' : 'No apps found.'}</p>) : 
+                                       <div className="p-4 bg-black/40 border-b border-white/10">
+                                           <input autoFocus type="text" placeholder="Search app..." value={appSearch} onChange={(e) => setAppSearch(e.target.value)} className="glass-input !py-3 w-full"/>
+                                       </div>
+                                       <div className="flex-grow overflow-y-auto p-3 custom-scrollbar bg-transparent space-y-2">
+                                           {filteredApps.length === 0 ? (<p className="text-center text-gray-500 py-10 text-[10px] font-mono uppercase tracking-widest">{isFetchingServices ? 'Fetching...' : 'No apps found.'}</p>) : 
                                                filteredApps.map(s => {
                                                    if(!s) return null;
                                                    return (
-                                                       <div key={s.code} onClick={() => { setSelectedSmsService(s.code); setIsAppDropdownOpen(false); setAppSearch(''); }} className={`px-4 py-3.5 my-1 rounded-xl cursor-pointer text-xs font-bold transition-colors flex items-center justify-between ${selectedSmsService === s.code ? 'bg-white text-black shadow-md' : 'text-gray-300 hover:bg-white/10'}`}>
+                                                       <div key={s.code} onClick={() => { setSelectedSmsService(s.code); setIsAppDropdownOpen(false); setAppSearch(''); }} className={`px-4 py-3.5 rounded-xl cursor-pointer text-xs font-bold transition-all duration-300 flex items-center justify-between ${selectedSmsService === s.code ? 'bg-white text-black shadow-[0_0_15px_rgba(255,255,255,0.4)] transform scale-[1.02]' : 'text-gray-300 hover:bg-white/10 glass-panel'}`}>
                                                            {s.name}
-                                                           {selectedSmsService === s.code && <CheckCircle className="w-3.5 h-3.5" />}
+                                                           {selectedSmsService === s.code && <CheckCircle className="w-4 h-4" />}
                                                        </div>
                                                    );
                                                })
                                            }
                                        </div>
                                    </div>
-                               </>
+                               </div>
                            )}
                        </div>
                     </div>
 
-                    <button onClick={buySmsNumber} disabled={isSmsLoading || !currentService || activeOrders.length > 0 || (!priceTiers || priceTiers.length === 0)} className="btn-animate w-full bg-white text-black font-bold py-4 px-6 rounded-2xl flex items-center justify-center gap-2 transition-all disabled:opacity-50 shadow-[0_5px_20px_rgba(255,255,255,0.2)] tracking-widest uppercase text-xs h-14 mt-4 relative z-10 max-w-md mx-auto block">
+                    {/* 🟢 GLOSSY GET NUMBER BUTTON 🟢 */}
+                    <button onClick={buySmsNumber} disabled={isSmsLoading || !currentService || activeOrders.length > 0 || (!priceTiers || priceTiers.length === 0)} className="btn-animate w-full glass-effect hover:bg-white/10 border border-white/30 text-white font-bold py-4 rounded-2xl transition-all duration-300 text-xs tracking-widest uppercase shadow-[0_0_20px_rgba(255,255,255,0.1)] h-14 mt-4 relative z-10 max-w-md mx-auto flex items-center justify-center gap-2">
                         {activeOrders.length > 0 ? <span className="flex items-center gap-2"><StopCircle className="w-4 h-4"/> Finish Order First</span> : isSmsLoading ? <span className="flex items-center gap-2"><RefreshCw className="w-4 h-4 animate-spin"/> Processing...</span> : 'Get Number'}
                     </button>
                 </div>
@@ -1243,7 +1292,7 @@
                                             <button onClick={() => copyText(c)} className="btn-animate p-4 bg-white hover:bg-gray-200 rounded-xl text-black transition-colors shadow-[0_0_15px_rgba(255,255,255,0.3)] shrink-0"><Copy className="w-4 h-4"/></button>
                                         </div>
                                     ))}
-                                    <button onClick={() => setActiveOrders([])} className="btn-animate w-full glass-panel hover:bg-white/20 text-white font-bold py-3.5 px-6 rounded-2xl transition-all flex items-center justify-center gap-2 uppercase text-xs tracking-widest shadow-md mt-8 !bg-black/50 !border-white/10 !py-4">Close Order</button>
+                                    <button onClick={() => setActiveOrders([])} className="btn-animate w-full glass-panel hover:bg-white/20 text-white font-bold py-4 px-6 rounded-2xl transition-all flex items-center justify-center gap-2 uppercase tracking-widest shadow-md mt-8 !text-xs">Close Order</button>
                                 </div>
                             )}
                         </div>
@@ -1254,9 +1303,9 @@
         }
 
         // ==========================================
-        // 🌟 ASSET STORE MODULE (ULTRA PREMIUM GLASS) 🌟
+        // 🌟 ASSET STORE MODULE
         // ==========================================
-        function CustomerDashboardStore({ inventory, categories, cart, setCart, allOrders, triggerToast }) {
+        function CustomerDashboardStore({ inventory, categories, cart, setCart, triggerToast }) {
           const [searchQuery, setSearchQuery] = useState('');
           const [selectedStates, setSelectedStates] = useState({}); 
           const filteredCategories = categories.filter(c => (c?.name || '').toLowerCase().includes((searchQuery || '').toLowerCase()));
@@ -1655,7 +1704,7 @@
                           <UserIcon className="w-8 h-8 text-white relative z-10" strokeWidth={1.5}/>
                         </div>
                         <h2 className="text-sm font-mono font-bold text-white mb-2 w-full truncate tracking-wide">{user.email}</h2>
-                        <p className="text-[10px] text-gray-400 font-mono uppercase tracking-widest mb-10">Joined: {userInfo?.joined ? new Date(userInfo.joined).toLocaleDateString() : 'Unknown'}</p>
+                        <p className="text-[10px] text-gray-400 font-mono uppercase tracking-widest mb-10">Joined: {safeFormatDate(userInfo?.joined)}</p>
                         
                         <div className="w-full bg-black/40 p-5 rounded-xl border border-white/5 backdrop-blur-sm">
                             <div className="w-full text-left mb-3 flex justify-between items-end">
@@ -1747,7 +1796,7 @@
                                             {isDeposit ? '+' : '-'}${Number(item.amount || 0).toFixed(2)}
                                         </p>
                                         <span className="text-[8px] text-gray-500 font-mono uppercase tracking-[0.2em] mt-1.5">
-                                            {item.date ? new Date(item.date).toLocaleString() : ''}
+                                            {safeFormatDate(item.date)}
                                         </span>
                                     </div>
                                 </div>
@@ -1791,7 +1840,7 @@
                                <div className="bg-[#050505] p-3 rounded-lg mb-3 shadow-inner ml-3">
                                  <p className="text-[11px] text-gray-400 font-light leading-relaxed break-words">{t.message}</p>
                                </div>
-                               <p className="text-[8px] text-gray-500 font-mono flex items-center gap-1.5 uppercase tracking-widest ml-3"><Clock className="w-2.5 h-2.5"/> {t.date ? new Date(t.date).toLocaleString() : ''}</p>
+                               <p className="text-[8px] text-gray-500 font-mono flex items-center gap-1.5 uppercase tracking-widest ml-3"><Clock className="w-2.5 h-2.5"/> {safeFormatDate(t.date)}</p>
                              </div>
                            ))}
                          </div>
@@ -1882,7 +1931,7 @@
         // ==========================================
         // ADMIN DASHBOARD
         // ==========================================
-        function AdminDashboard({ inventory, orders, deposits, categories, usersDB, db, appId, promoSettings, globalNotice, tickets, featureSettings, bankSettings, smsSettings, activeChats, auth, user, triggerToast, activeTab, setActiveTab }) {
+        function AdminDashboard({ inventory, orders, deposits, categories, usersDB, db, appId, promoSettings, globalNotice, tickets, featureSettings, bankSettings, smsSettings, activeChats, auth, user, uiCard, uiInput, triggerToast, activeTab, setActiveTab }) {
           const [uploadCategory, setUploadCategory] = useState('new');
           const [uploadText, setUploadText] = useState('');
           const [customerSearch, setCustomerSearch] = useState('');
@@ -2033,7 +2082,6 @@
           };
 
           const pendingDeposits = deposits.filter(d => d.status === 'Pending' || d.status === 'Verifying...' || d.status === 'Pending Review' || d.status === 'Awaiting Payment');
-          const pendingTickets = (tickets || []).filter(t => t.status === 'Open');
           const totalSales = orders.filter(o => o.status === 'Completed').reduce((sum, order) => sum + Number(order.total || 0), 0);
           
           const filteredUsers = Object.keys(usersDB).filter(email => email.toLowerCase().includes(customerSearch.toLowerCase()));
@@ -2124,16 +2172,16 @@
                      <form onSubmit={submitEditUser} className="space-y-5">
                         <div>
                            <label className="block text-[9px] font-bold text-gray-500 mb-2 uppercase tracking-[0.3em]">Password</label>
-                           <input type="text" value={editUserModal.password} onChange={e => setEditUserModal({...editUserModal, password: e.target.value})} className="glass-input text-xs" />
+                           <input type="text" value={editUserModal.password} onChange={e => setEditUserModal({...editUserModal, password: e.target.value})} className={uiInput + " text-xs"} />
                         </div>
                         <div className="grid grid-cols-2 gap-4">
                             <div>
                                <label className="block text-[9px] font-bold text-gray-500 mb-2 uppercase tracking-[0.3em]">Balance ($)</label>
-                               <input type="number" step="0.01" required value={editUserModal.balance} onChange={e => setEditUserModal({...editUserModal, balance: e.target.value})} className="glass-input" />
+                               <input type="number" step="0.01" required value={editUserModal.balance} onChange={e => setEditUserModal({...editUserModal, balance: e.target.value})} className={uiInput} />
                             </div>
                             <div>
                                <label className="block text-[9px] font-bold text-gray-500 mb-2 uppercase tracking-[0.3em]">Total Spent ($)</label>
-                               <input type="number" step="0.01" required value={editUserModal.totalSpent} onChange={e => setEditUserModal({...editUserModal, totalSpent: e.target.value})} className="glass-input" />
+                               <input type="number" step="0.01" required value={editUserModal.totalSpent} onChange={e => setEditUserModal({...editUserModal, totalSpent: e.target.value})} className={uiInput} />
                             </div>
                         </div>
                         <div className="pt-6 mt-4 border-t border-white/10">
@@ -2156,19 +2204,19 @@
                        <form onSubmit={handleAddProduct} className="space-y-4">
                           <div>
                              <label className="block text-[9px] font-bold text-gray-500 mb-2 uppercase tracking-[0.3em]">Card ID (e.g. facebook_acc)</label>
-                             <input type="text" required value={newProduct.id} onChange={e => setNewProduct({...newProduct, id: e.target.value})} className="glass-input text-xs" />
+                             <input type="text" required value={newProduct.id} onChange={e => setNewProduct({...newProduct, id: e.target.value})} className={uiInput + " text-xs"} />
                           </div>
                           <div>
                              <label className="block text-[9px] font-bold text-gray-500 mb-2 uppercase tracking-[0.3em]">Display Name</label>
-                             <input type="text" required value={newProduct.name} onChange={e => setNewProduct({...newProduct, name: e.target.value})} className="glass-input text-xs" />
+                             <input type="text" required value={newProduct.name} onChange={e => setNewProduct({...newProduct, name: e.target.value})} className={uiInput + " text-xs"} />
                           </div>
                           <div>
                              <label className="block text-[9px] font-bold text-gray-500 mb-2 uppercase tracking-[0.3em]">Description</label>
-                             <input type="text" required value={newProduct.description} onChange={e => setNewProduct({...newProduct, description: e.target.value})} className="glass-input text-xs" />
+                             <input type="text" required value={newProduct.description} onChange={e => setNewProduct({...newProduct, description: e.target.value})} className={uiInput + " text-xs"} />
                           </div>
                           <div>
                              <label className="block text-[9px] font-bold text-gray-500 mb-2 uppercase tracking-[0.3em]">Price ($)</label>
-                             <input type="number" step="0.01" required value={newProduct.price} onChange={e => setNewProduct({...newProduct, price: e.target.value})} className="glass-input text-xs font-mono" />
+                             <input type="number" step="0.01" required value={newProduct.price} onChange={e => setNewProduct({...newProduct, price: e.target.value})} className={uiInput + " text-xs font-mono"} />
                           </div>
                           <div className="pt-4 mt-2 border-t border-white/10">
                             <button type="submit" className="btn-animate w-full bg-white text-black font-bold py-4 px-6 rounded-2xl flex items-center justify-center gap-2 transition-all disabled:opacity-50 shadow-[0_5px_20px_rgba(255,255,255,0.2)] tracking-widest uppercase text-xs">Create Card</button>
@@ -2186,13 +2234,13 @@
                       <form onSubmit={handleUploadAccounts} className="flex flex-col space-y-5">
                         <div>
                           <label className="block text-[10px] font-bold text-gray-500 mb-2 uppercase tracking-[0.2em]">Select Type</label>
-                          <select value={uploadCategory} onChange={(e) => setUploadCategory(e.target.value)} className="glass-input">
+                          <select value={uploadCategory} onChange={(e) => setUploadCategory(e.target.value)} className={uiInput}>
                             {categories.map(cat => <option key={cat.id} value={cat.id}>{cat.name}</option>)}
                           </select>
                         </div>
                         <div>
                           <label className="block text-[10px] font-bold text-gray-500 mb-2 uppercase tracking-[0.2em]">Accounts Data</label>
-                          <textarea value={uploadText} onChange={(e) => setUploadText(e.target.value)} placeholder="Paste accounts here..." className="glass-input min-h-[200px] resize-none font-mono text-[10px]" required />
+                          <textarea value={uploadText} onChange={(e) => setUploadText(e.target.value)} placeholder="Paste accounts here..." className={uiInput + " min-h-[200px] resize-none font-mono text-[10px]"} required />
                         </div>
                         <button type="submit" className="btn-animate w-full bg-white text-black font-bold py-4 px-6 rounded-2xl flex items-center justify-center gap-2 transition-all disabled:opacity-50 shadow-[0_5px_20px_rgba(255,255,255,0.2)] tracking-widest uppercase text-xs">Upload</button>
                       </form>
@@ -2259,7 +2307,7 @@
                       <div className="flex items-center gap-3 w-full sm:w-auto">
                         <div className="relative flex-grow sm:flex-grow-0 sm:w-64">
                            <Search className="w-4 h-4 text-gray-500 absolute left-3 top-3" />
-                           <input type="text" placeholder="Search email..." value={customerSearch} onChange={(e)=>setCustomerSearch(e.target.value)} className="glass-input !py-2 !pl-9 bg-[#000] border-white/10 text-xs font-mono" />
+                           <input type="text" placeholder="Search email..." value={customerSearch} onChange={(e)=>setCustomerSearch(e.target.value)} className={uiInput + " !py-2 !pl-9 bg-[#000] border-white/10 text-xs font-mono"} />
                         </div>
                         <span className="text-[10px] font-mono font-bold text-white bg-white/10 border border-white/20 px-3 py-2 rounded-lg uppercase tracking-widest">{filteredUsers.length} Users</span>
                       </div>
@@ -2318,7 +2366,7 @@
                             <div className="bg-[#000] p-3 rounded-lg mb-3 shadow-inner">
                               <p className="text-xs text-gray-300 font-light leading-relaxed break-words">{t.message}</p>
                             </div>
-                            <p className="text-[9px] text-gray-500 font-mono flex items-center gap-1.5 uppercase tracking-widest"><Clock className="w-3 h-3"/> {new Date(t.date).toLocaleString()}</p>
+                            <p className="text-[9px] text-gray-500 font-mono flex items-center gap-1.5 uppercase tracking-widest"><Clock className="w-3 h-3"/> {safeFormatDate(t.date)}</p>
                           </div>
                         ))}
                         {tickets.length === 0 && <p className="text-center text-gray-600 py-10 text-xs font-mono uppercase tracking-widest">No tickets.</p>}
@@ -2368,7 +2416,7 @@
                                       </div>
                                       <form onSubmit={sendAdminMessage} className="bg-black/60 border-t border-white/10 p-3 flex gap-2 items-center animate-fade-in-up backdrop-blur-md">
                                           <input type="text" value={adminChatMessage} onChange={e => setAdminChatMessage(e.target.value)} placeholder="Type reply..." className="glass-input !py-3"/>
-                                          <button type="submit" disabled={!adminChatMessage.trim()} className="btn-animate bg-white text-black p-3.5 rounded-xl disabled:opacity-50 transition-colors shadow-[0_0_15px_rgba(255,255,255,0.2)]"><Send className="w-4 h-4"/></button>
+                                          <button type="submit" disabled={!adminChatMessage.trim()} className="btn-animate w-full bg-white text-black font-bold py-4 px-6 rounded-2xl flex items-center justify-center gap-2 transition-all disabled:opacity-50 shadow-[0_5px_20px_rgba(255,255,255,0.2)] tracking-widest uppercase text-xs !w-auto !p-3.5 !rounded-xl"><Send className="w-4 h-4"/></button>
                                       </form>
                                   </>
                               ) : (
@@ -2421,7 +2469,7 @@
                               <tr key={dep.id} className="hover:bg-white/5 transition-colors animate-scale-up" style={{animationDelay: `${idx * 0.05}s`, opacity: 0, animationFillMode: 'forwards'}}>
                                 <td className="p-4 sm:p-5">
                                   <p className="font-mono text-white font-bold text-[10px] truncate max-w-[120px]">{String(dep.id || '')}</p>
-                                  <p className="text-[9px] text-gray-500 mt-1.5 font-mono uppercase tracking-widest">{dep.date ? new Date(dep.date).toLocaleString() : ''}</p>
+                                  <p className="text-[9px] text-gray-500 mt-1.5 font-mono uppercase tracking-widest">{safeFormatDate(dep.date)}</p>
                                 </td>
                                 <td className="p-4 sm:p-5">
                                   <p className="text-gray-200 font-medium text-xs">{String(dep.email || '')}</p>
