@@ -291,6 +291,48 @@
           );
         };
 
+        // 🌟 UNIQUE QUICK GUIDE COMPONENT 🌟
+        const QuickGuide = () => {
+            const [showGuide, setShowGuide] = useState(true);
+            if(!showGuide) return null;
+            return (
+                <div className="w-full mb-5 relative z-20 animate-fade-in-up">
+                    <div className="bg-[#0a0a0a] border border-[#1a1a1a] rounded-xl p-4 relative overflow-hidden flex flex-col sm:flex-row items-center justify-between gap-4 shadow-[0_4px_20px_rgba(0,0,0,0.5)]">
+                        <button onClick={() => setShowGuide(false)} className="absolute top-2 right-2 text-gray-600 hover:text-white transition-colors z-20"><X className="w-3 h-3"/></button>
+                        
+                        <div className="shrink-0 flex flex-col items-center sm:items-start text-center sm:text-left z-10 pr-2 sm:border-r sm:border-[#1a1a1a]">
+                            <h3 className="text-[10px] font-bold text-white uppercase tracking-[0.2em] mb-1 flex items-center gap-1.5"><Zap className="w-3 h-3 text-brand-primary"/> Quick Start</h3>
+                            <p className="text-[8px] text-gray-500 font-mono tracking-widest uppercase">System Protocol</p>
+                        </div>
+
+                        <div className="flex-grow flex flex-col sm:flex-row w-full justify-around items-start sm:items-center relative gap-3 sm:gap-0 pl-2">
+                            {/* Connecting Line (Desktop) */}
+                            <div className="hidden sm:block absolute top-1/2 left-[10%] right-[10%] h-[1px] bg-[#1a1a1a] -translate-y-1/2 z-0">
+                                <div className="h-full bg-gradient-to-r from-brand-primary/0 via-brand-primary/50 to-brand-primary/0 w-full animate-[shimmer_2s_linear_infinite]"></div>
+                            </div>
+
+                            {/* Steps */}
+                            {[{num: '01', title: 'Fund Wallet', desc: 'Add USD via Crypto', icon: Wallet},
+                              {num: '02', title: 'Select Asset', desc: 'SMS or Accounts', icon: ShoppingCart},
+                              {num: '03', title: 'Deploy', desc: 'Instant Delivery', icon: CheckCircle}].map((step, i) => (
+                                <div key={i} className="flex items-center gap-2.5 relative z-10 bg-[#0a0a0a] px-2 py-1 w-full sm:w-auto group">
+                                    <div className="w-7 h-7 rounded-full bg-[#121212] border border-[#2a2a2a] flex items-center justify-center text-brand-primary shrink-0 shadow-[0_0_10px_rgba(212,175,55,0.05)] group-hover:border-brand-primary/50 transition-colors">
+                                        <step.icon className="w-3 h-3" />
+                                    </div>
+                                    <div className="text-left">
+                                        <p className="text-[9px] font-bold text-gray-200 uppercase tracking-widest flex items-center gap-1">
+                                            <span className="text-brand-primary/60 font-mono">{step.num}</span> {step.title}
+                                        </p>
+                                        <p className="text-[7px] text-gray-500 font-mono uppercase tracking-widest mt-0.5">{step.desc}</p>
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
+                    </div>
+                </div>
+            );
+        };
+
         function App() {
           const [showSplash, setShowSplash] = useState(true);
           const [user, setUser] = useState(null); 
@@ -543,11 +585,12 @@
                 )}
 
                 <div className="w-full relative z-30 mb-6 animate-fade-in-up">
-                  <div className="glass-effect rounded-2xl p-1 flex justify-between sm:justify-start gap-1 w-full overflow-x-auto scrollbar-hide border border-[#1a1a1a]">
+                  {/* 🟢 FIXED: Menu Button Gap Removed & Made Scroll-Free on Mobile 🟢 */}
+                  <div className="glass-effect rounded-xl p-1 flex justify-between gap-0.5 w-full overflow-x-visible border border-[#1a1a1a]">
                     {(user.role === 'admin' ? ADMIN_TABS : CUSTOMER_TABS).map(tab => (
-                      <button key={tab.id} onClick={() => setActiveTab(tab.id)} className={`flex-1 sm:flex-none flex flex-col sm:flex-row items-center justify-center gap-1.5 py-2.5 px-3 rounded-xl transition-all min-w-[70px] sm:min-w-[100px] ${activeTab === tab.id ? 'bg-brand-primary/10 text-brand-primary border border-brand-primary/20 shadow-sm scale-100' : 'text-gray-500 hover:text-gray-300 hover:bg-[#121212] border border-transparent hover:scale-95'}`}>
-                          <tab.icon className={`w-3.5 h-3.5 sm:w-4 sm:h-4 transition-all duration-300 ${activeTab === tab.id ? 'drop-shadow-[0_0_8px_rgba(212,175,55,0.5)] scale-110' : ''}`} strokeWidth={1.5} /> 
-                          <span className="text-[9px] sm:text-[10px] font-bold text-center uppercase tracking-widest">{tab.label}</span>
+                      <button key={tab.id} onClick={() => setActiveTab(tab.id)} className={`flex-1 flex flex-col items-center justify-center gap-1 py-2 px-1 rounded-lg transition-all min-w-0 ${activeTab === tab.id ? 'bg-brand-primary/10 text-brand-primary shadow-sm scale-105' : 'text-gray-500 hover:text-gray-300 hover:bg-[#121212] scale-100'}`}>
+                          <tab.icon className={`w-4 h-4 transition-all duration-300 ${activeTab === tab.id ? 'drop-shadow-[0_0_8px_rgba(212,175,55,0.5)] scale-110' : ''}`} strokeWidth={2} /> 
+                          <span className="text-[8px] sm:text-[10px] font-bold text-center uppercase tracking-wide leading-none">{tab.label}</span>
                       </button>
                     ))}
                   </div>
@@ -555,7 +598,7 @@
 
                 <div className="w-full relative tab-transition-enter" key={activeTab}>
                     {user.role === 'admin' ? (
-                      <AdminDashboard inventory={inventory} orders={allOrders} deposits={deposits} categories={categories} usersDB={usersDB} triggerToast={triggerToast} db={db} appId={appId} promoSettings={promoSettings} tickets={tickets} featureSettings={featureSettings} bankSettings={bankSettings} smsSettings={smsSettings} activeChats={activeChats} auth={auth} user={user} activeTab={activeTab} setActiveTab={setActiveTab} uiCard={uiCard} uiInput={uiInput} uiBtnPrimary={uiBtnPrimary} uiBtnSecondary={uiBtnSecondary} uiBtnAction={uiBtnAction} uiInnerPanel={uiInnerPanel} />
+                      <AdminDashboard inventory={inventory} orders={allOrders} deposits={deposits} categories={categories} usersDB={usersDB} triggerToast={triggerToast} db={db} appId={appId} promoSettings={promoSettings} tickets={tickets} featureSettings={featureSettings} bankSettings={bankSettings} smsSettings={smsSettings} activeChats={activeChats} auth={auth} user={user} activeTab={activeTab} setActiveTab={setActiveTab} globalNotice={globalNotice} uiCard={uiCard} uiInput={uiInput} uiBtnPrimary={uiBtnPrimary} uiBtnSecondary={uiBtnSecondary} uiBtnAction={uiBtnAction} uiInnerPanel={uiInnerPanel} />
                     ) : (
                       <>
                           {activeTab === 'sms' && <CustomerDashboardSMS user={user} balance={currentUserBalance} triggerToast={triggerToast} smsSettings={smsSettings} uiCard={uiCard} uiInput={uiInput} uiBtnPrimary={uiBtnPrimary} uiInnerPanel={uiInnerPanel} />}
@@ -676,7 +719,6 @@
           useEffect(() => { if (user?.email) localStorage.setItem(`smsOrders_${user.email}`, JSON.stringify(activeOrders)); }, [activeOrders, user]);
           useEffect(() => { const int = setInterval(() => setNow(Date.now()), 1000); return () => clearInterval(int); }, []);
 
-          // 🟢 FIXED: Check API and Loading State
           useEffect(() => {
               if (smsSettings?.active) {
                   setIsFetchingServices(true);
@@ -754,7 +796,6 @@
               } catch (e) { triggerToast("Network Error."); } finally { setIsSmsLoading(false); }
           };
 
-          // 🟢 FIXED: REMOVED CANCEL FUNCTION, ONLY SKIP REMAINS
           const performSkip = async (orderId, priceToRefund) => {
               try {
                   const token = await getAuthToken();
@@ -855,7 +896,6 @@
                        <div className="flex flex-col sm:flex-row gap-4 items-center">
                            <div className="relative w-full">
                                <div onClick={() => setIsAppDropdownOpen(!isAppDropdownOpen)} className={uiInput + " h-14 pl-12 pr-10 flex items-center justify-between cursor-pointer border-[#2a2a2a] hover:border-brand-primary/50 bg-[#0a0a0a]"}>
-                                   {/* 🟢 FIXED: Show proper state text based on fetching status */}
                                    <span className="truncate text-white font-medium">{isFetchingServices ? 'Loading Apps...' : (currentService ? `${currentService.name}` : (availableServices.length > 0 ? 'Select App' : 'No services found'))}</span>
                                    {isFetchingServices ? <RefreshCw className="w-4 h-4 text-brand-primary absolute left-4 animate-spin"/> : <Smartphone className="w-4 h-4 text-brand-primary absolute left-4"/>}
                                    <ChevronDown className={`w-4 h-4 text-gray-500 absolute right-4 transition-transform ${isAppDropdownOpen ? 'rotate-180' : ''}`}/>
@@ -1179,7 +1219,7 @@
                   setAutoPay(prev => {
                       if (prev.time > 0) return { ...prev, time: prev.time - 1 };
                       if (prev.time <= 0 && prev.checking) {
-                          try { updateDoc(doc(db, 'artifacts', appId, 'public', 'data', 'Store_Deposits', prev.invoiceId), { status: 'Expired' }); } catch (e) {}
+                          try { updateDoc(doc(db, 'artifacts', appId, 'public', 'data', 'Store_Deposits', autoPay.invoiceId), { status: 'Expired' }); } catch (e) {}
                           triggerToast('Payment session expired.');
                           return { active: false, amount: 0, cryptoAmount: 0, time: 0, checking: false, invoiceId: '' };
                       }
@@ -1865,10 +1905,11 @@
               } catch(err) {}
           };
 
-          // 🟢 FIXED: Navigate and pre-select chat 🟢
+          // 🟢 FIXED: Navigate and pre-select chat safely 🟢
           const startTicketChat = (userEmail) => {
-              setSelectedChatUser(userEmail);
-              // setActiveTab('support'); This is already active if we are clicking reply inside support tab, but it's safe to keep.
+              if (userEmail) {
+                  setSelectedChatUser(userEmail);
+              }
           };
 
           const pendingDeposits = deposits.filter(d => d.status === 'Pending' || d.status === 'Verifying...' || d.status === 'Pending Review' || d.status === 'Awaiting Payment');
@@ -2141,7 +2182,7 @@
                           <div key={t.id} className="bg-[#0a0a0a] border border-[#1a1a1a] p-4 rounded-xl animate-scale-up" style={{animationDelay: `${idx * 0.05}s`, opacity: 0, animationFillMode: 'forwards'}}>
                             <div className="flex justify-between items-start mb-3">
                               <div>
-                                <p className="text-gray-300 font-medium text-xs mb-1">{t.email}</p>
+                                <p className="text-gray-300 font-medium text-xs mb-1">{String(t.email || 'Unknown')}</p>
                                 <span className="font-bold text-[10px] text-brand-primary uppercase tracking-wide">{t.subject}</span>
                               </div>
                               <div className="flex flex-col items-end gap-2">
@@ -2157,7 +2198,7 @@
                             <div className="bg-[#121212] p-3 rounded-lg mb-3">
                               <p className="text-xs text-gray-400 font-light leading-relaxed break-words">{t.message}</p>
                             </div>
-                            <p className="text-[9px] text-gray-600 font-mono flex items-center gap-1.5 uppercase tracking-widest"><Clock className="w-3 h-3"/> {new Date(t.date).toLocaleString()}</p>
+                            <p className="text-[9px] text-gray-600 font-mono flex items-center gap-1.5 uppercase tracking-widest"><Clock className="w-3 h-3"/> {t.date ? new Date(t.date).toLocaleString() : ''}</p>
                           </div>
                         ))}
                         {tickets.length === 0 && <p className="text-center text-gray-600 py-10 text-xs font-mono uppercase tracking-widest">No tickets.</p>}
@@ -2179,7 +2220,7 @@
                                       <div key={chat.id} onClick={() => setSelectedChatUser(chat.userEmail)} className={`p-4 cursor-pointer border-b border-[#1a1a1a] transition-all hover:bg-[#121212] animate-slide-in-right ${selectedChatUser === chat.userEmail ? 'bg-[#121212] border-l-2 border-l-brand-primary' : ''}`} style={{animationDelay: `${idx * 0.05}s`, opacity: 0, animationFillMode: 'forwards'}}>
                                           <p className="text-[10px] font-bold text-gray-300 truncate w-full mb-1 flex items-center gap-1">
                                               {chat.unreadByAdmin && <span className="w-1.5 h-1.5 rounded-full bg-red-500"></span>}
-                                              {chat.userEmail.split('@')[0]}
+                                              {String(chat.userEmail || chat.id || 'User').split('@')[0]}
                                           </p>
                                           <p className="text-[9px] text-gray-500 truncate w-full font-light">{chat.lastMessage}</p>
                                       </div>
