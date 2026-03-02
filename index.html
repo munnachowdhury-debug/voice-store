@@ -18,15 +18,14 @@
             },
             colors: {
               brand: {
-                primary: '#06b6d4', // Cyan/Blue futuristic color
+                primary: '#06b6d4', 
                 primaryHover: '#0891b2', 
-                darkBg: '#030712', // Very Deep Blue/Navy
+                darkBg: '#030712', 
                 border: 'rgba(255, 255, 255, 0.1)' 
               }
             },
             backgroundImage: {
               'gold-gradient': 'linear-gradient(to right, #06b6d4, #3b82f6, #6366f1)',
-              'premium-glow': 'radial-gradient(circle at top right, rgba(99,102,241,0.2) 0%, rgba(0,0,0,0) 60%)',
               'glass-gradient': 'linear-gradient(145deg, rgba(255,255,255,0.05) 0%, rgba(255,255,255,0.01) 100%)'
             },
             animation: {
@@ -38,7 +37,6 @@
               'pulse-slow': 'pulseSlow 6s ease-in-out infinite',
               'shimmer': 'shimmer 2.5s linear infinite',
               'float': 'float 8s ease-in-out infinite',
-              'float-logo': 'floatLogo 20s linear infinite',
             },
             keyframes: {
               shimmer: {
@@ -72,12 +70,6 @@
               float: {
                 '0%, 100%': { transform: 'translateY(0)' },
                 '50%': { transform: 'translateY(-25px)' }
-              },
-              floatLogo: {
-                '0%': { transform: 'translateY(0) rotate(0deg) scale(1)' },
-                '33%': { transform: 'translateY(-40px) rotate(15deg) scale(1.1)' },
-                '66%': { transform: 'translateY(20px) rotate(-10deg) scale(0.9)' },
-                '100%': { transform: 'translateY(0) rotate(0deg) scale(1)' }
               }
             }
           }
@@ -201,34 +193,28 @@
 
         /* 🌟 OUTSIDE FLYING ANIMATIONS FOR LOGOS (SUPER SLOW) 🌟 */
         @keyframes fly1 {
-            0% { transform: translate(-40vw, 130vh) rotate(0deg) scale(0.5); opacity: 0; }
-            10% { opacity: 0.8; }
-            90% { opacity: 0.8; }
-            100% { transform: translate(140vw, -30vh) rotate(360deg) scale(1.5); opacity: 0; }
+            0% { transform: translate(-30vw, 130vh) rotate(0deg) scale(0.5); opacity: 0; }
+            5% { opacity: 0.3; }
+            95% { opacity: 0.3; }
+            100% { transform: translate(130vw, -30vh) rotate(360deg) scale(1.5); opacity: 0; }
         }
         @keyframes fly2 {
-            0% { transform: translate(140vw, 110vh) rotate(0deg) scale(1); opacity: 0; }
-            10% { opacity: 0.7; }
-            90% { opacity: 0.7; }
-            100% { transform: translate(-40vw, -30vh) rotate(-360deg) scale(0.8); opacity: 0; }
+            0% { transform: translate(130vw, 110vh) rotate(0deg) scale(1); opacity: 0; }
+            5% { opacity: 0.25; }
+            95% { opacity: 0.25; }
+            100% { transform: translate(-30vw, -30vh) rotate(-360deg) scale(0.8); opacity: 0; }
         }
         @keyframes fly3 {
             0% { transform: translate(50vw, 130vh) rotate(0deg) scale(1.2); opacity: 0; }
-            10% { opacity: 0.9; }
-            90% { opacity: 0.9; }
-            100% { transform: translate(-40vw, -50vh) rotate(180deg) scale(0.5); opacity: 0; }
+            5% { opacity: 0.35; }
+            95% { opacity: 0.35; }
+            100% { transform: translate(-30vw, -50vh) rotate(180deg) scale(0.5); opacity: 0; }
         }
         @keyframes fly4 {
-            0% { transform: translate(-40vw, 30vh) rotate(0deg) scale(0.8); opacity: 0; }
-            10% { opacity: 0.7; }
-            90% { opacity: 0.7; }
-            100% { transform: translate(140vw, 90vh) rotate(270deg) scale(1.2); opacity: 0; }
-        }
-        @keyframes fly5 {
-            0% { transform: translate(140vw, 20vh) rotate(0deg) scale(1); opacity: 0; }
-            10% { opacity: 0.8; }
-            90% { opacity: 0.8; }
-            100% { transform: translate(-40vw, 110vh) rotate(-180deg) scale(1.5); opacity: 0; }
+            0% { transform: translate(-30vw, 30vh) rotate(0deg) scale(0.8); opacity: 0; }
+            5% { opacity: 0.2; }
+            95% { opacity: 0.2; }
+            100% { transform: translate(130vw, 90vh) rotate(270deg) scale(1.2); opacity: 0; }
         }
     </style>
 </head>
@@ -317,15 +303,15 @@
           return { threshold: 0, name: 'Standard', next: 20, color: 'text-gray-400', icon: Award };
         };
 
-        // 🛡️ SAFE DATE FORMATTER
+        // 🛡️ SAFE DATE FORMATTER (To prevent crash during mapping)
         const safeFormatDate = (d) => {
             try {
-                if (!d) return '';
-                if (d.toDate) return d.toDate().toLocaleDateString();
+                if (!d) return 'N/A';
+                if (typeof d.toDate === 'function') return d.toDate().toLocaleDateString();
                 const dateObj = new Date(d);
-                if (isNaN(dateObj.getTime())) return '';
-                return dateObj.toLocaleDateString();
-            } catch(e) { return ''; }
+                if (!isNaN(dateObj.getTime())) return dateObj.toLocaleDateString();
+            } catch(e) {}
+            return 'Invalid Date';
         };
 
         const PremiumBackground = () => (
@@ -339,30 +325,29 @@
         const FloatingLogos = () => {
             const baseLogos = [
                 // WhatsApp (Green)
-                <svg className="text-[#25D366] drop-shadow-[0_0_25px_rgba(37,211,102,0.9)]" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413Z"/></svg>,
+                <svg className="text-[#25D366] drop-shadow-[0_0_20px_rgba(37,211,102,0.8)]" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413Z"/></svg>,
                 // Telegram (Blue)
-                <svg className="text-[#0088cc] drop-shadow-[0_0_25px_rgba(0,136,204,0.9)]" viewBox="0 0 24 24" fill="currentColor"><path d="M12 24c6.627 0 12-5.373 12-12S18.627 0 12 0 0 5.373 0 12s5.373 12 12 12zm5.894-17.717c.504-.227.876.108.736.69l-2.035 9.585c-.15.688-.564.86-.145.498l-3.155-2.322-1.523 1.468c-.168.168-.31.31-.635.31l.226-3.206 5.828-5.266c.253-.226-.055-.352-.393-.119L6.592 12.19l-3.107-.972c-.675-.21-.688-.675.14-.997l14.269-5.5Z"/></svg>,
+                <svg className="text-[#0088cc] drop-shadow-[0_0_20px_rgba(0,136,204,0.8)]" viewBox="0 0 24 24" fill="currentColor"><path d="M12 24c6.627 0 12-5.373 12-12S18.627 0 12 0 0 5.373 0 12s5.373 12 12 12zm5.894-17.717c.504-.227.876.108.736.69l-2.035 9.585c-.15.688-.564.86-.145.498l-3.155-2.322-1.523 1.468c-.168.168-.31.31-.635.31l.226-3.206 5.828-5.266c.253-.226-.055-.352-.393-.119L6.592 12.19l-3.107-.972c-.675-.21-.688-.675.14-.997l14.269-5.5Z"/></svg>,
                 // Facebook (Blue)
-                <svg className="text-[#1877F2] drop-shadow-[0_0_25px_rgba(24,119,242,0.9)]" viewBox="0 0 24 24" fill="currentColor"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.469h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.469h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg>,
+                <svg className="text-[#1877F2] drop-shadow-[0_0_20px_rgba(24,119,242,0.8)]" viewBox="0 0 24 24" fill="currentColor"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.469h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.469h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg>,
                 // Google Voice (Emerald)
-                <svg className="text-[#10b981] drop-shadow-[0_0_25px_rgba(16,185,129,0.9)]" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.373 0 0 5.373 0 12s5.373 12 12 12 12-5.373 12-12S18.627 0 12 0zm4.5 16.5c-1.33 0-3.83-1.67-5-3C10.17 12.17 8.5 9.67 8.5 8.33 8.5 7.6 9.17 7 9.83 7c.22 0 .44.1.58.28l1.42 2.13c.12.18.12.43 0 .61l-.8.8c.83 1.67 2.17 3 3.83 3.83l.8-.8c.18-.12.43-.12.61 0l2.13 1.42c.18.14.28.36.28.58 0 .66-.6 1.33-1.33 1.33z"/></svg>,
-                // Generic/TextPlus (Purple)
-                <svg className="text-[#8b5cf6] drop-shadow-[0_0_25px_rgba(139,92,246,0.9)]" viewBox="0 0 24 24" fill="currentColor"><path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zM9 11H7V9h2v2zm4 0h-2V9h2v2zm4 0h-2V9h2v2z"/></svg>
+                <svg className="text-[#10b981] drop-shadow-[0_0_20px_rgba(16,185,129,0.8)]" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.373 0 0 5.373 0 12s5.373 12 12 12 12-5.373 12-12S18.627 0 12 0zm4.5 16.5c-1.33 0-3.83-1.67-5-3C10.17 12.17 8.5 9.67 8.5 8.33 8.5 7.6 9.17 7 9.83 7c.22 0 .44.1.58.28l1.42 2.13c.12.18.12.43 0 .61l-.8.8c.83 1.67 2.17 3 3.83 3.83l.8-.8c.18-.12.43-.12.61 0l2.13 1.42c.18.14.28.36.28.58 0 .66-.6 1.33-1.33 1.33z"/></svg>
             ];
             
             const renderedLogos = useMemo(() => {
                 const arr = [];
-                const animationsList = ['fly1', 'fly2', 'fly3', 'fly4', 'fly5'];
-                // 🟢 Reduced the number of logos to 7 to make it less cluttered 🟢
-                for(let i=0; i<7; i++) {
+                const animationsList = ['fly1', 'fly2', 'fly3', 'fly4'];
+                // 🟢 Reduced the number of logos to ONLY 4 to remove clutter 🟢
+                for(let i=0; i<4; i++) {
                     const logo = baseLogos[i % baseLogos.length];
-                    const randomSize = Math.floor(Math.random() * 40) + 40;
-                    const randomDelay = Math.random() * -40; 
-                    const randomDuration = Math.floor(Math.random() * 60) + 60; 
+                    const randomSize = Math.floor(Math.random() * 40) + 50;
+                    const randomDelay = Math.random() * -60; 
+                    // 🟢 Super Slow Flying (100s to 160s duration) 🟢
+                    const randomDuration = Math.floor(Math.random() * 60) + 100; 
                     const animationName = animationsList[i % animationsList.length];
                     
                     arr.push(
-                        <div key={i} className="absolute opacity-60" style={{
+                        <div key={i} className="absolute opacity-30" style={{
                             width: `${randomSize}px`,
                             height: `${randomSize}px`,
                             animation: `${animationName} ${randomDuration}s linear infinite`,
@@ -466,13 +451,13 @@
                 return () => clearInterval(interval);
             }, [twoFaSecret]);
 
-            if (!acc) return null; // Ultimate safety
+            if (!acc) return null; // Ultimate safety check
 
             return (
                 <div className="bg-black/40 backdrop-blur-xl border border-white/10 hover:border-white/30 transition-all duration-300 rounded-3xl p-6 flex flex-col animate-scale-up hover:shadow-[0_10px_30px_rgba(255,255,255,0.05)]" style={{animationDelay: `${idx * 0.05}s`, opacity: 0, animationFillMode: 'forwards'}}>
                     <div className="flex justify-between items-start mb-5 pb-4 border-b border-white/10">
                         <span className="text-xs font-bold text-white uppercase tracking-wider flex items-center gap-2">
-                            <Package className="w-4 h-4 text-gray-300"/> {acc.type || 'Account'}
+                            <Package className="w-4 h-4 text-gray-300"/> {String(acc.type || 'Account')}
                         </span>
                         <span className="text-[8px] font-mono text-gray-400 uppercase tracking-widest bg-white/5 px-2.5 py-1 rounded border border-white/10">
                             {safeFormatDate(acc.date)}
@@ -644,36 +629,44 @@
                 snap.forEach((d) => { o.push({ id: d.id, ...d.data() }); }); 
                 // Using safer sort for dates
                 setAllOrders(o.sort((a,b) => {
-                    const da = a.date ? new Date(a.date).getTime() : 0;
-                    const db = b.date ? new Date(b.date).getTime() : 0;
-                    return isNaN(db) || isNaN(da) ? 0 : db - da;
+                    const timeA = a.date ? new Date(a.date).getTime() : 0;
+                    const timeB = b.date ? new Date(b.date).getTime() : 0;
+                    if (isNaN(timeA)) return 1;
+                    if (isNaN(timeB)) return -1;
+                    return timeB - timeA;
                 })); 
             }, errLog));
             unsubs.push(onSnapshot(collection(db, 'artifacts', appId, 'public', 'data', 'Store_Deposits'), (snap) => { 
                 const dep = []; 
                 snap.forEach((d) => { dep.push({ id: d.id, ...d.data() }); }); 
                 setDeposits(dep.sort((a,b) => {
-                    const da = a.date ? new Date(a.date).getTime() : 0;
-                    const db = b.date ? new Date(b.date).getTime() : 0;
-                    return isNaN(db) || isNaN(da) ? 0 : db - da;
+                    const timeA = a.date ? new Date(a.date).getTime() : 0;
+                    const timeB = b.date ? new Date(b.date).getTime() : 0;
+                    if (isNaN(timeA)) return 1;
+                    if (isNaN(timeB)) return -1;
+                    return timeB - timeA;
                 })); 
             }, errLog));
             unsubs.push(onSnapshot(collection(db, 'artifacts', appId, 'public', 'data', 'Store_Purchases'), (snap) => { 
                 const p = []; 
                 snap.forEach((d) => { p.push({ id: d.id, ...d.data() }); }); 
                 setPurchases(p.sort((a,b) => {
-                    const da = a.date ? new Date(a.date).getTime() : 0;
-                    const db = b.date ? new Date(b.date).getTime() : 0;
-                    return isNaN(db) || isNaN(da) ? 0 : db - da;
+                    const timeA = a.date ? new Date(a.date).getTime() : 0;
+                    const timeB = b.date ? new Date(b.date).getTime() : 0;
+                    if (isNaN(timeA)) return 1;
+                    if (isNaN(timeB)) return -1;
+                    return timeB - timeA;
                 })); 
             }, errLog));
             unsubs.push(onSnapshot(collection(db, 'artifacts', appId, 'public', 'data', 'Store_Tickets'), (snap) => { 
                 const t = []; 
                 snap.forEach((d) => { t.push({ id: d.id, ...d.data() }); }); 
                 setTickets(t.sort((a,b) => {
-                    const da = a.date ? new Date(a.date).getTime() : 0;
-                    const db = b.date ? new Date(b.date).getTime() : 0;
-                    return isNaN(db) || isNaN(da) ? 0 : db - da;
+                    const timeA = a.date ? new Date(a.date).getTime() : 0;
+                    const timeB = b.date ? new Date(b.date).getTime() : 0;
+                    if (isNaN(timeA)) return 1;
+                    if (isNaN(timeB)) return -1;
+                    return timeB - timeA;
                 })); 
             }, errLog));
             
@@ -740,7 +733,6 @@
             return (
               <div className="min-h-screen flex items-center justify-center p-4 relative font-sans w-full bg-transparent text-white">
                 <PremiumBackground />
-                {/* 🟢 FLOATING LOGOS ON LOGIN SCREEN 🟢 */}
                 <FloatingLogos />
                 <div className="w-full max-w-[400px] animate-scale-up z-10">
                   <div className="flex flex-col items-center mb-8">
@@ -789,7 +781,6 @@
           return (
             <div className="min-h-screen w-full relative overflow-x-hidden font-sans pb-24 flex flex-col bg-transparent text-white">
               <PremiumBackground />
-              {/* 🟢 FLOATING LOGOS ON DASHBOARD SCREEN AS WELL 🟢 */}
               <FloatingLogos />
               <MessageNotification msg={incomingMsg} onClose={() => setIncomingMsg(null)} />
               
@@ -854,20 +845,21 @@
 
                 <div className="w-full relative tab-transition-enter" key={activeTab}>
                     {user.role === 'admin' ? (
-                      <AdminDashboard inventory={inventory} orders={allOrders} deposits={deposits} categories={categories} usersDB={usersDB} triggerToast={triggerToast} db={db} appId={appId} promoSettings={promoSettings} tickets={tickets} featureSettings={featureSettings} bankSettings={bankSettings} smsSettings={smsSettings} activeChats={activeChats} auth={auth} user={user} activeTab={activeTab} setActiveTab={setActiveTab} globalNotice={globalNotice} uiCard={uiCard} uiInput={uiInput} uiBtnPrimary={uiBtnPrimary} uiBtnSecondary={uiBtnSecondary} uiBtnAction={uiBtnAction} uiInnerPanel={uiInnerPanel} />
+                      <AdminDashboard inventory={inventory} orders={allOrders} deposits={deposits} categories={categories} usersDB={usersDB} triggerToast={triggerToast} db={db} appId={appId} promoSettings={promoSettings} tickets={tickets} featureSettings={featureSettings} bankSettings={bankSettings} smsSettings={smsSettings} activeChats={activeChats} auth={auth} user={user} activeTab={activeTab} setActiveTab={setActiveTab} />
                     ) : (
                       <>
-                          {activeTab === 'sms' && <CustomerDashboardSMS user={user} balance={currentUserBalance} triggerToast={triggerToast} smsSettings={smsSettings} uiCard={uiCard} uiInput={uiInput} uiBtnPrimary={uiBtnPrimary} uiInnerPanel={uiInnerPanel} />}
-                          {activeTab === 'store' && <CustomerDashboardStore inventory={inventory} categories={categories} cart={cart} setCart={setCart} allOrders={allOrders} uiCard={uiCard} uiInput={uiInput} uiBtnPrimary={uiBtnPrimary} uiBtnSecondary={uiBtnSecondary} uiInnerPanel={uiInnerPanel} triggerToast={triggerToast} />}
-                          {activeTab === 'add_funds' && <CustomerDashboardFunds user={user} db={db} appId={appId} triggerToast={triggerToast} addNotification={addNotification} bankSettings={bankSettings} uiCard={uiCard} uiInput={uiInput} uiBtnPrimary={uiBtnPrimary} uiBtnSecondary={uiBtnSecondary} uiInnerPanel={uiInnerPanel} />}
-                          {activeTab === 'my_accounts' && <CustomerDashboardVault user={user} purchases={purchases} db={db} appId={appId} uiCard={uiCard} uiBtnPrimary={uiBtnPrimary} uiBtnSecondary={uiBtnSecondary} uiInnerPanel={uiInnerPanel} triggerToast={triggerToast} />}
-                          {activeTab === 'profile' && <CustomerDashboardProfile user={user} balance={currentUserBalance} tier={currentUserTier} userInfo={usersDB[user.email]} allOrders={allOrders} deposits={deposits} purchases={purchases} tickets={tickets.filter(t => t.email === user.email)} db={db} appId={appId} featureSettings={featureSettings} triggerToast={triggerToast} uiCard={uiCard} uiInput={uiInput} uiBtnPrimary={uiBtnPrimary} uiBtnSecondary={uiBtnSecondary} uiInnerPanel={uiInnerPanel} />}
+                          {activeTab === 'sms' && <CustomerDashboardSMS user={user} balance={currentUserBalance} triggerToast={triggerToast} smsSettings={smsSettings} />}
+                          {activeTab === 'store' && <CustomerDashboardStore inventory={inventory} categories={categories} cart={cart} setCart={setCart} allOrders={allOrders} triggerToast={triggerToast} />}
+                          {activeTab === 'add_funds' && <CustomerDashboardFunds user={user} db={db} appId={appId} triggerToast={triggerToast} addNotification={addNotification} bankSettings={bankSettings} />}
+                          {/* 🟢 FULLY FIXED VAULT COMPONENT RENDERING 🟢 */}
+                          {activeTab === 'my_accounts' && <CustomerDashboardVault user={user} purchases={purchases} db={db} appId={appId} triggerToast={triggerToast} />}
+                          {activeTab === 'profile' && <CustomerDashboardProfile user={user} balance={currentUserBalance} tier={currentUserTier} userInfo={usersDB[user.email]} allOrders={allOrders} deposits={deposits} purchases={purchases} tickets={tickets.filter(t => t.email === user.email)} db={db} appId={appId} featureSettings={featureSettings} triggerToast={triggerToast} />}
                       </>
                     )}
                 </div>
               </main>
 
-              {showCart && user.role === 'customer' && <CartModal cart={cart} setCart={setCart} setShowCart={setShowCart} balance={currentUserBalance} user={user} promoSettings={promoSettings} triggerToast={triggerToast} addNotification={addNotification} db={db} appId={appId} uiBtnPrimary={uiBtnPrimary} uiInnerPanel={uiInnerPanel} />}
+              {showCart && user.role === 'customer' && <CartModal cart={cart} setCart={setCart} setShowCart={setShowCart} balance={currentUserBalance} user={user} promoSettings={promoSettings} triggerToast={triggerToast} addNotification={addNotification} db={db} appId={appId} />}
               
               {/* LIVE CHAT WIDGET FOR CUSTOMERS */}
               {user && user.role === 'customer' && <LiveChatWidget user={user} db={db} appId={appId} setIncomingMsg={setIncomingMsg} />}
@@ -981,7 +973,7 @@
         // ==========================================
         // 🌟 SMS MODULE (ULTRA PREMIUM) 🌟
         // ==========================================
-        function CustomerDashboardSMS({ user, balance, triggerToast, smsSettings, uiCard, uiInput, uiBtnPrimary, uiInnerPanel }) {
+        function CustomerDashboardSMS({ user, balance, triggerToast, smsSettings }) {
           const [isSmsLoading, setIsSmsLoading] = useState(false);
           const [selectedSmsService, setSelectedSmsService] = useState(''); 
           const [availableServices, setAvailableServices] = useState([]); 
@@ -1301,7 +1293,7 @@
                                             <button onClick={() => copyText(c)} className="btn-animate p-4 bg-white hover:bg-gray-200 rounded-xl text-black transition-colors shadow-[0_0_15px_rgba(255,255,255,0.3)] shrink-0"><Copy className="w-4 h-4"/></button>
                                         </div>
                                     ))}
-                                    <button onClick={() => setActiveOrders([])} className={uiBtnSecondary + " mt-8 !bg-black/50 !border-white/10 !py-4"}>Close Order</button>
+                                    <button onClick={() => setActiveOrders([])} className="btn-animate w-full glass-panel hover:bg-white/20 text-white font-bold py-4 px-6 rounded-2xl transition-all flex items-center justify-center gap-2 uppercase tracking-widest shadow-md mt-8 !text-xs">Close Order</button>
                                 </div>
                             )}
                         </div>
@@ -1314,7 +1306,7 @@
         // ==========================================
         // 🌟 ASSET STORE MODULE (ULTRA PREMIUM GLASS) 🌟
         // ==========================================
-        function CustomerDashboardStore({ inventory, categories, cart, setCart, allOrders, triggerToast }) {
+        function CustomerDashboardStore({ inventory, categories, cart, setCart, triggerToast }) {
           const [searchQuery, setSearchQuery] = useState('');
           const [selectedStates, setSelectedStates] = useState({}); 
           const filteredCategories = categories.filter(c => (c?.name || '').toLowerCase().includes((searchQuery || '').toLowerCase()));
@@ -1696,7 +1688,11 @@
               ...myDeposits.map(d => ({ id: d.id, type: 'Funds Added', amount: d.amount, date: d.date, status: d.status, method: d.method })),
               ...myOrders.map(o => ({ id: o.id, type: 'Bought Account', amount: o.total, date: o.date, status: o.status, method: 'Account Balance' })),
               ...myPurchases.filter(p => String(p.type).includes('Network') || String(p.type).includes('Protocol')).map(p => ({ id: p.id, type: p.type, amount: 0, date: p.date, status: 'Acquired', method: 'Account Balance' }))
-          ].sort((a,b) => (new Date(b.date || 0)).getTime() - (new Date(a.date || 0)).getTime());
+          ].sort((a,b) => {
+              const timeA = a.date ? new Date(a.date).getTime() : 0;
+              const timeB = b.date ? new Date(b.date).getTime() : 0;
+              return isNaN(timeB) || isNaN(timeA) ? 0 : timeB - timeA;
+          });
 
           return (
             <div className="animate-fade-in-up w-full">
