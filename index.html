@@ -1,1 +1,2232 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>VoiceStore Premium Dashboard</title>
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+      tailwind.config = {
+        darkMode: 'class',
+        theme: {
+          extend: {
+            fontFamily: {
+              sans: ['Inter', 'system-ui', 'sans-serif'],
+              mono: ['JetBrains Mono', 'monospace'],
+            },
+            colors: {
+              brand: {
+                primary: '#f59e0b',
+                primaryHover: '#d97706',
+                darkBg: '#020617',
+                darkCard: '#0f172a',
+                lightBg: '#f0f4f8',
+                lightCard: '#ffffff'
+              }
+            },
+            animation: {
+              'fade-in-up': 'fadeInUp 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards',
+              'pop-in': 'popIn 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards',
+              'super-glow': 'superGlow 2s infinite alternate',
+              'pulse-border': 'pulseBorder 2s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+              'float-slow': 'float 20s ease-in-out infinite',
+              'float-fast': 'float 15s ease-in-out infinite reverse'
+            }
+          }
+        }
+      }
+    </script>
+    
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;700;800&display=swap" rel="stylesheet">
+    
+    <script async src="https://unpkg.com/es-module-shims@1.10.0/dist/es-module-shims.js"></script>
+
+    <!-- Import Maps for React and Lucide -->
+    <script type="importmap">
+      {
+        "imports": {
+          "react": "https://esm.sh/react@18.2.0?target=es2020",
+          "react-dom/client": "https://esm.sh/react-dom@18.2.0/client?target=es2020",
+          "lucide-react": "https://esm.sh/lucide-react@0.344.0?external=react&target=es2020"
+        }
+      }
+    </script>
+    
+    <!-- Babel & Libraries -->
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/otpauth/9.2.2/otpauth.umd.min.js"></script>
+    <script src="https://checkout.flutterwave.com/v3.js"></script>
+
+    <style>
+        .scrollbar-hide::-webkit-scrollbar { display: none; }
+        .scrollbar-hide { -ms-overflow-style: none; scrollbar-width: none; }
+        
+        body {
+            transition: background-color 0.5s ease, color 0.5s ease;
+            -webkit-user-select: none; -moz-user-select: none; -ms-user-select: none; user-select: none;
+            font-family: 'Inter', sans-serif;
+            overflow-x: hidden;
+            scroll-behavior: smooth;
+        }
+        
+        input, textarea, pre, select {
+            -webkit-user-select: text; -moz-user-select: text; -ms-user-select: text; user-select: text;
+        }
+
+        .btn-animate {
+            transition: transform 0.2s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.2s ease, filter 0.2s ease;
+        }
+        .btn-animate:active {
+            transform: translateY(2px) scale(0.98);
+            filter: brightness(0.9);
+        }
+        
+        .custom-scrollbar::-webkit-scrollbar { width: 6px; }
+        .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background-color: rgba(245, 158, 11, 0.4); border-radius: 10px; }
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover { background-color: rgba(245, 158, 11, 0.8); }
+    </style>
+</head>
+<body class="antialiased bg-[#0f172a] text-white transition-colors duration-500">
+    <div id="root"></div>
+
+    <script type="text/babel" data-type="module">
+        import React, { useState, useEffect, useRef } from 'react';
+        import { createRoot } from 'react-dom/client';
+
+        import { 
+            ShoppingCart, LogOut, Package, Users, DollarSign, Settings, Plus, Trash2, CheckCircle, 
+            X, Wallet, CreditCard, Clock, Copy, ArrowRight, Bell, User as UserIcon, 
+            Activity, BarChart, Eye, Lock, Search, Megaphone, Award, Zap, Headset, 
+            Star, AlertTriangle, Smartphone, Mail, ShieldAlert, Sun, Moon, HelpCircle, History, TrendingUp, Sparkles, Building, Edit, RefreshCw, ChevronDown, StopCircle, Ban
+        } from 'lucide-react';
+
+        // Firebase Imports
+        import { initializeApp } from 'https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js';
+        import { getAuth, onAuthStateChanged, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, sendEmailVerification, sendPasswordResetEmail } from 'https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js';
+        import { getFirestore, collection, doc, setDoc, getDoc, onSnapshot, updateDoc } from 'https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js';
+        
+        const firebaseConfig = {
+          apiKey: "AIzaSyAzHV1ZFm30K5xUzkAFYn4wuZUdxYdtgzo",
+          authDomain: "profit-pulse-ca8b1.firebaseapp.com",
+          projectId: "profit-pulse-ca8b1",
+          storageBucket: "profit-pulse-ca8b1.firebasestorage.app",
+          messagingSenderId: "422601280147",
+          appId: "1:422601280147:web:904ade1f967d4515179b66"
+        };
+        
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getFirestore(app);
+        const appId = typeof window.__app_id !== 'undefined' ? window.__app_id : 'voice-store-real';
+
+        // 🛡️ SECURITY GUARD: GLOBAL TOKEN GETTER 🛡️
+        const getAuthToken = async () => {
+            if (auth.currentUser) {
+                return await auth.currentUser.getIdToken(true);
+            }
+            return null;
+        };
+
+        const PRODUCT_CATEGORIES = [
+          { id: 'new', name: 'New Google Voice', description: 'Fresh account with recovery email. Ideal for personal use.', price: 5.00, icon: Package, color: 'text-violet-500 dark:text-violet-400' },
+          { id: 'old', name: 'Old Google Voice', description: 'Aged and highly trusted account (2012-2020).', price: 15.00, icon: Sparkles, color: 'text-rose-500 dark:text-rose-400' },
+          { id: 'textplus', name: 'TextPlus Account', description: 'Verified USA TextPlus account for unlimited texting.', price: 2.50, icon: Smartphone, color: 'text-cyan-500 dark:text-cyan-400' },
+          { id: 'gv_bulk', name: 'Bulk Google Voice (10x)', description: 'Wholesale package of 10 fresh Google Voice accounts.', price: 45.00, icon: Users, color: 'text-yellow-500 dark:text-yellow-400' }
+        ];
+
+        // 🌍 SECURE NETWORK REGIONS 🌍
+        const NETWORK_REGIONS = [
+          { id: 'USA', name: 'United States (+1)' },
+          { id: 'UK', name: 'United Kingdom (+44)' },
+          { id: 'NL', name: 'Netherlands (+31)' },
+          { id: 'PH', name: 'Philippines (+63)' }
+        ];
+
+        const CUSTOMER_TABS = [
+            { id: 'sms', label: 'Live SMS', icon: Smartphone },
+            { id: 'store', label: 'Marketplace', icon: ShoppingCart },
+            { id: 'add_funds', label: 'Deposit', icon: Wallet },
+            { id: 'my_accounts', label: 'Vault', icon: Package },
+            { id: 'profile', label: 'Profile', icon: UserIcon } 
+        ];
+
+        const ADMIN_TABS = [
+            { id: 'inventory', label: 'Inventory', icon: Package },
+            { id: 'deposits', label: 'Deposits', icon: CreditCard },
+            { id: 'users', label: 'Customers', icon: Users },
+            { id: 'support', label: 'Support', icon: Headset },
+            { id: 'analytics', label: 'Analytics', icon: BarChart },
+            { id: 'settings', label: 'Settings', icon: Settings }
+        ];
+
+        const uiCard = "bg-white/10 dark:bg-black/10 border border-white/30 dark:border-white/10 shadow-[0_8px_32px_0_rgba(31,38,135,0.07)] dark:shadow-[0_8px_32px_0_rgba(0,0,0,0.3)] backdrop-blur-[1px] rounded-3xl relative overflow-hidden transition-all duration-300 w-full hover:bg-white/20 dark:hover:bg-black/20";
+        const uiInput = "w-full bg-white/10 dark:bg-black/20 backdrop-blur-[1px] border border-white/30 dark:border-white/10 rounded-xl px-4 py-3.5 text-sm text-slate-900 dark:text-slate-200 placeholder-slate-500 dark:placeholder-slate-400 outline-none focus:border-violet-500/50 focus:ring-2 focus:ring-violet-500/20 transition-all font-medium shadow-inner";
+        const uiBtnPrimary = "btn-animate w-full bg-gradient-to-r from-violet-500/70 via-cyan-500/70 to-violet-600/70 hover:opacity-100 text-white font-bold py-4 px-6 rounded-xl shadow-[0_4px_20px_rgba(139,92,246,0.3)] backdrop-blur-[1px] disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 transition-all border border-white/30 dark:border-white/10";
+        const uiBtnSecondary = "btn-animate w-full bg-white/10 dark:bg-white/5 hover:bg-white/20 dark:hover:bg-white/10 backdrop-blur-[1px] border border-white/30 dark:border-white/10 text-slate-800 dark:text-white font-bold py-3.5 px-6 rounded-xl shadow-sm disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 transition-all";
+        const uiBtnAction = "btn-animate bg-white/10 dark:bg-white/5 hover:bg-white/20 dark:hover:bg-white/10 backdrop-blur-[1px] border border-white/30 dark:border-white/10 text-slate-800 dark:text-white font-semibold py-2 px-4 rounded-lg text-xs flex items-center gap-1.5 transition-all disabled:opacity-50 shadow-sm";
+        const uiInnerPanel = "bg-white/5 dark:bg-black/10 border border-white/20 dark:border-white/5 backdrop-blur-[1px] rounded-2xl p-5 w-full transition-all hover:bg-white/10 dark:hover:bg-white/10";
+
+        const TIERS = [
+            { threshold: 0, name: 'Bronze', next: 20, color: 'text-cyan-500 dark:text-cyan-400', icon: Award },
+            { threshold: 20, name: 'Silver', next: 50, color: 'text-slate-500 dark:text-slate-300', icon: Award },
+            { threshold: 50, name: 'Gold', next: 100, color: 'text-yellow-500 dark:text-yellow-400', icon: Award },
+            { threshold: 100, name: 'VIP Status', next: 100, color: 'text-violet-500 dark:text-violet-400', icon: Zap }
+        ];
+
+        const getTier = (spent) => {
+          if(typeof spent !== 'number' || isNaN(spent)) return TIERS[0];
+          if(spent >= 100) return TIERS[3];
+          if(spent >= 50) return TIERS[2];
+          if(spent >= 20) return TIERS[1];
+          return TIERS[0];
+        };
+
+        const PremiumBackground = () => (
+          <div className="fixed inset-0 z-[-1] pointer-events-none bg-slate-100 dark:bg-[#070b14] transition-colors duration-500 overflow-hidden">
+             <div className="absolute top-[-20%] left-[-10%] w-[100vw] h-[100vw] sm:w-[800px] sm:h-[800px] opacity-60 dark:opacity-30" style={{background: 'radial-gradient(circle, rgba(139,92,246,0.3) 0%, rgba(139,92,246,0) 70%)'}}></div>
+             <div className="absolute bottom-[-10%] right-[-10%] w-[90vw] h-[90vw] sm:w-[600px] sm:h-[600px] opacity-60 dark:opacity-20" style={{background: 'radial-gradient(circle, rgba(6,182,212,0.3) 0%, rgba(6,182,212,0) 70%)'}}></div>
+          </div>
+        );
+
+        const SplashScreen = () => {
+          const text = "Voice Store".split("");
+          
+          const animations = text.map((char, i) => {
+              if (char === " ") return null;
+              const side = Math.floor(Math.random() * 4);
+              let startX, startY;
+              if (side === 0) { startX = (Math.random() * 200 - 100) + 'vw'; startY = '-150vh'; }
+              else if (side === 1) { startX = '150vw'; startY = (Math.random() * 200 - 100) + 'vh'; }
+              else if (side === 2) { startX = (Math.random() * 200 - 100) + 'vw'; startY = '150vh'; }
+              else { startX = '-150vw'; startY = (Math.random() * 200 - 100) + 'vh'; }
+              const startR = (Math.random() * 1440 - 720) + 'deg';
+              
+              return `
+                @keyframes iosVibrateAssemble${i} {
+                    0% { opacity: 0; transform: translate(${startX}, ${startY}) rotate(${startR}) scale(4); filter: blur(10px); }
+                    15% { opacity: 1; transform: translate(calc(${startX} * 0.7), calc(${startY} * 0.7)) rotate(calc(${startR} * 0.7)) scale(3); filter: blur(5px); }
+                    30% { transform: translate(calc(${startX} * 0.4 + 20px), calc(${startY} * 0.4 - 20px)) rotate(calc(${startR} * 0.4 + 20deg)) scale(2.2); filter: blur(0); }
+                    45% { transform: translate(calc(${startX} * 0.2 - 20px), calc(${startY} * 0.2 + 20px)) rotate(calc(${startR} * 0.2 - 20deg)) scale(1.8); }
+                    60% { transform: translate(15px, -15px) rotate(12deg) scale(1.4); }
+                    70% { transform: translate(-12px, 12px) rotate(-10deg) scale(1.2); }
+                    80% { transform: translate(8px, -8px) rotate(6deg) scale(1.1); }
+                    90% { transform: translate(-4px, 4px) rotate(-3deg) scale(1.02); }
+                    100% { opacity: 1; transform: translate(0, 0) rotate(0) scale(1); filter: blur(0); }
+                }
+                .char-anim-${i} {
+                    display: inline-block;
+                    opacity: 0;
+                    animation: iosVibrateAssemble${i} 2.5s cubic-bezier(0.25, 1, 0.5, 1) forwards;
+                    animation-delay: ${i * 0.08}s;
+                    will-change: transform, opacity, filter;
+                }
+              `;
+          });
+
+          return (
+            <div className="fixed inset-0 z-[100] flex flex-col items-center justify-center bg-[#0f172a] transition-opacity duration-500 w-full h-full p-4 overflow-hidden">
+               <style dangerouslySetInnerHTML={{ __html: animations.filter(Boolean).join('\n') }} />
+               <div className="relative z-10 flex flex-col items-center w-full px-2">
+                  <h1 className="text-5xl sm:text-8xl md:text-9xl font-black tracking-tighter mb-8 flex justify-center flex-wrap w-full" style={{ lineHeight: '1.2' }}>
+                    {text.map((char, i) => {
+                        if (char === " ") return <span key={i} className="w-3 sm:w-6"></span>;
+                        return (
+                          <span key={i} className={`char-anim-${i}`} style={{
+                              background: 'linear-gradient(to right bottom, #c084fc, #22d3ee)',
+                              WebkitBackgroundClip: 'text',
+                              WebkitTextFillColor: 'transparent',
+                              filter: 'drop-shadow(0px 0px 15px rgba(139,92,246,0.6))'
+                          }}>
+                              {char}
+                          </span>
+                        )
+                    })}
+                  </h1>
+                  <p className="text-slate-500 dark:text-slate-400 font-bold text-[10px] sm:text-sm uppercase tracking-[0.4em] sm:tracking-[0.6em] animate-fade-in-up" style={{ animationDelay: '1.8s', opacity: 0, animationFillMode: 'forwards' }}>Premium Workspace</p>
+               </div>
+            </div>
+          );
+        };
+
+        function App() {
+          const [showSplash, setShowSplash] = useState(true);
+          const [user, setUser] = useState(null); 
+          const [isAuthChecking, setIsAuthChecking] = useState(true);
+          const [activeTab, setActiveTab] = useState('sms');
+          const [isDarkMode, setIsDarkMode] = useState(false);
+          const [usersDB, setUsersDB] = useState({});
+          
+          const [inventory, setInventory] = useState({ new: [], old: [], textplus: [], gv_bulk: [] });
+          const [allOrders, setAllOrders] = useState([]);
+          const [deposits, setDeposits] = useState([]);
+          const [purchases, setPurchases] = useState([]);
+          const [tickets, setTickets] = useState([]);
+          
+          const [promoSettings, setPromoSettings] = useState({ code: '', discount: 0, isActive: false });
+          const [globalNotice, setGlobalNotice] = useState('');
+          const [featureSettings, setFeatureSettings] = useState({ dailyReward: false, referral: false });
+          const [bankSettings, setBankSettings] = useState({ nairaRate: 1500, flutterwaveKey: '', flutterwaveActive: false });
+          
+          const [smsSettings, setSmsSettings] = useState({ active: true, markup: 1.00 });
+          const [categories, setCategories] = useState(PRODUCT_CATEGORIES);
+          
+          const [cart, setCart] = useState([]);
+          const [showCart, setShowCart] = useState(false);
+          const [notifications, setNotifications] = useState([]);
+          const [toastData, setToastData] = useState({ show: false, msg: '', id: 0 });
+
+          const [authMethod, setAuthMethod] = useState('login');
+          const [authError, setAuthError] = useState('');
+          const [authSuccessMsg, setAuthSuccessMsg] = useState('');
+          const [emailInput, setEmailInput] = useState('');
+          const [passwordInput, setPasswordInput] = useState('');
+          const [isLoading, setIsLoading] = useState(false);
+
+          useEffect(() => {
+              if (isDarkMode) document.documentElement.classList.add('dark');
+              else document.documentElement.classList.remove('dark');
+          }, [isDarkMode]);
+
+          useEffect(() => { setTimeout(() => setShowSplash(false), 3500); }, []);
+
+          useEffect(() => {
+            const unsubscribe = onAuthStateChanged(auth, async (firebaseUser) => {
+              if (firebaseUser && firebaseUser.email) {
+                 let currentAdminEmail = 'mdmunnachowdhury0003817@gmail.com';
+                 try {
+                     const adminDocRef = doc(db, 'artifacts', appId, 'public', 'data', 'Store_Settings', 'AdminConfig');
+                     const adminDoc = await getDoc(adminDocRef);
+                     if (adminDoc.exists()) currentAdminEmail = adminDoc.data().adminEmail || currentAdminEmail;
+                     else await setDoc(adminDocRef, { adminEmail: currentAdminEmail }, { merge: true });
+                 } catch (err) {}
+
+                 const userDocRef = doc(db, 'artifacts', appId, 'public', 'data', 'Store_Users', firebaseUser.email);
+                 try {
+                    const userDocSnap = await getDoc(userDocRef);
+                    if (!userDocSnap.exists() && firebaseUser.email.toLowerCase() !== currentAdminEmail.toLowerCase()) {
+                        await setDoc(userDocRef, { password: '', balance: 0, totalSpent: 0, joined: new Date().toISOString(), lastBonusDate: '' });
+                    }
+                 } catch(e) {}
+
+                 if (firebaseUser.email.toLowerCase() === currentAdminEmail.toLowerCase()) {
+                    setUser({ email: firebaseUser.email, role: 'admin' });
+                    setActiveTab('inventory');
+                 } else if (firebaseUser.emailVerified || true) {
+                    setUser({ email: firebaseUser.email, role: 'customer' });
+                    setActiveTab('sms');
+                 } else { setUser(null); }
+              } else { setUser(null); }
+              setIsAuthChecking(false);
+            });
+            return () => unsubscribe();
+          }, []);
+
+          useEffect(() => {
+            if (!user) return;
+            const errLog = (e) => { if (e.code !== 'permission-denied') console.error(e); };
+            const unsubs = [];
+            
+            unsubs.push(onSnapshot(doc(db, 'artifacts', appId, 'public', 'data', 'Store_Inventory', 'Stock'), (snap) => { if (snap.exists()) setInventory(snap.data()); }, errLog));
+            unsubs.push(onSnapshot(doc(db, 'artifacts', appId, 'public', 'data', 'Store_Settings', 'PromoCode'), (snap) => { if (snap.exists()) setPromoSettings(snap.data()); }, errLog));
+            unsubs.push(onSnapshot(doc(db, 'artifacts', appId, 'public', 'data', 'Store_Settings', 'Notice'), (snap) => { if (snap.exists()) setGlobalNotice(snap.data().text); }, errLog));
+            unsubs.push(onSnapshot(doc(db, 'artifacts', appId, 'public', 'data', 'Store_Settings', 'Features'), (snap) => { if (snap.exists()) setFeatureSettings(snap.data()); }, errLog));
+            unsubs.push(onSnapshot(doc(db, 'artifacts', appId, 'public', 'data', 'Store_Settings', 'Bank'), (snap) => { if (snap.exists()) setBankSettings(snap.data()); }, errLog));
+            unsubs.push(onSnapshot(doc(db, 'artifacts', appId, 'public', 'data', 'Store_Settings', 'SMS'), (snap) => { if (snap.exists()) setSmsSettings(snap.data()); }, errLog));
+            unsubs.push(onSnapshot(doc(db, 'artifacts', appId, 'public', 'data', 'Store_Settings', 'Products'), (snap) => { if (snap.exists() && snap.data().list) { const fetchedProducts = snap.data().list; const mergedCategories = fetchedProducts.map(fetchedItem => { const originalItem = PRODUCT_CATEGORIES.find(p => p.id === fetchedItem.id); return { ...fetchedItem, icon: originalItem ? originalItem.icon : Package }; }); setCategories(mergedCategories); } }, errLog));
+
+            if (user.role === 'admin') {
+                unsubs.push(onSnapshot(collection(db, 'artifacts', appId, 'public', 'data', 'Store_Users'), (snap) => {
+                  const u = {}; snap.forEach(d => u[d.id] = d.data()); setUsersDB(u);
+                }, errLog));
+            } else {
+                unsubs.push(onSnapshot(doc(db, 'artifacts', appId, 'public', 'data', 'Store_Users', user.email), (docSnap) => {
+                    if (docSnap.exists()) setUsersDB(prev => ({...prev, [user.email]: docSnap.data()}));
+                }, errLog));
+            }
+
+            unsubs.push(onSnapshot(collection(db, 'artifacts', appId, 'public', 'data', 'Store_Orders'), (snap) => {
+              const o = []; snap.forEach(d => o.push({ id: d.id, ...d.data() })); setAllOrders(o.sort((a,b) => new Date(b.date) - new Date(a.date)));
+            }, errLog));
+            unsubs.push(onSnapshot(collection(db, 'artifacts', appId, 'public', 'data', 'Store_Deposits'), (snap) => {
+              const dep = []; snap.forEach(d => dep.push({ id: d.id, ...d.data() })); setDeposits(dep.sort((a,b) => new Date(b.date) - new Date(a.date)));
+            }, errLog));
+            unsubs.push(onSnapshot(collection(db, 'artifacts', appId, 'public', 'data', 'Store_Purchases'), (snap) => {
+              const p = []; snap.forEach(d => p.push({ id: d.id, ...d.data() })); setPurchases(p.sort((a,b) => new Date(b.date) - new Date(a.date)));
+            }, errLog));
+            unsubs.push(onSnapshot(collection(db, 'artifacts', appId, 'public', 'data', 'Store_Tickets'), (snap) => {
+              const t = []; snap.forEach(d => t.push({ id: d.id, ...d.data() })); setTickets(t.sort((a,b) => new Date(b.date) - new Date(a.date)));
+            }, errLog));
+            
+            return () => unsubs.forEach(unsub => unsub());
+          }, [user]);
+
+          const handleAuthSubmit = async (e) => {
+            e.preventDefault(); setAuthError(''); setAuthSuccessMsg(''); setIsLoading(true);
+            let email = emailInput.trim(); let pwd = passwordInput.trim();
+            if (!email || !pwd) { setAuthError('Fill in all fields.'); setIsLoading(false); return; }
+            
+            if (authMethod === 'admin') {
+              const adminDocRef = doc(db, 'artifacts', appId, 'public', 'data', 'Store_Settings', 'AdminConfig');
+              let currentAdminEmail = 'mdmunnachowdhury0003817@gmail.com'; 
+              try {
+                  const adminDoc = await getDoc(adminDocRef);
+                  if (adminDoc.exists()) currentAdminEmail = adminDoc.data().adminEmail || currentAdminEmail;
+              } catch (e) {}
+
+              if (email.toLowerCase() !== currentAdminEmail.toLowerCase()) {
+                  setAuthError('Access Denied: Unauthorized Admin email.'); setIsLoading(false); return;
+              }
+
+              try {
+                  await signInWithEmailAndPassword(auth, email, pwd);
+                  setAuthSuccessMsg('Admin Login successful!');
+              } catch (error) {
+                  if (error.code === 'auth/user-not-found' || error.code === 'auth/invalid-credential') {
+                      try {
+                          await createUserWithEmailAndPassword(auth, email, pwd);
+                          setAuthSuccessMsg('Admin Account Initialized!');
+                      } catch (createErr) { setAuthError(createErr.message); }
+                  } else setAuthError('Login failed: ' + error.message);
+              }
+              setIsLoading(false); return;
+            }
+
+            try {
+              if (authMethod === 'signup') {
+                const userCredential = await createUserWithEmailAndPassword(auth, email, pwd);
+                await sendEmailVerification(userCredential.user);
+                
+                const userRef = doc(db, 'artifacts', appId, 'public', 'data', 'Store_Users', userCredential.user.email);
+                await setDoc(userRef, { password: pwd, balance: 0, totalSpent: 0, joined: new Date().toISOString(), lastBonusDate: '' });
+                
+                await auth.signOut(); 
+                setAuthSuccessMsg('Registration successful! Check email to verify.');
+                setAuthMethod('login'); 
+              } else {
+                const userCredential = await signInWithEmailAndPassword(auth, email, pwd);
+                if (!userCredential.user.emailVerified) {
+                   await auth.signOut(); setAuthError('Email not verified. Check inbox.');
+                   setIsLoading(false); return;
+                }
+                setAuthSuccessMsg('Welcome back!');
+              }
+            } catch (error) { setAuthError(error.message); }
+            finally { setIsLoading(false); }
+          };
+
+          const handleForgotPassword = async () => {
+            if (!emailInput.trim()) { setAuthError('Enter your email to receive a password reset link.'); return; }
+            setIsLoading(true);
+            try {
+              await sendPasswordResetEmail(auth, emailInput.trim());
+              setAuthError(''); setAuthSuccessMsg('Password reset link sent! Check your inbox.');
+            } catch (error) { setAuthError(error.message); } 
+            finally { setIsLoading(false); }
+          };
+
+          const handleLogout = () => {
+            signOut(auth).then(() => {
+              setUser(null); setCart([]); setShowCart(false); setEmailInput(''); setPasswordInput('');
+            });
+          };
+
+          const triggerToast = (msg) => {
+              const id = Date.now(); setToastData({ show: true, msg, id });
+              setTimeout(() => { setToastData(prev => prev.id === id ? { ...prev, show: false } : prev); }, 3500);
+          };
+
+          const addNotification = (title, text) => {
+            setNotifications(prev => [{ id: Date.now(), title, text, time: 'Just now' }, ...prev].slice(0, 5));
+          };
+
+          if (showSplash) return <SplashScreen />;
+          
+          if (isAuthChecking) return <div className="min-h-screen flex items-center justify-center bg-[#0f172a]"><RefreshCw className="w-8 h-8 text-violet-500 animate-spin"/></div>;
+
+          if (!user) {
+            return (
+              <div className="min-h-screen flex items-center justify-center p-4 relative font-sans w-full bg-[#0f172a] text-white">
+                <PremiumBackground />
+                <div className="absolute top-4 right-4 sm:top-6 sm:right-8 z-50">
+                    <button onClick={() => setIsDarkMode(!isDarkMode)} className="p-3 bg-white/50 dark:bg-slate-800/50 backdrop-blur-md rounded-full shadow-lg text-slate-800 dark:text-white border border-slate-200/50 dark:border-slate-700/50 transition-all hover:scale-110">
+                        {isDarkMode ? <Sun className="w-5 h-5"/> : <Moon className="w-5 h-5"/>}
+                    </button>
+                </div>
+                <div className="w-full max-w-[420px] animate-fade-in-up z-10">
+                  <div className="flex flex-col items-center mb-8">
+                    <div onDoubleClick={() => setAuthMethod(authMethod === 'admin' ? 'login' : 'admin')} className="w-20 h-20 rounded-[1.5rem] bg-white/80 dark:bg-[#0f172a]/80 backdrop-blur-xl border border-slate-200/50 dark:border-white/10 flex items-center justify-center mb-5 shadow-xl relative overflow-hidden">
+                      <div className="absolute inset-0 bg-gradient-to-br from-violet-500/10 to-transparent"></div>
+                      <Lock className="w-8 h-8 text-violet-500 dark:text-violet-400 relative z-10" strokeWidth={2.5}/>
+                    </div>
+                    <h2 className="text-4xl font-black text-transparent bg-clip-text bg-gradient-to-r from-violet-500 via-cyan-500 to-violet-600 text-center tracking-tight">VoiceStore</h2>
+                  </div>
+                  <div className={uiCard + " p-8 border-t-4 border-t-violet-500"}>
+                    {authMethod !== 'admin' && (
+                        <div className="flex bg-slate-100/80 dark:bg-black/40 backdrop-blur-md p-1.5 rounded-xl mb-8 border border-slate-200/50 dark:border-white/5 shadow-inner">
+                             <button type="button" onClick={() => { setAuthMethod('login'); setAuthError(''); setAuthSuccessMsg(''); }} className={`flex-1 flex items-center justify-center py-2.5 rounded-lg text-sm font-bold transition-all duration-300 ${authMethod === 'login' ? 'bg-white dark:bg-white/10 text-violet-600 dark:text-violet-400 shadow-sm border border-slate-200/50 dark:border-white/10' : 'text-slate-500 hover:text-slate-900 dark:hover:text-white'}`}>Log In</button>
+                             <button type="button" onClick={() => { setAuthMethod('signup'); setAuthError(''); setAuthSuccessMsg(''); }} className={`flex-1 flex items-center justify-center py-2.5 rounded-lg text-sm font-bold transition-all duration-300 ${authMethod === 'signup' ? 'bg-white dark:bg-white/10 text-violet-600 dark:text-violet-400 shadow-sm border border-slate-200/50 dark:border-white/10' : 'text-slate-500 hover:text-slate-900 dark:hover:text-white'}`}>Sign Up</button>
+                        </div>
+                    )}
+                    {authMethod === 'admin' && (
+                       <div className="text-center mb-8 pb-4 border-b border-slate-200 dark:border-white/10">
+                         <span className="text-xs font-black text-rose-500 dark:text-rose-400 uppercase tracking-widest flex items-center justify-center gap-1.5"><ShieldAlert className="w-4 h-4"/> Admin Access</span>
+                       </div>
+                    )}
+                    <form onSubmit={handleAuthSubmit} className="space-y-5">
+                      {authError && <div className="text-rose-500 text-sm font-bold bg-rose-50 dark:bg-rose-500/10 border border-rose-200 dark:border-rose-500/20 p-3 rounded-xl flex items-center gap-2 shadow-sm"><AlertTriangle className="w-4 h-4"/>{authError}</div>}
+                      {authSuccessMsg && <div className="text-emerald-600 text-sm font-bold bg-emerald-50 dark:bg-emerald-500/10 border border-emerald-200 dark:border-emerald-500/20 p-3 rounded-xl flex items-center gap-2 shadow-sm"><CheckCircle className="w-4 h-4"/>{authSuccessMsg}</div>}
+                      
+                      <div className="space-y-2">
+                        <label className="text-xs font-bold text-slate-500 dark:text-slate-400 pl-1 uppercase tracking-wider">{authMethod === 'admin' ? 'Admin Email' : 'Email Address'}</label>
+                        <input type="email" value={emailInput} onChange={e=>setEmailInput(e.target.value)} placeholder="name@example.com" required className={uiInput} />
+                      </div>
+                      <div className="space-y-2">
+                        <div className="flex justify-between items-center px-1">
+                           <label className="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">Password</label>
+                           {(authMethod === 'login' || authMethod === 'admin') && <button type="button" onClick={handleForgotPassword} className="text-xs font-bold text-violet-500 hover:text-violet-600 transition-colors">Forgot?</button>}
+                        </div>
+                        <input type="password" value={passwordInput} onChange={e=>setPasswordInput(e.target.value)} placeholder="••••••••" required className={uiInput} />
+                      </div>
+                      <div className="pt-4">
+                        <button type="submit" disabled={isLoading} className={uiBtnPrimary}>
+                            {isLoading ? 'Processing...' : (authMethod === 'signup' ? 'Create Account' : authMethod === 'login' ? 'Secure Login' : 'Admin Login')}
+                            {!isLoading && <ArrowRight className="w-4 h-4" />}
+                        </button>
+                      </div>
+                    </form>
+                  </div>
+                </div>
+              </div>
+            );
+          }
+
+          const currentUserBalance = user.role === 'customer' ? (usersDB[user.email]?.balance || 0) : 0;
+          const currentUserTier = user.role === 'customer' ? getTier(usersDB[user.email]?.totalSpent || 0) : null;
+
+          return (
+            <div className="min-h-screen w-full relative overflow-x-hidden font-sans pb-24 flex flex-col bg-[#0f172a] text-white transition-colors duration-500">
+              <PremiumBackground />
+              
+              {toastData.show && (
+                <div className="fixed top-6 left-1/2 -translate-x-1/2 z-[200] animate-slide-down w-[90%] sm:w-auto max-w-sm">
+                  <div className="bg-white/90 dark:bg-[#0f172a]/90 backdrop-blur-3xl border border-slate-200/50 dark:border-white/10 p-4 rounded-2xl shadow-2xl flex items-center gap-3">
+                    <CheckCircle className="w-6 h-6 text-emerald-500" />
+                    <span className="font-bold text-sm text-slate-800 dark:text-white">{toastData.msg}</span>
+                  </div>
+                </div>
+              )}
+
+              <header className="sticky top-0 z-40 w-full bg-white/5 dark:bg-black/10 backdrop-blur-[2px] border-b border-white/20 shadow-sm transition-colors">
+                <div className="max-w-7xl mx-auto px-4 h-16 sm:h-20 flex items-center justify-between">
+                  <div className="flex items-center gap-3">
+                      <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-violet-500/20 to-cyan-500/10 border border-violet-500/30 flex items-center justify-center">
+                        <Lock className="w-5 h-5 text-violet-500" />
+                      </div>
+                      <span className="text-lg sm:text-xl font-black text-transparent bg-clip-text bg-gradient-to-r from-violet-500 to-cyan-500 hidden sm:block">VoiceStore</span>
+                  </div>
+                  <div className="flex items-center gap-3 sm:gap-4">
+                    <button onClick={() => setIsDarkMode(!isDarkMode)} className="p-2 sm:p-2.5 rounded-xl bg-white/50 dark:bg-white/5 border border-slate-200/50 dark:border-white/10 shadow hover:text-violet-500 transition-colors">
+                        {isDarkMode ? <Sun className="w-4 h-4"/> : <Moon className="w-4 h-4"/>}
+                    </button>
+                    {user.role === 'customer' && (
+                        <button onClick={() => setShowCart(true)} className="relative p-2 sm:p-2.5 rounded-xl bg-white/50 dark:bg-white/5 border border-slate-200/50 dark:border-white/10 shadow hover:text-violet-500 transition-colors">
+                            <ShoppingCart className="w-4 h-4" />
+                            {cart.length > 0 && <span className="absolute -top-1.5 -right-1.5 bg-rose-500 text-white text-[9px] font-black px-1.5 py-0.5 rounded-full shadow-md animate-pop-in">{cart.length}</span>}
+                        </button>
+                    )}
+                    {user.role === 'customer' && (
+                        <div className="bg-white/60 dark:bg-white/5 px-3 sm:px-4 py-1.5 sm:py-2 rounded-xl flex items-center gap-2 border border-slate-200/50 dark:border-white/10 shadow-inner">
+                            <Wallet className="w-4 h-4 text-violet-500" />
+                            <span className="font-bold text-sm">${Number(currentUserBalance).toFixed(2)}</span>
+                        </div>
+                    )}
+                    <button onClick={handleLogout} className="p-2.5 bg-rose-50/80 dark:bg-rose-500/10 text-rose-500 rounded-xl border border-rose-200/50 dark:border-rose-500/20"><LogOut className="w-5 h-5" /></button>
+                  </div>
+                </div>
+              </header>
+
+              <main className="max-w-7xl mx-auto px-4 mt-6 sm:mt-8 relative z-10 w-full flex-grow flex flex-col items-center">
+                <div className="w-full relative z-30 pb-6">
+                  <div className="bg-white/10 dark:bg-black/20 border border-white/30 dark:border-white/10 backdrop-blur-md rounded-2xl p-1 flex justify-between sm:justify-start gap-0.5 sm:gap-2 shadow-[0_8px_32px_0_rgba(0,0,0,0.1)] w-full">
+                    {(user.role === 'admin' ? ADMIN_TABS : CUSTOMER_TABS).map(tab => (
+                      <button key={tab.id} onClick={() => setActiveTab(tab.id)} className={`flex-1 sm:flex-none flex flex-col sm:flex-row items-center justify-center gap-1 sm:gap-2 py-2 px-1 sm:px-4 rounded-xl font-bold transition-all min-w-[60px] sm:min-w-0 ${activeTab === tab.id ? 'bg-white/80 dark:bg-white/10 text-violet-600 dark:text-violet-400 shadow-sm border border-white/50 dark:border-white/10' : 'text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-white'}`}>
+                          <tab.icon className={`w-4 h-4 sm:w-4 sm:h-4 ${activeTab === tab.id ? 'text-violet-500 drop-shadow-[0_0_5px_currentColor]' : ''}`} /> 
+                          <span className="text-[9px] sm:text-xs font-bold text-center leading-tight">{tab.label}</span>
+                      </button>
+                    ))}
+                  </div>
+                </div>
+
+                {user.role === 'admin' ? (
+                  <AdminDashboard 
+                    inventory={inventory} orders={allOrders} deposits={deposits} categories={categories} usersDB={usersDB}
+                    triggerToast={triggerToast} db={db} appId={appId} promoSettings={promoSettings} globalNotice={globalNotice}
+                    tickets={tickets} featureSettings={featureSettings} bankSettings={bankSettings} smsSettings={smsSettings}
+                    auth={auth} user={user} uiCard={uiCard} uiInput={uiInput} uiBtnPrimary={uiBtnPrimary} uiBtnSecondary={uiBtnSecondary} uiBtnAction={uiBtnAction} uiInnerPanel={uiInnerPanel} activeTab={activeTab}
+                  />
+                ) : (
+                  <>
+                      {activeTab === 'sms' && (
+                        <CustomerDashboardSMS user={user} balance={currentUserBalance} triggerToast={triggerToast} smsSettings={smsSettings} uiCard={uiCard} uiInput={uiInput} uiBtnPrimary={uiBtnPrimary} uiInnerPanel={uiInnerPanel} />
+                      )}
+                      {activeTab === 'store' && (
+                        <CustomerDashboardStore inventory={inventory} categories={categories} cart={cart} setCart={setCart} allOrders={allOrders} uiCard={uiCard} uiInput={uiInput} uiBtnPrimary={uiBtnPrimary} uiInnerPanel={uiInnerPanel} triggerToast={triggerToast} />
+                      )}
+                      {activeTab === 'add_funds' && (
+                        <CustomerDashboardFunds user={user} db={db} appId={appId} triggerToast={triggerToast} addNotification={addNotification} bankSettings={bankSettings} uiCard={uiCard} uiInput={uiInput} uiBtnPrimary={uiBtnPrimary} uiBtnSecondary={uiBtnSecondary} uiInnerPanel={uiInnerPanel} />
+                      )}
+                      {activeTab === 'my_accounts' && (
+                        <CustomerDashboardVault user={user} purchases={purchases} triggerToast={triggerToast} db={db} appId={appId} uiCard={uiCard} uiBtnPrimary={uiBtnPrimary} uiInnerPanel={uiInnerPanel} />
+                      )}
+                      {activeTab === 'profile' && (
+                        <CustomerDashboardProfile user={user} balance={currentUserBalance} tier={currentUserTier} userInfo={usersDB[user.email]} allOrders={allOrders} deposits={deposits} purchases={purchases} tickets={tickets.filter(t => t.email === user.email)} db={db} appId={appId} featureSettings={featureSettings} triggerToast={triggerToast} uiCard={uiCard} uiInput={uiInput} uiBtnPrimary={uiBtnPrimary} uiBtnSecondary={uiBtnSecondary} uiInnerPanel={uiInnerPanel} />
+                      )}
+                  </>
+                )}
+              </main>
+
+              {showCart && user.role === 'customer' && (
+                <CartModal 
+                  cart={cart} setCart={setCart} setShowCart={setShowCart} balance={currentUserBalance}
+                  user={user} promoSettings={promoSettings} addNotification={addNotification} triggerToast={triggerToast} 
+                  uiCard={uiCard} uiBtnPrimary={uiBtnPrimary} uiInnerPanel={uiInnerPanel}
+                />
+              )}
+            </div>
+          );
+        }
+
+        // ==========================================
+        // 🌟 SMS MODULE (SECURE NETWORK) 🌟
+        // ==========================================
+        function CustomerDashboardSMS({ user, balance, triggerToast, smsSettings, uiCard, uiInput, uiBtnPrimary, uiInnerPanel }) {
+          const [isSmsLoading, setIsSmsLoading] = useState(false);
+          const [selectedSmsService, setSelectedSmsService] = useState(''); 
+          const [availableServices, setAvailableServices] = useState([]); 
+          const [isAppDropdownOpen, setIsAppDropdownOpen] = useState(false);
+          const [appSearch, setAppSearch] = useState('');
+          const [isFetchingServices, setIsFetchingServices] = useState(false);
+          const [smsCountry, setSmsCountry] = useState('USA'); 
+          
+          const [priceTiers, setPriceTiers] = useState([]);
+          const [selectedTier, setSelectedTier] = useState(null);
+          const [isTiersLoading, setIsTiersLoading] = useState(false);
+
+          // 🎯 Modal State for Cancel/Skip Premium Confirmation
+          const [confirmAction, setConfirmAction] = useState({ show: false, type: '', orderId: null, price: 0 });
+
+          const latestOrderRef = useRef(null);
+          const [activeOrders, setActiveOrders] = useState(() => {
+              try { const saved = localStorage.getItem(`smsOrders_${user?.email}`); if (saved) { const parsed = JSON.parse(saved); if(Array.isArray(parsed)) return parsed.filter(o => o && o.status === 'ACTIVE'); } } catch(e) {} return [];
+          });
+          const [now, setNow] = useState(Date.now());
+
+          useEffect(() => { if (user?.email) localStorage.setItem(`smsOrders_${user.email}`, JSON.stringify(activeOrders)); }, [activeOrders, user]);
+          useEffect(() => { const int = setInterval(() => setNow(Date.now()), 1000); return () => clearInterval(int); }, []);
+
+          useEffect(() => {
+              if (smsSettings?.active) {
+                  setIsFetchingServices(true);
+                  fetch(`https://voicestore-backend.onrender.com/api/grizzly/getPrices?country=${smsCountry}`)
+                  .then(r => r.json()).then(json => { setAvailableServices(json?.success && Array.isArray(json.data) ? json.data : []); setIsFetchingServices(false); }).catch(() => { setIsFetchingServices(false); setAvailableServices([]); });
+              }
+          }, [smsSettings, smsCountry]);
+
+          useEffect(() => {
+              if (selectedSmsService && smsCountry) {
+                  setIsTiersLoading(true);
+                  fetch(`https://voicestore-backend.onrender.com/api/grizzly/getServiceTiers?country=${smsCountry}&service=${selectedSmsService}`)
+                  .then(res => res.json()).then(data => { if (data?.success && Array.isArray(data?.tiers) && data.tiers.length > 0) { setPriceTiers(data.tiers); setSelectedTier(data.tiers[0]); } else { setPriceTiers([]); setSelectedTier(null); } setIsTiersLoading(false); }).catch(() => { setPriceTiers([]); setSelectedTier(null); setIsTiersLoading(false); });
+              }
+          }, [selectedSmsService, smsCountry]);
+
+          const filteredApps = Array.isArray(availableServices) ? availableServices.filter(app => (app?.name || '').toLowerCase().includes((appSearch || '').toLowerCase())) : [];
+          useEffect(() => { if (filteredApps.length > 0 && !selectedSmsService) setSelectedSmsService(filteredApps[0].code); }, [filteredApps, selectedSmsService]);
+
+          const currentService = availableServices.find(s => s?.code === selectedSmsService) || null;
+          const fallbackPrice = currentService?.finalPrice ? parseFloat(currentService.finalPrice) : 0;
+          const finalBuyPrice = selectedTier?.priceWithMarkup ? parseFloat(selectedTier.priceWithMarkup) : fallbackPrice;
+          const exactMaxPrice = selectedTier?.originalPrice ? parseFloat(selectedTier.originalPrice) : null;
+          const exactProviderId = selectedTier?.providerId || null;
+
+          const buySmsNumber = async () => {
+              if (!currentService) return;
+              if (activeOrders.length > 0) { triggerToast("Secure an active asset before requesting another."); return; }
+              if (balance < finalBuyPrice) { triggerToast("Insufficient secure funds."); return; }
+              
+              setIsSmsLoading(true);
+              try {
+                  const token = await getAuthToken(); 
+                  const deductRes = await fetch('https://voicestore-backend.onrender.com/api/sms-deduct', {
+                      method: 'POST', headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+                      body: JSON.stringify({ email: user.email, price: finalBuyPrice })
+                  });
+                  const deductData = await deductRes.json();
+                  if (!deductData.success) { triggerToast(deductData.message || "Balance deduction failed."); setIsSmsLoading(false); return; }
+
+                  const res = await fetch('https://voicestore-backend.onrender.com/api/juicy/getNumber', {
+                      method: 'POST', headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+                      body: JSON.stringify({ serviceId: currentService.code, countryId: smsCountry, maxPrice: exactMaxPrice, exactProviderId: exactProviderId }) 
+                  });
+                  const data = await res.json();
+                  
+                  if (data?.success && data?.phone) {
+                      let finalOrderPrice = finalBuyPrice;
+                      if (data.exactCost !== undefined && data.exactCost !== null) {
+                          const markup = parseFloat(smsSettings?.markup || 1.00);
+                          const actualTotalCost = parseFloat(data.exactCost) + markup;
+                          const diff = parseFloat((finalBuyPrice - actualTotalCost).toFixed(2));
+                          if (diff > 0) {
+                              fetch('https://voicestore-backend.onrender.com/api/sms-refund', { method: 'POST', headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` }, body: JSON.stringify({ email: user.email, price: diff }) }).catch(()=>{});
+                              finalOrderPrice = actualTotalCost; 
+                          }
+                      }
+                      const cleanName = (currentService.name || '').split(' [')[0];
+                      // 🎯 TIMER CHANGED TO 240 SECONDS (4 MINUTES)
+                      const newOrder = { id: data.orderId, phone: data.phone, service: cleanName, countryId: smsCountry, price: finalOrderPrice, status: 'ACTIVE', codes: [], expiresAt: Date.now() + 240 * 1000, isCancelling: false, isNew: true };
+                      setActiveOrders(prev => [newOrder, ...prev]); 
+                      triggerToast("Secure asset deployed successfully!");
+                  } else {
+                      await fetch('https://voicestore-backend.onrender.com/api/sms-refund', { method: 'POST', headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` }, body: JSON.stringify({ email: user.email, price: finalBuyPrice }) });
+                      triggerToast(data?.message || "Deployment failed.");
+                  }
+              } catch (e) { triggerToast("Network Error."); } finally { setIsSmsLoading(false); }
+          };
+
+          // Actual Executions
+          const performCancel = async (orderId, priceToRefund, isAuto = false) => {
+              if (isAuto) { setActiveOrders(prev => prev.filter(o => o.id !== orderId)); triggerToast(`Session expired. Auto-refunded.`); }
+              try {
+                  const token = await getAuthToken();
+                  const cancelRes = await fetch(`https://voicestore-backend.onrender.com/api/juicy/cancel`, { method: 'POST', headers: {'Content-Type':'application/json', 'Authorization': `Bearer ${token}`}, body: JSON.stringify({orderId}) }); 
+                  const cancelData = await cancelRes.json();
+                  if (!cancelData.success && !String(cancelData.message).includes('already')) { if (!isAuto) { triggerToast(cancelData.message); return; } }
+                  await fetch('https://voicestore-backend.onrender.com/api/sms-refund', { method: 'POST', headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` }, body: JSON.stringify({ email: user.email, price: priceToRefund }) });
+                  if (!isAuto) { triggerToast(`Session Terminated. $${priceToRefund.toFixed(2)} securely refunded.`); setActiveOrders(prev => prev.filter(o => o.id !== orderId)); }
+              } catch (e) {} 
+          };
+
+          const performSkip = async (orderId, priceToRefund) => {
+              try {
+                  const token = await getAuthToken();
+                  const skipRes = await fetch(`https://voicestore-backend.onrender.com/api/juicy/skip`, { method: 'POST', headers: {'Content-Type':'application/json', 'Authorization': `Bearer ${token}`}, body: JSON.stringify({orderId}) }); 
+                  const skipData = await skipRes.json();
+                  if (!skipData.success && !String(skipData.message).includes('already')) { triggerToast(skipData.message); return; }
+                  await fetch('https://voicestore-backend.onrender.com/api/sms-refund', { method: 'POST', headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` }, body: JSON.stringify({ email: user.email, price: priceToRefund }) });
+                  triggerToast(`Asset Banned. $${priceToRefund.toFixed(2)} securely refunded.`); 
+                  setActiveOrders(prev => prev.filter(o => o.id !== orderId));
+              } catch (e) {} 
+          };
+
+          const executeConfirmAction = () => {
+              if(confirmAction.type === 'cancel') performCancel(confirmAction.orderId, confirmAction.price);
+              else if(confirmAction.type === 'skip') performSkip(confirmAction.orderId, confirmAction.price);
+              setConfirmAction({ show: false, type: '', orderId: null, price: 0 });
+          };
+
+          useEffect(() => {
+              if(activeOrders.length === 0) return;
+              const interval = setInterval(() => {
+                  activeOrders.forEach(async (order) => {
+                      if (order.codes.length > 0) return; 
+                      if (Date.now() >= order.expiresAt) {
+                          if (!order.isCancelling) {
+                              order.isCancelling = true;
+                              setActiveOrders(prev => prev.filter(o => o.id !== order.id));
+                              triggerToast(`Session expired. Auto-refunded.`);
+                              performCancel(order.id, order.price, true);
+                          }
+                          return;
+                      }
+                      try {
+                          const res = await fetch(`https://voicestore-backend.onrender.com/api/juicy/getStatus?orderId=${order.id}`);
+                          const data = await res.json();
+                          if (data.success && data.status === 'OK' && data.code) {
+                              setActiveOrders(prev => prev.map(o => {
+                                  if (o.id === order.id && !o.codes.includes(data.code)) {
+                                      triggerToast(`Secure Transmission Received!`);
+                                      getAuthToken().then(token => { fetch('https://voicestore-backend.onrender.com/api/sms-save', { method: 'POST', headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` }, body: JSON.stringify({ email: user.email, type: `Secure Network (${o.service})`, data: `Phone: ${o.phone}\nDecrypted Code: ${data.code}` }) }); });
+                                      return { ...o, codes: [...o.codes, data.code], lastMsg: 'Intercepted' };
+                                  } return o;
+                              }));
+                          } else if (String(data.status).includes('CANCEL')) { setActiveOrders(prev => prev.filter(o => o.id !== order.id));
+                          } else { setActiveOrders(prev => prev.map(o => o.id === order.id ? {...o, lastMsg: data.status} : o)); }
+                      } catch(e) {}
+                  });
+              }, 3000); 
+              return () => clearInterval(interval);
+          }, [activeOrders, user]);
+
+          const copyText = (text) => {
+             if (navigator.clipboard) navigator.clipboard.writeText(text).then(() => triggerToast("Copied to clipboard!"));
+             else { const t = document.createElement("textarea"); t.value = text; document.body.appendChild(t); t.select(); document.execCommand("copy"); document.body.removeChild(t); triggerToast("Copied to clipboard!"); }
+          };
+
+          const formatPhoneDisplay = (phone) => { return `+${String(phone).replace(/\D/g, '')}`; };
+          const copyNumberOnly = (phone) => { copyText(String(phone).replace(/\D/g, '')); };
+
+          if(!smsSettings?.active) return <div className={uiCard + " text-center py-20 text-slate-500 font-medium w-full"}><Smartphone className="w-12 h-12 mx-auto mb-4 opacity-20"/> Network Operations Currently Suspended.</div>;
+
+          return (
+            <div className="w-full max-w-2xl mx-auto space-y-6 sm:space-y-8 animate-fade-in-up relative">
+                
+                {/* 🎯 MODAL FOR CANCEL/SKIP CONFIRMATION */}
+                {confirmAction.show && (
+                    <div className="fixed inset-0 z-[200] flex items-center justify-center p-4 bg-slate-900/80 backdrop-blur-sm animate-pop-in">
+                        <div className="bg-[#0f172a] border border-slate-700 w-full max-w-sm rounded-3xl p-6 shadow-2xl relative overflow-hidden">
+                            <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-violet-500 to-rose-500"></div>
+                            <div className="flex items-center gap-3 mb-4">
+                                <div className={`p-3 rounded-full ${confirmAction.type === 'cancel' ? 'bg-slate-800 text-slate-300' : 'bg-rose-500/20 text-rose-400'}`}>
+                                    {confirmAction.type === 'cancel' ? <X className="w-6 h-6"/> : <Ban className="w-6 h-6"/>}
+                                </div>
+                                <h3 className="text-lg font-black text-white">{confirmAction.type === 'cancel' ? 'Terminate Session?' : 'Ban This Asset?'}</h3>
+                            </div>
+                            <p className="text-sm text-slate-400 leading-relaxed font-medium mb-6">
+                                {confirmAction.type === 'cancel' 
+                                    ? "Are you sure you want to cancel this session? The active number will be released, and your funds will be instantly refunded to your secure wallet."
+                                    : "Encountered a blocked or invalid number? Skipping will permanently blacklist this number for your account and instantly refund your secure wallet. Proceed with ban?"}
+                            </p>
+                            <div className="flex gap-3">
+                                <button onClick={() => setConfirmAction({ show: false, type: '', orderId: null, price: 0 })} className="flex-1 py-3 rounded-xl font-bold text-slate-300 bg-slate-800 hover:bg-slate-700 transition-colors">Abort</button>
+                                <button onClick={executeConfirmAction} className={`flex-1 py-3 rounded-xl font-bold text-white shadow-lg transition-all ${confirmAction.type === 'cancel' ? 'bg-slate-600 hover:bg-slate-500' : 'bg-rose-600 hover:bg-rose-500 shadow-rose-500/30'}`}>Confirm</button>
+                            </div>
+                        </div>
+                    </div>
+                )}
+
+                <div className={uiCard + " p-6 sm:p-8"}>
+                    <div className="mb-6">
+                        <label className="block text-[10px] font-bold text-slate-500 dark:text-slate-400 mb-2.5 uppercase tracking-wider">Select Server Region</label>
+                        <div className="relative">
+                            <select value={smsCountry} onChange={e => setSmsCountry(e.target.value)} className={uiInput + " appearance-none cursor-pointer pr-10"}>
+                                {NETWORK_REGIONS.map(c => <option key={c.id} value={c.id} className="bg-slate-100 dark:bg-brand-darkBg text-slate-900 dark:text-white">{c.name}</option>)}
+                            </select>
+                            <ChevronDown className="w-5 h-5 text-slate-400 absolute right-4 top-3.5 pointer-events-none" />
+                        </div>
+                    </div>
+
+                    <div className="bg-slate-50/50 dark:bg-black/20 p-5 rounded-2xl border border-slate-200 dark:border-white/5 mb-6">
+                       <label className="block text-[10px] font-bold text-slate-500 dark:text-slate-400 mb-2 uppercase tracking-wider">Select Service Ecosystem</label>
+                       <div className="flex flex-col sm:flex-row gap-4 items-center">
+                           
+                           {/* 🎯 APP DROPDOWN (STOCK HIDDEN) */}
+                           <div className="relative w-full">
+                               <div onClick={() => setIsAppDropdownOpen(!isAppDropdownOpen)} className={uiInput + " h-14 pl-12 pr-10 flex items-center justify-between cursor-pointer font-bold text-slate-800 dark:text-white border-2 " + (isAppDropdownOpen ? "border-violet-500/50 ring-2 ring-violet-500/20" : "")}>
+                                   <span className="truncate">{isFetchingServices ? 'Ecosystem Syncing...' : (currentService ? `${currentService.name}` : 'No services available')}</span>
+                                   <Smartphone className="w-5 h-5 text-violet-500 absolute left-4"/>
+                                   <ChevronDown className={`w-4 h-4 text-slate-400 absolute right-4 transition-transform ${isAppDropdownOpen ? 'rotate-180' : ''}`}/>
+                               </div>
+                               {isAppDropdownOpen && (
+                                   <>
+                                       <div className="fixed inset-0 z-30" onClick={() => setIsAppDropdownOpen(false)}></div>
+                                       <div className="absolute top-full left-0 mt-2 w-full bg-white dark:bg-brand-darkCard border border-slate-200 dark:border-white/10 rounded-xl shadow-2xl z-40 overflow-hidden animate-pop-in">
+                                           <div className="p-3 border-b border-slate-100 dark:border-white/5 relative bg-slate-50 dark:bg-black/20">
+                                               <Search className="w-4 h-4 text-slate-400 absolute left-6 top-6"/>
+                                               <input type="text" autoFocus placeholder="Filter ecosystem..." value={appSearch} onChange={(e) => setAppSearch(e.target.value)} className="w-full bg-white dark:bg-black/50 border border-slate-200 dark:border-white/10 rounded-lg pl-10 pr-4 py-2.5 text-sm outline-none focus:border-violet-500/50 text-slate-900 dark:text-white"/>
+                                           </div>
+                                           <div className="max-h-64 overflow-y-auto custom-scrollbar p-1">
+                                               {filteredApps.length === 0 ? (<p className="text-center text-slate-500 py-6 text-sm">No services matched.</p>) : 
+                                                   filteredApps.map(s => {
+                                                       if(!s) return null;
+                                                       return (
+                                                           <div key={s.code} onClick={() => { setSelectedSmsService(s.code); setIsAppDropdownOpen(false); setAppSearch(''); }} className={`px-4 py-3 cursor-pointer rounded-lg text-sm font-semibold transition-colors flex justify-between items-center ${selectedSmsService === s.code ? 'bg-violet-50 dark:bg-violet-500/10 text-violet-600 dark:text-violet-400' : 'text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-white/5'}`}>
+                                                               <div className="flex flex-col"><span>{s.name}</span></div>
+                                                           </div>
+                                                       );
+                                                   })
+                                               }
+                                           </div>
+                                       </div>
+                                   </>
+                               )}
+                           </div>
+                           
+                           {/* 🎯 PRICE DROPDOWN (STOCK HIDDEN) */}
+                           <div className="relative w-full sm:w-auto shrink-0 min-w-[130px]">
+                               <select 
+                                   value={selectedTier?.originalPrice ? String(selectedTier.originalPrice) : ''}
+                                   onChange={(e) => { const tier = Array.isArray(priceTiers) ? priceTiers.find(t => String(t?.originalPrice) === e.target.value) : null; if(tier) setSelectedTier(tier); }}
+                                   disabled={isTiersLoading || (!Array.isArray(priceTiers)) || priceTiers.length === 0}
+                                   className="w-full bg-transparent outline-none appearance-none cursor-pointer text-center pr-6 disabled:opacity-50 disabled:cursor-not-allowed text-lg font-black text-emerald-600 dark:text-emerald-400"
+                               >
+                                   {isTiersLoading ? (
+                                       <option value="" className="text-sm bg-slate-100 dark:bg-slate-800 text-slate-900 dark:text-white">...</option>
+                                   ) : (Array.isArray(priceTiers) && priceTiers.length > 0) ? (
+                                       priceTiers.map((tier, idx) => (
+                                           <option key={idx} value={tier?.originalPrice ? String(tier.originalPrice) : ''} className="text-sm bg-slate-100 dark:bg-slate-800 text-slate-900 dark:text-white">
+                                               ${Number(tier?.priceWithMarkup || 0).toFixed(2)}
+                                           </option>
+                                       ))
+                                   ) : (
+                                       <option value="" className="text-sm bg-slate-100 dark:bg-slate-800 text-slate-900 dark:text-white">
+                                           ${Number(fallbackPrice || 0).toFixed(2)}
+                                       </option>
+                                   )}
+                               </select>
+                               {isTiersLoading ? <RefreshCw className="w-4 h-4 text-slate-400 absolute right-3 animate-spin pointer-events-none"/> : <ChevronDown className="w-4 h-4 text-slate-500 absolute right-3 top-5 pointer-events-none"/>}
+                           </div>
+
+                       </div>
+                    </div>
+
+                    <button onClick={buySmsNumber} disabled={isSmsLoading || !currentService || activeOrders.length > 0 || ((!priceTiers || priceTiers.length === 0) && fallbackPrice === 0)} className={uiBtnPrimary + " h-14 text-lg mt-6"}>
+                        {activeOrders.length > 0 ? <span className="flex items-center gap-2"><StopCircle className="w-5 h-5"/> Session Active</span> : isSmsLoading ? <span className="flex items-center gap-2"><RefreshCw className="w-5 h-5 animate-spin"/> Establishing Secure Tunnel...</span> : 'Acquire Secure Number'}
+                    </button>
+                </div>
+
+                {/* 🎯 ACTIVE ORDER UI WITH SKIP & CANCEL BUTTONS */}
+                {activeOrders.map((order, index) => {
+                    const timeLeft = Math.max(0, Math.floor((order.expiresAt - now) / 1000));
+                    return (
+                        <div key={order.id} ref={index === 0 ? latestOrderRef : null} className={uiCard + " border-violet-400/50 bg-white/90 dark:bg-[#18181b]/90 shadow-2xl relative overflow-hidden flex flex-col items-center py-10 px-6 " + (order.isNew ? "animate-super-glow" : "")}>
+                            <div className="absolute top-0 left-0 w-full h-1.5 bg-slate-200 dark:bg-slate-800"><div className="bg-gradient-to-r from-violet-400 to-cyan-500 h-full transition-all ease-linear shadow-[0_0_10px_rgba(245,158,11,0.8)]" style={{width: `${(timeLeft / 240) * 100}%`}}></div></div>
+                            <p className="text-sm font-bold text-slate-500 dark:text-slate-400 mb-6 uppercase tracking-widest">Routing Active: <span className="text-violet-600 dark:text-violet-400">{order.service}</span></p>
+                            <div className="flex items-center gap-3 w-full max-w-md mb-8">
+                                <div className="text-2xl sm:text-3xl font-mono font-black text-slate-900 dark:text-white bg-slate-50 dark:bg-black/40 px-6 py-4 rounded-2xl border border-slate-200 dark:border-white/10 shadow-inner flex-grow text-center whitespace-nowrap overflow-hidden text-ellipsis drop-shadow-md">{formatPhoneDisplay(order.phone)}</div>
+                                <button onClick={() => copyNumberOnly(order.phone)} title="Copy number only" className="btn-animate p-4 bg-violet-50 dark:bg-violet-500/10 hover:bg-violet-100 dark:hover:bg-violet-500/20 rounded-2xl text-violet-600 dark:text-violet-400 border border-violet-200 dark:border-violet-500/20 shadow-sm transition-colors shrink-0"><Copy className="w-6 h-6 drop-shadow-[0_0_5px_currentColor]"/></button>
+                            </div>
+                            {order.codes.length === 0 ? (
+                                <div className="w-full max-w-md bg-white dark:bg-white/5 p-5 rounded-2xl border border-slate-200 dark:border-white/10 shadow-md">
+                                    <p className="text-violet-600 dark:text-violet-400 font-bold mb-4 flex items-center justify-center gap-2 text-sm"><RefreshCw className="w-4 h-4 animate-spin"/> Awaiting Secure Transmission...</p>
+                                    <div className="flex justify-between items-center w-full mt-2 bg-slate-50 dark:bg-black/30 p-3 rounded-xl border border-slate-200 dark:border-slate-700">
+                                        <span className="text-sm font-mono font-bold text-slate-500 dark:text-slate-400 flex items-center gap-1.5 ml-2"><Clock className="w-4 h-4"/> {Math.floor(timeLeft / 60)}:{(timeLeft % 60).toString().padStart(2, '0')}</span>
+                                        
+                                        {/* 🎯 SKIP & CANCEL BUTTONS */}
+                                        {timeLeft > 220 ? (
+                                            <span className="text-xs text-slate-500 font-bold px-3">Verification Lock: {timeLeft - 220}s</span>
+                                        ) : (
+                                            <div className="flex gap-2">
+                                                <button onClick={() => setConfirmAction({show: true, type: 'cancel', orderId: order.id, price: order.price})} className="btn-animate bg-slate-200 hover:bg-slate-300 dark:bg-slate-800 dark:hover:bg-slate-700 border border-slate-300 dark:border-slate-600 text-slate-700 dark:text-slate-300 px-3 sm:px-4 py-2 rounded-xl text-xs font-bold transition-all shadow-sm">Cancel</button>
+                                                <button onClick={() => setConfirmAction({show: true, type: 'skip', orderId: order.id, price: order.price})} className="btn-animate bg-rose-100 hover:bg-rose-200 dark:bg-rose-500/10 dark:hover:bg-rose-500/20 border border-rose-300 dark:border-rose-500/30 text-rose-600 dark:text-rose-400 px-3 sm:px-4 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 shadow-sm"><Ban className="w-3.5 h-3.5"/> Skip</button>
+                                            </div>
+                                        )}
+                                    </div>
+                                </div>
+                            ) : (
+                                <div className="w-full max-w-md space-y-4 animate-pop-in">
+                                    <p className="text-xs text-emerald-600 dark:text-emerald-400 font-bold uppercase tracking-widest text-center mb-2">Transmission Decrypted</p>
+                                    {order.codes.map((c, i) => (
+                                        <div key={i} className="flex items-center justify-between gap-3 sm:gap-4 bg-emerald-50 dark:bg-emerald-500/10 border border-emerald-300 dark:border-emerald-500/30 p-4 sm:p-5 rounded-2xl shadow-[0_4px_20px_rgba(16,185,129,0.15)]">
+                                            <div className="text-xl sm:text-2xl font-mono font-black text-emerald-700 dark:text-emerald-300 break-words whitespace-pre-wrap flex-grow drop-shadow-sm">{c}</div>
+                                            <button onClick={() => copyText(c)} className="btn-animate p-3 bg-white dark:bg-white/10 hover:bg-slate-50 dark:hover:bg-white/20 rounded-xl text-emerald-600 dark:text-emerald-400 transition-colors shadow-sm shrink-0"><Copy className="w-5 h-5"/></button>
+                                        </div>
+                                    ))}
+                                    <button onClick={() => setActiveOrders([])} className={uiBtnPrimary + " mt-6"}>Acknowledge & Close Session</button>
+                                </div>
+                            )}
+                        </div>
+                    )
+                })}
+            </div>
+          );
+        }
+
+        // ==========================================
+        // ASSET STORE MODULE
+        // ==========================================
+        function CustomerDashboardStore({ inventory, categories, cart, setCart, allOrders, uiCard, uiInput, uiBtnPrimary, uiInnerPanel, triggerToast }) {
+          const [searchQuery, setSearchQuery] = useState('');
+          const [previewStockModal, setPreviewStockModal] = useState({show: false, categoryId: null, name: ''});
+          const filteredCategories = categories.filter(c => c.name.toLowerCase().includes(searchQuery.toLowerCase()));
+          const recentActivity = allOrders.slice(0, 5);
+
+          const addToCart = (productWithState) => {
+            const stockAvailable = inventory[productWithState.id] ? inventory[productWithState.id].length : 0;
+            const currentlyInCart = cart.filter(item => item.id === productWithState.id).length;
+            if (currentlyInCart >= stockAvailable) { triggerToast('Stock Limit Reached!'); return; }
+            setCart([...cart, productWithState]); triggerToast(`${productWithState.name} added to cart.`);
+          };
+
+          return (
+            <>
+              {previewStockModal.show && (
+                <div className="fixed inset-0 z-[110] flex items-center justify-center p-4 bg-slate-900/60 dark:bg-[#030712]/80 backdrop-blur-sm transition-all duration-300">
+                  <div className={uiCard + " w-full max-w-md p-6 max-h-[80vh] flex flex-col"}>
+                    <div className="flex justify-between items-center mb-5 pb-4 border-b border-slate-200 dark:border-white/10">
+                        <h3 className="font-bold text-lg sm:text-xl text-slate-900 dark:text-white flex items-center gap-2"><Eye className="w-5 h-5 text-violet-500 dark:text-violet-400" /> Live Stock Preview</h3>
+                        <button onClick={() => setPreviewStockModal({show: false, categoryId: null, name: ''})} className="btn-animate p-2 bg-slate-100 dark:bg-white/5 hover:bg-slate-200 dark:hover:bg-white/10 rounded-full text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white transition-colors"><X className="w-5 h-5" /></button>
+                    </div>
+                    <div className="overflow-y-auto pr-1 sm:pr-2 space-y-3 scrollbar-hide">
+                        {(!inventory[previewStockModal.categoryId] || inventory[previewStockModal.categoryId].length === 0) ? (
+                            <p className="text-center text-sm text-slate-500 dark:text-slate-400 font-medium py-10">No stock currently available.</p>
+                        ) : (
+                            inventory[previewStockModal.categoryId].map((acc, i) => {
+                                const rawStr = String(acc);
+                                let state = "US";
+                                const stateMatch = rawStr.match(/📍 STATE:\s*\n?([^\n]+)/i);
+                                if (stateMatch) state = stateMatch[1].trim();
+                                let phone = "Hidden";
+                                const phoneMatch = rawStr.match(/📱 PHONE:\s*\n?([^\n]+)/i);
+                                if (phoneMatch) {
+                                    const ph = phoneMatch[1].trim();
+                                    const m = ph.match(/(?:\+1|1)?\s*\(?(\d{3})\)?[-.\s]?\d{3}[-.\s]?(\d{4})/);
+                                    if (m) phone = m[1] + "****" + m[2].slice(-3);
+                                }
+                                return (
+                                   <div key={i} className={uiInnerPanel + " flex justify-between items-center"}>
+                                      <div className="flex items-center gap-3 sm:gap-4">
+                                         <span className="bg-violet-50 dark:bg-violet-500/10 text-violet-600 dark:text-violet-400 font-bold px-2 sm:px-2.5 py-1 rounded-lg text-[10px] sm:text-xs uppercase border border-violet-200 dark:border-violet-500/20">{state}</span>
+                                         <span className="font-mono text-xs sm:text-sm text-slate-700 dark:text-slate-200 font-medium tracking-wide">{phone}</span>
+                                      </div>
+                                      <span className="text-[8px] sm:text-[10px] text-emerald-600 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-500/10 px-1.5 sm:px-2 py-1 rounded-md uppercase font-bold tracking-widest border border-emerald-200 dark:border-emerald-500/20">Ready</span>
+                                   </div>
+                                )
+                            })
+                        )}
+                    </div>
+                  </div>
+                </div>
+              )}
+              <div className="space-y-6 sm:space-y-8 animate-fade-in-up w-full">
+                <div className="flex flex-col xl:flex-row justify-between items-start xl:items-center gap-4 w-full">
+                  <div className="w-full xl:w-auto">
+                    <h1 className="text-2xl sm:text-3xl font-black text-slate-900 dark:text-white tracking-tight drop-shadow-sm">Marketplace</h1>
+                    <p className="text-slate-600 dark:text-slate-400 text-sm mt-1 font-medium">High-quality verified static accounts.</p>
+                  </div>
+                  <div className="w-full xl:w-80">
+                     <div className="relative flex items-center w-full">
+                       <Search className="w-4 h-4 text-slate-500 absolute left-4" />
+                       <input type="text" placeholder="Search inventory..." value={searchQuery} onChange={(e)=>setSearchQuery(e.target.value)} className={uiInput + " pl-11"} />
+                     </div>
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 sm:gap-8 w-full">
+                  <div className="lg:col-span-2 grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6 w-full">
+                    {filteredCategories.map((product) => {
+                        const [selectedState, setSelectedState] = useState('Any');
+                        const stockList = inventory[product.id] || [];
+                        const totalStock = stockList.length;
+                        
+                        const availableStates = [...new Set(stockList.map(acc => {
+                            let state = "US";
+                            const stateMatch = String(acc).match(/📍 STATE:\s*\n?([^\n]+)/i);
+                            if (stateMatch) state = stateMatch[1].trim();
+                            return state;
+                        }))].sort();
+
+                        const currentStockCount = selectedState === 'Any' ? totalStock : stockList.filter(acc => String(acc).includes(selectedState)).length;
+                        const Icon = product.icon;
+
+                        return (
+                            <div key={product.id} className={uiCard + " p-6 flex flex-col group hover:-translate-y-1 hover:border-violet-500/30"}>
+                                {totalStock === 0 && <div className="absolute inset-0 bg-slate-900/80 dark:bg-brand-darkBg/80 z-20 flex items-center justify-center backdrop-blur-sm"><span className="bg-slate-800 dark:bg-slate-900 text-white px-4 py-2 rounded-xl text-xs font-bold uppercase tracking-widest shadow-xl border border-white/10">Out of Stock</span></div>}
+                                
+                                <div className="flex justify-between items-start mb-5">
+                                    <div className="bg-slate-100 dark:bg-black/30 p-3.5 rounded-xl border border-slate-200 dark:border-white/5 shadow-inner group-hover:scale-110 transition-transform duration-300">
+                                        <Icon className={`w-6 h-6 ${product.color} drop-shadow-[0_0_8px_currentColor]`} />
+                                    </div>
+                                    <div className="bg-white dark:bg-white/5 border border-slate-200 dark:border-white/10 px-3 py-1.5 rounded-xl flex items-center text-slate-800 dark:text-white text-sm font-bold shadow-sm">
+                                        ${Number(product.price).toFixed(2)}
+                                    </div>
+                                </div>
+                                
+                                <h3 className="text-lg font-bold text-slate-900 dark:text-white mb-2 break-words">{product.name}</h3>
+                                <p className="text-slate-600 dark:text-slate-400 text-xs leading-relaxed mb-4 flex-grow font-medium break-words">{product.description}</p>
+                                
+                                {totalStock > 0 && (
+                                    <div className="mb-4">
+                                        <label className="block text-[10px] font-bold text-slate-500 dark:text-slate-400 mb-1.5 uppercase tracking-wider">Select Preferred State</label>
+                                        <select value={selectedState} onChange={(e) => setSelectedState(e.target.value)} className={uiInput + " !py-2.5 !text-xs cursor-pointer"}>
+                                            <option value="Any">Any State (Random Delivery)</option>
+                                            {availableStates.map(st => <option key={st} value={st}>{st} State</option>)}
+                                        </select>
+                                    </div>
+                                )}
+                                
+                                <div className="flex justify-between items-center mt-auto pt-4 border-t border-slate-200 dark:border-white/5 w-full">
+                                    <div className="flex flex-col">
+                                        <span className="text-[10px] text-slate-500 font-bold uppercase tracking-wider mb-1">Available</span>
+                                        <span className={`text-sm font-black drop-shadow-sm ${currentStockCount > 5 ? 'text-slate-800 dark:text-white' : 'text-rose-500 dark:text-rose-400'}`}>{currentStockCount} pcs</span>
+                                    </div>
+                                    <button onClick={() => addToCart({...product, selectedState: selectedState === 'Any' ? null : selectedState})} disabled={currentStockCount === 0} className={uiBtnPrimary + " !w-auto !py-2.5 !px-5 text-sm"}>
+                                        Add <Plus className="w-4 h-4" />
+                                    </button>
+                                </div>
+                                
+                                {totalStock > 0 && (
+                                    <div className="mt-4 pt-4 border-t border-slate-200 dark:border-white/5 w-full text-center">
+                                        <p onClick={() => setPreviewStockModal({show: true, categoryId: product.id, name: product.name})} className="text-[10px] text-violet-600 dark:text-violet-400 cursor-pointer hover:text-violet-700 dark:hover:text-violet-300 font-bold tracking-wider uppercase flex items-center justify-center gap-1.5 transition-colors">
+                                            <Eye className="w-3.5 h-3.5 text-violet-500 dark:text-violet-400 drop-shadow-[0_0_5px_currentColor]"/> View Full Live Stock Preview
+                                        </p>
+                                    </div>
+                                )}
+                            </div>
+                        );
+                    })}
+                    {filteredCategories.length === 0 && <div className="col-span-full py-20 text-center text-slate-500 font-medium"><Search className="w-12 h-12 mx-auto mb-4 opacity-20"/>No products match.</div>}
+                  </div>
+
+                  <div className="lg:col-span-1 w-full">
+                     <div className={uiCard + " p-6 h-full flex flex-col"}>
+                        <h3 className="font-bold text-slate-900 dark:text-white mb-5 flex items-center gap-2 pb-4 border-b border-slate-200 dark:border-white/5 text-lg"><TrendingUp className="w-5 h-5 text-violet-500 dark:text-violet-400 drop-shadow-[0_0_5px_currentColor]"/> Live Activity</h3>
+                        <div className="space-y-4 overflow-y-auto flex-grow scrollbar-hide pr-1">
+                          {recentActivity.map((act, i) => (
+                            <div key={i} className={uiInnerPanel + " !p-3 relative overflow-hidden group hover:bg-slate-200 dark:hover:bg-white/[0.05] transition-colors"}>
+                              <div className="absolute top-0 left-0 w-1 h-full bg-violet-500 shadow-[0_0_10px_currentColor]"></div>
+                              <p className="text-sm text-slate-700 dark:text-slate-300 font-medium ml-2 break-words">
+                                <span className="font-bold text-slate-900 dark:text-white">{(act.customer || 'User').split('@')[0]}***</span> bought <span className="font-bold text-emerald-600 dark:text-emerald-400 drop-shadow-sm">${Number(act.total || 0).toFixed(2)}</span>
+                              </p>
+                              <p className="text-[10px] text-slate-500 mt-2 ml-2 flex items-center gap-1.5 font-medium"><Clock className="w-3 h-3"/> {new Date(act.date).toLocaleTimeString()}</p>
+                            </div>
+                          ))}
+                          {recentActivity.length === 0 && <p className="text-sm text-slate-500 text-center py-10 font-medium">No recent activity.</p>}
+                        </div>
+                     </div>
+                  </div>
+                </div>
+              </div>
+            </>
+          );
+        }
+
+        // ==========================================
+        // FUNDS MODULE
+        // ==========================================
+        function CustomerDashboardFunds({ user, db, appId, triggerToast, addNotification, bankSettings, uiCard, uiInput, uiBtnPrimary, uiBtnSecondary, uiInnerPanel }) {
+          const [autoPay, setAutoPay] = useState({ active: false, amount: 0, time: 900, checking: false, invoiceId: '' });
+          const TRON_ADDRESS = 'TELRyMwDmdKzBRb7Uaw3zNvphrc8V3D5Mj';
+          const BTC_ADDRESS = '1EgVdWyoCsWepg3TAowifuhoR81Lm1xEUd';
+          const [depositAmountUsd, setDepositAmountUsd] = useState('');
+          const [cryptoMethod, setCryptoMethod] = useState('USDT TRC20');
+
+          const startAutoDeposit = async (e) => {
+              e.preventDefault();
+              const form = e.target;
+              const baseAmount = parseFloat(form.amount ? form.amount.value : 0);
+              if (isNaN(baseAmount) || baseAmount < 1) { triggerToast('Minimum deposit is $1.00'); return; }
+              const uniqueCents = (Math.floor(Math.random() * 99) + 1) / 100; 
+              const finalAmount = +(baseAmount + uniqueCents).toFixed(2);
+              const newInvoiceId = 'DEP-' + Date.now();
+              let cryptoAmount = finalAmount;
+              if (cryptoMethod === 'BTC') {
+                 try {
+                     const btcRes = await fetch('https://api.coingecko.com/api/v3/simple/price?ids=bitcoin&vs_currencies=usd');
+                     const btcData = await btcRes.json();
+                     cryptoAmount = parseFloat((finalAmount / btcData.bitcoin.usd).toFixed(8));
+                 } catch(e) { triggerToast("Secure pricing fetch failed."); return; }
+              }
+              try {
+                  await setDoc(doc(db, 'artifacts', appId, 'public', 'data', 'Store_Deposits', newInvoiceId), { 
+                      email: user.email, amount: finalAmount, cryptoAmount: cryptoAmount,
+                      method: `${cryptoMethod} (Auto)`, status: 'Awaiting Payment', date: new Date().toISOString(), txId: 'Pending'
+                  });
+                  setAutoPay({ active: true, amount: finalAmount, cryptoAmount: cryptoAmount, method: cryptoMethod, time: 1800, checking: true, invoiceId: newInvoiceId });
+                  triggerToast(`Secure Invoice Generated`);
+              } catch (err) { triggerToast("Network exception."); }
+          };
+
+          const handleFlutterwavePayment = async () => {
+              if(!bankSettings?.flutterwaveActive || !bankSettings?.flutterwaveKey) { triggerToast("Flutterwave disabled."); return; }
+              const usdAmt = parseFloat(depositAmountUsd);
+              if(isNaN(usdAmt) || usdAmt < 1) { triggerToast("Minimum deposit is $1.00"); return; }
+              const nairaRate = bankSettings?.nairaRate || 1500;
+              const nairaAmount = usdAmt * nairaRate;
+              if (typeof window.FlutterwaveCheckout !== 'undefined') {
+                  window.FlutterwaveCheckout({
+                      public_key: bankSettings.flutterwaveKey, tx_ref: 'FLW-' + Math.floor((Math.random() * 1000000000) + 1), amount: nairaAmount, currency: "NGN",
+                      payment_options: "card, banktransfer, ussd", customer: { email: user.email },
+                      customizations: { title: "VoiceStore Premium", description: "Wallet Deposit ($" + usdAmt + ")" },
+                      callback: async function (data) {
+                          if(data.status === "successful" || data.status === "completed") {
+                              try {
+                                  const token = await getAuthToken();
+                                  const response = await fetch('https://voicestore-backend.onrender.com/api/flutterwave-success', {
+                                      method: 'POST', headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+                                      body: JSON.stringify({ email: user.email, amount: Number(usdAmt), transactionId: String(data.transaction_id || data.tx_ref) })
+                                  });
+                                  const result = await response.json();
+                                  if(result.success) {
+                                      triggerToast(`Successfully added $${usdAmt.toFixed(2)}!`); 
+                                      setDepositAmountUsd('');
+                                  } else {
+                                      triggerToast(result.message || 'Verification failed');
+                                  }
+                              } catch(e) {}
+                          }
+                      },
+                      onclose: function() { triggerToast('Payment window closed.'); }
+                  });
+              } else { triggerToast("Payment module loading... please try again."); }
+          };
+
+          useEffect(() => {
+              let interval;
+              if (autoPay.active && autoPay.checking && autoPay.time > 0) {
+                  interval = setInterval(async () => {
+                      try {
+                          const token = await getAuthToken();
+                          const response = await fetch('https://voicestore-backend.onrender.com/api/verify-deposit', {
+                              method: 'POST', headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+                              body: JSON.stringify({ invoiceId: autoPay.invoiceId, email: user.email, amount: autoPay.amount, method: `${autoPay.method} (Auto)`, cryptoAmount: autoPay.cryptoAmount })
+                          });
+                          const result = await response.json();
+                          if (result.success) {
+                              setAutoPay(prev => ({...prev, checking: false})); 
+                              triggerToast(`Funds Verified! $${autoPay.amount} credited.`);
+                              setAutoPay({ active: false, amount: 0, cryptoAmount: 0, time: 0, checking: false, invoiceId: '' });
+                              addNotification('Deposit Successful', `$${autoPay.amount} secured in vault.`);
+                          }
+                      } catch (err) {}
+                  }, 15000); 
+              }
+              const timer = setInterval(() => {
+                  if (autoPay.active && autoPay.time > 0) { setAutoPay(prev => ({ ...prev, time: prev.time - 1 })); } 
+                  else if (autoPay.active && autoPay.time <= 0 && autoPay.checking) {
+                      try { updateDoc(doc(db, 'artifacts', appId, 'public', 'data', 'Store_Deposits', autoPay.invoiceId), { status: 'Expired' }); } catch (e) {}
+                      setAutoPay({ active: false, amount: 0, cryptoAmount: 0, time: 0, checking: false, invoiceId: '' });
+                      triggerToast('Secure session expired.');
+                  }
+              }, 1000);
+              return () => { clearInterval(interval); clearInterval(timer); };
+          }, [autoPay, db, appId, user.email, addNotification]);
+
+          const copyToClipboard = (text) => {
+             if (navigator.clipboard) navigator.clipboard.writeText(text).then(() => triggerToast("Address Secured!"));
+             else { const t = document.createElement("textarea"); t.value = text; document.body.appendChild(t); t.select(); document.execCommand("copy"); document.body.removeChild(t); triggerToast("Address Secured!"); }
+          };
+
+          return (
+            <div className="animate-fade-in-up grid grid-cols-1 lg:grid-cols-2 gap-6 sm:gap-8 w-full">
+              <div className="space-y-6 sm:space-y-8 w-full">
+                <div className={uiCard + " p-6 sm:p-8 border-violet-200 dark:border-violet-500/30 h-fit"}>
+                  <h2 className="text-xl font-bold mb-2 text-slate-900 dark:text-white flex items-center gap-2">
+                     <Zap className="w-6 h-6 text-violet-500 dark:text-violet-400 drop-shadow-[0_0_5px_currentColor]"/> Auto Crypto Deposit
+                  </h2>
+                  
+                  {!autoPay.active ? (
+                      <div className="mt-6">
+                        <p className="text-sm text-slate-600 dark:text-slate-400 mb-6 font-medium leading-relaxed">Enter desired amount and select your preferred crypto network. Our engine will detect the payment automatically.</p>
+                        <form onSubmit={startAutoDeposit} className="space-y-5 w-full">
+                          <div>
+                            <label className="block text-xs font-bold text-slate-500 dark:text-slate-400 mb-2 uppercase tracking-wider">Allocation Amount (USD)</label>
+                            <div className="relative">
+                               <DollarSign className="w-5 h-5 text-slate-400 dark:text-slate-500 absolute left-4 top-3.5" />
+                               <input type="number" step="1" min="1" name="amount" required placeholder="10" className={uiInput + " pl-12 text-lg font-bold h-12"} />
+                            </div>
+                          </div>
+                          <div>
+                              <label className="block text-xs font-bold text-slate-500 dark:text-slate-400 mb-2 uppercase tracking-wider">Blockchain Node</label>
+                              <select value={cryptoMethod} onChange={e => setCryptoMethod(e.target.value)} className={uiInput + " h-12 cursor-pointer border-slate-600"}>
+                                  <option value="USDT TRC20" className="bg-slate-100 dark:bg-slate-800 text-slate-900 dark:text-white">USDT (Tron Network)</option>
+                                  <option value="BTC" className="bg-slate-100 dark:bg-slate-800 text-slate-900 dark:text-white">Bitcoin (Core Network)</option>
+                              </select>
+                          </div>
+                          <button type="submit" className={uiBtnPrimary + " h-12 text-sm mt-2"}>Initialize Transfer</button>
+                        </form>
+                      </div>
+                  ) : (
+                      <div className={uiInnerPanel + " text-center space-y-6 relative overflow-hidden mt-6 bg-slate-100 dark:bg-black/40 shadow-inner"}>
+                          <div className="absolute top-0 left-0 w-full h-1.5 bg-slate-200 dark:bg-slate-800">
+                              <div className="h-full bg-gradient-to-r from-violet-500 to-cyan-600 transition-all duration-1000 shadow-[0_0_10px_currentColor]" style={{ width: `${(autoPay.time / 1800) * 100}%` }}></div>
+                          </div>
+                          
+                          <p className="text-sm font-bold text-slate-900 dark:text-white flex items-center justify-center gap-2.5 pt-3">
+                              <span className="w-2.5 h-2.5 bg-violet-500 dark:bg-violet-400 rounded-full animate-pulse shadow-[0_0_5px_currentColor]"></span> Listening to {autoPay.method}...
+                          </p>
+                          
+                          <div className="text-4xl sm:text-5xl font-black text-violet-600 dark:text-violet-400 tracking-tight drop-shadow-md">
+                              {autoPay.cryptoAmount} <span className="text-xl sm:text-3xl">{autoPay.method === 'BTC' ? 'BTC' : 'USDT'}</span>
+                          </div>
+                          <p className="text-slate-500 dark:text-slate-400 font-medium text-sm">Equals to ${autoPay.amount.toFixed(2)} USD</p>
+
+                          <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-4 rounded-xl mt-4 shadow-sm">
+                              <p className="text-[10px] text-slate-500 font-bold uppercase tracking-wider mb-2">Destination Node Address</p>
+                              <p className="font-mono text-xs sm:text-sm text-slate-900 dark:text-white break-all select-all font-semibold tracking-wide">
+                                  {autoPay.method === 'BTC' ? BTC_ADDRESS : TRON_ADDRESS}
+                              </p>
+                              <button onClick={() => copyToClipboard(autoPay.method === 'BTC' ? BTC_ADDRESS : TRON_ADDRESS)} className={uiBtnSecondary + " !w-auto !py-2 !px-4 mt-3 mx-auto"}><Copy className="w-4 h-4" /> Copy</button>
+                          </div>
+                          
+                          <div className="bg-rose-50 dark:bg-rose-500/10 p-4 rounded-xl border border-rose-200 dark:border-rose-500/20 text-left">
+                             <p className="text-xs text-rose-600 dark:text-rose-400 font-bold mb-1.5 flex items-center gap-1.5 uppercase tracking-wider"><AlertTriangle className="w-4 h-4"/> Security Directive</p>
+                             <p className="text-xs sm:text-sm text-slate-700 dark:text-slate-300 leading-relaxed font-medium">
+                                  Transfer exactly <span className="font-bold text-slate-900 dark:text-white border-b border-rose-400">{autoPay.cryptoAmount} {autoPay.method === 'BTC' ? 'BTC' : 'USDT'}</span>. Variations will cause automated verification to fail.
+                             </p>
+                          </div>
+                          
+                          <div className="flex justify-between items-center pt-4 border-t border-slate-200 dark:border-white/10 w-full">
+                              <p className="text-sm font-mono text-slate-600 dark:text-slate-400 font-bold flex items-center gap-2">
+                                  <Clock className="w-4 h-4 text-slate-500"/> {Math.floor(autoPay.time / 60)}:{(autoPay.time % 60).toString().padStart(2, '0')}
+                              </p>
+                              <button onClick={() => setAutoPay({active: false, amount: 0, time: 0, checking: false, invoiceId: ''})} className="btn-animate text-xs text-rose-600 dark:text-rose-400 hover:text-rose-700 dark:hover:text-rose-300 font-bold px-4 py-2 bg-rose-100 dark:bg-rose-500/10 rounded-lg transition-colors border border-rose-200 dark:border-rose-500/20">Cancel</button>
+                          </div>
+                      </div>
+                  )}
+                </div>
+              </div>
+
+              <div className="space-y-6 sm:space-y-8 w-full">
+                <div className={uiCard + " p-6 sm:p-8"}>
+                  <div className="flex justify-between items-start mb-5 pb-4 border-b border-slate-200 dark:border-white/5">
+                     <h3 className="text-lg font-bold text-slate-900 dark:text-white flex items-center gap-2">
+                       <Building className="w-6 h-6 text-fuchsia-500 dark:text-fuchsia-400 drop-shadow-[0_0_5px_currentColor]"/> Local Bank Transfer
+                     </h3>
+                     <div className="text-right">
+                        <p className="text-[10px] text-slate-500 dark:text-slate-400 font-bold uppercase tracking-widest mb-1">Exchange Rate</p>
+                        <p className="text-sm font-black text-emerald-600 dark:text-emerald-400">$1 = ₦{bankSettings?.nairaRate || 1500}</p>
+                     </div>
+                  </div>
+                  
+                  <div className="mb-6 p-4 bg-slate-50 dark:bg-black/20 rounded-xl border border-slate-200 dark:border-white/5 shadow-inner">
+                     <label className="block text-xs font-bold text-slate-500 dark:text-slate-400 mb-2 uppercase tracking-wider">Amount to Deposit (USD)</label>
+                     <div className="relative mb-3">
+                        <DollarSign className="w-4 h-4 text-slate-400 absolute left-3 top-3.5" />
+                        <input type="number" min="1" placeholder="Enter amount..." value={depositAmountUsd} onChange={e => setDepositAmountUsd(e.target.value)} className={uiInput + " !pl-10 !py-2.5"} />
+                     </div>
+                     <div className="flex items-center justify-between p-3 bg-fuchsia-50 dark:bg-fuchsia-500/10 rounded-lg border border-fuchsia-200 dark:border-fuchsia-500/20">
+                        <span className="text-xs font-bold text-fuchsia-600 dark:text-fuchsia-400">Total to Send (₦):</span>
+                        <span className="text-lg font-black text-fuchsia-600 dark:text-fuchsia-400 drop-shadow-sm">₦{depositAmountUsd ? (parseFloat(depositAmountUsd) * (bankSettings?.nairaRate || 1500)).toLocaleString() : '0'}</span>
+                     </div>
+                  </div>
+
+                  <div className={uiInnerPanel + " mb-6 text-sm space-y-3"}>
+                    <div className="flex justify-between items-center border-b border-slate-200 dark:border-white/5 pb-3"><span className="text-slate-600 dark:text-slate-400 font-medium">Bank</span> <span className="font-bold text-slate-900 dark:text-white">Parallex</span></div>
+                    <div className="flex justify-between items-center border-b border-slate-200 dark:border-white/5 pb-3 pt-1"><span className="text-slate-600 dark:text-slate-400 font-medium">Name</span> <span className="font-bold text-slate-900 dark:text-white text-right">Samuel Osita Emmanuel</span></div>
+                    <div className="flex justify-between items-center pt-1"><span className="text-slate-600 dark:text-slate-400 font-medium">A/C Number</span> <span className="font-mono text-fuchsia-600 dark:text-fuchsia-400 font-black text-lg drop-shadow-sm">1120927346</span></div>
+                  </div>
+                  <button onClick={() => copyToClipboard('1120927346')} className={uiBtnSecondary + " mb-4"}><Copy className="w-4 h-4" /> Copy A/C Number</button>
+                  <div className="bg-slate-100 dark:bg-slate-800/50 p-3 rounded-lg border border-slate-200 dark:border-slate-700 flex items-start gap-2">
+                      <Info className="w-4 h-4 text-slate-500 dark:text-slate-400 shrink-0 mt-0.5"/>
+                      <p className="text-[10px] text-slate-600 dark:text-slate-400 font-medium leading-relaxed">Requires administrative approval. Submit a support ticket after transfer.</p>
+                  </div>
+                </div>
+
+                {bankSettings?.flutterwaveActive && (
+                    <div className={uiCard + " p-6 sm:p-8 border-emerald-200 dark:border-emerald-500/30"}>
+                        <h2 className="text-xl font-bold mb-2 text-slate-900 dark:text-white flex items-center gap-2">
+                            <CreditCard className="w-6 h-6 text-emerald-500 dark:text-emerald-400 drop-shadow-[0_0_5px_currentColor]"/> Fast Checkout (Card/Bank)
+                        </h2>
+                        <p className="text-sm text-slate-600 dark:text-slate-400 mb-6 leading-relaxed font-medium">Fund your wallet instantly via Flutterwave. Auto conversion rate: ₦{bankSettings?.nairaRate || 1500}/$.</p>
+                        
+                        <div className="flex flex-col sm:flex-row gap-4 items-end w-full">
+                            <div className="w-full">
+                              <label className="block text-xs font-bold text-slate-500 dark:text-slate-400 mb-2 uppercase tracking-wider">Amount in USD ($)</label>
+                              <div className="relative">
+                                 <DollarSign className="w-5 h-5 text-slate-400 dark:text-slate-500 absolute left-4 top-3.5" />
+                                 <input type="number" step="1" min="1" value={depositAmountUsd} onChange={e => setDepositAmountUsd(e.target.value)} placeholder="10" className={uiInput + " pl-12 text-lg font-bold h-12"} />
+                              </div>
+                            </div>
+                            <button onClick={handleFlutterwavePayment} className="btn-animate w-full sm:w-auto bg-gradient-to-r from-emerald-500 to-green-600 hover:from-emerald-400 hover:to-green-500 text-white font-bold px-8 rounded-xl h-12 whitespace-nowrap shadow-[0_4px_15px_rgba(16,185,129,0.4)] border border-emerald-400/50">
+                                Pay ₦{depositAmountUsd ? (parseFloat(depositAmountUsd) * (bankSettings?.nairaRate || 1500)).toLocaleString() : '0'}
+                            </button>
+                        </div>
+                    </div>
+                )}
+
+                <div className={uiCard + " p-6 sm:p-8"}>
+                  <h3 className="text-lg font-bold text-slate-900 dark:text-white mb-5 flex items-center gap-2 pb-4 border-b border-slate-200 dark:border-white/5">
+                    <DollarSign className="w-6 h-6 text-yellow-500 dark:text-yellow-400 drop-shadow-[0_0_5px_currentColor]"/> Binance Pay (Manual)
+                  </h3>
+                  <div className={uiInnerPanel + " mb-6 text-sm space-y-3"}>
+                    <div className="flex justify-between items-center border-b border-slate-200 dark:border-white/5 pb-3"><span className="text-slate-600 dark:text-slate-400 font-medium">Name</span> <span className="font-bold text-slate-900 dark:text-white">__CrYpTo-BoT_</span></div>
+                    <div className="flex justify-between items-center pt-1"><span className="text-slate-600 dark:text-slate-400 font-medium">Binance ID</span> <span className="font-mono text-yellow-600 dark:text-yellow-400 font-black text-lg drop-shadow-sm">406439321</span></div>
+                  </div>
+                  <button onClick={() => copyToClipboard('406439321')} className={uiBtnSecondary + " mb-3"}><Copy className="w-4 h-4" /> Copy ID</button>
+                  <div className="bg-slate-100 dark:bg-slate-800/50 p-3 rounded-lg border border-slate-200 dark:border-slate-700 flex items-start gap-2">
+                      <Info className="w-4 h-4 text-slate-500 dark:text-slate-400 shrink-0 mt-0.5"/>
+                      <p className="text-[10px] text-slate-600 dark:text-slate-400 font-medium leading-relaxed">Requires administrative approval. Submit a support ticket containing your transaction hash after completion.</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          );
+        }
+
+        // ==========================================
+        // VAULT MODULE
+        // ==========================================
+        function CustomerDashboardVault({ purchases, reportAccount, copyToClipboard, uiCard, uiBtnPrimary, uiInnerPanel }) {
+          return (
+            <div className="animate-fade-in-up w-full">
+              <div className={uiCard + " p-6 sm:p-8 min-h-[500px]"}>
+                <h2 className="text-xl sm:text-2xl font-bold text-slate-900 dark:text-white mb-6 flex items-center gap-3 pb-4 border-b border-slate-200 dark:border-white/5"><Package className="w-6 h-6 text-violet-500 dark:text-violet-400 drop-shadow-[0_0_5px_currentColor]"/> My Purchased Accounts</h2>
+                {purchases.length === 0 ? (
+                  <div className="text-center py-32 text-slate-500 flex flex-col items-center">
+                    <Lock className="w-16 h-16 mb-4 opacity-20" />
+                    <p className="text-base font-medium">You haven't purchased any accounts yet.</p>
+                  </div>
+                ) : (
+                  <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6 w-full">
+                    {purchases.map((acc, idx) => {
+                       const [totpCode, setTotpCode] = useState('');
+                       const [timeLeft, setTimeLeft] = useState(30);
+                       const [twoFaSecret, setTwoFaSecret] = useState(null);
+
+                       useEffect(() => {
+                           const rawData = String(acc.data || '');
+                           const match = rawData.match(/🔐 2FA INFO:\s*\n?([a-zA-Z0-9\s]+)/i);
+                           if (match) setTwoFaSecret(match[1].replace(/\s+/g, '').toUpperCase());
+                       }, [acc.data]);
+
+                       useEffect(() => {
+                           if (!twoFaSecret) return;
+                           const updateTotp = () => {
+                               if (typeof window.OTPAuth !== 'undefined') {
+                                   try {
+                                       let totp = new window.OTPAuth.TOTP({ algorithm: 'SHA1', digits: 6, period: 30, secret: window.OTPAuth.Secret.fromBase32(twoFaSecret) });
+                                       setTotpCode(totp.generate());
+                                       setTimeLeft(30 - (Math.floor(Date.now() / 1000) % 30));
+                                   } catch(e) {}
+                               }
+                           };
+                           updateTotp();
+                           const interval = setInterval(updateTotp, 1000);
+                           return () => clearInterval(interval);
+                       }, [twoFaSecret]);
+
+                       return (
+                           <div key={idx} className={uiInnerPanel + " flex flex-col w-full relative group"}>
+                               <div className="flex justify-between items-start mb-3 sm:mb-4">
+                                   <span className="text-xs sm:text-sm font-bold text-slate-800 dark:text-white flex items-center gap-1.5 sm:gap-2 break-words max-w-[70%]">
+                                       <Package className="w-4 h-4 text-violet-500 dark:text-violet-400 shrink-0 drop-shadow-[0_0_5px_currentColor]"/> {acc.type}
+                                   </span>
+                                   <span className="text-[10px] text-slate-500 dark:text-slate-400 font-semibold px-2 py-1 bg-slate-200 dark:bg-black/30 rounded-md shrink-0 border border-slate-300 dark:border-white/5">
+                                       {acc.date ? new Date(acc.date).toLocaleDateString() : ''}
+                                   </span>
+                               </div>
+
+                               {twoFaSecret && (
+                                   <div className="mb-4 bg-violet-50 dark:bg-violet-900/10 border border-violet-200 dark:border-violet-500/20 p-4 rounded-xl flex flex-col items-center justify-center relative overflow-hidden">
+                                       <div className="absolute top-0 left-0 w-full h-1 bg-slate-300 dark:bg-slate-800">
+                                           <div className="bg-violet-500 dark:bg-violet-400 h-full transition-all duration-1000 ease-linear shadow-[0_0_10px_currentColor]" style={{width: `${(timeLeft/30)*100}%`}}></div>
+                                       </div>
+                                       <p className="text-[10px] sm:text-xs text-violet-600 dark:text-violet-300 font-semibold mb-1 mt-1 uppercase tracking-widest">Live Authenticator Code</p>
+                                       <div className="text-3xl sm:text-4xl font-black text-slate-900 dark:text-white tracking-widest font-mono drop-shadow-md">{totpCode || '------'}</div>
+                                       <p className="text-[10px] text-slate-500 mt-2 font-medium">Valid for {timeLeft} seconds</p>
+                                   </div>
+                               )}
+
+                               <div className="w-full bg-white dark:bg-black/40 border border-slate-200 dark:border-white/5 p-3 sm:p-4 rounded-xl mb-4 sm:mb-5 overflow-x-auto shadow-inner">
+                                   <pre className="font-mono text-xs sm:text-sm text-emerald-600 dark:text-emerald-400 whitespace-pre-wrap break-words font-semibold">{String(acc.data || '')}</pre>
+                               </div>
+                               
+                               <div className="flex justify-end gap-3 mt-auto items-center">
+                                   <button onClick={() => {
+                                      const id = 'REP-' + Date.now();
+                                      setDoc(doc(db, 'artifacts', appId, 'public', 'data', 'Store_Tickets', id), { email: purchases[0].customer, subject: `Reported Account`, message: `Issue reported.`, status: 'Open', date: new Date().toISOString() });
+                                      triggerToast('Report forwarded to admin.');
+                                   }} className="btn-animate text-[11px] text-slate-500 dark:text-slate-400 hover:text-rose-500 dark:hover:text-rose-400 font-semibold px-3 py-2 transition-colors">Report Issue</button>
+                                   <button onClick={() => {
+                                      if (navigator.clipboard) navigator.clipboard.writeText(String(acc.data || '')).then(() => triggerToast("Copied!"));
+                                      else { const t = document.createElement("textarea"); t.value = String(acc.data || ''); document.body.appendChild(t); t.select(); document.execCommand("copy"); document.body.removeChild(t); triggerToast("Copied!"); }
+                                   }} className={uiBtnPrimary + " !w-auto !py-2 !px-4 !text-xs !rounded-lg"}>
+                                       <Copy className="w-3.5 h-3.5 drop-shadow-sm"/> Copy Data
+                                   </button>
+                               </div>
+                           </div>
+                       )
+                    })}
+                  </div>
+                )}
+              </div>
+            </div>
+          );
+        }
+
+        // ==========================================
+        // PROFILE MODULE
+        // ==========================================
+        function CustomerDashboardProfile({ user, balance, tier, userInfo, allOrders, deposits, purchases, tickets, db, appId, featureSettings, triggerToast, uiCard, uiInput, uiBtnPrimary, uiBtnSecondary, uiInnerPanel }) {
+          const [profileSubTab, setProfileSubTab] = useState('overview');
+          const [ticketSubject, setTicketSubject] = useState('');
+          const [ticketMessage, setTicketMessage] = useState('');
+
+          const claimDailyBonus = async () => {
+            const today = new Date().toISOString().split('T')[0];
+            if (userInfo?.lastBonusDate === today) { triggerToast('Bonus already claimed today.'); return; }
+            try {
+              const token = await getAuthToken();
+              const res = await fetch('https://voicestore-backend.onrender.com/api/claim-daily-bonus', {
+                  method: 'POST', headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+                  body: JSON.stringify({ email: user.email })
+              });
+              const data = await res.json();
+              triggerToast(data.message);
+            } catch(err) { triggerToast('Failed to claim bonus.'); }
+          };
+
+          const submitTicket = async (e) => {
+            e.preventDefault(); if (!ticketSubject.trim() || !ticketMessage.trim()) return;
+            try {
+              await setDoc(doc(db, 'artifacts', appId, 'public', 'data', 'Store_Tickets', 'TCK-' + Date.now()), { email: user.email, subject: ticketSubject, message: ticketMessage, status: 'Open', date: new Date().toISOString() });
+              setTicketSubject(''); setTicketMessage(''); triggerToast('Support ticket created.');
+            } catch(err) {}
+          };
+
+          const referralCode = `REF-${(user?.email || '').split('@')[0].toUpperCase()}`;
+          const unifiedHistory = [
+              ...deposits.map(d => ({ id: d.id, type: 'Deposit', amount: d.amount, date: d.date, status: d.status, method: d.method })),
+              ...allOrders.map(o => ({ id: o.id, type: 'Market Purchase', amount: o.total, date: o.date, status: o.status, method: 'Store Balance' })),
+              ...purchases.filter(p => String(p.type).includes('Live SMS')).map(p => ({ id: p.id, type: p.type, amount: 0, date: p.date, status: 'Completed', method: 'Store Balance' }))
+          ].sort((a,b) => new Date(b.date) - new Date(a.date));
+
+          return (
+            <div className="animate-fade-in-up w-full">
+              <div className="flex space-x-2 mb-6 p-1.5 bg-slate-200/50 dark:bg-white/[0.05] rounded-xl w-max mx-auto md:mx-0 shadow-inner">
+                  <button onClick={() => setProfileSubTab('overview')} className={`px-4 py-2 rounded-lg text-sm font-bold transition-all ${profileSubTab === 'overview' ? 'bg-white dark:bg-white/10 text-violet-600 dark:text-violet-400 shadow-sm' : 'text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'}`}>Overview</button>
+                  <button onClick={() => setProfileSubTab('history')} className={`px-4 py-2 rounded-lg text-sm font-bold transition-all ${profileSubTab === 'history' ? 'bg-white dark:bg-white/10 text-violet-600 dark:text-violet-400 shadow-sm' : 'text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'}`}>History</button>
+                  <button onClick={() => setProfileSubTab('support')} className={`px-4 py-2 rounded-lg text-sm font-bold transition-all ${profileSubTab === 'support' ? 'bg-white dark:bg-white/10 text-violet-600 dark:text-violet-400 shadow-sm' : 'text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'}`}>Support Tickets</button>
+              </div>
+
+              {profileSubTab === 'overview' && (
+                  <div className="grid grid-cols-1 xl:grid-cols-3 gap-6 sm:gap-8 w-full animate-fade-in-up">
+                      <div className={uiCard + " p-8 text-center xl:col-span-1 h-fit flex flex-col items-center"}>
+                        <div className="w-24 h-24 bg-violet-50 dark:bg-violet-500/10 rounded-[2rem] flex items-center justify-center mb-5 border border-violet-200 dark:border-violet-500/30 shadow-[inset_0_0_15px_rgba(245,158,11,0.2)]">
+                          <UserIcon className="w-10 h-10 text-violet-600 dark:text-violet-400 drop-shadow-[0_0_8px_currentColor]" strokeWidth={2.5}/>
+                        </div>
+                        <h2 className="text-lg font-bold text-slate-900 dark:text-white mb-1 w-full truncate" title={user.email}>{user.email}</h2>
+                        <p className="text-xs text-slate-500 dark:text-slate-400 font-semibold mb-8">Joined {userInfo?.joined ? new Date(userInfo.joined).toLocaleDateString() : 'N/A'}</p>
+                        
+                        <div className="w-full text-left mb-2 flex justify-between items-end">
+                            <span className="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">Level</span>
+                            <span className={`text-sm font-black ${tier?.color || 'text-slate-400'} flex items-center gap-1 drop-shadow-sm`}>
+                                {tier && tier.icon && <tier.icon className="w-3.5 h-3.5"/>}
+                                {tier?.name || 'Loading'}
+                            </span>
+                        </div>
+                        
+                        {tier && tier.next && (
+                            <div className="w-full bg-slate-200 dark:bg-slate-800 rounded-full h-2 mb-2 overflow-hidden shadow-inner">
+                                <div className="bg-gradient-to-r from-violet-500 to-cyan-600 h-full rounded-full shadow-[0_0_10px_rgba(245,158,11,0.8)]" style={{width: `${Math.min(100, ((userInfo?.totalSpent || 0) / tier.next) * 100)}%`}}></div>
+                            </div>
+                        )}
+                        {tier && tier.next ? (
+                            <p className="text-[10px] text-slate-600 dark:text-slate-500 font-medium w-full text-left mb-6">Spend ${Number(tier.next - (userInfo?.totalSpent || 0)).toFixed(2)} more to level up.</p>
+                        ) : (
+                            <p className="text-[10px] text-emerald-600 dark:text-emerald-400 font-bold w-full text-center mb-6 uppercase tracking-widest drop-shadow-sm">Max Level Achieved!</p>
+                        )}
+                      </div>
+
+                      <div className="xl:col-span-2 space-y-6 sm:space-y-8 w-full">
+                        <div className="grid grid-cols-2 gap-4 sm:gap-6 w-full">
+                          <div className={uiCard + " p-6 sm:p-8 flex flex-col justify-center items-center text-center"}>
+                            <p className="text-slate-500 dark:text-slate-400 text-[10px] sm:text-xs font-bold mb-2 uppercase tracking-widest">Lifetime Spent</p>
+                            <p className="text-3xl sm:text-4xl font-black text-slate-900 dark:text-white drop-shadow-sm">${Number(userInfo?.totalSpent || 0).toFixed(2)}</p>
+                          </div>
+                          <div className={uiCard + " p-6 sm:p-8 flex flex-col justify-center items-center text-center border-emerald-200 dark:border-emerald-500/30 bg-emerald-50 dark:bg-emerald-500/10 shadow-[inset_0_0_20px_rgba(16,185,129,0.1)]"}>
+                            <p className="text-emerald-700 dark:text-emerald-400/80 text-[10px] sm:text-xs font-bold mb-2 uppercase tracking-widest">Current Balance</p>
+                            <p className="text-3xl sm:text-4xl font-black text-emerald-600 dark:text-emerald-400 drop-shadow-[0_0_8px_currentColor]">${Number(balance || 0).toFixed(2)}</p>
+                          </div>
+                        </div>
+
+                        {featureSettings?.dailyReward && (
+                          <div className={uiCard + " p-6 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-5 border-violet-200 dark:border-violet-500/30 bg-violet-50 dark:bg-violet-500/10 shadow-[inset_0_0_20px_rgba(245,158,11,0.1)]"}>
+                             <div>
+                               <h3 className="text-base font-bold text-slate-900 dark:text-white flex items-center gap-2 mb-1.5"><Star className="w-5 h-5 text-yellow-500 dark:text-yellow-400 drop-shadow-[0_0_5px_currentColor]"/> Daily Reward</h3>
+                               <p className="text-sm text-slate-700 dark:text-slate-300 font-medium">Claim your free <span className="font-bold text-violet-600 dark:text-violet-400">$0.50</span> wallet bonus every 24 hours.</p>
+                             </div>
+                             <button onClick={claimDailyBonus} className="btn-animate bg-gradient-to-r from-violet-500 to-cyan-600 hover:from-violet-400 hover:to-cyan-500 border border-violet-400/50 text-white px-6 py-3 rounded-xl text-sm font-bold transition-all w-full sm:w-auto shadow-[0_4px_15px_rgba(245,158,11,0.4)]">Claim Bonus</button>
+                          </div>
+                        )}
+
+                        {featureSettings?.referral && (
+                          <div className={uiCard + " p-6 sm:p-8"}>
+                             <h3 className="text-sm sm:text-base font-bold text-slate-900 dark:text-white mb-2 flex items-center gap-2"><Users className="w-5 h-5 text-fuchsia-500 dark:text-fuchsia-400 drop-shadow-[0_0_5px_currentColor]"/> Affiliate Program</h3>
+                             <p className="text-xs sm:text-sm text-slate-600 dark:text-slate-400 font-medium mb-5">Share your unique code with friends to earn deposit bonuses.</p>
+                             <div className={uiInnerPanel + " !p-3 flex justify-between items-center bg-slate-100 dark:bg-black/40 shadow-inner"}>
+                               <span className="font-mono text-sm sm:text-base font-black text-fuchsia-600 dark:text-fuchsia-400 px-3 break-all tracking-wider">{referralCode}</span>
+                               <button onClick={() => {
+                                  if (navigator.clipboard) navigator.clipboard.writeText(referralCode).then(() => triggerToast("Copied!"));
+                                  else { const t = document.createElement("textarea"); t.value = referralCode; document.body.appendChild(t); t.select(); document.execCommand("copy"); document.body.removeChild(t); triggerToast("Copied!"); }
+                               }} className={uiBtnSecondary + " !w-auto !py-2.5 !px-3"}><Copy className="w-4 h-4"/></button>
+                             </div>
+                          </div>
+                        )}
+                      </div>
+                  </div>
+              )}
+
+              {profileSubTab === 'history' && (
+                  <div className={uiCard + " p-6 sm:p-8 min-h-[500px] animate-fade-in-up"}>
+                    <h2 className="text-xl sm:text-2xl font-bold text-slate-900 dark:text-white mb-6 flex items-center gap-3 pb-4 border-b border-slate-200 dark:border-white/5"><History className="w-6 h-6 text-violet-500 dark:text-violet-400 drop-shadow-[0_0_5px_currentColor]"/> Transaction Ledger</h2>
+                    
+                    {unifiedHistory.length === 0 ? (
+                      <div className="text-center py-32 text-slate-500 flex flex-col items-center">
+                        <Activity className="w-16 h-16 mb-4 opacity-20" />
+                        <p className="text-base font-medium">No transactions found.</p>
+                      </div>
+                    ) : (
+                      <div className="space-y-4 w-full">
+                        {unifiedHistory.map((item, idx) => {
+                            const isDeposit = item.type === 'Deposit';
+                            return (
+                                <div key={idx} className={uiInnerPanel + " !p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-4"}>
+                                    <div className="flex items-center gap-4">
+                                        <div className={`w-12 h-12 rounded-xl flex items-center justify-center border shrink-0 shadow-inner ${isDeposit ? 'bg-emerald-50 dark:bg-emerald-500/10 border-emerald-200 dark:border-emerald-500/30 text-emerald-600 dark:text-emerald-400' : 'bg-rose-50 dark:bg-rose-500/10 border-rose-200 dark:border-rose-500/30 text-rose-600 dark:text-rose-400'}`}>
+                                            {isDeposit ? <Wallet className="w-6 h-6 drop-shadow-[0_0_5px_currentColor]"/> : <ShoppingCart className="w-6 h-6 drop-shadow-[0_0_5px_currentColor]"/>}
+                                        </div>
+                                        <div>
+                                            <p className="text-base font-bold text-slate-900 dark:text-white">{item.type}</p>
+                                            <p className="text-[10px] sm:text-xs text-slate-500 dark:text-slate-400 font-mono mt-1 font-medium">{item.id}</p>
+                                            <p className="text-[10px] text-slate-600 dark:text-slate-500 font-semibold mt-1">{item.date ? new Date(item.date).toLocaleString() : ''}</p>
+                                        </div>
+                                    </div>
+                                    <div className="flex sm:flex-col items-center sm:items-end justify-between w-full sm:w-auto mt-2 sm:mt-0 pt-3 sm:pt-0 border-t border-slate-200 dark:border-white/5 sm:border-0">
+                                        <p className={`text-xl font-black ${isDeposit ? 'text-emerald-600 dark:text-emerald-400' : 'text-slate-900 dark:text-white'}`}>
+                                            {isDeposit ? '+' : '-'}${Number(item.amount || 0).toFixed(2)}
+                                        </p>
+                                        <span className={`text-[9px] sm:text-[10px] font-bold mt-1 px-2.5 py-1 rounded-md uppercase tracking-wider border shadow-sm ${
+                                            String(item.status || '').includes('Completed') || String(item.status || '').includes('Approved') ? 'bg-emerald-50 dark:bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border-emerald-200 dark:border-emerald-500/30' : 
+                                            String(item.status || '').includes('Pending') || String(item.status || '').includes('Awaiting') ? 'bg-violet-50 dark:bg-violet-500/10 text-violet-600 dark:text-violet-400 border-violet-200 dark:border-violet-500/30' : 
+                                            'bg-rose-50 dark:bg-rose-500/10 text-rose-600 dark:text-rose-400 border-rose-200 dark:border-rose-500/30'
+                                        }`}>
+                                            {item.status}
+                                        </span>
+                                    </div>
+                                </div>
+                            );
+                        })}
+                      </div>
+                    )}
+                  </div>
+              )}
+
+              {profileSubTab === 'support' && (
+                  <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 sm:gap-8 w-full animate-fade-in-up">
+                      <div className="space-y-6 sm:space-y-8 w-full">
+                          <div className={uiCard + " p-6 sm:p-8 h-fit"}>
+                            <h2 className="text-xl font-bold text-slate-900 dark:text-white mb-2 flex items-center gap-2 pb-4 border-b border-slate-200 dark:border-white/5"><Headset className="w-6 h-6 text-violet-500 dark:text-violet-400 drop-shadow-[0_0_5px_currentColor]"/> Open a Ticket</h2>
+                            <p className="text-sm text-slate-600 dark:text-slate-400 font-medium mb-6 mt-4">Experiencing issues? Describe it below and our team will assist you shortly.</p>
+                            <form onSubmit={submitTicket} className="space-y-5 w-full">
+                              <div>
+                                <label className="block text-xs font-bold text-slate-500 dark:text-slate-400 mb-2 uppercase tracking-wider">Subject</label>
+                                <input type="text" value={ticketSubject} onChange={e => setTicketSubject(e.target.value)} required placeholder="Brief issue title" className={uiInput} />
+                              </div>
+                              <div>
+                                <label className="block text-xs font-bold text-slate-500 dark:text-slate-400 mb-2 uppercase tracking-wider">Details</label>
+                                <textarea value={ticketMessage} onChange={e => setTicketMessage(e.target.value)} required placeholder="Provide full context..." rows="4" className={uiInput + " resize-none"} />
+                              </div>
+                              <button type="submit" className={uiBtnPrimary}>Submit Request</button>
+                            </form>
+                          </div>
+
+                          <div className={uiCard + " p-6 sm:p-8 h-fit w-full"}>
+                             <h2 className="text-base sm:text-lg font-bold text-slate-900 dark:text-white mb-4 flex items-center gap-2"><HelpCircle className="w-5 h-5 text-violet-500 dark:text-violet-400 drop-shadow-[0_0_5px_currentColor]"/> Quick FAQ</h2>
+                             <div className="space-y-3">
+                                <div className={uiInnerPanel}><p className="font-bold text-slate-900 dark:text-white text-sm mb-1.5 leading-snug">How long does Auto Deposit take?</p><p className="text-[11px] sm:text-xs text-slate-600 dark:text-slate-400 leading-relaxed font-medium">USDT TRC20 and BTC deposits are usually credited within 1-5 minutes after blockchain confirmation.</p></div>
+                                <div className={uiInnerPanel}><p className="font-bold text-slate-900 dark:text-white text-sm mb-1.5 leading-snug">What if the account I bought is invalid?</p><p className="text-[11px] sm:text-xs text-slate-600 dark:text-slate-400 leading-relaxed font-medium">Please click 'Report Issue' in the Vault tab. Our team will verify and provide a replacement.</p></div>
+                             </div>
+                          </div>
+                      </div>
+
+                      <div className={uiCard + " p-6 sm:p-8 flex flex-col w-full"}>
+                         <h3 className="text-lg font-bold text-slate-900 dark:text-white mb-5 pb-4 border-b border-slate-200 dark:border-white/5">Active Tickets</h3>
+                         <div className="space-y-4 overflow-y-auto scrollbar-hide pr-1">
+                           {tickets.length === 0 ? <p className="text-center text-slate-500 font-medium py-20 text-sm">You have no active support tickets.</p> : tickets.map(t => (
+                             <div key={t.id} className={uiInnerPanel + " w-full"}>
+                               <div className="flex justify-between items-start mb-3">
+                                 <h4 className="font-bold text-slate-900 dark:text-white text-sm sm:text-base break-words w-[70%]">{t.subject}</h4>
+                                 <span className={`text-[10px] px-2.5 py-1 rounded-md font-bold uppercase tracking-wider border shrink-0 shadow-sm ${t.status === 'Open' ? 'bg-violet-50 dark:bg-violet-500/10 text-violet-600 dark:text-violet-400 border-violet-200 dark:border-violet-500/30' : 'bg-emerald-50 dark:bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border-emerald-200 dark:border-emerald-500/30'}`}>{t.status}</span>
+                               </div>
+                               <div className="bg-slate-100 dark:bg-black/30 p-3 rounded-xl border border-slate-200 dark:border-white/5 mb-3 w-full shadow-inner">
+                                 <p className="text-sm text-slate-700 dark:text-slate-300 font-medium leading-relaxed break-words">{t.message}</p>
+                               </div>
+                               <p className="text-[10px] text-slate-500 font-bold flex items-center gap-1.5"><Clock className="w-3 h-3"/> {t.date ? new Date(t.date).toLocaleString() : ''}</p>
+                             </div>
+                           ))}
+                         </div>
+                      </div>
+                  </div>
+              )}
+            </div>
+          );
+        }
+
+        // ==========================================
+        // CART MODAL
+        // ==========================================
+        function CartModal({ cart, setCart, setShowCart, balance, user, promoSettings, triggerToast, addNotification, db, appId, uiCard, uiBtnPrimary, uiInnerPanel }) {
+            const [isCheckingOut, setIsCheckingOut] = useState(false);
+            const totalAmount = cart.reduce((sum, item) => sum + item.price, 0);
+            const discountAmount = promoSettings?.isActive ? (totalAmount * (promoSettings.discount / 100)) : 0;
+            const finalAmount = totalAmount - discountAmount;
+
+            const handleCheckout = async () => {
+                if (balance < finalAmount) { triggerToast("Insufficient balance. Please deposit funds."); return; }
+                setIsCheckingOut(true);
+                let serverWakeTimer = setTimeout(() => { triggerToast("Secure server is waking up... please wait a few seconds."); }, 4000);
+                try {
+                    const token = await getAuthToken();
+                    const response = await fetch('https://voicestore-backend.onrender.com/api/checkout', {
+                        method: 'POST', headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` }, body: JSON.stringify({ email: user.email, cart: cart })
+                    });
+                    clearTimeout(serverWakeTimer);
+                    if (!response.ok) throw new Error("Network response was not ok");
+                    const result = await response.json();
+                    if (result.success) {
+                        triggerToast(result.message); addNotification("Purchase Complete", `You bought ${cart.length} item(s).`);
+                        setCart([]); setShowCart(false);
+                    } else triggerToast("Error: " + result.message);
+                } catch(e) { clearTimeout(serverWakeTimer); triggerToast("Checkout failed. Server error or network issue."); } 
+                finally { setIsCheckingOut(false); }
+            };
+
+            return (
+                <div className="fixed inset-0 z-[120] flex items-center justify-center p-4 bg-slate-900/60 dark:bg-[#030712]/80 backdrop-blur-sm animate-fade-in-up">
+                    <div className={uiCard + " w-full max-w-md p-6"}>
+                        <div className="flex justify-between items-center mb-5 pb-4 border-b border-slate-200 dark:border-white/10">
+                            <h3 className="text-lg font-bold text-slate-800 dark:text-white flex items-center gap-2"><ShoppingCart className="w-5 h-5 text-violet-500 dark:text-violet-400 drop-shadow-[0_0_5px_currentColor]"/> Your Cart</h3>
+                            <button onClick={() => setShowCart(false)} className="p-2 bg-slate-100 dark:bg-white/5 hover:bg-slate-200 dark:hover:bg-white/10 rounded-full text-slate-600 dark:text-slate-300 transition-colors"><X className="w-4 h-4" /></button>
+                        </div>
+                        {cart.length === 0 ? (
+                            <div className="text-center py-10 text-slate-400 flex flex-col items-center">
+                                <ShoppingCart className="w-12 h-12 mb-3 opacity-20" />
+                                <p className="font-medium">Your cart is completely empty.</p>
+                            </div>
+                        ) : (
+                            <div className="space-y-4">
+                                <div className="max-h-60 overflow-y-auto space-y-2 pr-1 scrollbar-hide">
+                                    {cart.map((item, idx) => (
+                                        <div key={idx} className={uiInnerPanel + " flex justify-between items-center !p-3"}>
+                                            <span className="text-sm font-semibold text-slate-700 dark:text-slate-200">
+                                                {item.name} {item.selectedState && <span className="text-[10px] bg-violet-500/10 border border-violet-500/20 text-violet-600 dark:text-violet-400 px-1.5 py-0.5 rounded ml-1.5">{item.selectedState}</span>}
+                                            </span>
+                                            <div className="flex items-center gap-4">
+                                                <span className="text-sm font-bold text-violet-500 dark:text-violet-400">${item.price.toFixed(2)}</span>
+                                                <button onClick={() => setCart(cart.filter((_, i) => i !== idx))} className="text-rose-500 dark:text-rose-400 hover:text-rose-600 dark:hover:text-rose-300 transition-colors"><Trash2 className="w-4 h-4"/></button>
+                                            </div>
+                                        </div>
+                                    ))}
+                                </div>
+                                <div className="border-t border-slate-200 dark:border-white/10 pt-4 space-y-2.5">
+                                    <div className="flex justify-between text-sm text-slate-500 dark:text-slate-400 font-medium"><span>Subtotal:</span><span>${totalAmount.toFixed(2)}</span></div>
+                                    {promoSettings?.isActive && discountAmount > 0 && <div className="flex justify-between text-sm text-emerald-500 dark:text-emerald-400 font-medium"><span>Discount ({promoSettings.discount}%):</span><span>-${discountAmount.toFixed(2)}</span></div>}
+                                    <div className="flex justify-between text-xl font-black text-slate-800 dark:text-white pt-2 border-t border-slate-200 dark:border-white/10"><span>Total:</span><span>${finalAmount.toFixed(2)}</span></div>
+                                </div>
+                                <button onClick={handleCheckout} disabled={isCheckingOut || balance < finalAmount} className={uiBtnPrimary + " mt-4"}>
+                                    {isCheckingOut ? 'Processing Purchase...' : (balance < finalAmount ? 'Insufficient Balance' : 'Complete Purchase')}
+                                </button>
+                            </div>
+                        )}
+                    </div>
+                </div>
+            );
+        }
+
+        // ==========================================
+        // ADMIN DASHBOARD
+        // ==========================================
+        function AdminDashboard({ inventory, orders, deposits, categories, usersDB, db, appId, promoSettings, globalNotice, tickets, featureSettings, bankSettings, smsSettings, auth, user, uiCard, uiInput, uiBtnPrimary, uiBtnSecondary, uiBtnAction, uiInnerPanel, triggerToast, activeTab }) {
+          const [uploadCategory, setUploadCategory] = useState('new');
+          const [uploadText, setUploadText] = useState('');
+          const [customerSearch, setCustomerSearch] = useState('');
+
+          const [promoInput, setPromoInput] = useState('');
+          const [discountInput, setDiscountInput] = useState(0);
+          const [promoActive, setPromoActive] = useState(false);
+          const [noticeInput, setNoticeInput] = useState('');
+          const [nairaRateInput, setNairaRateInput] = useState(1500);
+          
+          const [flutterwaveKeyInput, setFlutterwaveKeyInput] = useState('');
+          const [flutterwaveActiveInput, setFlutterwaveActiveInput] = useState(false);
+          
+          const [dailyRewardActive, setDailyRewardActive] = useState(false);
+          const [referralActive, setReferralActive] = useState(false);
+
+          const [smsMarkupInput, setSmsMarkupInput] = useState(1.00);
+          const [smsActiveInput, setSmsActiveInput] = useState(true);
+
+          const [editUserModal, setEditUserModal] = useState({ show: false, email: '', password: '', balance: 0, totalSpent: 0 });
+          const [editProductModal, setEditProductModal] = useState({ show: false, product: null });
+          const [manageStockModal, setManageStockModal] = useState({ show: false, categoryId: null });
+
+          const handleSaveProduct = async (e) => {
+            e.preventDefault();
+            const updatedCategories = categories.map(cat => cat.id === editProductModal.product.id ? editProductModal.product : cat);
+            const safeDataToSave = updatedCategories.map(cat => ({ id: cat.id, name: cat.name, description: cat.description, price: Number(cat.price), color: cat.color || '' }));
+            try {
+              await setDoc(doc(db, 'artifacts', appId, 'public', 'data', 'Store_Settings', 'Products'), { list: safeDataToSave });
+              triggerToast('Product updated successfully.');
+              setEditProductModal({ show: false, product: null });
+            } catch (err) { triggerToast('Failed to update product.'); }
+          };
+
+          const handleDeleteAccount = async (categoryId, accountIndex) => {
+            if (!window.confirm("Are you sure you want to delete this specific account?")) return;
+            try {
+              const newInv = { ...inventory };
+              newInv[categoryId].splice(accountIndex, 1);
+              await updateDoc(doc(db, 'artifacts', appId, 'public', 'data', 'Store_Inventory', 'Stock'), newInv);
+              triggerToast('Account deleted successfully.');
+            } catch (err) { triggerToast('Failed to delete account.'); }
+          };
+
+          useEffect(() => {
+            if (promoSettings) { setPromoInput(promoSettings.code || ''); setDiscountInput(promoSettings.discount || 0); setPromoActive(promoSettings.isActive || false); }
+            if (globalNotice) setNoticeInput(globalNotice);
+            if (featureSettings) { setDailyRewardActive(featureSettings.dailyReward || false); setReferralActive(featureSettings.referral || false); }
+            if (bankSettings) { 
+                setNairaRateInput(bankSettings.nairaRate || 1500); 
+                setFlutterwaveKeyInput(bankSettings.flutterwaveKey || '');
+                setFlutterwaveActiveInput(bankSettings.flutterwaveActive || false);
+            }
+            if (smsSettings) {
+                setSmsMarkupInput(smsSettings.markup !== undefined ? smsSettings.markup : 1.00);
+                setSmsActiveInput(smsSettings.active ?? true);
+            }
+          }, [promoSettings, globalNotice, featureSettings, bankSettings, smsSettings]);
+
+          const pendingDeposits = deposits.filter(d => d.status === 'Pending' || d.status === 'Verifying...' || d.status === 'Pending Review' || d.status === 'Awaiting Payment');
+          const pendingTickets = (tickets || []).filter(t => t.status === 'Open');
+          const totalSales = orders.filter(o => o.status === 'Completed').reduce((sum, order) => sum + Number(order.total || 0), 0);
+          
+          const filteredUsers = Object.keys(usersDB).filter(email => email.toLowerCase().includes(customerSearch.toLowerCase()));
+
+          const handleUploadAccounts = async (e) => {
+            e.preventDefault();
+            if (!uploadText.trim()) return;
+            
+            const rawText = uploadText.trim();
+            let validAccounts = [];
+            
+            if (uploadCategory === 'textplus' || rawText.includes('Email\n') || rawText.includes('Email\r\n')) {
+                const blocks = rawText.split(/(?=^Email\s*\n)/gm).filter(b => b.trim().length > 5);
+                validAccounts = blocks.map(b => b.trim());
+            } else if (rawText.includes('💌 EMAIL:')) {
+                const blocks = rawText.split(/(?=💌 EMAIL:)/g).filter(b => b.trim().length > 5);
+                validAccounts = blocks.map(b => b.trim());
+            } else {
+                validAccounts = rawText.split(/\n\s*\n/).map(a => a.trim()).filter(a => a.length > 5);
+                if(validAccounts.length === 0) validAccounts = rawText.split(/\n/).map(a => a.trim()).filter(a => a.length > 5);
+            }
+
+            if (validAccounts.length === 0) { triggerToast("No valid format found. Check formatting."); return; }
+
+            try {
+              const newInv = { ...inventory };
+              if (!newInv[uploadCategory]) newInv[uploadCategory] = [];
+              newInv[uploadCategory] = [...newInv[uploadCategory], ...validAccounts];
+              await updateDoc(doc(db, 'artifacts', appId, 'public', 'data', 'Store_Inventory', 'Stock'), newInv);
+              setUploadText(''); triggerToast(`Added ${validAccounts.length} assets successfully!`);
+            } catch (err) { triggerToast("Upload failed."); }
+          };
+
+          const submitEditUser = async (e) => {
+            e.preventDefault();
+            try {
+              const token = await getAuthToken();
+              const res = await fetch('https://voicestore-backend.onrender.com/api/admin/update-user', {
+                  method: 'POST', headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+                  body: JSON.stringify({ userEmail: editUserModal.email, newBalance: editUserModal.balance, newTotalSpent: editUserModal.totalSpent, newPassword: editUserModal.password })
+              });
+              if(res.ok) {
+                  triggerToast('User details updated successfully.');
+                  setEditUserModal({ show: false, email: '', password: '', balance: 0, totalSpent: 0 });
+              } else {
+                  triggerToast('Failed to update user.');
+              }
+            } catch (err) { triggerToast('Failed to update user.'); }
+          };
+
+          const sendResetLinkToUser = async (userEmail) => {
+              try { await sendPasswordResetEmail(auth, userEmail); triggerToast(`Password reset link sent to ${userEmail}`); } 
+              catch (err) { triggerToast('Failed to send reset link.'); }
+          };
+
+          const handleManualApprove = async (depId) => {
+            const dep = deposits.find(d => d.id === depId);
+            if(!dep) return;
+            try {
+              await updateDoc(doc(db, 'artifacts', appId, 'public', 'data', 'Store_Deposits', depId), { status: 'Approved' });
+              const currentBal = Number(usersDB[dep.email]?.balance || 0);
+              await updateDoc(doc(db, 'artifacts', appId, 'public', 'data', 'Store_Users', dep.email), { balance: currentBal + Number(dep.amount || 0) });
+              triggerToast("Deposit approved.");
+            } catch (err) { triggerToast("Action failed."); }
+          };
+
+          const handleResolveTicket = async (ticketId) => {
+            try { await updateDoc(doc(db, 'artifacts', appId, 'public', 'data', 'Store_Tickets', ticketId), { status: 'Resolved' }); triggerToast('Ticket resolved.'); } 
+            catch(err) { triggerToast('Failed to close ticket.'); }
+          };
+
+          const handleSaveSettings = async (e) => {
+            e.preventDefault();
+            try {
+              await setDoc(doc(db, 'artifacts', appId, 'public', 'data', 'Store_Settings', 'PromoCode'), { code: String(promoInput).toUpperCase(), discount: parseFloat(discountInput), isActive: promoActive });
+              await setDoc(doc(db, 'artifacts', appId, 'public', 'data', 'Store_Settings', 'Notice'), { text: noticeInput });
+              await setDoc(doc(db, 'artifacts', appId, 'public', 'data', 'Store_Settings', 'Features'), { dailyReward: dailyRewardActive, referral: referralActive });
+              await setDoc(doc(db, 'artifacts', appId, 'public', 'data', 'Store_Settings', 'SMS'), { markup: parseFloat(smsMarkupInput), active: smsActiveInput });
+              await setDoc(doc(db, 'artifacts', appId, 'public', 'data', 'Store_Settings', 'Bank'), { 
+                  nairaRate: parseFloat(nairaRateInput) || 1500, flutterwaveKey: flutterwaveKeyInput, flutterwaveActive: flutterwaveActiveInput
+              });
+              triggerToast("Settings saved.");
+            } catch (error) { triggerToast("Error saving settings."); }
+          };
+
+          return (
+            <>
+              {editUserModal.show && (
+                <div className="fixed inset-0 z-[150] flex items-center justify-center p-4 bg-slate-900/60 dark:bg-[#030712]/80 backdrop-blur-sm transition-all duration-300 w-full h-full">
+                  <div className={uiCard + " w-full max-w-md p-6"}>
+                     <div className="flex justify-between items-center mb-5 border-b border-slate-200 dark:border-white/10 pb-4">
+                         <h3 className="text-lg font-bold text-slate-900 dark:text-white flex items-center gap-2"><Edit className="w-5 h-5 text-violet-500 dark:text-violet-400"/> Edit Customer</h3>
+                         <button onClick={() => setEditUserModal({ show: false, email: '', password: '', balance: 0, totalSpent: 0 })} className="p-2 bg-slate-100 dark:bg-white/5 hover:bg-slate-200 dark:hover:bg-white/10 rounded-full text-slate-600 dark:text-slate-300 transition-colors"><X className="w-4 h-4" /></button>
+                     </div>
+                     <p className="text-xs text-slate-700 dark:text-slate-400 font-mono mb-5 font-bold bg-slate-100 dark:bg-black/30 p-3 rounded-lg truncate border border-slate-200 dark:border-white/5 shadow-inner">{editUserModal.email}</p>
+                     
+                     <form onSubmit={submitEditUser} className="space-y-4">
+                        <div>
+                           <label className="block text-xs font-bold text-slate-500 dark:text-slate-400 mb-2 uppercase tracking-wider">Saved Password</label>
+                           <input type="text" placeholder="User's Password" value={editUserModal.password} onChange={e => setEditUserModal({...editUserModal, password: e.target.value})} className={uiInput} />
+                        </div>
+                        <div className="grid grid-cols-2 gap-4">
+                            <div>
+                               <label className="block text-xs font-bold text-slate-500 dark:text-slate-400 mb-2 uppercase tracking-wider">Balance ($)</label>
+                               <input type="number" step="0.01" required value={editUserModal.balance} onChange={e => setEditUserModal({...editUserModal, balance: e.target.value})} className={uiInput} />
+                            </div>
+                            <div>
+                               <label className="block text-xs font-bold text-slate-500 dark:text-slate-400 mb-2 uppercase tracking-wider">Total Spent ($)</label>
+                               <input type="number" step="0.01" required value={editUserModal.totalSpent} onChange={e => setEditUserModal({...editUserModal, totalSpent: e.target.value})} className={uiInput} />
+                            </div>
+                        </div>
+                        <div className="pt-5 flex flex-col gap-3 border-t border-slate-200 dark:border-white/5 mt-4">
+                          <button type="submit" className={uiBtnPrimary}>Save Changes</button>
+                          <button type="button" onClick={() => sendResetLinkToUser(editUserModal.email)} className={uiBtnSecondary + " !bg-rose-50 dark:!bg-rose-500/10 hover:!bg-rose-100 dark:hover:!bg-rose-500/20 text-rose-600 dark:!text-rose-400"}><Mail className="w-4 h-4"/> Send Password Reset Link</button>
+                        </div>
+                     </form>
+                  </div>
+                </div>
+              )}
+
+              {/* Main Content Area */}
+              <div className="flex-grow w-full min-w-0 mt-2 sm:mt-4">
+                {activeTab === 'inventory' && (
+                  <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 sm:gap-8 w-full animate-fade-in-up">
+                    <div className={uiCard + " p-6 sm:p-8 h-fit lg:col-span-1"}>
+                      <h2 className="text-lg font-bold mb-5 text-slate-900 dark:text-white border-b border-slate-200 dark:border-white/5 pb-4">Add Stock</h2>
+                      <form onSubmit={handleUploadAccounts} className="flex flex-col space-y-4">
+                        <div>
+                          <label className="block text-[10px] font-bold text-slate-500 dark:text-slate-400 mb-2 uppercase tracking-wider">Category</label>
+                          <select value={uploadCategory} onChange={(e) => setUploadCategory(e.target.value)} className={uiInput}>
+                            {categories.map(cat => <option key={cat.id} value={cat.id} className="bg-slate-100 dark:bg-brand-darkBg text-slate-900 dark:text-white">{cat.name}</option>)}
+                          </select>
+                        </div>
+                        <div>
+                          <label className="block text-[10px] font-bold text-slate-500 dark:text-slate-400 mb-2 uppercase tracking-wider">Paste Data</label>
+                          <textarea value={uploadText} onChange={(e) => setUploadText(e.target.value)} placeholder="Paste accounts here..." className={uiInput + " min-h-[150px] resize-none font-mono text-xs"} required />
+                        </div>
+                        <button type="submit" className={uiBtnPrimary}>Upload Assets</button>
+                      </form>
+                    </div>
+
+                    <div className="lg:col-span-2 space-y-6 sm:space-y-8 w-full">
+                      <div className={uiCard}>
+                        <div className="p-5 sm:p-6 border-b border-slate-200 dark:border-white/5 bg-slate-50 dark:bg-white/[0.02] backdrop-blur-sm"><h2 className="text-base font-bold text-slate-900 dark:text-white">Current Stock</h2></div>
+                        <div className="w-full overflow-x-auto">
+                          <table className="w-full text-left text-sm whitespace-nowrap">
+                            <thead className="bg-slate-100 dark:bg-black/20 backdrop-blur-sm text-slate-600 dark:text-slate-400 font-bold border-b border-slate-200 dark:border-white/5 text-xs uppercase tracking-wider">
+                              <tr><th className="p-4 sm:p-5">Asset Name & Price</th><th className="p-4 sm:p-5 text-center">Quantity</th><th className="p-4 sm:p-5 text-right">Action</th></tr>
+                            </thead>
+                            <tbody className="divide-y divide-slate-200 dark:divide-white/5">
+                              {categories.map(cat => (
+                                <tr key={cat.id} className="hover:bg-slate-50 dark:hover:bg-white/5 transition-colors">
+                                  <td className="p-4 sm:p-5">
+                                    <p className="text-slate-900 dark:text-slate-200 font-bold">{cat.name}</p>
+                                    <p className="text-xs text-emerald-600 dark:text-emerald-400 font-bold mt-1 drop-shadow-sm">${Number(cat.price).toFixed(2)}</p>
+                                  </td>
+                                  <td className="p-4 sm:p-5 text-center font-black text-violet-600 dark:text-violet-400 drop-shadow-[0_0_5px_currentColor]">{inventory[cat.id] ? inventory[cat.id].length : 0}</td>
+                                  <td className="p-4 sm:p-5 text-right">
+                                    <div className="flex justify-end gap-2">
+                                      <button onClick={() => setManageStockModal({ show: true, categoryId: cat.id })} className={uiBtnAction}>Manage</button>
+                                      <button onClick={() => setEditProductModal({ show: true, product: { ...cat } })} className={uiBtnAction + " !bg-violet-50 dark:!bg-violet-500/10 border-violet-200 dark:!border-violet-500/20 text-violet-600 dark:!text-violet-400 hover:bg-violet-100 dark:hover:!bg-violet-500/20"}>Edit Info</button>
+                                    </div>
+                                  </td>
+                                </tr>
+                              ))}
+                            </tbody>
+                          </table>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                )}
+
+                {editProductModal.show && (
+                  <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 dark:bg-brand-darkBg/80 backdrop-blur-sm transition-all duration-300 w-full h-full">
+                    <div className={uiCard + " w-full max-w-md p-6"}>
+                       <h3 className="text-lg font-bold text-slate-900 dark:text-white mb-5 border-b border-slate-200 dark:border-white/5 pb-4">Edit Product Details</h3>
+                       <form onSubmit={handleSaveProduct} className="space-y-4">
+                          <div>
+                            <label className="block text-[10px] font-bold text-slate-500 dark:text-slate-400 mb-2 uppercase tracking-wider">Product Name</label>
+                            <input type="text" required value={editProductModal.product.name} onChange={e => setEditProductModal({ ...editProductModal, product: { ...editProductModal.product, name: e.target.value } })} className={uiInput} />
+                          </div>
+                          <div>
+                            <label className="block text-[10px] font-bold text-slate-500 dark:text-slate-400 mb-2 uppercase tracking-wider">Description</label>
+                            <textarea rows="3" required value={editProductModal.product.description} onChange={e => setEditProductModal({ ...editProductModal, product: { ...editProductModal.product, description: e.target.value } })} className={uiInput + " resize-none text-sm"}></textarea>
+                          </div>
+                          <div>
+                            <label className="block text-[10px] font-bold text-slate-500 dark:text-slate-400 mb-2 uppercase tracking-wider">Price ($)</label>
+                            <input type="number" step="0.01" required value={editProductModal.product.price} onChange={e => setEditProductModal({ ...editProductModal, product: { ...editProductModal.product, price: parseFloat(e.target.value) } })} className={uiInput} />
+                          </div>
+                          <div className="flex gap-3 pt-5 border-t border-slate-200 dark:border-white/5 mt-4">
+                            <button type="button" onClick={() => setEditProductModal({ show: false, product: null })} className={uiBtnSecondary}>Cancel</button>
+                            <button type="submit" className={uiBtnPrimary}>Save Changes</button>
+                          </div>
+                       </form>
+                    </div>
+                  </div>
+                )}
+
+                {manageStockModal.show && (
+                  <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 dark:bg-brand-darkBg/80 backdrop-blur-sm transition-all duration-300 w-full h-full">
+                    <div className={uiCard + " w-full max-w-2xl p-6 flex flex-col max-h-[80vh]"}>
+                       <div className="flex justify-between items-center mb-5 pb-4 border-b border-slate-200 dark:border-white/5 shrink-0">
+                         <h3 className="text-lg font-bold text-slate-900 dark:text-white flex items-center gap-2"><Package className="w-5 h-5 text-violet-500 dark:text-violet-400 drop-shadow-[0_0_5px_currentColor]"/> Manage Accounts</h3>
+                         <button onClick={() => setManageStockModal({ show: false, categoryId: null })} className="p-2 bg-slate-100 dark:bg-white/5 hover:bg-slate-200 dark:hover:bg-white/10 rounded-full text-slate-500 dark:text-slate-300 transition-colors"><X className="w-5 h-5" /></button>
+                       </div>
+                       <div className="overflow-y-auto flex-grow pr-2 scrollbar-hide space-y-3 w-full">
+                          {(!inventory[manageStockModal.categoryId] || inventory[manageStockModal.categoryId].length === 0) ? (
+                              <p className="text-center text-slate-500 dark:text-slate-400 font-medium py-10">No accounts in stock.</p>
+                          ) : (
+                              inventory[manageStockModal.categoryId].map((acc, index) => (
+                                  <div key={index} className={uiInnerPanel + " flex justify-between items-center w-full"}>
+                                      <pre className="text-xs text-slate-700 dark:text-slate-300 font-mono font-medium truncate max-w-[75%]">{acc}</pre>
+                                      <button onClick={() => handleDeleteAccount(manageStockModal.categoryId, index)} className="p-2 bg-rose-50 dark:bg-rose-500/10 text-rose-600 dark:text-rose-400 hover:bg-rose-100 dark:hover:bg-rose-500/20 rounded-lg transition-colors shrink-0 shadow-sm border border-rose-200 dark:border-rose-500/20">
+                                          <Trash2 className="w-4 h-4" />
+                                      </button>
+                                  </div>
+                              ))
+                          )}
+                       </div>
+                    </div>
+                  </div>
+                )}
+
+                {activeTab === 'users' && (
+                  <div className={uiCard + " animate-fade-in-up w-full"}>
+                    <div className="p-5 sm:p-6 border-b border-slate-200 dark:border-white/5 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 bg-slate-50 dark:bg-white/[0.02] backdrop-blur-sm">
+                      <h2 className="text-base font-bold text-slate-900 dark:text-white">Customer Database</h2>
+                      <div className="flex items-center gap-3 w-full sm:w-auto">
+                        <div className="relative flex-grow sm:flex-grow-0 sm:w-64">
+                           <Search className="w-4 h-4 text-slate-400 absolute left-3 top-3" />
+                           <input type="text" placeholder="Search email..." value={customerSearch} onChange={(e)=>setCustomerSearch(e.target.value)} className={uiInput + " !py-2 !pl-9"} />
+                        </div>
+                        <span className="text-xs font-bold text-slate-700 dark:text-slate-300 whitespace-nowrap bg-slate-200 dark:bg-black/40 px-3 py-1.5 rounded-lg border border-slate-300 dark:border-white/5">{filteredUsers.length} Users</span>
+                      </div>
+                    </div>
+                    <div className="overflow-x-auto w-full">
+                      <table className="w-full text-left text-sm whitespace-nowrap">
+                        <thead className="bg-slate-100 dark:bg-black/20 backdrop-blur-sm text-slate-600 dark:text-slate-400 font-bold border-b border-slate-200 dark:border-white/5 text-xs uppercase tracking-wider">
+                          <tr><th className="p-4 sm:p-5">Email & Password</th><th className="p-4 sm:p-5">Spent</th><th className="p-4 sm:p-5">Balance</th><th className="p-4 sm:p-5 text-right">Actions</th></tr>
+                        </thead>
+                        <tbody className="divide-y divide-slate-200 dark:divide-white/5">
+                          {filteredUsers.map(email => (
+                            <tr key={email} className="hover:bg-slate-50 dark:hover:bg-white/5 transition-colors">
+                              <td className="p-4 sm:p-5">
+                                  <p className="text-slate-900 dark:text-slate-200 font-bold">{String(email)}</p>
+                                  <p className="text-[10px] text-slate-500 mt-1 font-mono">Pass: {usersDB[email].password || 'Hidden/Not Saved'}</p>
+                              </td>
+                              <td className="p-4 sm:p-5 font-semibold text-slate-700 dark:text-slate-300">${Number(usersDB[email].totalSpent || 0).toFixed(2)}</td>
+                              <td className="p-4 sm:p-5 font-black text-emerald-600 dark:text-emerald-400 drop-shadow-sm">${Number(usersDB[email].balance || 0).toFixed(2)}</td>
+                              <td className="p-4 sm:p-5 text-right">
+                                <button onClick={() => setEditUserModal({ show: true, email: email, password: usersDB[email].password || '', balance: usersDB[email].balance || 0, totalSpent: usersDB[email].totalSpent || 0 })} className={uiBtnAction + " !w-auto !ml-auto !bg-violet-50 dark:!bg-violet-500/10 border-violet-200 dark:!border-violet-500/20 text-violet-600 dark:!text-violet-400 hover:bg-violet-100 dark:hover:!bg-violet-500/20"}><Edit className="w-4 h-4"/> Edit Profile</button>
+                              </td>
+                            </tr>
+                          ))}
+                        </tbody>
+                      </table>
+                      {filteredUsers.length === 0 && <p className="text-center py-10 text-slate-500 font-medium">No customers found.</p>}
+                    </div>
+                  </div>
+                )}
+
+                {activeTab === 'support' && (
+                  <div className={uiCard + " animate-fade-in-up w-full"}>
+                    <div className="p-5 sm:p-6 border-b border-slate-200 dark:border-white/5 flex items-center justify-between bg-slate-50 dark:bg-white/[0.02] backdrop-blur-sm">
+                       <h2 className="text-base font-bold text-slate-900 dark:text-white">Support Tickets</h2>
+                       {pendingTickets.length > 0 && <span className="bg-violet-50 dark:bg-violet-500/10 text-violet-600 dark:text-violet-400 px-3 py-1 rounded-lg text-xs font-bold border border-violet-200 dark:border-violet-500/20 shadow-[0_0_5px_currentColor]">{pendingTickets.length} Open</span>}
+                    </div>
+                    <div className="overflow-x-auto w-full">
+                      <table className="w-full text-left whitespace-nowrap text-sm">
+                        <thead className="bg-slate-100 dark:bg-black/20 backdrop-blur-sm text-slate-600 dark:text-slate-400 font-bold border-b border-slate-200 dark:border-white/5 text-xs uppercase tracking-wider">
+                          <tr><th className="p-4 sm:p-5">User</th><th className="p-4 sm:p-5">Subject</th><th className="p-4 sm:p-5">Date</th><th className="p-4 sm:p-5 text-right">Action</th></tr>
+                        </thead>
+                        <tbody className="divide-y divide-slate-200 dark:divide-white/5">
+                          {(tickets||[]).map(t => (
+                            <tr key={t.id} className="hover:bg-slate-50 dark:hover:bg-white/5 transition-colors">
+                              <td className="p-4 sm:p-5 text-slate-900 dark:text-slate-200 font-bold">{t.email}</td>
+                              <td className="p-4 sm:p-5 text-slate-700 dark:text-slate-300">
+                                <span className="font-bold block">{t.subject}</span>
+                                <span className="text-[10px] truncate max-w-[150px] sm:max-w-xs inline-block font-medium text-slate-500 mt-1">{t.message}</span>
+                              </td>
+                              <td className="p-4 sm:p-5 text-slate-500 dark:text-slate-400 font-semibold text-[10px]">{new Date(t.date).toLocaleDateString()}</td>
+                              <td className="p-4 sm:p-5 text-right">
+                                {t.status === 'Open' ? (
+                                  <button onClick={() => handleResolveTicket(t.id)} className={uiBtnAction + " !w-auto !ml-auto"}>Resolve</button>
+                                ) : (
+                                  <span className="text-[10px] text-emerald-600 dark:text-emerald-400 font-bold">Closed</span>
+                                )}
+                              </td>
+                            </tr>
+                          ))}
+                        </tbody>
+                      </table>
+                      {(!tickets || tickets.length === 0) && <p className="text-center py-10 text-slate-500 font-medium">Inbox zero.</p>}
+                    </div>
+                  </div>
+                )}
+
+                {activeTab === 'analytics' && (
+                  <div className="animate-fade-in-up w-full">
+                    <h2 className="text-xl font-bold mb-6 text-slate-900 dark:text-white drop-shadow-md">Overview</h2>
+                    <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 w-full">
+                      <div className={uiCard + " p-6 sm:p-8"}>
+                        <p className="text-slate-500 dark:text-slate-400 text-[10px] font-bold mb-2 uppercase tracking-widest">Gross Volume</p>
+                        <h3 className="text-3xl sm:text-4xl font-black text-slate-900 dark:text-white drop-shadow-md">${Number(totalSales || 0).toFixed(2)}</h3>
+                      </div>
+                      <div className={uiCard + " p-6 sm:p-8"}>
+                        <p className="text-slate-500 dark:text-slate-400 text-[10px] font-bold mb-2 uppercase tracking-widest">Total Customers</p>
+                        <h3 className="text-3xl sm:text-4xl font-black text-slate-900 dark:text-white drop-shadow-md">{Object.keys(usersDB).length}</h3>
+                      </div>
+                      <div className={uiCard + " p-6 sm:p-8"}>
+                        <p className="text-slate-500 dark:text-slate-400 text-[10px] font-bold mb-2 uppercase tracking-widest">Completed Orders</p>
+                        <h3 className="text-3xl sm:text-4xl font-black text-slate-900 dark:text-white drop-shadow-md">{orders.length}</h3>
+                      </div>
+                    </div>
+                  </div>
+                )}
+
+                {activeTab === 'deposits' && (
+                  <div className={uiCard + " animate-fade-in-up w-full"}>
+                    <div className="p-5 sm:p-6 border-b border-slate-200 dark:border-white/5 flex items-center justify-between bg-slate-50 dark:bg-white/[0.02] backdrop-blur-sm">
+                      <h2 className="text-base font-bold text-slate-900 dark:text-white">Deposit Ledger</h2>
+                      {pendingDeposits.length > 0 && <span className="bg-violet-50 dark:bg-violet-500/10 border border-violet-200 dark:border-violet-500/20 text-violet-600 dark:text-violet-400 px-3 py-1 rounded-lg text-[10px] sm:text-xs font-bold">{pendingDeposits.length} Pending</span>}
+                    </div>
+                    <div className="overflow-x-auto w-full">
+                      <table className="w-full text-left whitespace-nowrap text-sm">
+                        <thead className="bg-slate-100 dark:bg-black/20 backdrop-blur-sm text-slate-600 dark:text-slate-400 font-bold border-b border-slate-200 dark:border-white/5 text-xs uppercase tracking-wider">
+                          <tr><th className="p-4 sm:p-5">Tx Ref / Date</th><th className="p-4 sm:p-5">User / Method</th><th className="p-4 sm:p-5">Amount</th><th className="p-4 sm:p-5 text-right">Status / Action</th></tr>
+                        </thead>
+                        <tbody className="divide-y divide-slate-200 dark:divide-white/5">
+                          {deposits.map(dep => {
+                            const isPending = String(dep.status || '').includes('Pending') || String(dep.status || '').includes('Verifying') || String(dep.status || '').includes('Awaiting');
+                            return (
+                              <tr key={dep.id} className="hover:bg-slate-50 dark:hover:bg-white/5 transition-colors">
+                                <td className="p-4 sm:p-5">
+                                  <p className="font-mono text-slate-500 dark:text-slate-400 font-bold text-[10px]">{String(dep.id || '')}</p>
+                                  <p className="text-[10px] text-slate-600 dark:text-slate-500 mt-1 font-semibold">{dep.date ? new Date(dep.date).toLocaleString() : ''}</p>
+                                </td>
+                                <td className="p-4 sm:p-5">
+                                  <p className="text-slate-900 dark:text-slate-200 font-bold">{String(dep.email || '')}</p>
+                                  <p className="text-[10px] text-slate-500 dark:text-slate-400 mt-1 font-semibold">{String(dep.method || '')}</p>
+                                </td>
+                                <td className="p-4 sm:p-5 font-black text-emerald-600 dark:text-emerald-400 drop-shadow-sm">${Number(dep.amount || 0).toFixed(2)}</td>
+                                <td className="p-4 sm:p-5 text-right">
+                                  <div className="flex flex-col items-end gap-2">
+                                    <span className={`text-[10px] font-bold ${dep.status === 'Approved' ? 'text-emerald-600 dark:text-emerald-400' : isPending ? 'text-violet-600 dark:text-violet-400' : 'text-rose-600 dark:text-rose-400'}`}>{String(dep.status || '')}</span>
+                                    {isPending && (
+                                        <button onClick={() => handleManualApprove(dep.id)} className="btn-animate text-[10px] bg-gradient-to-r from-emerald-500 to-green-600 hover:from-emerald-400 hover:to-green-500 text-white px-3 py-1.5 rounded-lg font-bold transition-all flex items-center gap-1.5 shadow-[0_4px_10px_rgba(16,185,129,0.3)]">
+                                            <CheckCircle className="w-3.5 h-3.5"/> Approve
+                                        </button>
+                                    )}
+                                  </div>
+                                </td>
+                              </tr>
+                            )
+                          })}
+                        </tbody>
+                      </table>
+                      {deposits.length === 0 && <p className="text-center py-10 text-slate-500 font-medium">No deposits recorded.</p>}
+                    </div>
+                  </div>
+                )}
+
+                {activeTab === 'settings' && (
+                  <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 sm:gap-8 w-full animate-fade-in-up">
+                    <div className={uiCard + " p-6 sm:p-8 w-full"}>
+                      <h2 className="text-lg font-bold text-slate-900 dark:text-white mb-6 border-b border-slate-200 dark:border-white/5 pb-4">Store Configuration</h2>
+                      
+                      <form onSubmit={handleSaveSettings} className="space-y-6">
+                        <div className="space-y-4">
+                           <h3 className="text-[10px] font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">Feature Flags</h3>
+                           <label className={uiInnerPanel + " flex items-center justify-between cursor-pointer hover:bg-slate-100 dark:hover:bg-white/10"}>
+                             <span className="text-sm font-bold text-slate-800 dark:text-slate-200">Daily Login Bonus</span>
+                             <input type="checkbox" checked={dailyRewardActive} onChange={(e) => setDailyRewardActive(e.target.checked)} className="w-4 h-4 rounded text-violet-500 focus:ring-violet-500" />
+                           </label>
+                           <label className={uiInnerPanel + " flex items-center justify-between cursor-pointer hover:bg-slate-100 dark:hover:bg-white/10"}>
+                             <span className="text-sm font-bold text-slate-800 dark:text-slate-200">Affiliate Program</span>
+                             <input type="checkbox" checked={referralActive} onChange={(e) => setReferralActive(e.target.checked)} className="w-4 h-4 rounded text-violet-500 focus:ring-violet-500" />
+                           </label>
+                        </div>
+
+                        <div className="space-y-4 pt-6 border-t border-slate-200 dark:border-white/5">
+                           <h3 className="text-[10px] font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">API Target Settings</h3>
+                           <div className="grid grid-cols-1 gap-4">
+                             <div>
+                               <label className="block text-[10px] font-bold text-slate-700 dark:text-slate-300 mb-2">Markup per SMS ($)</label>
+                               <input type="number" step="0.01" value={smsMarkupInput} onChange={(e) => setSmsMarkupInput(e.target.value)} placeholder="1.00" className={uiInput} />
+                             </div>
+                           </div>
+                           <label className="flex items-center gap-2.5 cursor-pointer mt-2 pl-1">
+                             <input type="checkbox" checked={smsActiveInput} onChange={(e) => setSmsActiveInput(e.target.checked)} className="w-4 h-4 rounded text-violet-500 focus:ring-violet-500" />
+                             <span className="text-sm font-bold text-slate-800 dark:text-slate-200">Enable Live SMS Verification</span>
+                           </label>
+                        </div>
+
+                        <div className="space-y-4 pt-6 border-t border-slate-200 dark:border-white/5">
+                           <h3 className="text-[10px] font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">Promotions</h3>
+                           <div className="grid grid-cols-2 gap-4">
+                             <div>
+                               <label className="block text-[10px] font-bold text-slate-700 dark:text-slate-300 mb-2">Code</label>
+                               <input type="text" value={promoInput} onChange={(e) => setPromoInput(e.target.value)} placeholder="DISCOUNT20" className={uiInput + " uppercase"} />
+                             </div>
+                             <div>
+                               <label className="block text-[10px] font-bold text-slate-700 dark:text-slate-300 mb-2">Discount (%)</label>
+                               <input type="number" min="0" max="100" value={discountInput} onChange={(e) => setDiscountInput(e.target.value)} className={uiInput} />
+                             </div>
+                           </div>
+                           <label className="flex items-center gap-2.5 cursor-pointer mt-2 pl-1">
+                             <input type="checkbox" checked={promoActive} onChange={(e) => setPromoActive(e.target.checked)} className="w-4 h-4 rounded text-violet-500 focus:ring-violet-500" />
+                             <span className="text-sm font-bold text-slate-800 dark:text-slate-200">Enable Promo globally</span>
+                           </label>
+                        </div>
+
+                        <div className="space-y-4 pt-6 border-t border-slate-200 dark:border-white/5">
+                           <h3 className="text-[10px] font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">Announcement</h3>
+                           <div>
+                             <label className="block text-[10px] font-bold text-slate-700 dark:text-slate-300 mb-2">Marquee Bar Text</label>
+                             <input type="text" value={noticeInput} onChange={(e) => setNoticeInput(e.target.value)} placeholder="Store wide announcement..." className={uiInput} />
+                           </div>
+                        </div>
+
+                        <div className="space-y-4 pt-6 border-t border-slate-200 dark:border-white/5">
+                           <h3 className="text-[10px] font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">Bank Transfer (Naira)</h3>
+                           <div>
+                             <label className="block text-[10px] font-bold text-slate-700 dark:text-slate-300 mb-2">Naira Exchange Rate (1 USD = ? NGN)</label>
+                             <input type="number" value={nairaRateInput} onChange={(e) => setNairaRateInput(e.target.value)} placeholder="1500" className={uiInput} />
+                           </div>
+                        </div>
+
+                        <div className="space-y-4 pt-6 border-t border-slate-200 dark:border-white/5">
+                           <h3 className="text-[10px] font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">Flutterwave API (Automated)</h3>
+                           <div>
+                             <label className="block text-[10px] font-bold text-slate-700 dark:text-slate-300 mb-2">Flutterwave Public Key</label>
+                             <input type="text" value={flutterwaveKeyInput} onChange={(e) => setFlutterwaveKeyInput(e.target.value)} placeholder="FLWPUBK_TEST-xxxxxxxxx" className={uiInput} />
+                           </div>
+                           <label className="flex items-center gap-2.5 cursor-pointer mt-2 pl-1">
+                             <input type="checkbox" checked={flutterwaveActiveInput} onChange={(e) => setFlutterwaveActiveInput(e.target.checked)} className="w-4 h-4 rounded text-violet-500 focus:ring-violet-500" />
+                             <span className="text-sm font-bold text-slate-800 dark:text-slate-200">Enable Flutterwave Deposit for Users</span>
+                           </label>
+                        </div>
+
+                        <div className="pt-4"><button type="submit" className={uiBtnPrimary}>Save Changes</button></div>
+                      </form>
+                    </div>
+                  </div>
+                )}
+              </div>
+            </>
+          );
+        }
+
+        const root = createRoot(document.getElementById('root'));
+        root.render(<App />);
+    </script>
+</body>
+</html>
 
