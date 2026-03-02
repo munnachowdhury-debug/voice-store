@@ -291,48 +291,6 @@
           );
         };
 
-        // 🌟 UNIQUE QUICK GUIDE COMPONENT 🌟
-        const QuickGuide = () => {
-            const [showGuide, setShowGuide] = useState(true);
-            if(!showGuide) return null;
-            return (
-                <div className="w-full mb-5 relative z-20 animate-fade-in-up">
-                    <div className="bg-[#0a0a0a] border border-[#1a1a1a] rounded-xl p-4 relative overflow-hidden flex flex-col sm:flex-row items-center justify-between gap-4 shadow-[0_4px_20px_rgba(0,0,0,0.5)]">
-                        <button onClick={() => setShowGuide(false)} className="absolute top-2 right-2 text-gray-600 hover:text-white transition-colors z-20"><X className="w-3 h-3"/></button>
-                        
-                        <div className="shrink-0 flex flex-col items-center sm:items-start text-center sm:text-left z-10 pr-2 sm:border-r sm:border-[#1a1a1a]">
-                            <h3 className="text-[10px] font-bold text-white uppercase tracking-[0.2em] mb-1 flex items-center gap-1.5"><Zap className="w-3 h-3 text-brand-primary"/> Quick Start</h3>
-                            <p className="text-[8px] text-gray-500 font-mono tracking-widest uppercase">System Protocol</p>
-                        </div>
-
-                        <div className="flex-grow flex flex-col sm:flex-row w-full justify-around items-start sm:items-center relative gap-3 sm:gap-0 pl-2">
-                            {/* Connecting Line (Desktop) */}
-                            <div className="hidden sm:block absolute top-1/2 left-[10%] right-[10%] h-[1px] bg-[#1a1a1a] -translate-y-1/2 z-0">
-                                <div className="h-full bg-gradient-to-r from-brand-primary/0 via-brand-primary/50 to-brand-primary/0 w-full animate-[shimmer_2s_linear_infinite]"></div>
-                            </div>
-
-                            {/* Steps */}
-                            {[{num: '01', title: 'Fund Wallet', desc: 'Add USD via Crypto', icon: Wallet},
-                              {num: '02', title: 'Select Asset', desc: 'SMS or Accounts', icon: ShoppingCart},
-                              {num: '03', title: 'Deploy', desc: 'Instant Delivery', icon: CheckCircle}].map((step, i) => (
-                                <div key={i} className="flex items-center gap-2.5 relative z-10 bg-[#0a0a0a] px-2 py-1 w-full sm:w-auto group">
-                                    <div className="w-7 h-7 rounded-full bg-[#121212] border border-[#2a2a2a] flex items-center justify-center text-brand-primary shrink-0 shadow-[0_0_10px_rgba(212,175,55,0.05)] group-hover:border-brand-primary/50 transition-colors">
-                                        <step.icon className="w-3 h-3" />
-                                    </div>
-                                    <div className="text-left">
-                                        <p className="text-[9px] font-bold text-gray-200 uppercase tracking-widest flex items-center gap-1">
-                                            <span className="text-brand-primary/60 font-mono">{step.num}</span> {step.title}
-                                        </p>
-                                        <p className="text-[7px] text-gray-500 font-mono uppercase tracking-widest mt-0.5">{step.desc}</p>
-                                    </div>
-                                </div>
-                            ))}
-                        </div>
-                    </div>
-                </div>
-            );
-        };
-
         function App() {
           const [showSplash, setShowSplash] = useState(true);
           const [user, setUser] = useState(null); 
@@ -346,6 +304,7 @@
           const [purchases, setPurchases] = useState([]);
           const [tickets, setTickets] = useState([]);
           const [activeChats, setActiveChats] = useState([]);
+          const initialChatsLoadRef = useRef(true);
           
           const [promoSettings, setPromoSettings] = useState({ code: '', discount: 0, isActive: false });
           const [globalNotice, setGlobalNotice] = useState('');
@@ -368,6 +327,9 @@
           const [isLoading, setIsLoading] = useState(false);
 
           useEffect(() => { setTimeout(() => setShowSplash(false), 2500); }, []);
+
+          const triggerToast = (msg) => { const id = Date.now(); setToastData({ show: true, msg, id }); setTimeout(() => { setToastData(prev => prev.id === id ? { ...prev, show: false } : prev); }, 3500); };
+          const addNotification = (title, text) => { setNotifications(prev => [{ id: Date.now(), title, text, time: 'Just now' }, ...prev].slice(0, 5)); };
 
           useEffect(() => {
             const unsubscribe = onAuthStateChanged(auth, async (firebaseUser) => {
@@ -414,7 +376,25 @@
 
             if (user.role === 'admin') {
                 unsubs.push(onSnapshot(collection(db, 'artifacts', appId, 'public', 'data', 'Store_Users'), (snap) => { const u = {}; snap.forEach(d => u[d.id] = d.data()); setUsersDB(u); }, errLog));
-                unsubs.push(onSnapshot(collection(db, 'artifacts', appId, 'public', 'data', 'Store_ActiveChats'), (snap) => { const chats = []; snap.forEach(d => chats.push({ id: d.id, ...d.data() })); setActiveChats(chats.sort((a,b) => b.lastMessageTime - a.lastMessageTime)); }, errLog));
+                unsubs.push(onSnapshot(collection(db, 'artifacts', appId, 'public', 'data', 'Store_ActiveChats'), (snap) => { 
+                    const chats = []; 
+                    snap.forEach(d => chats.push({ id: d.id, ...d.data() })); 
+                    
+                    // Admin Notification for incoming messages
+                    if (!initialChatsLoadRef.current) {
+                        snap.docChanges().forEach(change => {
+                            if (change.type === 'modified' || change.type === 'added') {
+                                const data = change.doc.data();
+                                if (data.unreadByAdmin) {
+                                    triggerToast(`New message from ${String(data.userEmail).split('@')[0]}`);
+                                }
+                            }
+                        });
+                    }
+
+                    setActiveChats(chats.sort((a,b) => b.lastMessageTime - a.lastMessageTime)); 
+                    initialChatsLoadRef.current = false;
+                }, errLog));
             } else {
                 unsubs.push(onSnapshot(doc(db, 'artifacts', appId, 'public', 'data', 'Store_Users', user.email), (docSnap) => { if (docSnap.exists()) setUsersDB(prev => ({...prev, [user.email]: docSnap.data()})); }, errLog));
             }
@@ -479,8 +459,6 @@
           };
 
           const handleLogout = () => { signOut(auth).then(() => { setUser(null); setCart([]); setShowCart(false); setEmailInput(''); setPasswordInput(''); }); };
-          const triggerToast = (msg) => { const id = Date.now(); setToastData({ show: true, msg, id }); setTimeout(() => { setToastData(prev => prev.id === id ? { ...prev, show: false } : prev); }, 3500); };
-          const addNotification = (title, text) => { setNotifications(prev => [{ id: Date.now(), title, text, time: 'Just now' }, ...prev].slice(0, 5)); };
 
           if (showSplash) return <SplashScreen />;
 
@@ -585,12 +563,15 @@
                 )}
 
                 <div className="w-full relative z-30 mb-6 animate-fade-in-up">
-                  {/* 🟢 FIXED: Menu Button Gap Removed & Made Scroll-Free on Mobile 🟢 */}
-                  <div className="glass-effect rounded-xl p-1 flex justify-between gap-0.5 w-full overflow-x-visible border border-[#1a1a1a]">
+                  {/* 🟢 ULTRA COMPACT PREMIUM MENU 🟢 */}
+                  <div className="bg-[#0a0a0a] rounded-2xl p-1.5 flex justify-between gap-1 w-full overflow-x-auto custom-scrollbar border border-[#2a2a2a] shadow-[0_4px_20px_rgba(0,0,0,0.4)]">
                     {(user.role === 'admin' ? ADMIN_TABS : CUSTOMER_TABS).map(tab => (
-                      <button key={tab.id} onClick={() => setActiveTab(tab.id)} className={`flex-1 flex flex-col items-center justify-center gap-1 py-2 px-1 rounded-lg transition-all min-w-0 ${activeTab === tab.id ? 'bg-brand-primary/10 text-brand-primary shadow-sm scale-105' : 'text-gray-500 hover:text-gray-300 hover:bg-[#121212] scale-100'}`}>
-                          <tab.icon className={`w-4 h-4 transition-all duration-300 ${activeTab === tab.id ? 'drop-shadow-[0_0_8px_rgba(212,175,55,0.5)] scale-110' : ''}`} strokeWidth={2} /> 
-                          <span className="text-[8px] sm:text-[10px] font-bold text-center uppercase tracking-wide leading-none">{tab.label}</span>
+                      <button key={tab.id} onClick={() => setActiveTab(tab.id)} className={`relative flex-1 flex flex-col items-center justify-center gap-1.5 py-2.5 px-2 rounded-xl transition-all duration-300 min-w-[70px] sm:min-w-[100px] overflow-hidden group ${activeTab === tab.id ? 'text-black font-extrabold shadow-[0_0_15px_rgba(212,175,55,0.4)] transform scale-[1.02]' : 'text-gray-400 hover:text-white hover:bg-[#1a1a1a]'}`}>
+                          {activeTab === tab.id && <div className="absolute inset-0 bg-gold-gradient opacity-90"></div>}
+                          <div className="relative z-10 flex flex-col items-center">
+                              <tab.icon className={`w-4 h-4 sm:w-5 sm:h-5 transition-transform duration-300 ${activeTab === tab.id ? 'scale-110 drop-shadow-md' : 'group-hover:scale-110'}`} strokeWidth={activeTab === tab.id ? 2.5 : 1.5} /> 
+                              <span className="text-[9px] sm:text-[11px] text-center uppercase tracking-widest mt-1 whitespace-nowrap">{tab.label}</span>
+                          </div>
                       </button>
                     ))}
                   </div>
@@ -614,31 +595,54 @@
               {showCart && user.role === 'customer' && <CartModal cart={cart} setCart={setCart} setShowCart={setShowCart} balance={currentUserBalance} user={user} promoSettings={promoSettings} triggerToast={triggerToast} addNotification={addNotification} db={db} appId={appId} uiCard={uiCard} uiBtnPrimary={uiBtnPrimary} uiInnerPanel={uiInnerPanel} />}
               
               {/* LIVE CHAT WIDGET FOR CUSTOMERS */}
-              {user && user.role === 'customer' && <LiveChatWidget user={user} db={db} appId={appId} />}
+              {user && user.role === 'customer' && <LiveChatWidget user={user} db={db} appId={appId} triggerToast={triggerToast} />}
             </div>
           );
         }
 
         // ==========================================
-        // 💬 LIVE CHAT WIDGET (Customer Side)
+        // 💬 LIVE CHAT WIDGET (Customer Side) - FIXED NOTIFICATIONS
         // ==========================================
-        function LiveChatWidget({ user, db, appId }) {
+        function LiveChatWidget({ user, db, appId, triggerToast }) {
             const [isOpen, setIsOpen] = useState(false);
             const [message, setMessage] = useState('');
             const [chatMessages, setChatMessages] = useState([]);
+            const [unreadCount, setUnreadCount] = useState(0);
             const messagesEndRef = useRef(null);
+            const initialLoadRef = useRef(true);
 
             useEffect(() => {
-                if (!isOpen) return;
                 const q = query(collection(db, 'artifacts', appId, 'public', 'data', 'Store_Chats', user.email, 'messages'), orderBy('timestamp', 'asc'));
                 const unsubscribe = onSnapshot(q, (snapshot) => {
-                    const msgs = [];
-                    snapshot.forEach(doc => { msgs.push({ id: doc.id, ...doc.data() }); });
-                    setChatMessages(msgs);
-                    setTimeout(() => { messagesEndRef.current?.scrollIntoView({ behavior: "smooth" }); }, 100);
+                    const allMsgs = [];
+                    snapshot.forEach(doc => allMsgs.push({ id: doc.id, ...doc.data() }));
+                    setChatMessages(allMsgs);
+                    
+                    // Trigger notification logic for new messages
+                    if (!initialLoadRef.current) {
+                        snapshot.docChanges().forEach((change) => {
+                            if (change.type === "added") {
+                                const newMsg = change.doc.data();
+                                if (newMsg.sender === 'admin' && !isOpen) {
+                                    triggerToast(`Message from Admin: ${newMsg.text.substring(0, 20)}...`);
+                                    setUnreadCount(prev => prev + 1);
+                                }
+                            }
+                        });
+                    }
+
+                    if (isOpen) {
+                        setTimeout(() => { messagesEndRef.current?.scrollIntoView({ behavior: "smooth" }); }, 100);
+                        setUnreadCount(0);
+                    }
+                    initialLoadRef.current = false;
                 });
                 return () => unsubscribe();
             }, [isOpen, db, appId, user.email]);
+
+            useEffect(() => {
+                if (isOpen) setUnreadCount(0);
+            }, [isOpen]);
 
             const sendMessage = async (e) => {
                 e.preventDefault();
@@ -655,6 +659,11 @@
                 <>
                     <button onClick={() => setIsOpen(!isOpen)} className="btn-animate fixed bottom-6 right-6 z-[150] w-14 h-14 bg-brand-primary rounded-full shadow-[0_0_20px_rgba(212,175,55,0.4)] flex items-center justify-center text-black">
                         {isOpen ? <X className="w-6 h-6" /> : <MessageSquare className="w-6 h-6" />}
+                        {!isOpen && unreadCount > 0 && (
+                            <span className="absolute -top-1 -right-1 bg-red-600 text-white text-[10px] font-bold w-5 h-5 flex items-center justify-center rounded-full border-2 border-[#0a0a0a] animate-pulse">
+                                {unreadCount}
+                            </span>
+                        )}
                     </button>
                     {isOpen && (
                         <div className="fixed bottom-24 right-6 z-[150] w-[320px] h-[400px] bg-[#121212] border border-[#2a2a2a] rounded-2xl shadow-[0_20px_50px_rgba(0,0,0,0.8)] flex flex-col overflow-hidden animate-pop-in origin-bottom-right">
@@ -2189,8 +2198,8 @@
                                   <span className={`text-[8px] px-2 py-1 rounded border uppercase tracking-[0.2em] font-bold ${t.status === 'Open' ? 'bg-red-900/10 text-red-500 border-red-900/30' : 'bg-emerald-900/10 text-emerald-500 border-emerald-900/30'}`}>{t.status}</span>
                                   {t.status === 'Open' && (
                                     <div className="flex gap-2 mt-1">
-                                        <button onClick={() => startTicketChat(t.email)} className="text-[9px] text-brand-primary hover:text-white transition-colors underline flex items-center gap-1"><MessageCircle className="w-2.5 h-2.5"/> Reply</button>
-                                        <button onClick={async () => { await updateDoc(doc(db, 'artifacts', appId, 'public', 'data', 'Store_Tickets', t.id), { status: 'Resolved' }); triggerToast('Ticket marked resolved.'); }} className="text-[9px] text-gray-500 hover:text-white transition-colors underline ml-2">Resolve</button>
+                                        <button onClick={() => startTicketChat(t.email)} className="btn-animate text-[9px] text-brand-primary hover:text-white transition-colors underline flex items-center gap-1"><MessageCircle className="w-2.5 h-2.5"/> Reply</button>
+                                        <button onClick={async () => { await updateDoc(doc(db, 'artifacts', appId, 'public', 'data', 'Store_Tickets', t.id), { status: 'Resolved' }); triggerToast('Ticket marked resolved.'); }} className="btn-animate text-[9px] text-gray-500 hover:text-white transition-colors underline ml-2">Resolve</button>
                                     </div>
                                   )}
                               </div>
@@ -2198,7 +2207,7 @@
                             <div className="bg-[#121212] p-3 rounded-lg mb-3">
                               <p className="text-xs text-gray-400 font-light leading-relaxed break-words">{t.message}</p>
                             </div>
-                            <p className="text-[9px] text-gray-600 font-mono flex items-center gap-1.5 uppercase tracking-widest"><Clock className="w-3 h-3"/> {t.date ? new Date(t.date).toLocaleString() : ''}</p>
+                            <p className="text-[9px] text-gray-600 font-mono flex items-center gap-1.5 uppercase tracking-widest"><Clock className="w-3 h-3"/> {new Date(t.date).toLocaleString()}</p>
                           </div>
                         ))}
                         {tickets.length === 0 && <p className="text-center text-gray-600 py-10 text-xs font-mono uppercase tracking-widest">No tickets.</p>}
