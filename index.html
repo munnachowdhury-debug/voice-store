@@ -86,8 +86,8 @@
         
         .custom-scrollbar::-webkit-scrollbar { width: 6px; }
         .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
-        .custom-scrollbar::-webkit-scrollbar-thumb { background-color: rgba(245, 158, 11, 0.4); border-radius: 10px; }
-        .custom-scrollbar::-webkit-scrollbar-thumb:hover { background-color: rgba(245, 158, 11, 0.8); }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background-color: rgba(139, 92, 246, 0.4); border-radius: 10px; }
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover { background-color: rgba(139, 92, 246, 0.8); }
     </style>
 </head>
 <body class="antialiased bg-[#0f172a] text-white transition-colors duration-500">
@@ -248,7 +248,6 @@
           const [user, setUser] = useState(null); 
           const [isAuthChecking, setIsAuthChecking] = useState(true);
           const [activeTab, setActiveTab] = useState('sms');
-          const [isDarkMode, setIsDarkMode] = useState(false);
           const [usersDB, setUsersDB] = useState({});
           
           const [inventory, setInventory] = useState({ new: [], old: [], textplus: [], gv_bulk: [] });
@@ -276,11 +275,6 @@
           const [emailInput, setEmailInput] = useState('');
           const [passwordInput, setPasswordInput] = useState('');
           const [isLoading, setIsLoading] = useState(false);
-
-          useEffect(() => {
-              if (isDarkMode) document.documentElement.classList.add('dark');
-              else document.documentElement.classList.remove('dark');
-          }, [isDarkMode]);
 
           useEffect(() => { setTimeout(() => setShowSplash(false), 3500); }, []);
 
@@ -429,6 +423,7 @@
                       <div className="space-y-2">
                         <div className="flex justify-between items-center px-1">
                            <label className="text-xs font-bold text-slate-400 uppercase tracking-wider">Passcode</label>
+                           {(authMethod === 'login' || authMethod === 'admin') && <button type="button" onClick={handleForgotPassword} className="text-xs font-bold text-violet-400 hover:text-violet-300 transition-colors">Forgot?</button>}
                         </div>
                         <input type="password" value={passwordInput} onChange={e=>setPasswordInput(e.target.value)} placeholder="••••••••" required className={uiInput} />
                       </div>
@@ -546,10 +541,12 @@
           useEffect(() => { const int = setInterval(() => setNow(Date.now()), 1000); return () => clearInterval(int); }, []);
 
           useEffect(() => {
-              setIsFetchingServices(true);
-              fetch(`https://voicestore-backend.onrender.com/api/grizzly/getPrices?country=${smsCountry}`)
-              .then(r => r.json()).then(json => { setAvailableServices(json?.success && Array.isArray(json.data) ? json.data : []); setIsFetchingServices(false); }).catch(() => { setIsFetchingServices(false); setAvailableServices([]); });
-          }, [smsCountry]);
+              if (smsSettings?.active) {
+                  setIsFetchingServices(true);
+                  fetch(`https://voicestore-backend.onrender.com/api/grizzly/getPrices?country=${smsCountry}`)
+                  .then(r => r.json()).then(json => { setAvailableServices(json?.success && Array.isArray(json.data) ? json.data : []); setIsFetchingServices(false); }).catch(() => { setIsFetchingServices(false); setAvailableServices([]); });
+              }
+          }, [smsSettings, smsCountry]);
 
           useEffect(() => {
               if (selectedSmsService && smsCountry) {
@@ -563,7 +560,10 @@
           useEffect(() => { if (filteredApps.length > 0 && !selectedSmsService) setSelectedSmsService(filteredApps[0].code); }, [filteredApps, selectedSmsService]);
 
           const currentService = availableServices.find(s => s?.code === selectedSmsService) || null;
-          const finalBuyPrice = selectedTier?.priceWithMarkup ? parseFloat(selectedTier.priceWithMarkup) : 0;
+          const fallbackPrice = currentService?.finalPrice ? parseFloat(currentService.finalPrice) : 0;
+          const finalBuyPrice = selectedTier?.priceWithMarkup ? parseFloat(selectedTier.priceWithMarkup) : fallbackPrice;
+          const exactMaxPrice = selectedTier?.originalPrice ? parseFloat(selectedTier.originalPrice) : null;
+          const exactProviderId = selectedTier?.providerId || null;
 
           const buySmsNumber = async () => {
               if (!currentService) return;
@@ -573,32 +573,52 @@
               setIsSmsLoading(true);
               try {
                   const token = await getAuthToken(); 
+                  const deductRes = await fetch('https://voicestore-backend.onrender.com/api/sms-deduct', {
+                      method: 'POST', headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+                      body: JSON.stringify({ email: user.email, price: finalBuyPrice })
+                  });
+                  const deductData = await deductRes.json();
+                  if (!deductData.success) { triggerToast(deductData.message || "Balance deduction failed."); setIsSmsLoading(false); return; }
+
                   const res = await fetch('https://voicestore-backend.onrender.com/api/juicy/getNumber', {
                       method: 'POST', headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
-                      body: JSON.stringify({ serviceId: currentService.code, countryId: smsCountry }) 
+                      body: JSON.stringify({ serviceId: currentService.code, countryId: smsCountry, maxPrice: exactMaxPrice, exactProviderId: exactProviderId }) 
                   });
                   const data = await res.json();
                   
                   if (data?.success && data?.phone) {
+                      let finalOrderPrice = finalBuyPrice;
+                      if (data.exactCost !== undefined && data.exactCost !== null) {
+                          const markup = parseFloat(smsSettings?.markup || 1.00);
+                          const actualTotalCost = parseFloat(data.exactCost) + markup;
+                          const diff = parseFloat((finalBuyPrice - actualTotalCost).toFixed(2));
+                          if (diff > 0) {
+                              fetch('https://voicestore-backend.onrender.com/api/sms-refund', { method: 'POST', headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` }, body: JSON.stringify({ email: user.email, price: diff }) }).catch(()=>{});
+                              finalOrderPrice = actualTotalCost; 
+                          }
+                      }
                       const cleanName = (currentService.name || '').split(' [')[0];
                       // 🎯 TIMER CHANGED TO 240 SECONDS (4 MINUTES)
-                      const newOrder = { id: data.orderId, phone: data.phone, service: cleanName, price: data.exactCost, status: 'ACTIVE', codes: [], expiresAt: Date.now() + 240 * 1000 };
+                      const newOrder = { id: data.orderId, phone: data.phone, service: cleanName, countryId: smsCountry, price: finalOrderPrice, status: 'ACTIVE', codes: [], expiresAt: Date.now() + 240 * 1000, isCancelling: false, isNew: true };
                       setActiveOrders(prev => [newOrder, ...prev]); 
-                      triggerToast(`Secure asset deployed. Deducted: $${data.exactCost}`);
-                  } else { triggerToast(data?.message || "Deployment failed."); }
+                      triggerToast("Secure asset deployed successfully!");
+                  } else {
+                      await fetch('https://voicestore-backend.onrender.com/api/sms-refund', { method: 'POST', headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` }, body: JSON.stringify({ email: user.email, price: finalBuyPrice }) });
+                      triggerToast(data?.message || "Deployment failed.");
+                  }
               } catch (e) { triggerToast("Network Error."); } finally { setIsSmsLoading(false); }
           };
 
           // Actual Executions
-          const performCancel = async (orderId, priceToRefund) => {
+          const performCancel = async (orderId, priceToRefund, isAuto = false) => {
+              if (isAuto) { setActiveOrders(prev => prev.filter(o => o.id !== orderId)); triggerToast(`Session expired. Auto-refunded.`); }
               try {
                   const token = await getAuthToken();
                   const cancelRes = await fetch(`https://voicestore-backend.onrender.com/api/juicy/cancel`, { method: 'POST', headers: {'Content-Type':'application/json', 'Authorization': `Bearer ${token}`}, body: JSON.stringify({orderId}) }); 
                   const cancelData = await cancelRes.json();
-                  if (!cancelData.success && !String(cancelData.message).includes('already')) { triggerToast(cancelData.message); return; }
+                  if (!cancelData.success && !String(cancelData.message).includes('already')) { if (!isAuto) { triggerToast(cancelData.message); return; } }
                   await fetch('https://voicestore-backend.onrender.com/api/sms-refund', { method: 'POST', headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` }, body: JSON.stringify({ email: user.email, price: priceToRefund }) });
-                  triggerToast(`Session Terminated. $${priceToRefund.toFixed(2)} securely refunded.`); 
-                  setActiveOrders(prev => prev.filter(o => o.id !== orderId));
+                  if (!isAuto) { triggerToast(`Session Terminated. $${priceToRefund.toFixed(2)} securely refunded.`); setActiveOrders(prev => prev.filter(o => o.id !== orderId)); }
               } catch (e) {} 
           };
 
@@ -630,7 +650,7 @@
                               order.isCancelling = true;
                               setActiveOrders(prev => prev.filter(o => o.id !== order.id));
                               triggerToast(`Session expired. Auto-refunded.`);
-                              performCancel(order.id, order.price);
+                              performCancel(order.id, order.price, true);
                           }
                           return;
                       }
@@ -748,17 +768,14 @@
                                        <option value="" className="text-sm bg-slate-800 text-slate-300">...</option>
                                    ) : (Array.isArray(priceTiers) && priceTiers.length > 0) ? (
                                        priceTiers.map((tier, idx) => (
-                                           <option key={idx} value={tier?.originalPrice ? String(tier.originalPrice) : ''} className="text-sm bg-slate-800 text-slate-900 dark:text-white">
-                                               ${Number(tier?.priceWithMarkup || 0).toFixed(2)}
-                                           </option>
+                                           <option key={idx} value={String(tier.originalPrice)} className="bg-slate-800 text-white text-base">${Number(tier.priceWithMarkup || 0).toFixed(2)}</option>
                                        ))
                                    ) : (
-                                       <option value="" className="text-sm bg-slate-800 text-slate-900 dark:text-white">
-                                           ${Number(fallbackPrice || 0).toFixed(2)}
-                                       </option>
+                                       <option value="" className="bg-slate-800 text-white text-base">$0.00</option>
                                    )}
                                </select>
-                               {isTiersLoading ? <RefreshCw className="w-4 h-4 text-slate-400 absolute right-3 animate-spin pointer-events-none"/> : <ChevronDown className="w-4 h-4 text-slate-500 absolute right-3 top-5 pointer-events-none"/>}
+                               <DollarSign className="w-5 h-5 text-emerald-500/70 absolute left-3 top-4 pointer-events-none"/>
+                               <ChevronDown className="w-4 h-4 text-slate-500 absolute right-3 top-5 pointer-events-none"/>
                            </div>
 
                        </div>
