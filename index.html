@@ -109,7 +109,7 @@
             font-family: 'Inter', sans-serif;
             overflow-x: hidden;
             scroll-behavior: smooth;
-            background-color: #0a0a0a;
+            background-color: #050505;
             color: #ffffff;
         }
         
@@ -158,13 +158,13 @@
         
         /* Message Notification Animation */
         @keyframes messageAlert {
-            0% { transform: translateY(-100%); opacity: 0; }
-            10% { transform: translateY(0); opacity: 1; }
-            90% { transform: translateY(0); opacity: 1; }
-            100% { transform: translateY(-100%); opacity: 0; }
+            0% { transform: translate(-50%, -100%); opacity: 0; }
+            10% { transform: translate(-50%, 0); opacity: 1; }
+            90% { transform: translate(-50%, 0); opacity: 1; }
+            100% { transform: translate(-50%, -100%); opacity: 0; }
         }
         .msg-alert-anim {
-            animation: messageAlert 5s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+            animation: messageAlert 4s cubic-bezier(0.22, 1, 0.36, 1) forwards;
         }
     </style>
 </head>
@@ -179,10 +179,10 @@
             ShoppingCart, LogOut, Package, Users, DollarSign, Settings, Plus, Trash2, CheckCircle, 
             X, Wallet, CreditCard, Clock, Copy, ArrowRight, Bell, User as UserIcon, 
             Activity, BarChart, Eye, Lock, Search, Megaphone, Award, Zap, Headset, 
-            Star, AlertTriangle, Smartphone, Mail, ShieldAlert, Sun, Moon, HelpCircle, History, TrendingUp, Sparkles, Building, Edit, RefreshCw, ChevronDown, StopCircle, Ban, Info, Key, MessageSquare, Send, BookOpen, MessageCircle
+            Star, AlertTriangle, Smartphone, Mail, ShieldAlert, Sun, Moon, HelpCircle, History, TrendingUp, Sparkles, Building, Edit, RefreshCw, ChevronDown, StopCircle, Ban, Info, Key, MessageSquare, Send, BookOpen, MessageCircle, Radar
         } from 'lucide-react';
 
-        // ফায়ারবেস ইমপোর্ট
+        // Firebase Imports
         import { initializeApp } from 'https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js';
         import { getAuth, onAuthStateChanged, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, sendEmailVerification, sendPasswordResetEmail } from 'https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js';
         import { getFirestore, collection, doc, setDoc, getDoc, onSnapshot, updateDoc, addDoc, query, orderBy, serverTimestamp, deleteDoc } from 'https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js';
@@ -260,7 +260,7 @@
         };
 
         const PremiumBackground = () => (
-          <div className="fixed inset-0 z-[-1] pointer-events-none bg-[#0a0a0a] overflow-hidden flex items-center justify-center">
+          <div className="fixed inset-0 z-[-1] pointer-events-none bg-[#050505] overflow-hidden flex items-center justify-center">
              <div className="absolute inset-0 opacity-[0.015] bg-[linear-gradient(rgba(255,255,255,0.1)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.1)_1px,transparent_1px)] bg-[size:50px_50px]"></div>
              <div className="absolute top-[-20%] right-[-10%] w-[800px] h-[800px] bg-brand-primary/5 rounded-full blur-[120px] animate-float pointer-events-none"></div>
              <div className="absolute bottom-[-20%] left-[-10%] w-[600px] h-[600px] bg-brand-primary/5 rounded-full blur-[100px] animate-float-fast pointer-events-none"></div>
@@ -301,12 +301,22 @@
           );
         };
 
-        // 🌟 মেসেজ নোটিফিকেশন কম্পোনেন্ট 🌟
+        // 🌟 মেসেজ নোটিফিকেশন কম্পোনেন্ট (AUTO DISMISS FIX) 🌟
         const MessageNotification = ({ msg, onClose }) => {
+            useEffect(() => {
+                if (msg) {
+                    const timer = setTimeout(() => {
+                        onClose();
+                    }, 4000); // 4 seconds auto close
+                    return () => clearTimeout(timer);
+                }
+            }, [msg, onClose]);
+
             if (!msg) return null;
+            
             return (
-                <div className="fixed top-6 left-1/2 -translate-x-1/2 z-[300] w-[90%] max-w-sm msg-alert-anim">
-                    <div className="bg-[#121212]/95 backdrop-blur-xl border border-brand-primary/40 p-4 rounded-2xl shadow-[0_15px_40px_rgba(212,175,55,0.2)] flex items-start gap-4">
+                <div className="fixed top-6 left-1/2 z-[300] w-[90%] max-w-sm msg-alert-anim pointer-events-none">
+                    <div className="bg-[#121212]/95 backdrop-blur-xl border border-brand-primary/40 p-4 rounded-2xl shadow-[0_15px_40px_rgba(212,175,55,0.2)] flex items-start gap-4 pointer-events-auto">
                         <div className="w-10 h-10 rounded-full bg-brand-primary/10 flex items-center justify-center shrink-0 border border-brand-primary/20">
                             <MessageSquare className="w-5 h-5 text-brand-primary" />
                         </div>
@@ -591,13 +601,15 @@
                 )}
 
                 <div className="w-full relative z-30 mb-8 animate-slide-in-down">
-                  {/* 🟢 MENU DESIGN UPDATE 🟢 */}
-                  <div className="glass-effect rounded-2xl p-1.5 flex justify-between w-full border border-[#1f1f1f] shadow-[0_8px_30px_rgba(0,0,0,0.6)] mx-auto max-w-3xl">
+                  {/* 🟢 MENU DESIGN UPDATE: COMPACT, VISIBLE TEXT, NO OVERFLOW ISSUES 🟢 */}
+                  <div className="glass-effect rounded-2xl p-1.5 flex flex-wrap sm:flex-nowrap justify-center sm:justify-between w-full border border-[#1f1f1f] shadow-[0_8px_30px_rgba(0,0,0,0.6)] mx-auto max-w-4xl gap-1">
                     {(user.role === 'admin' ? ADMIN_TABS : CUSTOMER_TABS).map(tab => (
-                      <button key={tab.id} onClick={() => setActiveTab(tab.id)} className={`relative flex-1 flex items-center justify-center gap-2 py-3 px-1 rounded-lg transition-all duration-400 min-w-0 overflow-hidden group ${activeTab === tab.id ? 'text-black font-bold shadow-[0_0_15px_rgba(212,175,55,0.3)] bg-brand-primary' : 'text-gray-400 hover:text-white hover:bg-[#1a1a1a]'}`}>
-                          <div className="relative z-10 flex items-center gap-1.5 sm:gap-2">
-                              <tab.icon className={`w-3.5 h-3.5 transition-transform duration-300 ${activeTab === tab.id ? 'scale-110 drop-shadow-md' : 'group-hover:scale-110'}`} strokeWidth={activeTab === tab.id ? 2 : 1.5} /> 
-                              <span className={`text-[9px] sm:text-[10px] uppercase tracking-widest whitespace-nowrap hidden sm:inline-block ${activeTab === tab.id ? 'font-bold' : 'font-medium'}`}>{tab.label}</span>
+                      <button key={tab.id} onClick={() => setActiveTab(tab.id)} className={`relative flex-1 flex items-center justify-center py-2.5 px-1 rounded-xl transition-all duration-400 min-w-[65px] overflow-hidden group ${activeTab === tab.id ? 'bg-gold-gradient text-black shadow-[0_0_20px_rgba(212,175,55,0.4)] transform scale-[1.02]' : 'text-gray-400 hover:text-white hover:bg-[#1a1a1a]'}`}>
+                          <div className="relative z-10 flex flex-col sm:flex-row items-center justify-center gap-1.5 w-full">
+                              <tab.icon className={`w-4 h-4 transition-transform duration-300 ${activeTab === tab.id ? 'scale-110 drop-shadow-md' : 'group-hover:scale-110'}`} strokeWidth={activeTab === tab.id ? 2.5 : 1.5} /> 
+                              <span className={`text-[9px] sm:text-[10px] uppercase tracking-wider text-center ${activeTab === tab.id ? 'font-bold' : 'font-medium'}`}>
+                                  {tab.label}
+                              </span>
                           </div>
                       </button>
                     ))}
@@ -621,6 +633,7 @@
 
               {showCart && user.role === 'customer' && <CartModal cart={cart} setCart={setCart} setShowCart={setShowCart} balance={currentUserBalance} user={user} promoSettings={promoSettings} triggerToast={triggerToast} addNotification={addNotification} db={db} appId={appId} uiCard={uiCard} uiBtnPrimary={uiBtnPrimary} uiInnerPanel={uiInnerPanel} />}
               
+              {/* LIVE CHAT WIDGET FOR CUSTOMERS */}
               {user && user.role === 'customer' && <LiveChatWidget user={user} db={db} appId={appId} setIncomingMsg={setIncomingMsg} />}
             </div>
           );
@@ -653,7 +666,6 @@
                                 if (newMsg.sender === 'admin' && !isOpen) {
                                     setIncomingMsg(newMsg.text);
                                     setUnreadCount(prev => prev + 1);
-                                    setTimeout(() => setIncomingMsg(null), 5000);
                                 }
                             }
                         });
@@ -683,33 +695,30 @@
 
             return (
                 <>
-                    <button onClick={() => setIsOpen(!isOpen)} className="btn-animate fixed bottom-6 right-6 z-[150] w-12 h-12 sm:w-14 sm:h-14 bg-brand-primary rounded-full shadow-[0_5px_20px_rgba(212,175,55,0.4)] flex items-center justify-center text-black hover:scale-105 transition-transform">
-                        {isOpen ? <X className="w-5 h-5 sm:w-6 sm:h-6" /> : <MessageSquare className="w-5 h-5 sm:w-6 sm:h-6" />}
+                    <button onClick={() => setIsOpen(!isOpen)} className="btn-animate fixed bottom-6 right-6 z-[150] w-14 h-14 bg-gold-gradient rounded-full shadow-[0_10px_25px_rgba(212,175,55,0.5)] flex items-center justify-center text-black hover:scale-105 transition-transform">
+                        {isOpen ? <X className="w-6 h-6" /> : <MessageSquare className="w-6 h-6" />}
                         {!isOpen && unreadCount > 0 && (
-                            <span className="absolute -top-1 -right-1 bg-red-600 text-white text-[9px] font-bold w-5 h-5 flex items-center justify-center rounded-full border-2 border-[#050505] animate-pulse">
+                            <span className="absolute -top-1 -right-1 bg-red-600 text-white text-[10px] font-bold w-5 h-5 flex items-center justify-center rounded-full border-2 border-[#050505] animate-pulse">
                                 {unreadCount}
                             </span>
                         )}
                     </button>
                     {isOpen && (
-                        <div className="fixed bottom-20 sm:bottom-24 right-4 sm:right-6 z-[150] w-[calc(100vw-32px)] sm:w-[340px] h-[450px] bg-[#0a0a0a] border border-[#1f1f1f] rounded-2xl shadow-[0_20px_50px_rgba(0,0,0,0.8)] flex flex-col overflow-hidden animate-pop-in origin-bottom-right">
-                            <div className="bg-[#0f0f0f] border-b border-[#1f1f1f] p-4 flex items-center justify-between">
-                                <div className="flex items-center gap-3">
-                                   <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse shadow-[0_0_8px_rgba(34,197,94,0.8)]"></div>
-                                   <h3 className="text-white font-bold text-xs tracking-widest uppercase">Admin Support</h3>
-                                </div>
-                                <button onClick={() => setIsOpen(false)} className="text-gray-500 hover:text-white"><X className="w-4 h-4"/></button>
+                        <div className="fixed bottom-24 right-6 z-[150] w-[320px] h-[450px] bg-[#0a0a0a] border border-[#2a2a2a] rounded-2xl shadow-[0_20px_50px_rgba(0,0,0,0.8)] flex flex-col overflow-hidden animate-pop-in origin-bottom-right">
+                            <div className="bg-[#121212] border-b border-[#2a2a2a] p-4 flex items-center gap-3">
+                                <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse shadow-[0_0_8px_rgba(34,197,94,0.8)]"></div>
+                                <h3 className="text-white font-bold text-xs tracking-widest uppercase">Admin Support</h3>
                             </div>
-                            <div className="flex-grow overflow-y-auto p-4 space-y-4 custom-scrollbar bg-gradient-to-b from-[#050505] to-[#0a0a0a]">
+                            <div className="flex-grow overflow-y-auto p-4 space-y-4 custom-scrollbar bg-gradient-to-b from-[#0a0a0a] to-[#050505]">
                                 {chatMessages.length === 0 ? (
                                     <div className="h-full flex flex-col items-center justify-center opacity-30 animate-pulse">
-                                        <Headset className="w-10 h-10 mb-3 text-brand-primary" strokeWidth={1} />
+                                        <MessageSquare className="w-10 h-10 mb-3 text-brand-primary" strokeWidth={1.5} />
                                         <p className="text-[10px] text-gray-400 font-mono text-center uppercase tracking-widest">Encrypted Channel Open</p>
                                     </div>
                                 ) : (
                                     chatMessages.map((msg, i) => (
                                         <div key={msg.id} className={`flex flex-col animate-fade-in-up ${msg.sender === 'user' ? 'items-end' : 'items-start'}`} style={{animationDelay: `${i * 0.05}s`, opacity: 0, animationFillMode: 'forwards'}}>
-                                            <div className={`px-4 py-2.5 rounded-2xl max-w-[85%] text-[11px] font-medium leading-relaxed shadow-lg ${msg.sender === 'user' ? 'bg-gold-gradient text-black rounded-tr-sm' : 'bg-[#121212] text-gray-200 border border-[#1f1f1f] rounded-tl-sm'}`}>
+                                            <div className={`px-4 py-2.5 rounded-2xl max-w-[85%] text-[11px] font-medium leading-relaxed shadow-lg ${msg.sender === 'user' ? 'bg-gold-gradient text-black rounded-tr-sm' : 'bg-[#1a1a1a] text-gray-200 border border-[#2a2a2a] rounded-tl-sm'}`}>
                                                 {msg.text}
                                             </div>
                                             <span className="text-[8px] text-gray-600 mt-1.5 font-mono tracking-wider">
@@ -720,8 +729,8 @@
                                 )}
                                 <div ref={messagesEndRef} />
                             </div>
-                            <form onSubmit={sendMessage} className="bg-[#0f0f0f] border-t border-[#1f1f1f] p-3 flex gap-2 items-center">
-                                <input type="text" value={message} onChange={e => setMessage(e.target.value)} placeholder="Enter message..." className="flex-grow bg-[#050505] border border-[#1f1f1f] rounded-xl px-4 py-3 text-xs text-white outline-none focus:border-brand-primary/50 transition-colors"/>
+                            <form onSubmit={sendMessage} className="bg-[#121212] border-t border-[#2a2a2a] p-3 flex gap-2 items-center">
+                                <input type="text" value={message} onChange={e => setMessage(e.target.value)} placeholder="Enter message..." className="flex-grow bg-[#0a0a0a] border border-[#1a1a1a] rounded-xl px-4 py-3 text-xs text-white outline-none focus:border-brand-primary/50 transition-colors"/>
                                 <button type="submit" disabled={!message.trim()} className="btn-animate bg-brand-primary text-black p-3 rounded-xl disabled:opacity-50 transition-colors shadow-[0_0_10px_rgba(212,175,55,0.2)]"><Send className="w-4 h-4" /></button>
                             </form>
                         </div>
@@ -731,7 +740,7 @@
         }
 
         // ==========================================
-        // 🌟 SMS MODULE
+        // 🌟 SMS MODULE (ULTRA PREMIUM) 🌟
         // ==========================================
         function CustomerDashboardSMS({ user, balance, triggerToast, smsSettings, uiCard, uiInput, uiBtnPrimary, uiInnerPanel }) {
           const [isSmsLoading, setIsSmsLoading] = useState(false);
@@ -894,7 +903,7 @@
           if(!smsSettings?.active) return <div className={uiCard + " text-center py-24 text-gray-600 font-mono text-xs uppercase tracking-widest border border-[#1f1f1f]"}><Smartphone className="w-10 h-10 mx-auto mb-4 opacity-30" strokeWidth={1}/> Service Offline.</div>;
 
           return (
-            <div className="w-full max-w-2xl mx-auto space-y-6 sm:space-y-8 relative animate-fade-in-up">
+            <div className="w-full max-w-3xl mx-auto space-y-6 sm:space-y-8 relative animate-fade-in-up">
                 
                 {confirmAction.show && (
                     <div className="fixed inset-0 z-[200] flex items-center justify-center p-4 bg-[#0a0a0a]/90 backdrop-blur-md animate-pop-in">
@@ -917,75 +926,93 @@
                     </div>
                 )}
 
-                <div className={uiCard + " p-6 sm:p-8 border-t-[1px] border-t-brand-primary/30"}>
-                    <div className="mb-6">
-                        <label className="block text-[10px] font-bold text-brand-primary mb-2.5 uppercase tracking-[0.2em]">Select Country</label>
-                        <div className="relative">
-                            <select value={smsCountry} onChange={e => setSmsCountry(e.target.value)} className={uiInput + " appearance-none cursor-pointer pr-10 text-white bg-[#0f0f0f]"}>
-                                {NETWORK_REGIONS.map(c => <option key={c.id} value={c.id} className="bg-[#121212]">{c.name}</option>)}
-                            </select>
-                            <ChevronDown className="w-4 h-4 text-brand-primary absolute right-4 top-4 pointer-events-none" />
+                <div className="bg-[#0a0a0a] rounded-3xl p-6 sm:p-8 border border-[#1f1f1f] shadow-2xl relative overflow-hidden group hover:border-brand-primary/30 transition-colors duration-500">
+                    <div className="absolute top-[-50%] right-[-10%] w-[300px] h-[300px] bg-brand-primary/5 rounded-full blur-3xl pointer-events-none transition-opacity group-hover:opacity-100 opacity-50"></div>
+                    
+                    <div className="flex items-center justify-between mb-8 pb-5 border-b border-[#1a1a1a] relative z-10">
+                        <h2 className="text-xl font-light tracking-[0.2em] text-white flex items-center gap-3 uppercase">
+                            <div className="w-10 h-10 rounded-full bg-[#121212] flex items-center justify-center border border-[#2a2a2a]">
+                                <Radar className="w-5 h-5 text-brand-primary animate-spin" style={{ animationDuration: '4s' }}/>
+                            </div>
+                            Control <span className="font-bold text-brand-primary">Panel</span>
+                        </h2>
+                        <div className="flex items-center gap-2">
+                           <span className="w-2 h-2 rounded-full bg-green-500 animate-pulse shadow-[0_0_8px_rgba(34,197,94,0.8)]"></span>
+                           <span className="text-[9px] text-gray-400 font-mono uppercase tracking-widest hidden sm:block">Status: Live</span>
                         </div>
                     </div>
 
-                    <div className="bg-[#121212] p-5 rounded-2xl border border-[#2a2a2a] mb-8 shadow-inner">
-                       <label className="block text-[10px] font-bold text-brand-primary mb-3 uppercase tracking-[0.2em]">Select Service</label>
-                       <div className="flex flex-col sm:flex-row gap-4 items-center">
-                           <div className="relative w-full">
-                               <div onClick={() => setIsAppDropdownOpen(!isAppDropdownOpen)} className={uiInput + " h-14 pl-12 pr-10 flex items-center justify-between cursor-pointer border-[#1f1f1f] hover:border-brand-primary/40 bg-[#050505]"}>
-                                   <span className="truncate text-gray-200 font-medium text-xs tracking-wide">{isFetchingServices ? 'Loading Apps...' : (currentService ? `${currentService.name}` : (availableServices.length > 0 ? 'Select App' : 'No services found'))}</span>
-                                   {isFetchingServices ? <RefreshCw className="w-4 h-4 text-brand-primary absolute left-4 animate-spin"/> : <Smartphone className="w-4 h-4 text-brand-primary absolute left-4"/>}
-                                   <ChevronDown className={`w-4 h-4 text-gray-600 absolute right-4 transition-transform ${isAppDropdownOpen ? 'rotate-180' : ''}`}/>
-                               </div>
-                               {isAppDropdownOpen && (
-                                   <>
-                                       <div className="fixed inset-0 z-30" onClick={() => setIsAppDropdownOpen(false)}></div>
-                                       <div className="absolute top-full left-0 mt-2 w-full bg-[#0f0f0f] border border-[#1f1f1f] rounded-xl shadow-[0_15px_40px_rgba(0,0,0,0.8)] z-40 overflow-hidden animate-pop-in">
-                                           <div className="p-3 border-b border-[#1f1f1f] bg-[#050505]">
-                                               <input type="text" autoFocus placeholder="Search app..." value={appSearch} onChange={(e) => setAppSearch(e.target.value)} className="w-full bg-[#121212] text-white text-xs font-medium rounded-lg px-4 py-3 outline-none border border-[#1f1f1f] focus:border-brand-primary/50 transition-colors"/>
-                                           </div>
-                                           <div className="max-h-60 overflow-y-auto custom-scrollbar bg-[#0a0a0a]">
-                                               {filteredApps.length === 0 ? (<p className="text-center text-gray-600 py-6 text-xs font-mono uppercase tracking-widest">{isFetchingServices ? 'Fetching...' : 'No apps found.'}</p>) : 
-                                                   filteredApps.map(s => {
-                                                       if(!s) return null;
-                                                       return (
-                                                           <div key={s.code} onClick={() => { setSelectedSmsService(s.code); setIsAppDropdownOpen(false); setAppSearch(''); }} className={`px-5 py-3.5 cursor-pointer text-xs font-medium transition-colors border-b border-[#1f1f1f]/50 flex items-center justify-between ${selectedSmsService === s.code ? 'bg-brand-primary/10 text-brand-primary' : 'text-gray-400 hover:text-white hover:bg-[#121212]'}`}>
-                                                               {s.name}
-                                                               {selectedSmsService === s.code && <CheckCircle className="w-3 h-3 text-brand-primary" />}
-                                                           </div>
-                                                       );
-                                                   })
-                                               }
-                                           </div>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-5 relative z-10 mb-8">
+                        <div>
+                            <label className="block text-[10px] font-bold text-brand-primary mb-2.5 uppercase tracking-[0.2em]">Select Country</label>
+                            <div className="relative">
+                                <select value={smsCountry} onChange={e => setSmsCountry(e.target.value)} className={uiInput + " appearance-none cursor-pointer pr-10 text-white bg-[#0f0f0f] border-[#2a2a2a]"}>
+                                    {NETWORK_REGIONS.map(c => <option key={c.id} value={c.id} className="bg-[#121212]">{c.name}</option>)}
+                                </select>
+                                <ChevronDown className="w-4 h-4 text-brand-primary absolute right-4 top-4 pointer-events-none" />
+                            </div>
+                        </div>
+
+                        <div>
+                            <label className="block text-[10px] font-bold text-brand-primary mb-2.5 uppercase tracking-[0.2em]">Select Price</label>
+                            <div className="relative w-full">
+                                <select 
+                                    value={selectedTier?.originalPrice ? String(selectedTier.originalPrice) : ''}
+                                    onChange={(e) => { const tier = Array.isArray(priceTiers) ? priceTiers.find(t => String(t?.originalPrice) === e.target.value) : null; if(tier) setSelectedTier(tier); }}
+                                    disabled={isTiersLoading || (!Array.isArray(priceTiers)) || priceTiers.length === 0}
+                                    className={uiInput + " h-[46px] pl-10 appearance-none cursor-pointer text-sm font-mono text-brand-primary border-[#2a2a2a] bg-[#0f0f0f] disabled:opacity-50"}
+                                >
+                                    {isTiersLoading ? (
+                                        <option value="" className="text-xs bg-[#121212] text-gray-500">...</option>
+                                    ) : (Array.isArray(priceTiers) && priceTiers.length > 0) ? (
+                                        priceTiers.map((tier, idx) => (
+                                            <option key={idx} value={String(tier.originalPrice)} className="bg-[#121212] text-gray-200">${Number(tier.priceWithMarkup || 0).toFixed(2)}</option>
+                                        ))
+                                    ) : (
+                                        <option value="" className="bg-[#121212] text-gray-500">$0.00</option>
+                                    )}
+                                </select>
+                                <DollarSign className="w-4 h-4 text-brand-primary/50 absolute left-4 top-4 pointer-events-none"/>
+                                <ChevronDown className="w-4 h-4 text-gray-600 absolute right-4 top-4 pointer-events-none"/>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div className="bg-[#0f0f0f] p-5 rounded-2xl border border-[#2a2a2a] mb-8 shadow-inner relative z-10">
+                       <label className="block text-[10px] font-bold text-gray-400 mb-3 uppercase tracking-[0.2em]">Select App</label>
+                       <div className="relative w-full">
+                           <div onClick={() => setIsAppDropdownOpen(!isAppDropdownOpen)} className={uiInput + " h-[50px] pl-12 pr-10 flex items-center justify-between cursor-pointer border-[#1f1f1f] hover:border-brand-primary/40 bg-[#050505]"}>
+                               <span className="truncate text-gray-200 font-medium text-[13px] tracking-wide">{isFetchingServices ? 'Loading Apps...' : (currentService ? `${currentService.name}` : (availableServices.length > 0 ? 'Select App' : 'No services found'))}</span>
+                               {isFetchingServices ? <RefreshCw className="w-4 h-4 text-brand-primary absolute left-4 animate-spin"/> : <Smartphone className="w-4 h-4 text-brand-primary absolute left-4"/>}
+                               <ChevronDown className={`w-4 h-4 text-gray-600 absolute right-4 transition-transform ${isAppDropdownOpen ? 'rotate-180' : ''}`}/>
+                           </div>
+                           {isAppDropdownOpen && (
+                               <>
+                                   <div className="fixed inset-0 z-30" onClick={() => setIsAppDropdownOpen(false)}></div>
+                                   <div className="absolute top-full left-0 mt-2 w-full bg-[#0f0f0f] border border-[#2a2a2a] rounded-xl shadow-[0_15px_40px_rgba(0,0,0,0.8)] z-40 overflow-hidden animate-pop-in">
+                                       <div className="p-3 border-b border-[#1f1f1f] bg-[#050505]">
+                                           <input type="text" autoFocus placeholder="Search app..." value={appSearch} onChange={(e) => setAppSearch(e.target.value)} className="w-full bg-[#121212] text-white text-xs font-medium rounded-lg px-4 py-3 outline-none border border-[#1f1f1f] focus:border-brand-primary/50 transition-colors"/>
                                        </div>
-                                   </>
-                               )}
-                           </div>
-                           
-                           <div className="relative w-full sm:w-auto shrink-0 min-w-[140px]">
-                               <select 
-                                   value={selectedTier?.originalPrice ? String(selectedTier.originalPrice) : ''}
-                                   onChange={(e) => { const tier = Array.isArray(priceTiers) ? priceTiers.find(t => String(t?.originalPrice) === e.target.value) : null; if(tier) setSelectedTier(tier); }}
-                                   disabled={isTiersLoading || (!Array.isArray(priceTiers)) || priceTiers.length === 0}
-                                   className={uiInput + " h-14 pl-10 appearance-none cursor-pointer text-base font-mono text-brand-primary border-[#2a2a2a] bg-[#050505] disabled:opacity-50"}
-                               >
-                                   {isTiersLoading ? (
-                                       <option value="" className="text-xs bg-[#121212] text-gray-500">...</option>
-                                   ) : (Array.isArray(priceTiers) && priceTiers.length > 0) ? (
-                                       priceTiers.map((tier, idx) => (
-                                           <option key={idx} value={String(tier.originalPrice)} className="bg-[#121212] text-gray-200 text-sm">${Number(tier.priceWithMarkup || 0).toFixed(2)}</option>
-                                       ))
-                                   ) : (
-                                       <option value="" className="bg-[#121212] text-gray-500 text-sm">$0.00</option>
-                                   )}
-                               </select>
-                               <DollarSign className="w-4 h-4 text-brand-primary/50 absolute left-4 top-5 pointer-events-none"/>
-                               <ChevronDown className="w-4 h-4 text-gray-600 absolute right-4 top-5 pointer-events-none"/>
-                           </div>
+                                       <div className="max-h-60 overflow-y-auto custom-scrollbar bg-[#0a0a0a]">
+                                           {filteredApps.length === 0 ? (<p className="text-center text-gray-600 py-6 text-xs font-mono uppercase tracking-widest">{isFetchingServices ? 'Fetching...' : 'No apps found.'}</p>) : 
+                                               filteredApps.map(s => {
+                                                   if(!s) return null;
+                                                   return (
+                                                       <div key={s.code} onClick={() => { setSelectedSmsService(s.code); setIsAppDropdownOpen(false); setAppSearch(''); }} className={`px-5 py-3.5 cursor-pointer text-xs font-medium transition-colors border-b border-[#1f1f1f]/50 flex items-center justify-between ${selectedSmsService === s.code ? 'bg-brand-primary/10 text-brand-primary' : 'text-gray-400 hover:text-white hover:bg-[#121212]'}`}>
+                                                           {s.name}
+                                                           {selectedSmsService === s.code && <CheckCircle className="w-3 h-3 text-brand-primary" />}
+                                                       </div>
+                                                   );
+                                               })
+                                           }
+                                       </div>
+                                   </div>
+                               </>
+                           )}
                        </div>
                     </div>
 
-                    <button onClick={buySmsNumber} disabled={isSmsLoading || !currentService || activeOrders.length > 0 || (!priceTiers || priceTiers.length === 0)} className={uiBtnPrimary + " h-[52px]"}>
+                    <button onClick={buySmsNumber} disabled={isSmsLoading || !currentService || activeOrders.length > 0 || (!priceTiers || priceTiers.length === 0)} className={uiBtnPrimary + " h-[52px] relative z-10 shadow-[0_10px_30px_rgba(212,175,55,0.15)] hover:shadow-[0_15px_40px_rgba(212,175,55,0.3)]"}>
                         {activeOrders.length > 0 ? <span className="flex items-center gap-2"><StopCircle className="w-4 h-4"/> Finish Order First</span> : isSmsLoading ? <span className="flex items-center gap-2"><RefreshCw className="w-4 h-4 animate-spin"/> Processing...</span> : 'Get Number'}
                     </button>
                 </div>
@@ -993,46 +1020,46 @@
                 {activeOrders.map((order, index) => {
                     const timeLeft = Math.max(0, Math.floor((order.expiresAt - now) / 1000));
                     return (
-                        <div key={order.id} ref={index === 0 ? latestOrderRef : null} className={uiCard + " border border-brand-primary/20 bg-[#0f0f0f] flex flex-col items-center py-10 px-6 shadow-[0_15px_40px_rgba(212,175,55,0.05)] animate-scale-up"}>
-                            <div className="absolute top-0 left-0 w-full h-[2px] bg-[#1a1a1a]"><div className="bg-brand-primary h-full transition-all ease-linear shadow-[0_0_10px_rgba(212,175,55,0.8)]" style={{width: `${(timeLeft / 240) * 100}%`}}></div></div>
+                        <div key={order.id} ref={index === 0 ? latestOrderRef : null} className={uiCard + " border border-brand-primary/40 bg-[#050505] flex flex-col items-center py-10 px-6 shadow-[0_20px_50px_rgba(212,175,55,0.15)] animate-scale-up"}>
+                            <div className="absolute top-0 left-0 w-full h-[3px] bg-[#1a1a1a]"><div className="bg-brand-primary h-full transition-all ease-linear shadow-[0_0_15px_rgba(212,175,55,0.8)]" style={{width: `${(timeLeft / 240) * 100}%`}}></div></div>
                             
-                            <div className="flex items-center gap-2.5 mb-6 bg-[#0a0a0a] px-4 py-2 rounded-full border border-[#1f1f1f]">
+                            <div className="flex items-center gap-2.5 mb-6 bg-[#0f0f0f] px-5 py-2 rounded-full border border-[#2a2a2a] shadow-inner">
                                 <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse shadow-[0_0_8px_rgba(16,185,129,0.8)]"></span>
-                                <p className="text-gray-300 font-bold uppercase tracking-[0.2em] text-[10px]">{order.service}</p>
+                                <p className="text-gray-200 font-bold uppercase tracking-[0.3em] text-[11px]">{order.service}</p>
                             </div>
 
-                            <div className="flex items-center gap-3 w-full max-w-md mb-8">
-                                <div className="text-3xl sm:text-4xl font-mono font-light text-white bg-[#050505] px-6 py-5 rounded-2xl border border-[#1f1f1f] shadow-inner flex-grow text-center whitespace-nowrap overflow-hidden text-ellipsis tracking-wider">
+                            <div className="flex items-center justify-between w-full max-w-md mb-8 bg-[#0f0f0f] border border-[#1f1f1f] rounded-2xl p-2 shadow-inner">
+                                <div className="text-3xl sm:text-4xl font-mono font-light text-brand-primary flex-grow text-center whitespace-nowrap overflow-hidden text-ellipsis tracking-wider px-4 drop-shadow-[0_0_10px_rgba(212,175,55,0.3)]">
                                     +{String(order.phone).replace(/\D/g, '')}
                                 </div>
-                                <button onClick={() => copyNumberOnly(order.phone)} className="btn-animate p-5 bg-[#050505] hover:bg-[#121212] rounded-2xl text-brand-primary border border-[#1f1f1f] shadow-sm transition-colors shrink-0">
+                                <button onClick={() => copyNumberOnly(order.phone)} className="btn-animate p-4 bg-[#121212] hover:bg-[#1a1a1a] rounded-xl text-gray-400 hover:text-white border border-[#2a2a2a] transition-colors shrink-0">
                                     <Copy className="w-5 h-5"/>
                                 </button>
                             </div>
                             
                             {order.codes.length === 0 ? (
                                 <div className="w-full max-w-md">
-                                    <p className="text-gray-500 font-mono text-[10px] uppercase tracking-widest mb-4 flex justify-center items-center gap-2"><RefreshCw className="w-3 h-3 animate-spin text-brand-primary/50"/> {order.lastMsg === 'WAITING' || !order.lastMsg ? 'Waiting for SMS...' : `Status: ${order.lastMsg}`}</p>
-                                    <div className="flex justify-between items-center bg-[#050505] p-3 sm:p-4 rounded-xl border border-[#1f1f1f] shadow-inner">
+                                    <p className="text-gray-400 font-mono text-[10px] uppercase tracking-widest mb-4 flex justify-center items-center gap-2"><RefreshCw className="w-3 h-3 animate-spin text-brand-primary/60"/> {order.lastMsg === 'WAITING' || !order.lastMsg ? 'Waiting for SMS...' : `Status: ${order.lastMsg}`}</p>
+                                    <div className="flex justify-between items-center bg-[#0a0a0a] p-3 sm:p-4 rounded-xl border border-[#2a2a2a] shadow-inner">
                                         <div className="flex items-center gap-2.5 pl-2">
                                             <Clock className="w-4 h-4 text-brand-primary hidden sm:block opacity-70"/>
-                                            <span className="font-mono text-lg font-light text-gray-200 tracking-widest">{Math.floor(timeLeft / 60)}:{(timeLeft % 60).toString().padStart(2, '0')}</span>
+                                            <span className="font-mono text-xl font-light text-gray-200 tracking-widest">{Math.floor(timeLeft / 60)}:{(timeLeft % 60).toString().padStart(2, '0')}</span>
                                         </div>
                                         
                                         {/* 🟢 ONLY SKIP BUTTON REMAINS HERE */}
-                                        <button onClick={() => setConfirmAction({show: true, type: 'skip', orderId: order.id, price: order.price})} className="btn-animate bg-[#121212] hover:bg-[#1a1a1a] border border-[#2a2a2a] text-red-400 px-6 py-2.5 rounded-lg text-[10px] uppercase tracking-wider font-bold transition-all flex items-center gap-2"><Ban className="w-3 h-3"/> Skip</button>
+                                        <button onClick={() => setConfirmAction({show: true, type: 'skip', orderId: order.id, price: order.price})} className="btn-animate bg-[#121212] hover:bg-[#1a1a1a] border border-[#2a2a2a] text-red-500 px-6 py-3 rounded-lg text-[10px] uppercase tracking-wider font-bold transition-all flex items-center gap-2"><Ban className="w-3.5 h-3.5"/> Skip</button>
                                     </div>
                                 </div>
                             ) : (
                                 <div className="w-full max-w-md space-y-4 animate-pop-in">
-                                    <p className="text-[10px] text-emerald-500 font-bold uppercase tracking-[0.3em] text-center mb-3">SMS Received</p>
+                                    <p className="text-[11px] text-emerald-500 font-bold uppercase tracking-[0.3em] text-center mb-4">SMS Received</p>
                                     {order.codes.map((c, i) => (
-                                        <div key={i} className="flex items-center justify-between gap-3 sm:gap-4 bg-brand-primary/5 border border-brand-primary/20 p-4 sm:p-5 rounded-2xl shadow-[inset_0_0_15px_rgba(212,175,55,0.05)] animate-scale-up" style={{animationDelay: `${i * 0.1}s`, opacity: 0, animationFillMode: 'forwards'}}>
-                                            <div className="text-2xl sm:text-3xl font-mono font-light text-brand-primary tracking-[0.2em] flex-grow text-center">{c}</div>
-                                            <button onClick={() => copyText(c)} className="btn-animate p-3.5 bg-brand-primary/10 hover:bg-brand-primary/20 rounded-xl text-brand-primary transition-colors border border-brand-primary/30 shrink-0"><Copy className="w-4 h-4"/></button>
+                                        <div key={i} className="flex items-center justify-between gap-3 sm:gap-4 bg-brand-primary/5 border border-brand-primary/30 p-5 rounded-2xl shadow-[inset_0_0_20px_rgba(212,175,55,0.05)] animate-scale-up" style={{animationDelay: `${i * 0.1}s`, opacity: 0, animationFillMode: 'forwards'}}>
+                                            <div className="text-3xl sm:text-4xl font-mono font-light text-brand-primary tracking-[0.3em] flex-grow text-center drop-shadow-lg">{c}</div>
+                                            <button onClick={() => copyText(c)} className="btn-animate p-4 bg-brand-primary/10 hover:bg-brand-primary/20 rounded-xl text-brand-primary transition-colors border border-brand-primary/30 shrink-0"><Copy className="w-5 h-5"/></button>
                                         </div>
                                     ))}
-                                    <button onClick={() => setActiveOrders([])} className={uiBtnSecondary + " mt-8 !bg-[#050505] !border-[#1f1f1f]"}>Close</button>
+                                    <button onClick={() => setActiveOrders([])} className={uiBtnSecondary + " mt-8 !bg-[#0f0f0f] !border-[#2a2a2a]"}>Close</button>
                                 </div>
                             )}
                         </div>
@@ -1043,7 +1070,7 @@
         }
 
         // ==========================================
-        // 🌟 ASSET STORE MODULE (BEAUTIFUL NEW DESIGN) 🌟
+        // 🌟 ASSET STORE MODULE (ULTRA PREMIUM) 🌟
         // ==========================================
         function CustomerDashboardStore({ inventory, categories, cart, setCart, allOrders, uiCard, uiInput, uiBtnPrimary, uiInnerPanel, triggerToast }) {
           const [searchQuery, setSearchQuery] = useState('');
@@ -1079,13 +1106,15 @@
 
           return (
             <div className="space-y-6 w-full">
-              <div className="flex flex-col sm:flex-row justify-between items-center gap-4 w-full bg-[#0f0f0f] p-4 rounded-2xl border border-[#1f1f1f] shadow-lg animate-slide-in-right">
-                <div className="text-center sm:text-left w-full pl-2">
-                  <h1 className="text-xl font-light text-white tracking-[0.2em] uppercase">Buy <span className="font-bold text-brand-primary">Accounts</span></h1>
+              <div className="flex flex-col sm:flex-row justify-between items-center gap-4 w-full bg-[#0a0a0a] p-5 rounded-2xl border border-[#1f1f1f] shadow-[0_10px_30px_rgba(0,0,0,0.5)] animate-slide-in-right relative overflow-hidden">
+                <div className="absolute top-0 left-0 w-1 h-full bg-brand-primary"></div>
+                <div className="text-center sm:text-left w-full pl-3">
+                  <h1 className="text-xl sm:text-2xl font-light text-white tracking-[0.25em] uppercase mb-1">Buy <span className="font-bold text-brand-primary">Accounts</span></h1>
+                  <p className="text-gray-500 text-[10px] font-mono tracking-widest uppercase">Verified Static Entities</p>
                 </div>
-                <div className="w-full sm:w-64 relative">
-                     <Search className="w-4 h-4 text-gray-600 absolute left-4 top-3" />
-                     <input type="text" placeholder="Search..." value={searchQuery} onChange={(e)=>setSearchQuery(e.target.value)} className={uiInput + " !pl-11 !py-2.5 !text-xs bg-[#050505] border-[#1a1a1a]"} />
+                <div className="w-full sm:w-72 relative">
+                     <Search className="w-4 h-4 text-brand-primary absolute left-4 top-3.5" />
+                     <input type="text" placeholder="Search accounts..." value={searchQuery} onChange={(e)=>setSearchQuery(e.target.value)} className={uiInput + " !pl-12 !py-3 !text-xs bg-[#050505] border-[#2a2a2a]"} />
                 </div>
               </div>
 
@@ -1098,51 +1127,53 @@
                       const isOutOfStock = stockCount === 0;
 
                       return (
-                          <div key={product.id} className={uiCard + " animate-scale-up p-5 flex flex-col group transition-all duration-300 border border-[#1f1f1f] hover:border-brand-primary/40 bg-[#0a0a0a] " + (isOutOfStock ? "opacity-50 grayscale" : "hover:shadow-[0_10px_30px_rgba(212,175,55,0.08)]")} style={{animationDelay: `${idx * 0.05}s`, opacity: 0, animationFillMode: 'forwards'}}>
+                          <div key={product.id} className={`relative bg-[#0a0a0a] rounded-2xl p-6 flex flex-col group transition-all duration-500 border border-[#1a1a1a] animate-scale-up ${isOutOfStock ? "opacity-60 grayscale" : "hover:border-brand-primary/40 hover:-translate-y-2 hover:shadow-[0_15px_40px_-10px_rgba(212,175,55,0.25)]"}`} style={{animationDelay: `${idx * 0.05}s`, opacity: 0, animationFillMode: 'forwards'}}>
                               
+                              <div className="absolute top-0 left-0 w-full h-[2px] bg-gradient-to-r from-transparent via-brand-primary to-transparent scale-x-0 group-hover:scale-x-100 transition-transform duration-700"></div>
+
                               {/* 🟢 COMPACT OUT OF STOCK OVERLAY 🟢 */}
                               {isOutOfStock && (
                                   <div className="absolute inset-0 z-20 flex items-center justify-center bg-[#050505]/70 backdrop-blur-sm rounded-2xl pointer-events-none">
-                                      <div className="bg-red-900/90 text-white font-bold px-4 py-2 rounded-lg border border-red-500/50 shadow-2xl tracking-[0.2em] text-[10px] uppercase">
+                                      <div className="bg-red-900/90 text-white font-bold px-4 py-2 rounded-lg border border-red-500/50 shadow-2xl tracking-[0.3em] text-[10px] uppercase transform -rotate-12">
                                           Out of Stock
                                       </div>
                                   </div>
                               )}
 
-                              <div className="flex justify-between items-start mb-4 relative z-10">
-                                  <div className="bg-[#121212] p-3 rounded-xl border border-[#2a2a2a] shadow-inner group-hover:scale-110 transition-transform">
-                                      <Icon className={`w-6 h-6 text-brand-primary drop-shadow-[0_0_8px_currentColor]`} strokeWidth={1.5} />
+                              <div className="flex justify-between items-start mb-6 relative z-10">
+                                  <div className="bg-[#121212] p-3.5 rounded-xl border border-[#2a2a2a] group-hover:bg-brand-primary/10 group-hover:border-brand-primary/30 transition-colors shadow-inner">
+                                      <Icon className={`w-6 h-6 text-brand-primary drop-shadow-[0_0_10px_rgba(212,175,55,0.5)]`} strokeWidth={1.5} />
                                   </div>
-                                  <div className="text-right">
-                                      <div className="text-brand-primary text-sm font-mono font-bold">${Number(product.price).toFixed(2)}</div>
-                                      <div className="text-[8px] text-gray-500 uppercase tracking-widest mt-1 font-mono bg-[#121212] px-2 py-0.5 rounded border border-[#1f1f1f] inline-block">{stockCount} Stock</div>
+                                  <div className="text-right flex flex-col items-end">
+                                      <span className="text-brand-primary text-xl font-mono font-light tracking-wider">${Number(product.price).toFixed(2)}</span>
+                                      <span className="text-[8px] text-brand-primary/80 uppercase tracking-widest mt-1 font-mono bg-brand-primary/10 px-2 py-0.5 rounded-full border border-brand-primary/20">{stockCount} Units</span>
                                   </div>
                               </div>
                               
-                              <h3 className="text-sm font-bold text-gray-200 mb-1.5 truncate tracking-wide relative z-10">{product.name}</h3>
-                              <p className="text-gray-600 text-[10px] leading-relaxed mb-5 flex-grow line-clamp-2 font-light relative z-10">{product.description}</p>
+                              <h3 className="text-sm font-bold text-gray-100 mb-2 tracking-wide uppercase relative z-10">{product.name}</h3>
+                              <p className="text-gray-500 text-[10px] leading-relaxed mb-6 flex-grow line-clamp-2 font-light relative z-10">{product.description}</p>
                               
                               {!isOutOfStock && availableStates.length > 0 && (
-                                  <div className="mb-4 relative z-10">
+                                  <div className="mb-5 relative z-10">
                                       <select 
                                           value={selectedStates[product.id] || ''} 
                                           onChange={(e) => handleStateChange(product.id, e.target.value)}
-                                          className="w-full bg-[#050505] border border-[#1f1f1f] text-gray-400 text-[10px] rounded-lg px-3 py-2.5 appearance-none outline-none focus:border-brand-primary/50 tracking-wider font-mono cursor-pointer"
+                                          className="w-full bg-[#050505] border border-[#1f1f1f] group-hover:border-[#2a2a2a] text-gray-300 text-[10px] rounded-xl px-4 py-3 appearance-none outline-none focus:border-brand-primary/50 tracking-wider font-mono cursor-pointer transition-colors"
                                       >
                                           <option value="">Select State</option>
                                           {availableStates.map(state => <option key={state} value={state}>{state}</option>)}
                                       </select>
-                                      <ChevronDown className="w-3 h-3 text-gray-600 absolute right-3 top-2.5 pointer-events-none"/>
+                                      <ChevronDown className="w-3 h-3 text-gray-500 absolute right-4 top-3.5 pointer-events-none"/>
                                   </div>
                               )}
 
-                              <button onClick={() => handleAddToCart(product)} disabled={isOutOfStock} className={uiBtnSecondary + " !w-full !py-3 !text-[9px] !rounded-xl !bg-[#121212] !border-[#1f1f1f] relative z-10"}>
-                                  {isOutOfStock ? 'Unavailable' : 'Add to Cart'} <ShoppingCart className="w-3 h-3" />
+                              <button onClick={() => handleAddToCart(product)} disabled={isOutOfStock} className="btn-animate w-full bg-[#121212] border border-[#2a2a2a] group-hover:bg-brand-primary/10 group-hover:border-brand-primary/30 group-hover:text-brand-primary text-gray-400 font-bold py-3.5 rounded-xl transition-all text-[10px] tracking-widest uppercase relative z-10 flex justify-center items-center gap-2">
+                                  {isOutOfStock ? 'Unavailable' : 'Add to Cart'} <ShoppingCart className="w-3.5 h-3.5" />
                               </button>
                           </div>
                       );
                   })}
-                  {filteredCategories.length === 0 && <div className="col-span-full py-10 text-center text-gray-600 font-mono text-[10px] uppercase tracking-widest"><Search className="w-6 h-6 mx-auto mb-2 opacity-20"/>No accounts found.</div>}
+                  {filteredCategories.length === 0 && <div className="col-span-full py-16 text-center text-gray-600 font-mono text-[10px] uppercase tracking-widest"><Search className="w-8 h-8 mx-auto mb-3 opacity-20"/>No accounts found.</div>}
               </div>
             </div>
           );
@@ -1606,7 +1637,7 @@
                                <button onClick={() => {
                                   if (navigator.clipboard) navigator.clipboard.writeText(referralCode).then(() => triggerToast("Copied!"));
                                   else { const t = document.createElement("textarea"); t.value = referralCode; document.body.appendChild(t); t.select(); document.execCommand("copy"); document.body.removeChild(t); triggerToast("Copied!"); }
-                               }} className="btn-animate bg-[#121212] hover:bg-[#1a1a1a] text-gray-400 p-3 rounded-lg transition-colors border border-[#2a2a2a]"><Copy className="w-4 h-4"/></button>
+                               }} className="bg-[#121212] hover:bg-[#1a1a1a] text-gray-400 p-3 rounded-lg transition-colors border border-[#2a2a2a]"><Copy className="w-4 h-4"/></button>
                              </div>
                           </div>
                         )}
