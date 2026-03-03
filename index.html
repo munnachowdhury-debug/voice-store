@@ -2641,21 +2641,64 @@
                 )}
 
                 {activeTab === 'analytics' && (
-                  <div className="w-full">
-                    <h2 className="text-xl font-bold tracking-[0.1em] uppercase mb-6 text-white pl-2 animate-fade-in-up">System Metrics</h2>
-                    <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 w-full">
-                      <div className="glass-effect rounded-3xl p-6 sm:p-8 border border-white/10 animate-fade-in-up" style={{animationDelay: '0.1s'}}>
-                        <p className="text-gray-400 text-[10px] font-bold mb-3 uppercase tracking-[0.3em]">Total Revenue</p>
-                        <h3 className="text-3xl sm:text-4xl font-light font-mono text-white">${Number(totalSales || 0).toFixed(2)}</h3>
-                      </div>
-                      <div className="glass-effect rounded-3xl p-6 sm:p-8 border border-white/10 animate-fade-in-up" style={{animationDelay: '0.2s'}}>
-                        <p className="text-gray-400 text-[10px] font-bold mb-3 uppercase tracking-[0.3em]">Total Users</p>
-                        <h3 className="text-3xl sm:text-4xl font-light font-mono text-white">{Object.keys(usersDB).length}</h3>
-                      </div>
-                      <div className="glass-effect rounded-3xl p-6 sm:p-8 border border-white/10 animate-fade-in-up" style={{animationDelay: '0.3s'}}>
-                        <p className="text-gray-400 text-[10px] font-bold mb-3 uppercase tracking-[0.3em]">Total Orders</p>
-                        <h3 className="text-3xl sm:text-4xl font-light font-mono text-white">{orders.length}</h3>
-                      </div>
+                  <div className="w-full space-y-8">
+                    <div>
+                        <h2 className="text-xl font-bold tracking-[0.1em] uppercase mb-6 text-white pl-2 animate-fade-in-up">System Metrics</h2>
+                        <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 w-full">
+                          <div className="glass-effect rounded-3xl p-6 sm:p-8 border border-white/10 animate-fade-in-up" style={{animationDelay: '0.1s'}}>
+                            <p className="text-gray-400 text-[10px] font-bold mb-3 uppercase tracking-[0.3em]">Total Revenue</p>
+                            <h3 className="text-3xl sm:text-4xl font-light font-mono text-white">${Number(totalSales || 0).toFixed(2)}</h3>
+                          </div>
+                          <div className="glass-effect rounded-3xl p-6 sm:p-8 border border-white/10 animate-fade-in-up" style={{animationDelay: '0.2s'}}>
+                            <p className="text-gray-400 text-[10px] font-bold mb-3 uppercase tracking-[0.3em]">Total Users</p>
+                            <h3 className="text-3xl sm:text-4xl font-light font-mono text-white">{Object.keys(usersDB).length}</h3>
+                          </div>
+                          <div className="glass-effect rounded-3xl p-6 sm:p-8 border border-white/10 animate-fade-in-up" style={{animationDelay: '0.3s'}}>
+                            <p className="text-gray-400 text-[10px] font-bold mb-3 uppercase tracking-[0.3em]">Total Orders</p>
+                            <h3 className="text-3xl sm:text-4xl font-light font-mono text-white">{orders.length}</h3>
+                          </div>
+                        </div>
+                    </div>
+
+                    {/* 🟢 NEW SECTION: ALL CUSTOMER PURCHASES DETAILS 🟢 */}
+                    <div className="glass-effect rounded-3xl w-full border border-white/10 overflow-hidden animate-fade-in-up" style={{animationDelay: '0.4s'}}>
+                        <div className="p-5 sm:p-6 border-b border-white/10 bg-[rgba(0,0,0,0.5)]">
+                          <h2 className="text-sm font-bold tracking-[0.2em] uppercase text-white">All Customer Purchases</h2>
+                          <p className="text-[10px] text-gray-400 font-mono mt-1 uppercase tracking-widest">Accounts, SMS, Phone Numbers & Details</p>
+                        </div>
+                        <div className="w-full overflow-x-auto bg-transparent">
+                          <table className="w-full text-left text-sm whitespace-nowrap">
+                            <thead className="bg-[#000] text-gray-500 font-bold border-b border-white/5 text-[10px] uppercase tracking-[0.2em]">
+                              <tr>
+                                  <th className="p-4 sm:p-5">Date</th>
+                                  <th className="p-4 sm:p-5">Customer Email</th>
+                                  <th className="p-4 sm:p-5">Purchase Type</th>
+                                  <th className="p-4 sm:p-5">Item Details (Credentials / Phone)</th>
+                              </tr>
+                            </thead>
+                            <tbody className="divide-y divide-white/5">
+                              {purchases.map((p, idx) => (
+                                <tr key={p.id || idx} className="hover:bg-[rgba(255,255,255,0.05)] transition-colors animate-fade-in-up" style={{animationDelay: `${(idx % 10) * 0.05}s`}}>
+                                  <td className="p-4 sm:p-5 align-top">
+                                      <p className="text-[10px] text-gray-400 font-mono uppercase tracking-widest mt-1">{safeFormatDate(p.date)}</p>
+                                  </td>
+                                  <td className="p-4 sm:p-5 align-top">
+                                      <p className="text-xs font-bold text-white tracking-wide mt-1">{p.customer}</p>
+                                  </td>
+                                  <td className="p-4 sm:p-5 align-top">
+                                      <span className="bg-brand-primary/10 text-brand-primary border border-brand-primary/20 px-3 py-1.5 rounded-lg text-[10px] font-bold uppercase tracking-widest inline-block mt-0.5">{p.type}</span>
+                                  </td>
+                                  <td className="p-4 sm:p-5">
+                                      <div className="bg-[rgba(0,0,0,0.4)] border border-white/5 p-3 rounded-xl min-w-[250px] max-w-sm max-h-32 overflow-y-auto custom-scrollbar shadow-inner">
+                                          <pre className="text-[11px] font-mono text-white font-medium whitespace-pre-wrap break-words">{p.data}</pre>
+                                      </div>
+                                  </td>
+                                </tr>
+                              ))}
+                            </tbody>
+                          </table>
+                          {(!purchases || purchases.length === 0) && <p className="text-center py-16 text-gray-600 font-mono text-[10px] uppercase tracking-widest">No purchases yet.</p>}
+                        </div>
                     </div>
                   </div>
                 )}
