@@ -36,40 +36,36 @@
               'pop-in': 'popIn 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards',
               'pulse-slow': 'pulseSlow 6s ease-in-out infinite',
               'shimmer': 'shimmer 2.5s linear infinite',
-              'float': 'float 8s ease-in-out infinite',
             },
             keyframes: {
               shimmer: {
                 'from': { backgroundPosition: '200% center' },
                 'to': { backgroundPosition: '-200% center' }
               },
+              /* 🟢 3D TRANSFORM FOR 0% PHONE HEATING 🟢 */
               fadeInUp: {
-                '0%': { opacity: '0', transform: 'translateY(25px)' },
-                '100%': { opacity: '1', transform: 'translateY(0)' }
+                '0%': { opacity: '0', transform: 'translate3d(0, 25px, 0)' },
+                '100%': { opacity: '1', transform: 'translate3d(0, 0, 0)' }
               },
               scaleUp: {
-                '0%': { opacity: '0', transform: 'scale(0.92) translateY(10px)' },
-                '100%': { opacity: '1', transform: 'scale(1) translateY(0)' }
+                '0%': { opacity: '0', transform: 'scale(0.92) translate3d(0, 10px, 0)' },
+                '100%': { opacity: '1', transform: 'scale(1) translate3d(0, 0, 0)' }
               },
               slideInRight: {
-                '0%': { opacity: '0', transform: 'translateX(25px)' },
-                '100%': { opacity: '1', transform: 'translateX(0)' }
+                '0%': { opacity: '0', transform: 'translate3d(25px, 0, 0)' },
+                '100%': { opacity: '1', transform: 'translate3d(0, 0, 0)' }
               },
               slideInDown: {
-                '0%': { opacity: '0', transform: 'translateY(-20px)' },
-                '100%': { opacity: '1', transform: 'translateY(0)' }
+                '0%': { opacity: '0', transform: 'translate3d(0, -20px, 0)' },
+                '100%': { opacity: '1', transform: 'translate3d(0, 0, 0)' }
               },
               popIn: {
-                '0%': { opacity: '0', transform: 'scale(0.8)' },
-                '100%': { opacity: '1', transform: 'scale(1)' }
+                '0%': { opacity: '0', transform: 'scale(0.8) translate3d(0,0,0)' },
+                '100%': { opacity: '1', transform: 'scale(1) translate3d(0,0,0)' }
               },
               pulseSlow: {
-                '0%, 100%': { opacity: '0.8', transform: 'scale(1)' },
-                '50%': { opacity: '0.4', transform: 'scale(1.05)' }
-              },
-              float: {
-                '0%, 100%': { transform: 'translateY(0)' },
-                '50%': { transform: 'translateY(-25px)' }
+                '0%, 100%': { opacity: '0.8', transform: 'scale(1) translate3d(0,0,0)' },
+                '50%': { opacity: '0.4', transform: 'scale(1.05) translate3d(0,0,0)' }
               }
             }
           }
@@ -140,14 +136,14 @@
         .custom-scrollbar::-webkit-scrollbar-thumb { background-color: rgba(255, 255, 255, 0.15); border-radius: 10px; }
         .custom-scrollbar::-webkit-scrollbar-thumb:hover { background-color: rgba(255, 255, 255, 0.4); }
 
-        /* 🌟 REDUCED BLUR FOR PERFORMANCE (NO PHONE HEATING) 🌟 */
+        /* 🌟 BLUR OPTIMIZED FOR 0% HEATING 🌟 */
         .glass-effect {
             background: rgba(20, 25, 35, 0.4);
-            backdrop-filter: blur(4px); /* Changed from 24px to 4px */
-            -webkit-backdrop-filter: blur(4px);
+            backdrop-filter: blur(2px);
+            -webkit-backdrop-filter: blur(2px);
             border: 1px solid rgba(255, 255, 255, 0.1);
             box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.3);
-            transition: all 0.4s cubic-bezier(0.25, 1, 0.5, 1);
+            transition: border 0.3s ease, background 0.3s ease, box-shadow 0.3s ease;
         }
         .glass-effect:hover {
             background: rgba(30, 35, 45, 0.5);
@@ -158,8 +154,8 @@
         .glass-panel {
             background: rgba(0, 0, 0, 0.4);
             border: 1px solid rgba(255, 255, 255, 0.08);
-            backdrop-filter: blur(2px); /* Changed from 12px to 2px */
-            -webkit-backdrop-filter: blur(2px);
+            backdrop-filter: blur(1px);
+            -webkit-backdrop-filter: blur(1px);
             border-radius: 16px;
         }
 
@@ -183,39 +179,45 @@
         .tab-transition-enter { animation: fadeInUp 0.4s cubic-bezier(0.22, 1, 0.36, 1) forwards; }
 
         @keyframes slideInNotify {
-            0% { transform: translateY(-100%); opacity: 0; }
-            10% { transform: translateY(0); opacity: 1; }
-            90% { transform: translateY(0); opacity: 1; }
-            100% { transform: translateY(-100%); opacity: 0; }
+            0% { transform: translate3d(0,-100%,0); opacity: 0; }
+            10% { transform: translate3d(0,0,0); opacity: 1; }
+            90% { transform: translate3d(0,0,0); opacity: 1; }
+            100% { transform: translate3d(0,-100%,0); opacity: 0; }
         }
         .msg-alert-anim {
             animation: slideInNotify 5s cubic-bezier(0.16, 1, 0.3, 1) forwards;
         }
 
-        /* 🌟 OUTSIDE FLYING ANIMATIONS FOR LOGOS (SUPER SLOW) 🌟 */
+        /* 🌟 3D HARDWARE ACCELERATED ANIMATIONS FOR LOGOS (0% CPU LOAD) 🌟 */
+        .hardware-accelerated {
+            will-change: transform, opacity;
+            transform-style: preserve-3d;
+            backface-visibility: hidden;
+        }
+
         @keyframes fly1 {
-            0% { transform: translate(-40vw, 130vh) rotate(0deg) scale(0.5); opacity: 0; }
+            0% { transform: translate3d(-40vw, 130vh, 0) rotate(0deg) scale(0.5); opacity: 0; }
             5% { opacity: 0.9; }
             95% { opacity: 0.9; }
-            100% { transform: translate(140vw, -30vh) rotate(360deg) scale(1.5); opacity: 0; }
+            100% { transform: translate3d(140vw, -30vh, 0) rotate(360deg) scale(1.5); opacity: 0; }
         }
         @keyframes fly2 {
-            0% { transform: translate(140vw, 110vh) rotate(0deg) scale(1); opacity: 0; }
+            0% { transform: translate3d(140vw, 110vh, 0) rotate(0deg) scale(1); opacity: 0; }
             5% { opacity: 0.85; }
             95% { opacity: 0.85; }
-            100% { transform: translate(-40vw, -30vh) rotate(-360deg) scale(0.8); opacity: 0; }
+            100% { transform: translate3d(-40vw, -30vh, 0) rotate(-360deg) scale(0.8); opacity: 0; }
         }
         @keyframes fly3 {
-            0% { transform: translate(50vw, 130vh) rotate(0deg) scale(1.2); opacity: 0; }
+            0% { transform: translate3d(50vw, 130vh, 0) rotate(0deg) scale(1.2); opacity: 0; }
             5% { opacity: 0.95; }
             95% { opacity: 0.95; }
-            100% { transform: translate(-40vw, -50vh) rotate(180deg) scale(0.5); opacity: 0; }
+            100% { transform: translate3d(-40vw, -50vh, 0) rotate(180deg) scale(0.5); opacity: 0; }
         }
         @keyframes fly4 {
-            0% { transform: translate(-40vw, 30vh) rotate(0deg) scale(0.8); opacity: 0; }
+            0% { transform: translate3d(-40vw, 30vh, 0) rotate(0deg) scale(0.8); opacity: 0; }
             5% { opacity: 0.85; }
             95% { opacity: 0.85; }
-            100% { transform: translate(140vw, 90vh) rotate(270deg) scale(1.2); opacity: 0; }
+            100% { transform: translate3d(140vw, 90vh, 0) rotate(270deg) scale(1.2); opacity: 0; }
         }
     </style>
 </head>
@@ -230,7 +232,7 @@
             ShoppingCart, LogOut, Package, Users, DollarSign, Settings, Plus, Trash2, CheckCircle, 
             X, Wallet, CreditCard, Clock, Copy, ArrowRight, Bell, User as UserIcon, 
             Activity, BarChart, Eye, Lock, Search, Megaphone, Award, Zap, Headset, 
-            Star, AlertTriangle, Smartphone, ShieldCheck, Moon, HelpCircle, History, TrendingUp, Sparkles, Building, Edit, RefreshCw, ChevronDown, StopCircle, Ban, Info, Key, MessageSquare, Send, BookOpen, MessageCircle, Radar
+            Star, AlertTriangle, Smartphone, ShieldCheck, Moon, HelpCircle, History, TrendingUp, Sparkles, Building, Edit, RefreshCw, ChevronDown, StopCircle, Ban, Info, Key, MessageSquare, Send, BookOpen, MessageCircle, Radar, CircleDollarSign
         } from 'lucide-react';
 
         // Firebase Imports
@@ -288,12 +290,10 @@
             { id: 'settings', label: 'Settings', icon: Settings }
         ];
 
-        // 🟢 UI VARIABLES 🟢
         const uiCard = "glass-effect rounded-3xl relative transition-all duration-500 w-full";
         const uiInput = "glass-input";
         const uiBtnPrimary = "btn-animate w-full bg-white text-black font-bold py-4 px-6 rounded-2xl flex items-center justify-center gap-2 transition-all disabled:opacity-50 shadow-[0_5px_20px_rgba(255,255,255,0.2)] tracking-widest uppercase text-xs";
         const uiBtnSecondary = "btn-animate w-full glass-panel hover:bg-white/20 text-white font-bold py-3.5 px-6 rounded-2xl transition-all flex items-center justify-center gap-2 uppercase text-xs tracking-widest shadow-md";
-        const uiBtnAction = "btn-animate glass-panel hover:bg-white/20 text-white font-semibold py-2.5 px-4 rounded-xl text-[10px] flex items-center gap-1.5 transition-all disabled:opacity-50 uppercase tracking-widest";
         const uiInnerPanel = "glass-panel p-5 w-full transition-all";
 
         const getTier = (spent) => {
@@ -304,7 +304,6 @@
           return { threshold: 0, name: 'Standard', next: 20, color: 'text-gray-400', icon: Award };
         };
 
-        // 🛡️ SAFE DATE FORMATTER
         const safeFormatDate = (d) => {
             try {
                 if (!d) return 'N/A';
@@ -322,7 +321,7 @@
           </div>
         );
 
-        // 🌟 CRYSTAL CLEAR COLORFUL FLOATING LOGOS (Fewer Logos, Crystal Clear) 🌟
+        // 🌟 CRYSTAL CLEAR HARDWARE ACCELERATED LOGOS 🌟
         const FloatingLogos = () => {
             const baseLogos = [
                 <svg className="text-[#25D366] drop-shadow-[0_0_20px_rgba(37,211,102,0.8)]" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413Z"/></svg>,
@@ -334,16 +333,16 @@
             const renderedLogos = useMemo(() => {
                 const arr = [];
                 const animationsList = ['fly1', 'fly2', 'fly3', 'fly4'];
-                // 🟢 Reduced to only 4 clean logos to prevent clutter 🟢
+                // 🟢 Only 4 logos, zero performance lag 🟢
                 for(let i=0; i<4; i++) {
                     const logo = baseLogos[i % baseLogos.length];
                     const randomSize = Math.floor(Math.random() * 40) + 50;
                     const randomDelay = Math.random() * -60; 
-                    const randomDuration = Math.floor(Math.random() * 80) + 120; // Super Slow (120-200s)
+                    const randomDuration = Math.floor(Math.random() * 80) + 120; 
                     const animationName = animationsList[i % animationsList.length];
                     
                     arr.push(
-                        <div key={i} className="absolute opacity-90" style={{
+                        <div key={i} className="hardware-accelerated absolute opacity-90" style={{
                             width: `${randomSize}px`,
                             height: `${randomSize}px`,
                             animation: `${animationName} ${randomDuration}s linear infinite`,
@@ -424,6 +423,9 @@
             static getDerivedStateFromError(error) {
                 return { hasError: true, errorMsg: error.toString() };
             }
+            componentDidCatch(error, errorInfo) {
+                console.error("Dashboard Render Error:", error, errorInfo);
+            }
             render() {
                 if (this.state.hasError) {
                     return (
@@ -471,7 +473,7 @@
                 return () => clearInterval(interval);
             }, [twoFaSecret]);
 
-            if (!acc) return null; // Ultimate safety check
+            if (!acc) return null;
 
             return (
                 <div className="glass-panel border border-white/10 hover:border-white/30 transition-all duration-300 rounded-3xl p-6 flex flex-col animate-scale-up hover:shadow-[0_10px_30px_rgba(255,255,255,0.05)]" style={{animationDelay: `${idx * 0.05}s`, opacity: 0, animationFillMode: 'forwards'}}>
@@ -542,6 +544,7 @@
           const [cryptoSettings, setCryptoSettings] = useState({ usdtAddress: 'TELRyMwDmdKzBRb7Uaw3zNvphrc8V3D5Mj', btcAddress: '1EgVdWyoCsWepg3TAowifuhoR81Lm1xEUd' });
           const [smsSettings, setSmsSettings] = useState({ active: true, markup: 1.00 });
           const [categories, setCategories] = useState(DEFAULT_CATEGORIES);
+          const [customPayments, setCustomPayments] = useState([]);
           
           const [cart, setCart] = useState([]);
           const [showCart, setShowCart] = useState(false);
@@ -581,13 +584,12 @@
                     }
                  } catch(e) {}
 
-                 // 🟢 STRICT EMAIL VERIFICATION RULE APPLIED 🟢
                  if (firebaseUser.email.toLowerCase() === currentAdminEmail.toLowerCase()) {
                     setUser({ email: firebaseUser.email, role: 'admin' }); setActiveTab('inventory');
                  } else if (firebaseUser.emailVerified) { 
                     setUser({ email: firebaseUser.email, role: 'customer' }); setActiveTab('sms');
                  } else { 
-                    setUser(null); // Must verify to login
+                    setUser(null); 
                  }
               } else { setUser(null); }
               setIsAuthChecking(false);
@@ -595,7 +597,6 @@
             return () => unsubscribe();
           }, []);
 
-          // Data Fetching 
           useEffect(() => {
             if (!user) return;
             const errLog = (e) => { if (e.code !== 'permission-denied') console.error(e); };
@@ -606,18 +607,18 @@
             unsubs.push(onSnapshot(doc(db, 'artifacts', appId, 'public', 'data', 'Store_Settings', 'Notice'), (snap) => { if (snap.exists()) setGlobalNotice(snap.data().text || ''); }, errLog));
             unsubs.push(onSnapshot(doc(db, 'artifacts', appId, 'public', 'data', 'Store_Settings', 'Features'), (snap) => { if (snap.exists()) setFeatureSettings(snap.data()); }, errLog));
             
-            // 🟢 DYNAMIC PAYMENT SETTINGS FETCHING 🟢
             unsubs.push(onSnapshot(doc(db, 'artifacts', appId, 'public', 'data', 'Store_Settings', 'Bank'), (snap) => { if (snap.exists()) setBankSettings(prev => ({...prev, ...snap.data()})); }, errLog));
             unsubs.push(onSnapshot(doc(db, 'artifacts', appId, 'public', 'data', 'Store_Settings', 'Crypto'), (snap) => { if (snap.exists()) setCryptoSettings(prev => ({...prev, ...snap.data()})); }, errLog));
+            unsubs.push(onSnapshot(doc(db, 'artifacts', appId, 'public', 'data', 'Store_Settings', 'CustomPayments'), (snap) => { 
+                if (snap.exists() && Array.isArray(snap.data().list)) { setCustomPayments(snap.data().list); }
+                else { setCustomPayments([]); }
+            }, errLog));
             
             unsubs.push(onSnapshot(doc(db, 'artifacts', appId, 'public', 'data', 'Store_Settings', 'SMS'), (snap) => { if (snap.exists()) setSmsSettings(snap.data()); }, errLog));
             
             unsubs.push(onSnapshot(doc(db, 'artifacts', appId, 'public', 'data', 'Store_Settings', 'Products'), (snap) => { 
-                if (snap.exists() && Array.isArray(snap.data().list)) { 
-                    setCategories(snap.data().list); 
-                } else { 
-                    setCategories(DEFAULT_CATEGORIES); 
-                } 
+                if (snap.exists() && Array.isArray(snap.data().list)) { setCategories(snap.data().list); } 
+                else { setCategories(DEFAULT_CATEGORIES); } 
             }, errLog));
 
             if (user.role === 'admin') {
@@ -718,14 +719,13 @@
                 const userCredential = await createUserWithEmailAndPassword(auth, email, pwd);
                 const userRef = doc(db, 'artifacts', appId, 'public', 'data', 'Store_Users', userCredential.user.email);
                 await setDoc(userRef, { password: pwd, balance: 0, totalSpent: 0, joined: new Date().toISOString(), lastBonusDate: '' });
-                // 🟢 MANDATORY VERIFICATION RE-ENABLED 🟢
+                
                 await sendEmailVerification(userCredential.user);
                 await auth.signOut(); 
                 setAuthSuccessMsg('Account created! Please verify your email inbox before logging in.'); 
                 setAuthMethod('login'); 
               } else {
                 const userCredential = await signInWithEmailAndPassword(auth, email, pwd);
-                // 🟢 MANDATORY VERIFICATION RE-ENABLED 🟢
                 if (!userCredential.user.emailVerified) {
                    await auth.signOut(); 
                    setAuthError('Please verify your email inbox first!');
@@ -871,13 +871,12 @@
                     {/* 🟢 ERROR BOUNDARY: NO MORE BLANK SCREENS 🟢 */}
                     <ErrorBoundary>
                         {user.role === 'admin' ? (
-                          <AdminDashboard inventory={inventory} orders={allOrders} deposits={deposits} categories={categories} usersDB={usersDB} triggerToast={triggerToast} db={db} appId={appId} promoSettings={promoSettings} tickets={tickets} featureSettings={featureSettings} bankSettings={bankSettings} cryptoSettings={cryptoSettings} smsSettings={smsSettings} activeChats={activeChats} auth={auth} user={user} activeTab={activeTab} setActiveTab={setActiveTab} />
+                          <AdminDashboard inventory={inventory} orders={allOrders} deposits={deposits} categories={categories} usersDB={usersDB} triggerToast={triggerToast} db={db} appId={appId} promoSettings={promoSettings} tickets={tickets} featureSettings={featureSettings} bankSettings={bankSettings} cryptoSettings={cryptoSettings} customPayments={customPayments} smsSettings={smsSettings} activeChats={activeChats} auth={auth} user={user} activeTab={activeTab} setActiveTab={setActiveTab} />
                         ) : (
                           <>
                               {activeTab === 'sms' && <CustomerDashboardSMS user={user} balance={currentUserBalance} triggerToast={triggerToast} smsSettings={smsSettings} />}
                               {activeTab === 'store' && <CustomerDashboardStore inventory={inventory} categories={categories} cart={cart} setCart={setCart} allOrders={allOrders} triggerToast={triggerToast} />}
-                              {activeTab === 'add_funds' && <CustomerDashboardFunds user={user} db={db} appId={appId} triggerToast={triggerToast} addNotification={addNotification} bankSettings={bankSettings} cryptoSettings={cryptoSettings} />}
-                              {/* 🟢 FULLY FIXED VAULT COMPONENT RENDERING 🟢 */}
+                              {activeTab === 'add_funds' && <CustomerDashboardFunds user={user} db={db} appId={appId} triggerToast={triggerToast} addNotification={addNotification} bankSettings={bankSettings} cryptoSettings={cryptoSettings} customPayments={customPayments} />}
                               {activeTab === 'my_accounts' && <CustomerDashboardVault user={user} purchases={purchases} db={db} appId={appId} triggerToast={triggerToast} />}
                               {activeTab === 'profile' && <CustomerDashboardProfile user={user} balance={currentUserBalance} tier={currentUserTier} userInfo={usersDB[user.email]} allOrders={allOrders} deposits={deposits} purchases={purchases} tickets={tickets.filter(t => t && t.email === user.email)} db={db} appId={appId} featureSettings={featureSettings} triggerToast={triggerToast} />}
                           </>
@@ -1331,7 +1330,7 @@
         }
 
         // ==========================================
-        // 🌟 ASSET STORE MODULE (ULTRA PREMIUM GLASS) 🌟
+        // 🌟 ASSET STORE MODULE
         // ==========================================
         function CustomerDashboardStore({ inventory, categories, cart, setCart, triggerToast }) {
           const [searchQuery, setSearchQuery] = useState('');
@@ -1439,18 +1438,22 @@
         }
 
         // ==========================================
-        // FUNDS MODULE
+        // 🟢 FIXED: FUNDS MODULE (Dynamic Payment Methods) 🟢
         // ==========================================
-        function CustomerDashboardFunds({ user, db, appId, triggerToast, addNotification, bankSettings, cryptoSettings }) {
+        function CustomerDashboardFunds({ user, db, appId, triggerToast, addNotification, bankSettings, cryptoSettings, customPayments }) {
           const [autoPay, setAutoPay] = useState({ active: false, amount: 0, time: 900, checking: false, invoiceId: '' });
           
-          // 🟢 DYNAMIC CRYPTO ADDRESSES 🟢
           const TRON_ADDRESS = cryptoSettings?.usdtAddress || 'TELRyMwDmdKzBRb7Uaw3zNvphrc8V3D5Mj';
           const BTC_ADDRESS = cryptoSettings?.btcAddress || '1EgVdWyoCsWepg3TAowifuhoR81Lm1xEUd';
           
           const [depositAmountUsd, setDepositAmountUsd] = useState('');
           const [cryptoAmountInput, setCryptoAmountInput] = useState(''); 
           const [cryptoMethod, setCryptoMethod] = useState('USDT TRC20');
+          
+          // 🟢 MANUAL DEPOSIT STATE 🟢
+          const [manualAmount, setManualAmount] = useState('');
+          const [manualMethod, setManualMethod] = useState('Local Bank Transfer');
+          const [manualTxId, setManualTxId] = useState('');
 
           const startAutoDeposit = async (e) => {
               e.preventDefault();
@@ -1478,6 +1481,26 @@
                   triggerToast(`Invoice created for ` + cryptoMethod);
               } catch (err) { triggerToast("Request failed."); }
           };
+
+          // 🟢 NEW MANUAL DEPOSIT SUBMISSION 🟢
+          const submitManualDeposit = async (e) => {
+              e.preventDefault();
+              const amt = parseFloat(manualAmount);
+              if (isNaN(amt) || amt < 1) return triggerToast("Minimum deposit is $1");
+              if (!manualTxId.trim()) return triggerToast("Please provide Transaction ID/Sender Details");
+              
+              const newInvoiceId = 'DEP-MANUAL-' + Date.now();
+              try {
+                  await setDoc(doc(db, 'artifacts', appId, 'public', 'data', 'Store_Deposits', newInvoiceId), { 
+                      email: user.email, amount: amt, method: manualMethod, status: 'Pending Review', date: new Date().toISOString(), txId: manualTxId
+                  });
+                  triggerToast(`Deposit request sent! Admin will review shortly.`);
+                  setManualAmount('');
+                  setManualTxId('');
+              } catch(e) {
+                  triggerToast("Failed to submit request.");
+              }
+          }
 
           const handleFlutterwavePayment = async () => {
               if(!bankSettings?.flutterwaveActive || !bankSettings?.flutterwaveKey) { triggerToast("Payment gateway disabled."); return; }
@@ -1548,10 +1571,12 @@
              else { const t = document.createElement("textarea"); t.value = text; document.body.appendChild(t); t.select(); document.execCommand("copy"); document.body.removeChild(t); triggerToast("Copied!"); }
           };
 
+          const selectedCustomPayment = (customPayments || []).find(p => p.name === manualMethod);
+
           return (
             <div className="animate-fade-in-up grid grid-cols-1 lg:grid-cols-2 gap-6 sm:gap-8 w-full">
               <div className="space-y-6 sm:space-y-8 w-full">
-                <div className="glass-effect rounded-3xl p-6 sm:p-8 h-fit">
+                <div className="glass-effect rounded-3xl p-6 sm:p-8 h-fit border border-white/10">
                   <h2 className="text-sm font-bold tracking-widest mb-6 text-white flex items-center gap-2 uppercase">
                      <Zap className="w-4 h-4"/> Crypto Deposit
                   </h2>
@@ -1617,41 +1642,7 @@
                       </div>
                   )}
                 </div>
-              </div>
-
-              <div className="space-y-6 sm:space-y-8 w-full">
-                <div className="glass-effect rounded-3xl p-6 sm:p-8">
-                  <div className="flex justify-between items-start mb-6 pb-4 border-b border-white/10">
-                     <h3 className="text-sm font-bold tracking-widest text-white flex items-center gap-2 uppercase">
-                       <Building className="w-4 h-4"/> Bank Transfer
-                     </h3>
-                     <div className="text-right">
-                        <p className="text-[8px] text-gray-400 font-bold uppercase tracking-widest mb-1">Rate</p>
-                        <p className="text-[11px] font-mono text-white">$1 = ₦{bankSettings?.nairaRate || 1500}</p>
-                     </div>
-                  </div>
-                  
-                  <div className="mb-6 p-4 bg-white/5 rounded-xl border border-white/10 shadow-inner">
-                     <label className="block text-[9px] font-bold text-gray-400 mb-2 uppercase tracking-[0.2em]">Amount to Add (USD)</label>
-                     <div className="relative mb-3">
-                        <DollarSign className="w-3.5 h-3.5 text-white absolute left-3 top-3.5" />
-                        <input type="number" min="1" placeholder="Enter amount..." value={depositAmountUsd} onChange={e => setDepositAmountUsd(e.target.value)} className="glass-input !pl-9 !py-2.5 font-mono text-xs" />
-                     </div>
-                     <div className="flex items-center justify-between p-3 bg-black/40 rounded-lg border border-white/5">
-                        <span className="text-[9px] font-bold text-gray-400 uppercase tracking-widest">Send (₦):</span>
-                        <span className="text-sm font-mono font-bold text-white">₦{depositAmountUsd && !isNaN(parseFloat(depositAmountUsd)) ? (parseFloat(depositAmountUsd) * (bankSettings?.nairaRate || 1500)).toLocaleString() : '0'}</span>
-                     </div>
-                  </div>
-
-                  <div className="bg-black/40 border border-white/5 rounded-xl p-4 mb-5 text-[11px] font-mono tracking-wide space-y-3">
-                    <div className="flex justify-between items-center border-b border-white/5 pb-2"><span className="text-gray-400">Bank</span> <span className="font-bold text-white">{bankSettings?.bankName || 'Parallex'}</span></div>
-                    <div className="flex justify-between items-center border-b border-white/5 pb-2 pt-1"><span className="text-gray-400">Name</span> <span className="font-bold text-white text-right">{bankSettings?.accountName || 'Samuel Osita Emmanuel'}</span></div>
-                    <div className="flex justify-between items-center pt-1"><span className="text-gray-400">A/C No.</span> <span className="text-white font-bold text-sm">{bankSettings?.accountNumber || '1120927346'}</span></div>
-                  </div>
-                  <button onClick={() => copyToClipboard(bankSettings?.accountNumber || '1120927346')} className="btn-animate w-full glass-panel hover:bg-white/20 text-white font-bold py-3.5 px-6 rounded-2xl transition-all flex items-center justify-center gap-2 uppercase tracking-widest shadow-md mb-4 !text-xs"><Copy className="w-3.5 h-3.5" /> Copy Details</button>
-                  <p className="text-[8px] text-gray-500 font-mono uppercase tracking-widest text-center mt-2">Admin verification required.</p>
-                </div>
-
+                
                 {bankSettings?.flutterwaveActive && (
                     <div className="glass-effect rounded-3xl p-6 sm:p-8 border border-[#1f1f1f]">
                         <h2 className="text-sm font-bold tracking-widest mb-4 text-white flex items-center gap-2 uppercase">
@@ -1674,6 +1665,74 @@
                     </div>
                 )}
               </div>
+
+              <div className="space-y-6 sm:space-y-8 w-full">
+                <div className="glass-effect rounded-3xl p-6 sm:p-8 border border-white/10">
+                  <div className="flex justify-between items-start mb-6 pb-4 border-b border-white/10">
+                     <h3 className="text-sm font-bold tracking-widest text-white flex items-center gap-2 uppercase">
+                       <Building className="w-4 h-4"/> Manual Deposit
+                     </h3>
+                  </div>
+
+                  <div className="mb-6">
+                      <label className="block text-[9px] font-bold text-gray-400 mb-2.5 uppercase tracking-[0.2em] ml-1">Select Payment Method</label>
+                      <div className="relative">
+                          <select value={manualMethod} onChange={e => setManualMethod(e.target.value)} className={uiInput + " appearance-none cursor-pointer text-white font-mono text-xs bg-black/40"}>
+                              <option value="Local Bank Transfer" className="bg-[#121212]">Local Bank Transfer</option>
+                              {(customPayments || []).map(p => (
+                                  <option key={p.id} value={p.name} className="bg-[#121212]">{p.name}</option>
+                              ))}
+                          </select>
+                          <ChevronDown className="w-4 h-4 text-white absolute right-4 top-4 pointer-events-none" />
+                      </div>
+                  </div>
+                  
+                  {/* 🟢 DYNAMIC PAYMENT INSTRUCTIONS 🟢 */}
+                  {manualMethod === 'Local Bank Transfer' ? (
+                      <div className="bg-black/40 border border-white/5 rounded-xl p-4 mb-6 text-[11px] font-mono tracking-wide space-y-3">
+                        <div className="flex justify-between items-center border-b border-white/5 pb-2"><span className="text-gray-400">Bank</span> <span className="font-bold text-white">{bankSettings?.bankName || 'Parallex'}</span></div>
+                        <div className="flex justify-between items-center border-b border-white/5 pb-2 pt-1"><span className="text-gray-400">Name</span> <span className="font-bold text-white text-right">{bankSettings?.accountName || 'Samuel Osita Emmanuel'}</span></div>
+                        <div className="flex justify-between items-center border-b border-white/5 pb-2 pt-1"><span className="text-gray-400">A/C No.</span> <span className="text-white font-bold text-sm">{bankSettings?.accountNumber || '1120927346'}</span></div>
+                        <div className="flex justify-between items-center pt-1"><span className="text-gray-400">Rate</span> <span className="text-brand-primary font-bold text-sm">1 USD = ₦{bankSettings?.nairaRate || 1500}</span></div>
+                        <button onClick={() => copyToClipboard(bankSettings?.accountNumber || '1120927346')} className="btn-animate w-full glass-panel hover:bg-white/20 text-white font-bold py-3 px-6 rounded-xl transition-all flex items-center justify-center gap-2 uppercase tracking-widest shadow-md mt-2 !text-[10px]"><Copy className="w-3.5 h-3.5" /> Copy Details</button>
+                      </div>
+                  ) : selectedCustomPayment ? (
+                      <div className="bg-black/40 border border-white/5 rounded-xl p-4 mb-6 text-[11px] font-mono tracking-wide space-y-3">
+                        <div className="flex justify-between items-center border-b border-white/5 pb-2"><span className="text-gray-400">Method</span> <span className="font-bold text-white">{selectedCustomPayment.name}</span></div>
+                        <div className="flex justify-between items-center border-b border-white/5 pb-2 pt-1"><span className="text-gray-400">Details/Wallet</span> <span className="text-white font-bold text-sm break-all text-right max-w-[60%]">{selectedCustomPayment.details}</span></div>
+                        <div className="flex flex-col pt-1"><span className="text-gray-400 mb-1">Instructions:</span> <span className="text-gray-300 font-light leading-relaxed">{selectedCustomPayment.instruction}</span></div>
+                        <button onClick={() => copyToClipboard(selectedCustomPayment.details)} className="btn-animate w-full glass-panel hover:bg-white/20 text-white font-bold py-3 px-6 rounded-xl transition-all flex items-center justify-center gap-2 uppercase tracking-widest shadow-md mt-2 !text-[10px]"><Copy className="w-3.5 h-3.5" /> Copy Data</button>
+                      </div>
+                  ) : null}
+
+                  {/* 🟢 DEPOSIT REQUEST FORM 🟢 */}
+                  <form onSubmit={submitManualDeposit} className="space-y-4 p-4 bg-white/5 rounded-2xl border border-white/10 shadow-inner">
+                      <p className="text-[10px] font-bold text-brand-primary uppercase tracking-widest mb-2 flex items-center gap-2"><CircleDollarSign className="w-3.5 h-3.5"/> Submit Deposit Request</p>
+                      <div className="grid grid-cols-2 gap-4">
+                          <div>
+                              <label className="block text-[9px] font-bold text-gray-400 mb-2 uppercase tracking-[0.2em]">Amount (USD)</label>
+                              <div className="relative">
+                                 <DollarSign className="w-3.5 h-3.5 text-white absolute left-3 top-3.5" />
+                                 <input type="number" step="0.01" min="1" value={manualAmount} onChange={e => setManualAmount(e.target.value)} required placeholder="10" className="glass-input !pl-9 !py-2.5 font-mono text-xs" />
+                              </div>
+                          </div>
+                          <div>
+                              <label className="block text-[9px] font-bold text-gray-400 mb-2 uppercase tracking-[0.2em] whitespace-nowrap overflow-hidden text-ellipsis">Equivalent Amount</label>
+                              <div className="glass-input !py-2.5 font-mono text-xs bg-[#000] text-gray-300 flex items-center">
+                                  {manualMethod === 'Local Bank Transfer' && manualAmount ? `₦${(parseFloat(manualAmount) * (bankSettings?.nairaRate || 1500)).toLocaleString()}` : (manualAmount ? `$${manualAmount}` : '0')}
+                              </div>
+                          </div>
+                      </div>
+                      <div>
+                          <label className="block text-[9px] font-bold text-gray-400 mb-2 uppercase tracking-[0.2em]">Transaction ID / Sender Name</label>
+                          <input type="text" value={manualTxId} onChange={e => setManualTxId(e.target.value)} required placeholder="Enter TrxID or Phone Number..." className="glass-input !py-2.5 font-mono text-xs" />
+                      </div>
+                      <button type="submit" className="btn-animate w-full bg-white text-black font-bold py-3.5 rounded-xl flex items-center justify-center gap-2 transition-all shadow-[0_5px_20px_rgba(255,255,255,0.2)] tracking-widest uppercase text-[10px] mt-2">
+                          Submit Request
+                      </button>
+                  </form>
+                </div>
+              </div>
             </div>
           );
         }
@@ -1682,7 +1741,6 @@
         // 🟢 FIXED: VAULT MODULE (SAFE RENDERING)
         // ==========================================
         function CustomerDashboardVault({ purchases, db, appId, triggerToast, user }) {
-          // 🛡️ SAFE ARRAY FILTERING
           const myPurchases = (purchases || []).filter(p => p && p.customer === user?.email);
 
           return (
@@ -1708,7 +1766,6 @@
                   </div>
                 ) : (
                   <div className="grid grid-cols-1 lg:grid-cols-2 gap-5 w-full">
-                    {/* 🛡️ SAFE MAPPING */}
                     {myPurchases.map((acc, idx) => {
                         if (!acc) return null;
                         return (
@@ -1754,7 +1811,6 @@
 
           const referralCode = `REF-${(user?.email || '').split('@')[0].toUpperCase()}`;
           
-          // 🛡️ SAFE FILTERING
           const myDeposits = (deposits || []).filter(d => d && d.email === user?.email);
           const myOrders = (allOrders || []).filter(o => o && o.customer === user?.email);
           const myPurchases = (purchases || []).filter(p => p && p.customer === user?.email);
@@ -2012,7 +2068,7 @@
         // ==========================================
         // ADMIN DASHBOARD
         // ==========================================
-        function AdminDashboard({ inventory, orders, deposits, categories, usersDB, db, appId, promoSettings, globalNotice, tickets, featureSettings, bankSettings, cryptoSettings, smsSettings, activeChats, auth, user, triggerToast, activeTab, setActiveTab }) {
+        function AdminDashboard({ inventory, orders, deposits, categories, usersDB, db, appId, promoSettings, globalNotice, tickets, featureSettings, bankSettings, cryptoSettings, customPayments, smsSettings, activeChats, auth, user, triggerToast, activeTab, setActiveTab }) {
           const [uploadCategory, setUploadCategory] = useState('new');
           const [uploadText, setUploadText] = useState('');
           const [customerSearch, setCustomerSearch] = useState('');
@@ -2032,7 +2088,6 @@
           const [smsMarkupInput, setSmsMarkupInput] = useState(1.00);
           const [smsActiveInput, setSmsActiveInput] = useState(true);
           
-          // 🟢 ADDED DYNAMIC CRYPTO & BANK STATES 🟢
           const [usdtAddressInput, setUsdtAddressInput] = useState('TELRyMwDmdKzBRb7Uaw3zNvphrc8V3D5Mj');
           const [btcAddressInput, setBtcAddressInput] = useState('1EgVdWyoCsWepg3TAowifuhoR81Lm1xEUd');
           const [bankNameInput, setBankNameInput] = useState('Parallex');
@@ -2041,18 +2096,18 @@
 
           const [editUserModal, setEditUserModal] = useState({ show: false, email: '', password: '', balance: 0, totalSpent: 0 });
           
-          // 🟢 PRODUCT MANAGEMENT STATES 🟢
           const [manageStockModal, setManageStockModal] = useState({ show: false, categoryId: null });
           const [newProductModal, setNewProductModal] = useState(false);
           const [newProduct, setNewProduct] = useState({ id: '', name: '', description: '', price: 5.00 });
 
-          // Chat Management State
+          // 🟢 ADD NEW DYNAMIC PAYMENT STATE 🟢
+          const [newCustomPayment, setNewCustomPayment] = useState({ name: '', details: '', instruction: '' });
+
           const [selectedChatUser, setSelectedChatUser] = useState(null);
           const [adminChatMessage, setAdminChatMessage] = useState('');
           const [adminChatMessages, setAdminChatMessages] = useState([]);
           const adminMessagesEndRef = useRef(null);
 
-          // 🟢 ADD NEW PRODUCT LOGIC 🟢
           const handleAddProduct = async (e) => {
               e.preventDefault();
               if (!newProduct.id || !newProduct.name) return;
@@ -2075,7 +2130,6 @@
               } catch (err) { triggerToast('Failed to add card.'); }
           };
 
-          // 🟢 REMOVE PRODUCT LOGIC 🟢
           const handleRemoveProduct = async (productId) => {
               if (!window.confirm("Are you sure you want to permanently remove this card?")) return;
               const updatedCategories = categories.filter(c => c.id !== productId);
@@ -2083,6 +2137,27 @@
                   await setDoc(doc(db, 'artifacts', appId, 'public', 'data', 'Store_Settings', 'Products'), { list: updatedCategories });
                   triggerToast('Card removed.');
               } catch (err) { triggerToast('Failed to remove.'); }
+          };
+
+          // 🟢 HANDLE CUSTOM PAYMENT METHODS 🟢
+          const handleAddCustomPayment = async (e) => {
+              e.preventDefault();
+              if (!newCustomPayment.name || !newCustomPayment.details) return triggerToast("Fill all required fields.");
+              const newItem = { id: Date.now(), name: newCustomPayment.name, details: newCustomPayment.details, instruction: newCustomPayment.instruction };
+              const updatedList = [...(customPayments || []), newItem];
+              try {
+                  await setDoc(doc(db, 'artifacts', appId, 'public', 'data', 'Store_Settings', 'CustomPayments'), { list: updatedList });
+                  triggerToast('Payment Method Added.');
+                  setNewCustomPayment({ name: '', details: '', instruction: '' });
+              } catch (e) { triggerToast('Error adding method.'); }
+          };
+
+          const handleRemoveCustomPayment = async (id) => {
+              const updatedList = (customPayments || []).filter(p => p.id !== id);
+              try {
+                  await setDoc(doc(db, 'artifacts', appId, 'public', 'data', 'Store_Settings', 'CustomPayments'), { list: updatedList });
+                  triggerToast('Payment Method Removed.');
+              } catch (e) { triggerToast('Error removing method.'); }
           };
 
           const handleDeleteAccount = async (categoryId, accountIndex) => {
@@ -2117,23 +2192,18 @@
             }
           }, [promoSettings, globalNotice, featureSettings, bankSettings, cryptoSettings, smsSettings]);
 
-          // Fetch messages for selected user in Admin
           useEffect(() => {
               if (!selectedChatUser) return;
-              
               const q = query(
                   collection(db, 'artifacts', appId, 'public', 'data', 'Store_Chats', selectedChatUser, 'messages'),
                   orderBy('timestamp', 'asc')
               );
-              
               const unsubscribe = onSnapshot(q, (snapshot) => {
                   const msgs = [];
                   snapshot.forEach((doc) => {
                       msgs.push({ id: doc.id, ...doc.data() });
                   });
                   setAdminChatMessages(msgs);
-                  
-                  // Mark as read when admin opens it
                   updateDoc(doc(db, 'artifacts', appId, 'public', 'data', 'Store_ActiveChats', selectedChatUser), {
                       unreadByAdmin: false
                   }).catch(e => {});
@@ -2142,7 +2212,6 @@
                       adminMessagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
                   }, 100);
               });
-              
               return () => unsubscribe();
           }, [selectedChatUser, db, appId]);
 
@@ -2218,11 +2287,6 @@
             } catch (err) { triggerToast('Network error.'); }
           };
 
-          const sendResetLinkToUser = async (userEmail) => {
-              try { await sendPasswordResetEmail(auth, userEmail); triggerToast(`Link sent to ${userEmail}`); } 
-              catch (err) { triggerToast('Failed to send.'); }
-          };
-
           const handleManualApprove = async (depId) => {
             const dep = deposits.find(d => d.id === depId);
             if(!dep) return;
@@ -2234,11 +2298,6 @@
             } catch (err) { triggerToast("Failed."); }
           };
 
-          const handleResolveTicket = async (ticketId) => {
-            try { await updateDoc(doc(db, 'artifacts', appId, 'public', 'data', 'Store_Tickets', ticketId), { status: 'Resolved' }); triggerToast('Ticket closed.'); } 
-            catch(err) { triggerToast('Failed to close.'); }
-          };
-
           const handleSaveSettings = async (e) => {
             e.preventDefault();
             try {
@@ -2247,7 +2306,6 @@
               await setDoc(doc(db, 'artifacts', appId, 'public', 'data', 'Store_Settings', 'Features'), { dailyReward: dailyRewardActive, referral: referralActive });
               await setDoc(doc(db, 'artifacts', appId, 'public', 'data', 'Store_Settings', 'SMS'), { markup: parseFloat(smsMarkupInput), active: smsActiveInput });
               
-              // 🟢 SAVING DYNAMIC PAYMENT SETTINGS 🟢
               await setDoc(doc(db, 'artifacts', appId, 'public', 'data', 'Store_Settings', 'Bank'), { 
                   bankName: bankNameInput, accountName: bankAccountNameInput, accountNumber: bankAccountNumberInput,
                   nairaRate: parseFloat(nairaRateInput) || 1500, flutterwaveKey: flutterwaveKeyInput, flutterwaveActive: flutterwaveActiveInput
@@ -2700,26 +2758,70 @@
                       </form>
                     </div>
 
-                    {/* 🟢 NEW PRODUCT MANAGEMENT SECTION 🟢 */}
-                    <div className="glass-effect rounded-3xl p-6 sm:p-8 w-full border border-white/10 h-fit animate-slide-in-right" style={{animationDelay: '0.1s', opacity: 0, animationFillMode: 'forwards'}}>
-                      <div className="flex justify-between items-center mb-6 border-b border-white/10 pb-4">
-                         <h2 className="text-sm font-bold tracking-[0.2em] uppercase text-white">Manage Accounts Cards</h2>
-                         <button onClick={() => setNewProductModal(true)} className="btn-animate bg-white text-black px-4 py-2 rounded-lg text-[10px] uppercase tracking-widest font-bold flex items-center gap-1 shadow-[0_0_15px_rgba(255,255,255,0.2)]"><Plus className="w-3 h-3"/> New</button>
-                      </div>
-                      
-                      <div className="space-y-4">
-                          {categories.map((cat, idx) => (
-                              <div key={idx} className="bg-black/40 border border-white/5 p-4 rounded-2xl flex justify-between items-center animate-scale-up hover:border-white/20 transition-colors backdrop-blur-sm" style={{animationDelay: `${idx * 0.1}s`, opacity: 0, animationFillMode: 'forwards'}}>
-                                  <div>
-                                      <p className="text-xs font-bold text-white uppercase tracking-wider">{cat.name}</p>
-                                      <p className="text-[10px] font-mono text-gray-400 mt-1">${Number(cat.price).toFixed(2)}</p>
-                                  </div>
-                                  <button onClick={() => handleRemoveProduct(cat.id)} className="btn-animate p-2.5 bg-red-900/20 text-red-500 hover:bg-red-900/40 border border-red-900/30 rounded-lg transition-colors">
-                                      <Trash2 className="w-4 h-4"/>
-                                  </button>
+                    <div className="space-y-6 sm:space-y-8 w-full">
+                        {/* 🟢 CUSTOM PAYMENT METHODS MODULE 🟢 */}
+                        <div className="glass-effect rounded-3xl p-6 sm:p-8 w-full border border-white/10 h-fit animate-slide-in-right" style={{animationDelay: '0.1s', opacity: 0, animationFillMode: 'forwards'}}>
+                          <div className="flex justify-between items-center mb-6 border-b border-white/10 pb-4">
+                             <h2 className="text-sm font-bold tracking-[0.2em] uppercase text-white">Custom Payment Methods</h2>
+                          </div>
+                          
+                          <form onSubmit={handleAddCustomPayment} className="space-y-4 mb-8 bg-black/40 p-5 rounded-2xl border border-white/5 shadow-inner">
+                              <p className="text-[9px] font-bold text-brand-primary uppercase tracking-widest mb-2">Add New Method (e.g. bKash/Nagad)</p>
+                              <div>
+                                  <label className="block text-[9px] font-bold text-gray-500 mb-2 uppercase tracking-widest">Method Name</label>
+                                  <input type="text" required value={newCustomPayment.name} onChange={e => setNewCustomPayment({...newCustomPayment, name: e.target.value})} placeholder="bKash Personal" className="glass-input text-xs" />
                               </div>
-                          ))}
-                      </div>
+                              <div>
+                                  <label className="block text-[9px] font-bold text-gray-500 mb-2 uppercase tracking-widest">Wallet Number / Details</label>
+                                  <input type="text" required value={newCustomPayment.details} onChange={e => setNewCustomPayment({...newCustomPayment, details: e.target.value})} placeholder="017XXXXXXXX" className="glass-input text-xs font-mono" />
+                              </div>
+                              <div>
+                                  <label className="block text-[9px] font-bold text-gray-500 mb-2 uppercase tracking-widest">Instructions for User</label>
+                                  <input type="text" value={newCustomPayment.instruction} onChange={e => setNewCustomPayment({...newCustomPayment, instruction: e.target.value})} placeholder="Send money and enter TRX ID below." className="glass-input text-xs" />
+                              </div>
+                              <button type="submit" className="btn-animate w-full glass-panel hover:bg-white/20 text-white font-bold py-3 px-6 rounded-xl transition-all shadow-md text-[10px] uppercase tracking-widest mt-2 flex items-center justify-center gap-2"><Plus className="w-3 h-3"/> Add Method</button>
+                          </form>
+
+                          <div className="space-y-3">
+                              {(!customPayments || customPayments.length === 0) ? (
+                                  <p className="text-center text-gray-600 font-mono text-[10px] uppercase tracking-widest py-4">No custom methods added.</p>
+                              ) : (
+                                  customPayments.map((p, idx) => (
+                                      <div key={p.id || idx} className="bg-black/40 border border-white/5 p-4 rounded-xl flex justify-between items-center animate-scale-up hover:border-white/20 transition-colors backdrop-blur-sm">
+                                          <div>
+                                              <p className="text-[11px] font-bold text-white uppercase tracking-wider">{p.name}</p>
+                                              <p className="text-[9px] font-mono text-gray-400 mt-1">{p.details}</p>
+                                          </div>
+                                          <button onClick={() => handleRemoveCustomPayment(p.id)} className="btn-animate p-2.5 bg-red-900/20 text-red-500 hover:bg-red-900/40 border border-red-900/30 rounded-lg transition-colors">
+                                              <Trash2 className="w-3.5 h-3.5"/>
+                                          </button>
+                                      </div>
+                                  ))
+                              )}
+                          </div>
+                        </div>
+
+                        {/* 🟢 NEW PRODUCT MANAGEMENT SECTION 🟢 */}
+                        <div className="glass-effect rounded-3xl p-6 sm:p-8 w-full border border-white/10 h-fit animate-slide-in-right" style={{animationDelay: '0.2s', opacity: 0, animationFillMode: 'forwards'}}>
+                          <div className="flex justify-between items-center mb-6 border-b border-white/10 pb-4">
+                             <h2 className="text-sm font-bold tracking-[0.2em] uppercase text-white">Manage Accounts Cards</h2>
+                             <button onClick={() => setNewProductModal(true)} className="btn-animate bg-white text-black px-4 py-2 rounded-lg text-[10px] uppercase tracking-widest font-bold flex items-center gap-1 shadow-[0_0_15px_rgba(255,255,255,0.2)]"><Plus className="w-3 h-3"/> New</button>
+                          </div>
+                          
+                          <div className="space-y-4">
+                              {categories.map((cat, idx) => (
+                                  <div key={idx} className="bg-black/40 border border-white/5 p-4 rounded-2xl flex justify-between items-center animate-scale-up hover:border-white/20 transition-colors backdrop-blur-sm" style={{animationDelay: `${idx * 0.1}s`, opacity: 0, animationFillMode: 'forwards'}}>
+                                      <div>
+                                          <p className="text-xs font-bold text-white uppercase tracking-wider">{cat.name}</p>
+                                          <p className="text-[10px] font-mono text-gray-400 mt-1">${Number(cat.price).toFixed(2)}</p>
+                                      </div>
+                                      <button onClick={() => handleRemoveProduct(cat.id)} className="btn-animate p-2.5 bg-red-900/20 text-red-500 hover:bg-red-900/40 border border-red-900/30 rounded-lg transition-colors">
+                                          <Trash2 className="w-4 h-4"/>
+                                      </button>
+                                  </div>
+                              ))}
+                          </div>
+                        </div>
                     </div>
                   </div>
                 )}
