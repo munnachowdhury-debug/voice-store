@@ -20,40 +20,27 @@
               brand: {
                 primary: '#06b6d4', 
                 primaryHover: '#0891b2', 
-                darkBg: '#030712', 
-                border: 'rgba(255, 255, 255, 0.15)' 
+                darkBg: '#030712'
               }
             },
-            backgroundImage: {
-              'gold-gradient': 'linear-gradient(to right, #06b6d4, #3b82f6, #6366f1)',
-              /* 🟢 SUPER CLEAR GLASS GRADIENT 🟢 */
-              'glass-gradient': 'linear-gradient(145deg, rgba(255,255,255,0.05) 0%, rgba(255,255,255,0.01) 100%)'
-            },
             animation: {
-              'matrix-in': 'matrixIn 0.8s cubic-bezier(0.25, 1, 0.5, 1) forwards',
-              'spring-card': 'springCard 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) forwards',
-              'swoosh-in': 'swooshIn 0.6s cubic-bezier(0.25, 1, 0.5, 1) forwards',
-              'bouncy-pop': 'bouncyPop 0.7s cubic-bezier(0.34, 1.56, 0.64, 1) forwards',
+              'fade-in-up': 'fadeInUp 0.4s ease-out forwards',
+              'pop-in': 'popIn 0.3s ease-out forwards',
+              'pulse-slow': 'pulseSlow 4s ease-in-out infinite',
             },
             keyframes: {
-              /* 🟢 HIGH-LEVEL 3D ANIMATIONS (ZERO CPU HEATING - NO BLUR) 🟢 */
-              matrixIn: {
-                '0%': { transform: 'perspective(2000px) rotateX(10deg) rotateY(-5deg) translateZ(-50px) translateY(30px)', opacity: '0' },
-                '100%': { transform: 'perspective(2000px) rotateX(0deg) rotateY(0deg) translateZ(0) translateY(0)', opacity: '1' }
+              /* 🟢 LIGHTWEIGHT ANIMATIONS (NO HEATING) 🟢 */
+              fadeInUp: {
+                '0%': { opacity: '0', transform: 'translateY(15px)' },
+                '100%': { opacity: '1', transform: 'translateY(0)' }
               },
-              springCard: {
-                '0%': { transform: 'scale(0.85) translateY(40px)', opacity: '0' },
-                '50%': { transform: 'scale(1.02) translateY(-5px)', opacity: '1' },
-                '100%': { transform: 'scale(1) translateY(0)', opacity: '1' }
+              popIn: {
+                '0%': { opacity: '0', transform: 'scale(0.95)' },
+                '100%': { opacity: '1', transform: 'scale(1)' }
               },
-              swooshIn: {
-                '0%': { transform: 'translate3d(40px, 0, 0) skewX(-5deg)', opacity: '0' },
-                '100%': { transform: 'translate3d(0, 0, 0) skewX(0deg)', opacity: '1' }
-              },
-              bouncyPop: {
-                '0%': { transform: 'scale(0.8) translate3d(0, 30px, 0)', opacity: '0' },
-                '50%': { transform: 'scale(1.03) translate3d(0, -5px, 0)', opacity: '1' },
-                '100%': { transform: 'scale(1) translate3d(0, 0, 0)', opacity: '1' }
+              pulseSlow: {
+                '0%, 100%': { opacity: '1' },
+                '50%': { opacity: '0.7' }
               }
             }
           }
@@ -87,12 +74,8 @@
         .scrollbar-hide { -ms-overflow-style: none; scrollbar-width: none; }
         
         body {
-            /* 🌟 STATIC DEEP PREMIUM BACKGROUND 🌟 */
+            /* 🌟 DEEP MODERN BACKGROUND 🌟 */
             background-color: #030712;
-            background-image: 
-                radial-gradient(circle at 15% 50%, rgba(6, 182, 212, 0.15) 0px, transparent 40%),
-                radial-gradient(circle at 85% 30%, rgba(139, 92, 246, 0.15) 0px, transparent 40%);
-            background-attachment: fixed;
             color: #ffffff;
             font-family: 'Plus Jakarta Sans', sans-serif;
             overflow-x: hidden;
@@ -104,48 +87,43 @@
         }
         pre { -webkit-user-select: auto; user-select: auto; }
 
-        /* 🌟 CRAZY ELASTIC BUTTON ANIMATIONS (HARDWARE ACCELERATED) 🌟 */
+        /* 🌟 BUTTON ANIMATIONS (NO CSS TRANSFORMS TO PREVENT Z-INDEX BUGS) 🌟 */
         .btn-animate {
-            transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.3s ease, background-color 0.3s ease;
-            position: relative;
-            transform-origin: center center;
-            transform: translateZ(0); 
-            will-change: transform;
+            transition: transform 0.15s ease-out, box-shadow 0.15s ease-out;
         }
         .btn-animate:hover {
-            transform: scale(1.05) translate3d(0, -3px, 0);
-            box-shadow: 0 15px 25px -5px rgba(6, 182, 212, 0.4);
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px -5px rgba(6, 182, 212, 0.4);
         }
         .btn-animate:active {
-            transform: scale(0.9) translate3d(0, 4px, 0) !important;
-            box-shadow: 0 2px 5px rgba(6, 182, 212, 0.2) !important;
-            transition: transform 0.1s cubic-bezier(0.4, 0, 0.2, 1) !important;
+            transform: translateY(2px);
+            box-shadow: 0 2px 5px rgba(6, 182, 212, 0.2);
         }
         
         .custom-scrollbar::-webkit-scrollbar { width: 5px; height: 5px; }
         .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
         .custom-scrollbar::-webkit-scrollbar-thumb { background-color: rgba(255, 255, 255, 0.15); border-radius: 10px; }
-        .custom-scrollbar::-webkit-scrollbar-thumb:hover { background-color: rgba(255, 255, 255, 0.4); }
 
-        /* 🌟 ULTRA CLEAR GLASS EFFECT (0% HEATING, NO BLUR) 🌟 */
+        /* 🌟 1% BLUR & 100% TRANSPARENT GLASS (FIXED Z-INDEX ISSUE) 🌟 */
         .glass-effect {
-            background: rgba(255, 255, 255, 0.03); /* Super transparent */
-            border: 1px solid rgba(255, 255, 255, 0.15); /* Distinct border */
-            box-shadow: inset 0 1px 1px rgba(255,255,255,0.1), 0 10px 40px -10px rgba(0, 0, 0, 0.5);
-            transition: border-color 0.3s ease, background 0.3s ease;
-            transform: translateZ(0);
+            background: rgba(15, 23, 42, 0.3); /* Super sheer background */
+            backdrop-filter: blur(2px); /* 1% Blur */
+            -webkit-backdrop-filter: blur(2px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.3);
+            /* Removed translateZ to fix Modal overlapping issues! */
         }
         .glass-effect:hover {
-            border-color: rgba(6, 182, 212, 0.4);
-            background: rgba(255, 255, 255, 0.05);
+            border-color: rgba(6, 182, 212, 0.3);
+            background: rgba(15, 23, 42, 0.4);
         }
 
         .glass-panel {
-            background: rgba(255, 255, 255, 0.02);
-            border: 1px solid rgba(255, 255, 255, 0.1);
+            background: rgba(255, 255, 255, 0.03); /* Transparent */
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            backdrop-filter: blur(2px); /* 1% Blur */
+            -webkit-backdrop-filter: blur(2px);
             border-radius: 16px;
-            box-shadow: inset 0 1px 0 rgba(255,255,255,0.05);
-            transform: translateZ(0);
         }
 
         .glass-input {
@@ -156,49 +134,15 @@
             padding: 14px 18px;
             font-size: 13px;
             color: #fff;
-            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            transition: border-color 0.2s ease;
             outline: none;
-            transform: translateZ(0);
         }
         .glass-input:focus {
             border-color: #06b6d4;
             background: rgba(0, 0, 0, 0.6);
-            box-shadow: 0 0 15px rgba(6, 182, 212, 0.3);
-            transform: scale(1.02) translateZ(0);
         }
 
-        .tab-transition-enter { animation: matrixIn 0.6s cubic-bezier(0.25, 1, 0.5, 1) forwards; }
-
-        @keyframes slideInNotify {
-            0% { transform: translate3d(0,-100%,0) scale(0.8); opacity: 0; }
-            10% { transform: translate3d(0,0,0) scale(1); opacity: 1; }
-            90% { transform: translate3d(0,0,0) scale(1); opacity: 1; }
-            100% { transform: translate3d(0,-100%,0) scale(0.8); opacity: 0; }
-        }
-        .msg-alert-anim {
-            animation: slideInNotify 5s cubic-bezier(0.68, -0.55, 0.265, 1.55) forwards;
-        }
-
-        /* 🌟 EXTREMELY OPTIMIZED FLOATING ANIMATIONS (GPU ONLY) 🌟 */
-        .hardware-accelerated {
-            transform-style: preserve-3d;
-            backface-visibility: hidden;
-            pointer-events: none;
-            will-change: transform;
-        }
-
-        @keyframes fly1 {
-            0% { transform: translate3d(-10vw, 110vh, 0) scale(0.8); }
-            100% { transform: translate3d(110vw, -10vh, 0) scale(1.1); }
-        }
-        @keyframes fly2 {
-            0% { transform: translate3d(110vw, 90vh, 0) scale(1); }
-            100% { transform: translate3d(-10vw, -10vh, 0) scale(0.7); }
-        }
-        @keyframes fly3 {
-            0% { transform: translate3d(30vw, 110vh, 0) scale(0.9); }
-            100% { transform: translate3d(-10vw, -30vh, 0) scale(1.2); }
-        }
+        .tab-transition-enter { animation: fadeInUp 0.4s ease-out forwards; }
     </style>
 </head>
 <body class="antialiased">
@@ -296,21 +240,35 @@
         const extractSmsCode = (fullText) => {
             if (!fullText) return null;
             const textStr = String(fullText);
-            // Matches 4 to 8 consecutive digits
+            // Matches 4 to 8 consecutive digits (standard for WhatsApp, Telegram, etc)
             const match = textStr.match(/\b\d{4,8}\b/);
             return match ? match[0] : null;
+        };
+
+        // 🌟 STATIC BACKGROUND LOGOS (NO MOVEMENT = 0% PHONE HEATING) 🌟
+        const StaticBackgroundLogos = () => {
+            return (
+                <div className="fixed inset-0 z-[-1] pointer-events-none overflow-hidden">
+                    {/* WhatsApp Logo */}
+                    <svg className="absolute top-[10%] left-[5%] text-[#25D366] opacity-20 w-32 h-32 rotate-12" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413Z"/></svg>
+                    {/* Telegram Logo */}
+                    <svg className="absolute top-[40%] right-[8%] text-[#0088cc] opacity-20 w-48 h-48 -rotate-12" viewBox="0 0 24 24" fill="currentColor"><path d="M12 24c6.627 0 12-5.373 12-12S18.627 0 12 0 0 5.373 0 12s5.373 12 12 12zm5.894-17.717c.504-.227.876.108.736.69l-2.035 9.585c-.15.688-.564.86-.145.498l-3.155-2.322-1.523 1.468c-.168.168-.31.31-.635.31l.226-3.206 5.828-5.266c.253-.226-.055-.352-.393-.119L6.592 12.19l-3.107-.972c-.675-.21-.688-.675.14-.997l14.269-5.5Z"/></svg>
+                    {/* FB Logo */}
+                    <svg className="absolute bottom-[10%] left-[10%] text-[#1877F2] opacity-15 w-36 h-36 rotate-6" viewBox="0 0 24 24" fill="currentColor"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.469h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.469h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg>
+                    {/* Additional Logo */}
+                    <svg className="absolute bottom-[30%] right-[25%] text-[#10b981] opacity-15 w-24 h-24 -rotate-6" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.373 0 0 5.373 0 12s5.373 12 12 12 12-5.373 12-12S18.627 0 12 0zm4.5 16.5c-1.33 0-3.83-1.67-5-3C10.17 12.17 8.5 9.67 8.5 8.33 8.5 7.6 9.17 7 9.83 7c.22 0 .44.1.58.28l1.42 2.13c.12.18.12.43 0 .61l-.8.8c.83 1.67 2.17 3 3.83 3.83l.8-.8c.18-.12.43-.12.61 0l2.13 1.42c.18.14.28.36.28.58 0 .66-.6 1.33-1.33 1.33z"/></svg>
+                </div>
+            );
         };
 
         const SplashScreen = () => {
           return (
             <div className="fixed inset-0 z-[999] flex flex-col items-center justify-center overflow-hidden transition-opacity duration-1000 w-full h-full bg-[#030712]">
-               <div className="relative z-10 flex flex-col items-center justify-center px-4 w-full h-full animate-spring-card text-center">
+               <StaticBackgroundLogos />
+               <div className="relative z-10 flex flex-col items-center justify-center px-4 w-full h-full animate-pop-in text-center">
                   <h1 className="text-4xl sm:text-6xl font-bold tracking-[0.2em] mb-4 text-white uppercase text-center w-full drop-shadow-lg">
                       Verify<span className="text-brand-primary font-light">Hub</span>
                   </h1>
-                  <div className="w-40 h-[2px] bg-white/10 mt-6 overflow-hidden relative mx-auto rounded-full">
-                      <div className="absolute top-0 left-0 h-full bg-brand-primary w-full animate-[shimmer_1.5s_ease-in-out_infinite]"></div>
-                  </div>
                </div>
             </div>
           );
@@ -334,8 +292,8 @@
             
             return (
                 <div className={`fixed top-6 left-1/2 -translate-x-1/2 z-[300] w-[90%] max-w-sm transition-all duration-300 ease-in-out ${show ? 'translate-y-0 opacity-100' : '-translate-y-full opacity-0 pointer-events-none'}`}>
-                    <div className="glass-effect p-4 rounded-3xl flex items-center gap-4 shadow-[0_20px_50px_rgba(0,0,0,0.8)]">
-                        <div className="w-12 h-12 rounded-full bg-white text-black flex items-center justify-center shrink-0 shadow-[0_0_15px_rgba(255,255,255,0.5)]">
+                    <div className="glass-effect p-4 rounded-3xl flex items-center gap-4 shadow-xl">
+                        <div className="w-12 h-12 rounded-full bg-white text-black flex items-center justify-center shrink-0">
                             <MessageSquare className="w-6 h-6 animate-pulse" />
                         </div>
                         <div className="flex-grow pt-0.5">
@@ -361,7 +319,7 @@
             render() {
                 if (this.state.hasError) {
                     return (
-                        <div className="w-full flex flex-col items-center justify-center p-10 text-center glass-effect rounded-3xl min-h-[400px] animate-spring-card">
+                        <div className="w-full flex flex-col items-center justify-center p-10 text-center glass-effect rounded-3xl min-h-[400px] animate-pop-in">
                             <AlertTriangle className="w-10 h-10 text-red-500 mb-4" />
                             <p className="text-white font-bold mb-2">Rendering Interrupted</p>
                             <p className="text-[10px] text-red-400 font-mono mb-6 break-all">{this.state.errorMsg}</p>
@@ -425,18 +383,18 @@
             if (!acc) return null;
 
             return (
-                <div className="glass-panel p-6 flex flex-col animate-spring-card" style={{animationDelay: `${idx * 0.05}s`, animationFillMode: 'both'}}>
+                <div className="glass-panel p-6 flex flex-col animate-fade-in-up" style={{animationDelay: `${idx * 0.05}s`, animationFillMode: 'both'}}>
                     <div className="flex justify-between items-start mb-5 pb-4 border-b border-white/10">
                         <span className="text-xs font-bold text-white uppercase tracking-wider flex items-center gap-2">
                             <Package className="w-4 h-4 text-brand-primary"/> {String(acc.type || 'Account')}
                         </span>
-                        <span className="text-[8px] font-mono text-gray-400 uppercase tracking-widest bg-[rgba(255,255,255,0.05)] px-2.5 py-1 rounded">
+                        <span className="text-[8px] font-mono text-gray-400 uppercase tracking-widest bg-[rgba(255,255,255,0.05)] px-2.5 py-1 rounded border border-white/10">
                             {safeFormatDate(acc.date)}
                         </span>
                     </div>
 
                     {twoFaSecret && (
-                        <div className="mb-5 bg-[rgba(0,0,0,0.4)] border border-white/5 p-4 rounded-xl flex flex-col items-center justify-center relative overflow-hidden">
+                        <div className="mb-5 bg-[rgba(0,0,0,0.4)] border border-white/5 p-4 rounded-xl flex flex-col items-center justify-center relative overflow-hidden shadow-inner">
                             <div className="absolute bottom-0 left-0 w-full h-[1px] bg-white/10">
                                 <div className="bg-brand-primary h-full transition-all duration-1000 ease-linear shadow-[0_0_10px_rgba(6,182,212,0.8)]" style={{width: `${(timeLeft/30)*100}%`}}></div>
                             </div>
@@ -445,7 +403,7 @@
                         </div>
                     )}
 
-                    <div className="w-full bg-[rgba(0,0,0,0.4)] border border-white/5 p-4 rounded-xl mb-5 overflow-x-auto flex-grow custom-scrollbar">
+                    <div className="w-full bg-[rgba(0,0,0,0.4)] border border-white/5 p-4 rounded-xl mb-5 overflow-x-auto flex-grow shadow-inner custom-scrollbar">
                         <pre className="font-mono text-[11px] text-white font-medium whitespace-pre-wrap break-words leading-relaxed drop-shadow-md">{String(acc.data || '')}</pre>
                     </div>
                     
@@ -462,7 +420,7 @@
                         <button onClick={() => {
                            if (navigator.clipboard) navigator.clipboard.writeText(String(acc.data || '')).then(() => triggerToast("Copied!"));
                            else { const t = document.createElement("textarea"); t.value = String(acc.data || ''); document.body.appendChild(t); t.select(); document.execCommand("copy"); document.body.removeChild(t); triggerToast("Copied!"); }
-                        }} className="btn-animate bg-white text-black px-5 py-2.5 rounded-lg text-[9px] uppercase tracking-widest font-bold flex items-center gap-2">
+                        }} className="btn-animate bg-white text-black px-5 py-2.5 rounded-lg text-[9px] uppercase tracking-widest font-bold flex items-center gap-2 shadow-[0_0_10px_rgba(255,255,255,0.2)]">
                             <Copy className="w-3 h-3"/> Copy Data
                         </button>
                     </div>
@@ -716,12 +674,13 @@
           if (!user) {
             return (
               <div className="min-h-screen flex items-center justify-center p-4 relative font-sans w-full bg-transparent text-white">
-                <div className="w-full max-w-[400px] animate-matrix-in z-10">
+                <StaticBackgroundLogos />
+                <div className="w-full max-w-[400px] animate-fade-in-up z-10">
                   <div className="flex flex-col items-center mb-8">
                     <h2 className="text-4xl sm:text-5xl font-bold tracking-[0.2em] text-white uppercase text-center drop-shadow-md">Verify<span className="font-light text-brand-primary">Hub</span></h2>
                   </div>
                   
-                  <div className="glass-effect rounded-3xl p-8 shadow-[0_20px_50px_rgba(0,0,0,0.8)]">
+                  <div className="glass-effect rounded-3xl p-8">
                     {authMethod !== 'admin' && (
                         <div className="grid grid-cols-2 gap-2 glass-panel p-1 rounded-xl mb-8 border border-white/5">
                              <button type="button" onClick={() => { setAuthMethod('login'); setAuthError(''); setAuthSuccessMsg(''); }} className={`btn-animate flex items-center justify-center py-3 rounded-lg text-xs font-bold uppercase tracking-widest ${authMethod === 'login' ? 'bg-white text-black shadow-lg' : 'text-gray-400 hover:text-white'}`}>Login</button>
@@ -731,8 +690,8 @@
                     {authMethod === 'admin' && <div className="text-center mb-8 pb-4 border-b border-white/10"><span className="text-[10px] font-bold text-brand-primary uppercase tracking-[0.3em] flex items-center justify-center gap-2"><ShieldCheck className="w-4 h-4"/> Admin Portal</span></div>}
                     
                     <form onSubmit={handleAuthSubmit} className="space-y-5">
-                      {authError && <div className="text-red-400 text-xs font-bold glass-panel border-red-500/30 p-4 rounded-xl flex items-center gap-3 animate-bouncy-pop"><AlertTriangle className="w-5 h-5 shrink-0"/>{authError}</div>}
-                      {authSuccessMsg && <div className="text-green-400 text-xs font-bold glass-panel border-green-500/30 p-4 rounded-xl flex items-center gap-3 animate-bouncy-pop"><CheckCircle className="w-5 h-5 shrink-0"/>{authSuccessMsg}</div>}
+                      {authError && <div className="text-red-400 text-xs font-bold glass-panel border-red-500/30 p-4 rounded-xl flex items-center gap-3"><AlertTriangle className="w-5 h-5 shrink-0"/>{authError}</div>}
+                      {authSuccessMsg && <div className="text-green-400 text-xs font-bold glass-panel border-green-500/30 p-4 rounded-xl flex items-center gap-3"><CheckCircle className="w-5 h-5 shrink-0"/>{authSuccessMsg}</div>}
                       
                       <div className="space-y-2">
                         <label className="text-[9px] font-bold text-gray-400 pl-1 uppercase tracking-widest">Email Address</label>
@@ -746,7 +705,7 @@
                         <input type="password" value={passwordInput} onChange={e=>setPasswordInput(e.target.value)} placeholder="••••••••" required className="glass-input" />
                       </div>
                       <div className="pt-6">
-                        <button type="submit" disabled={isLoading} className="btn-animate w-full bg-white text-black font-bold py-4 rounded-2xl text-xs tracking-widest uppercase flex items-center justify-center gap-2 shadow-[0_5px_20px_rgba(255,255,255,0.2)]">
+                        <button type="submit" disabled={isLoading} className="btn-animate w-full glass-effect hover:bg-white text-white hover:text-black border border-white/20 font-bold py-4 rounded-2xl text-xs tracking-widest uppercase flex items-center justify-center gap-2">
                             {isLoading ? <span className="flex items-center gap-2"><RefreshCw className="w-4 h-4 animate-spin"/> Processing...</span> : (authMethod === 'signup' ? 'Create Account' : authMethod === 'login' ? 'Access Terminal' : 'Admin Login')}
                         </button>
                       </div>
@@ -762,10 +721,11 @@
 
           return (
             <div className="min-h-screen w-full relative overflow-x-hidden font-sans pb-24 flex flex-col bg-transparent text-white">
+              <StaticBackgroundLogos />
               <MessageNotification msg={incomingMsg} onClose={() => setIncomingMsg(null)} />
               
               {toastData.show && (
-                <div className="fixed top-6 left-1/2 -translate-x-1/2 z-[400] animate-bouncy-pop w-[90%] sm:w-auto max-w-sm">
+                <div className="fixed top-6 left-1/2 -translate-x-1/2 z-[400] w-[90%] sm:w-auto max-w-sm animate-fade-in-up">
                   <div className="glass-effect p-3.5 rounded-2xl shadow-xl flex items-center gap-3 border border-white/20">
                     <CheckCircle className="w-4 h-4 text-brand-primary shrink-0" />
                     <span className="font-bold text-[10px] sm:text-xs tracking-widest text-white uppercase">{toastData.msg}</span>
@@ -775,8 +735,8 @@
 
               <header className="sticky top-0 z-40 w-full glass-effect rounded-none border-t-0 border-x-0 border-b border-white/10">
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 h-20 flex items-center justify-between">
-                  <div className="flex items-center gap-3 sm:gap-4 animate-swoosh-in">
-                      <div className="w-10 h-10 rounded-xl glass-panel flex items-center justify-center border border-white/20 hover:rotate-12 transition-transform cursor-pointer">
+                  <div className="flex items-center gap-3 sm:gap-4">
+                      <div className="w-10 h-10 rounded-xl glass-panel flex items-center justify-center border border-white/20">
                         <ShieldCheck className="w-5 h-5 text-brand-primary" strokeWidth={1.5} />
                       </div>
                       <span className="text-xl font-light tracking-[0.25em] text-white hidden sm:block uppercase">Verify<span className="font-bold text-brand-primary">Hub</span></span>
@@ -785,7 +745,7 @@
                     {user.role === 'customer' && (
                         <button onClick={() => setShowCart(true)} className="btn-animate relative p-3 rounded-xl glass-panel text-white hover:bg-white/10 transition-colors border border-white/10">
                             <ShoppingCart className="w-4 h-4" strokeWidth={1.5}/>
-                            {cart.length > 0 && <span className="absolute -top-2 -right-2 bg-brand-primary text-black text-[10px] font-bold w-5 h-5 flex items-center justify-center rounded-full animate-bouncy-pop">{cart.length}</span>}
+                            {cart.length > 0 && <span className="absolute -top-2 -right-2 bg-brand-primary text-black text-[10px] font-bold w-5 h-5 flex items-center justify-center rounded-full">{cart.length}</span>}
                         </button>
                     )}
                     {user.role === 'customer' && (
@@ -801,13 +761,13 @@
 
               <main className="max-w-7xl mx-auto px-4 sm:px-6 mt-8 relative z-10 w-full flex-grow flex flex-col items-center">
                 {globalNotice && (
-                  <div className="w-full mb-6 glass-panel border-l-4 border-l-brand-primary p-4 rounded-2xl flex items-start sm:items-center gap-4 animate-spring-card">
+                  <div className="w-full mb-6 glass-panel border-l-4 border-l-brand-primary p-4 rounded-2xl flex items-start sm:items-center gap-4">
                      <Megaphone className="w-5 h-5 text-brand-primary shrink-0 mt-0.5 sm:mt-0" />
                      <p className="text-xs font-medium text-gray-200 leading-relaxed tracking-wide">{globalNotice}</p>
                   </div>
                 )}
 
-                <div className="w-full relative z-30 mb-8 animate-matrix-in">
+                <div className="w-full relative z-30 mb-8">
                   {/* 🟢 FIXED TABS: Grid Layout to Prevent Any Scrolling or Cut-offs 🟢 */}
                   <div className="glass-effect rounded-[24px] p-1.5 sm:p-2 grid grid-cols-5 gap-1 w-full border border-white/10 mx-auto max-w-5xl">
                     {(user.role === 'admin' ? ADMIN_TABS : CUSTOMER_TABS).map(tab => (
@@ -901,7 +861,7 @@
 
             return (
                 <>
-                    <button onClick={() => setIsOpen(!isOpen)} className="btn-animate fixed bottom-6 right-6 z-[150] w-14 h-14 bg-white rounded-full shadow-[0_4px_15px_rgba(255,255,255,0.3)] flex items-center justify-center text-black hover:scale-105">
+                    <button onClick={() => setIsOpen(!isOpen)} className="btn-animate fixed bottom-6 right-6 z-[150] w-14 h-14 bg-white rounded-full shadow-[0_4px_15px_rgba(255,255,255,0.3)] flex items-center justify-center text-black">
                         {isOpen ? <X className="w-6 h-6" /> : <MessageSquare className="w-6 h-6" />}
                         {!isOpen && unreadCount > 0 && (
                             <span className="absolute -top-1 -right-1 bg-brand-primary text-black text-[10px] font-bold w-5 h-5 flex items-center justify-center rounded-full border-2 border-white animate-pulse shadow-lg">
@@ -910,7 +870,7 @@
                         )}
                     </button>
                     {isOpen && (
-                        <div className="fixed bottom-24 right-6 z-[150] w-[340px] h-[480px] glass-effect rounded-3xl shadow-[0_20px_50px_rgba(0,0,0,0.9)] flex flex-col overflow-hidden animate-bouncy-pop origin-bottom-right border border-white/20">
+                        <div className="fixed bottom-24 right-6 z-[150] w-[340px] h-[480px] glass-effect rounded-3xl shadow-[0_20px_50px_rgba(0,0,0,0.9)] flex flex-col overflow-hidden origin-bottom-right animate-fade-in-up">
                             <div className="bg-[rgba(255,255,255,0.05)] border-b border-white/10 p-5 flex items-center justify-between">
                                 <div className="flex items-center gap-3">
                                    <div className="w-2.5 h-2.5 bg-brand-primary rounded-full animate-pulse"></div>
@@ -926,7 +886,7 @@
                                     </div>
                                 ) : (
                                     chatMessages.map((msg, i) => (
-                                        <div key={msg.id} className={`flex flex-col animate-swoosh-in ${msg.sender === 'user' ? 'items-end' : 'items-start'}`} style={{animationDelay: `${i * 0.03}s`}}>
+                                        <div key={msg.id} className={`flex flex-col animate-fade-in-up ${msg.sender === 'user' ? 'items-end' : 'items-start'}`} style={{animationDelay: `${i * 0.03}s`}}>
                                             <div className={`px-4 py-3 rounded-2xl max-w-[85%] text-[12px] font-medium leading-relaxed shadow-lg ${msg.sender === 'user' ? 'bg-white text-black rounded-tr-sm' : 'glass-panel text-white rounded-tl-sm'}`}>
                                                 {msg.text}
                                             </div>
@@ -1102,22 +1062,15 @@
 
           const formatPhoneDisplay = (phone) => { return `+${String(phone).replace(/\D/g, '')}`; };
           const copyNumberOnly = (phone) => { copyText(String(phone).replace(/\D/g, '')); };
-          
-          // 🟢 HELPER FOR EXTRACTING CODE 🟢
-          const extractCode = (fullMessage) => {
-              if(!fullMessage) return null;
-              const match = fullMessage.match(/\b\d{4,8}\b/);
-              return match ? match[0] : null;
-          };
 
           if(!smsSettings?.active) return <div className="glass-effect rounded-3xl w-full text-center py-32 text-gray-500 font-mono text-sm uppercase tracking-widest"><Smartphone className="w-12 h-12 mx-auto mb-4 opacity-30" strokeWidth={1.5}/> Service Offline.</div>;
 
           return (
-            <div className="w-full max-w-3xl mx-auto space-y-6 sm:space-y-8 relative animate-matrix-in">
+            <div className="w-full max-w-3xl mx-auto space-y-6 sm:space-y-8 relative">
                 
                 {confirmAction.show && (
-                    <div className="fixed inset-0 z-[200] flex items-center justify-center p-4 bg-[#000]/80">
-                        <div className="glass-effect w-full max-w-sm rounded-3xl p-6 sm:p-8 relative overflow-hidden border border-white/20 animate-bouncy-pop">
+                    <div className="fixed inset-0 z-[600] flex items-center justify-center p-4 bg-[#000]/80">
+                        <div className="glass-effect w-full max-w-sm rounded-3xl p-6 sm:p-8 relative overflow-hidden border border-white/20 animate-fade-in-up">
                             <div className="absolute top-0 left-0 w-full h-1.5 bg-red-600"></div>
                             <div className="flex items-center gap-4 mb-6">
                                 <div className="p-3.5 rounded-2xl glass-panel text-red-500 border border-red-500/30">
@@ -1130,7 +1083,7 @@
                             </p>
                             <div className="flex gap-3 w-full">
                                 <button onClick={() => setConfirmAction({ show: false, type: '', orderId: null, price: 0 })} className="btn-animate flex-1 py-3.5 rounded-xl font-bold text-gray-300 glass-panel hover:bg-white/10 text-xs uppercase tracking-widest">Cancel</button>
-                                <button onClick={executeConfirmAction} className="btn-animate flex-1 py-3.5 rounded-xl font-bold text-white text-xs uppercase tracking-widest shadow-lg bg-red-600 hover:bg-red-500 border border-red-500/50">Yes, Skip</button>
+                                <button onClick={executeConfirmAction} className="btn-animate flex-1 py-3.5 rounded-xl font-bold text-white text-xs uppercase tracking-widest bg-red-600 hover:bg-red-500 border border-red-500/50">Yes, Skip</button>
                             </div>
                         </div>
                     </div>
@@ -1139,7 +1092,7 @@
                 <div className={uiCard + " p-6 sm:p-8"}>
                     <div className="flex items-center justify-between mb-8 pb-5 border-b border-white/10 relative z-10">
                         <h2 className="text-lg sm:text-xl font-light tracking-[0.2em] text-white flex items-center gap-3 uppercase">
-                            <div className="w-10 h-10 rounded-xl glass-panel flex items-center justify-center">
+                            <div className="w-10 h-10 rounded-xl glass-panel flex items-center justify-center shadow-inner">
                                 <Radar className="w-5 h-5 text-brand-primary animate-spin" style={{ animationDuration: '4s' }}/>
                             </div>
                             Control <span className="font-bold text-brand-primary">Panel</span>
@@ -1151,24 +1104,24 @@
                     </div>
 
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-5 relative z-10 mb-8">
-                        <div className="glass-panel p-4 rounded-2xl hover:border-brand-primary/30 transition-colors shadow-none">
+                        <div className="glass-panel p-4 rounded-2xl hover:border-brand-primary/30 transition-colors">
                             <label className="block text-[9px] font-bold text-gray-400 mb-2.5 uppercase tracking-[0.2em] ml-1">Select Region</label>
                             <div className="relative">
-                                <select value={smsCountry} onChange={e => setSmsCountry(e.target.value)} className={uiInput + " appearance-none cursor-pointer pr-10 text-white h-12 bg-[rgba(0,0,0,0.5)]"}>
+                                <select value={smsCountry} onChange={e => setSmsCountry(e.target.value)} className={uiInput + " appearance-none cursor-pointer pr-10 text-white h-12 bg-transparent"}>
                                     {NETWORK_REGIONS.map(c => <option key={c.id} value={c.id} className="bg-[#121212]">{c.name}</option>)}
                                 </select>
                                 <ChevronDown className="w-4 h-4 text-white absolute right-4 top-4 pointer-events-none" />
                             </div>
                         </div>
 
-                        <div className="glass-panel p-4 rounded-2xl hover:border-brand-primary/30 transition-colors shadow-none">
+                        <div className="glass-panel p-4 rounded-2xl hover:border-brand-primary/30 transition-colors">
                             <label className="block text-[9px] font-bold text-gray-400 mb-2.5 uppercase tracking-[0.2em] ml-1">Select Price</label>
                             <div className="relative w-full">
                                 <select 
                                     value={selectedTier?.originalPrice ? String(selectedTier.originalPrice) : ''}
                                     onChange={(e) => { const tier = Array.isArray(priceTiers) ? priceTiers.find(t => String(t?.originalPrice) === e.target.value) : null; if(tier) setSelectedTier(tier); }}
                                     disabled={isTiersLoading || (!Array.isArray(priceTiers)) || priceTiers.length === 0}
-                                    className={uiInput + " h-12 pl-10 appearance-none cursor-pointer text-[13px] font-mono text-white bg-[rgba(0,0,0,0.5)] disabled:opacity-50"}
+                                    className={uiInput + " h-12 pl-10 appearance-none cursor-pointer text-[13px] font-mono text-white bg-transparent disabled:opacity-50"}
                                 >
                                     {isTiersLoading ? (
                                         <option value="" className="text-xs bg-[#121212] text-gray-500">...</option>
@@ -1186,7 +1139,7 @@
                         </div>
                     </div>
 
-                    <div className="glass-panel p-5 sm:p-6 rounded-3xl mb-8 shadow-none relative z-10 transition-all z-[50]">
+                    <div className="glass-panel p-5 sm:p-6 rounded-3xl mb-8 relative transition-all">
                        <label className="block text-[10px] font-bold text-gray-400 mb-3 uppercase tracking-[0.2em] ml-1">Select Application</label>
                        <div className="relative w-full">
                            <div onClick={() => setIsAppDropdownOpen(!isAppDropdownOpen)} className={uiInput + " h-14 pl-12 pr-10 flex items-center justify-between cursor-pointer hover:border-brand-primary/50 bg-[rgba(0,0,0,0.5)]"}>
@@ -1195,9 +1148,9 @@
                                <ChevronDown className={`w-4 h-4 text-gray-400 absolute right-4 transition-transform ${isAppDropdownOpen ? 'rotate-180' : ''}`}/>
                            </div>
                            
-                           {/* 🟢 MODAL WITH Z-INDEX 500 FIXED TO BE ALWAYS ON TOP 🟢 */}
+                           {/* 🟢 Z-INDEX FIXED MODAL 🟢 */}
                            {isAppDropdownOpen && (
-                               <div className="fixed inset-0 z-[500] flex items-center justify-center p-4 bg-[#000]/90 animate-bouncy-pop">
+                               <div className="fixed inset-0 z-[9999] flex items-center justify-center p-4 bg-black/80 animate-fade-in-up">
                                    <div className="glass-effect border border-white/20 w-full max-w-sm rounded-3xl flex flex-col h-[70vh] shadow-[0_20px_50px_rgba(0,0,0,0.9)] overflow-hidden">
                                        <div className="p-4 border-b border-white/10 flex justify-between items-center bg-[rgba(255,255,255,0.05)]">
                                            <h3 className="font-bold text-white text-xs tracking-widest uppercase">Select Application</h3>
@@ -1211,7 +1164,7 @@
                                                filteredApps.map((s, i) => {
                                                    if(!s) return null;
                                                    return (
-                                                       <div key={s.code} onClick={() => { setSelectedSmsService(s.code); setIsAppDropdownOpen(false); setAppSearch(''); }} className={`btn-animate px-4 py-3.5 rounded-xl cursor-pointer text-xs font-bold flex items-center justify-between animate-swoosh-in ${selectedSmsService === s.code ? 'bg-white text-black shadow-[0_0_15px_rgba(255,255,255,0.4)]' : 'text-gray-300 hover:bg-white/10 glass-panel'}`} style={{animationDelay: `${i * 0.02}s`, animationFillMode: 'both'}}>
+                                                       <div key={s.code} onClick={() => { setSelectedSmsService(s.code); setIsAppDropdownOpen(false); setAppSearch(''); }} className={`btn-animate px-4 py-3.5 rounded-xl cursor-pointer text-xs font-bold flex items-center justify-between ${selectedSmsService === s.code ? 'bg-white text-black shadow-[0_0_15px_rgba(255,255,255,0.4)]' : 'text-gray-300 hover:bg-[rgba(255,255,255,0.05)] glass-panel'}`}>
                                                            {s.name}
                                                            {selectedSmsService === s.code && <CheckCircle className="w-4 h-4" />}
                                                        </div>
@@ -1225,6 +1178,7 @@
                        </div>
                     </div>
 
+                    {/* 🟢 GLOSSY GET NUMBER BUTTON 🟢 */}
                     <button onClick={buySmsNumber} disabled={isSmsLoading || !currentService || activeOrders.length > 0 || (!priceTiers || priceTiers.length === 0)} className="btn-animate w-full glass-effect hover:bg-white text-white hover:text-black font-bold py-4 rounded-2xl text-xs tracking-widest uppercase shadow-[0_5px_20px_rgba(255,255,255,0.1)] h-14 mt-4 relative z-10 max-w-md mx-auto flex items-center justify-center gap-2">
                         {activeOrders.length > 0 ? <span className="flex items-center gap-2"><StopCircle className="w-4 h-4"/> Finish Order First</span> : isSmsLoading ? <span className="flex items-center gap-2"><RefreshCw className="w-4 h-4 animate-spin"/> Processing...</span> : 'Get Number'}
                     </button>
@@ -1232,7 +1186,7 @@
 
                 {activeOrders.map((order, index) => {
                     return (
-                        <div key={order.id} className="glass-effect rounded-3xl border border-white/20 flex flex-col items-center py-10 px-6 sm:px-10 animate-spring-card relative overflow-hidden group mt-8">
+                        <div key={order.id} className="glass-effect rounded-3xl border border-white/20 flex flex-col items-center py-10 px-6 sm:px-10 animate-fade-in-up relative overflow-hidden group mt-8">
                             <div className="absolute top-0 left-0 w-full h-[3px] bg-white/10">
                                 <OrderProgressBar expiresAt={order.expiresAt} />
                             </div>
@@ -1243,10 +1197,10 @@
                             </div>
 
                             <div className="flex items-center gap-4 w-full max-w-md mb-10 relative z-10">
-                                <div className="text-3xl sm:text-5xl font-mono font-bold text-white bg-[rgba(0,0,0,0.5)] px-6 py-6 rounded-2xl border border-white/10 flex-grow text-center whitespace-nowrap overflow-hidden text-ellipsis tracking-wider drop-shadow-md">
+                                <div className="text-3xl sm:text-5xl font-mono font-bold text-white bg-[rgba(0,0,0,0.5)] px-6 py-6 rounded-2xl border border-white/10 flex-grow text-center whitespace-nowrap overflow-hidden text-ellipsis tracking-wider">
                                     +{String(order.phone).replace(/\D/g, '')}
                                 </div>
-                                <button onClick={() => copyNumberOnly(order.phone)} className="btn-animate p-6 bg-white hover:bg-gray-200 text-black rounded-2xl shadow-[0_0_20px_rgba(255,255,255,0.2)] transition-colors shrink-0">
+                                <button onClick={() => copyNumberOnly(order.phone)} className="btn-animate p-6 bg-white hover:bg-gray-200 text-black rounded-2xl shadow-[0_0_20px_rgba(255,255,255,0.2)] shrink-0">
                                     <Copy className="w-6 h-6"/>
                                 </button>
                             </div>
@@ -1260,17 +1214,17 @@
                                             <OrderTimerDisplay expiresAt={order.expiresAt} />
                                         </div>
                                         
-                                        <button onClick={() => setConfirmAction({show: true, type: 'skip', orderId: order.id, price: order.price})} className="btn-animate bg-red-900/20 hover:bg-red-900/40 border border-red-900/50 text-red-400 px-6 py-3 rounded-xl text-[10px] uppercase tracking-widest font-bold transition-all flex items-center gap-2"><Ban className="w-3.5 h-3.5"/> Skip</button>
+                                        <button onClick={() => setConfirmAction({show: true, type: 'skip', orderId: order.id, price: order.price})} className="btn-animate bg-red-900/20 hover:bg-red-900/40 border border-red-900/50 text-red-400 px-6 py-3 rounded-xl text-[10px] uppercase tracking-widest font-bold flex items-center gap-2"><Ban className="w-3.5 h-3.5"/> Skip</button>
                                     </div>
                                 </div>
                             ) : (
-                                <div className="w-full max-w-md space-y-5 relative z-10 animate-swoosh-in">
+                                <div className="w-full max-w-md space-y-5 relative z-10 animate-fade-in-up">
                                     <p className="text-[11px] text-green-400 font-bold uppercase tracking-[0.3em] text-center mb-5">SMS Received</p>
                                     {order.codes.map((c, i) => {
-                                        /* 🟢 EXACT CODE EXTRACTION & NORMAL TEXT DISPLAY 🟢 */
+                                        /* 🟢 FIXED: PROPERLY FORMATTING SMS TEXT AND EXTRACTING ONLY CODE 🟢 */
                                         const exactCode = extractCode(c);
                                         return (
-                                            <div key={i} className="flex flex-col gap-4 bg-[rgba(255,255,255,0.05)] border border-brand-primary/30 p-5 rounded-2xl animate-fade-in-up" style={{animationDelay: `${i * 0.1}s`, animationFillMode: 'both'}}>
+                                            <div key={i} className="flex flex-col gap-4 bg-[rgba(255,255,255,0.05)] border border-brand-primary/30 p-5 rounded-2xl">
                                                 <p className="text-xs text-white font-sans leading-relaxed text-left break-words">{c}</p>
                                                 
                                                 {exactCode && (
@@ -1282,7 +1236,7 @@
                                             </div>
                                         );
                                     })}
-                                    <button onClick={() => setActiveOrders([])} className="btn-animate w-full glass-panel hover:bg-white/20 text-white font-bold py-4 px-6 rounded-2xl transition-all flex items-center justify-center gap-2 uppercase tracking-widest mt-8 !text-xs">Close Order</button>
+                                    <button onClick={() => setActiveOrders([])} className="btn-animate w-full glass-panel hover:bg-white/20 text-white font-bold py-4 px-6 rounded-2xl flex items-center justify-center gap-2 uppercase tracking-widest mt-8 !text-xs">Close Order</button>
                                 </div>
                             )}
                         </div>
@@ -1327,7 +1281,7 @@
           };
 
           return (
-            <div className="space-y-6 w-full relative z-10 animate-matrix-in">
+            <div className="space-y-6 w-full relative z-10 animate-fade-in-up">
               <div className="flex flex-col sm:flex-row justify-between items-center gap-4 w-full glass-effect p-5 rounded-3xl border border-white/10 relative overflow-hidden">
                 <div className="absolute top-0 left-0 w-1.5 h-full bg-brand-primary"></div>
                 <div className="text-center sm:text-left w-full pl-4 py-1">
@@ -1348,7 +1302,7 @@
                       const isOutOfStock = stockCount === 0;
 
                       return (
-                          <div key={product.id} className={`relative glass-panel rounded-3xl p-6 flex flex-col group transition-all duration-300 border border-white/5 animate-spring-card ${isOutOfStock ? "opacity-50 grayscale" : "hover:border-brand-primary/40 hover:bg-[rgba(255,255,255,0.02)]"}`} style={{animationDelay: `${idx * 0.05}s`, animationFillMode: 'both'}}>
+                          <div key={product.id} className={`relative glass-panel rounded-3xl p-6 flex flex-col group transition-all duration-300 border border-white/5 animate-fade-in-up ${isOutOfStock ? "opacity-50 grayscale" : "hover:border-brand-primary/40 hover:bg-[rgba(255,255,255,0.02)]"}`} style={{animationDelay: `${idx * 0.05}s`}}>
                               
                               <div className="absolute top-0 left-0 w-full h-[2px] bg-gradient-to-r from-transparent via-brand-primary to-transparent scale-x-0 group-hover:scale-x-100 transition-transform duration-700 ease-out"></div>
 
@@ -1536,7 +1490,7 @@
           const selectedCustomPayment = (customPayments || []).find(p => p.name === manualMethod);
 
           return (
-            <div className="animate-matrix-in grid grid-cols-1 lg:grid-cols-2 gap-6 sm:gap-8 w-full">
+            <div className="animate-fade-in-up grid grid-cols-1 lg:grid-cols-2 gap-6 sm:gap-8 w-full">
               <div className="space-y-6 sm:space-y-8 w-full">
                 <div className="glass-effect rounded-3xl p-6 sm:p-8 h-fit border border-white/10">
                   <h2 className="text-sm font-bold tracking-widest mb-6 text-white flex items-center gap-2 uppercase">
@@ -1568,7 +1522,7 @@
                         </form>
                       </div>
                   ) : (
-                      <div className="bg-[rgba(0,0,0,0.5)] border border-white/10 rounded-2xl p-6 text-center space-y-6 relative overflow-hidden mt-6 animate-bouncy-pop">
+                      <div className="bg-[rgba(0,0,0,0.5)] border border-white/10 rounded-2xl p-6 text-center space-y-6 relative overflow-hidden mt-6 animate-fade-in-up">
                           <div className="absolute top-0 left-0 w-full h-[2px] bg-white/10">
                               <div className="h-full bg-white transition-all duration-1000" style={{ width: `${(autoPay.time / 1800) * 100}%` }}></div>
                           </div>
@@ -1685,7 +1639,7 @@
           const myPurchases = (purchases || []).filter(p => p && p.customer === user?.email);
 
           return (
-            <div className="animate-matrix-in w-full">
+            <div className="animate-fade-in-up w-full">
               <div className="glass-effect rounded-3xl p-6 sm:p-8 min-h-[600px] border border-white/10">
                 <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-8 pb-6 border-b border-white/10 gap-4">
                     <div>
@@ -1767,7 +1721,7 @@
           });
 
           return (
-            <div className="animate-matrix-in w-full">
+            <div className="animate-fade-in-up w-full">
               <div className="flex space-x-1.5 mb-8 p-1.5 bg-[rgba(255,255,255,0.05)] rounded-xl border border-white/10 shadow-inner max-w-fit mx-auto md:mx-0">
                   <button onClick={() => setProfileSubTab('overview')} className={`btn-animate px-5 py-2.5 rounded-lg text-[9px] uppercase tracking-widest font-bold ${profileSubTab === 'overview' ? 'bg-white text-black shadow-md' : 'text-gray-400 hover:text-white'}`}>My Profile</button>
                   <button onClick={() => setProfileSubTab('history')} className={`btn-animate px-5 py-2.5 rounded-lg text-[9px] uppercase tracking-widest font-bold ${profileSubTab === 'history' ? 'bg-white text-black shadow-md' : 'text-gray-400 hover:text-white'}`}>History</button>
@@ -1831,7 +1785,7 @@
                           <div className="glass-effect rounded-3xl p-6 sm:p-8 border border-white/10">
                              <h3 className="text-sm font-bold tracking-widest text-white mb-3 flex items-center gap-2 uppercase"><Users className="w-4 h-4 text-gray-300"/> Referral Code</h3>
                              <p className="text-xs text-gray-400 font-light mb-6">Share your code with friends to earn commission.</p>
-                             <div className="bg-[rgba(0,0,0,0.5)] border border-white/10 p-2 rounded-xl flex justify-between items-center shadow-inner">
+                             <div className="bg-[#0f172a] border border-white/10 p-2 rounded-xl flex justify-between items-center shadow-inner">
                                <span className="font-mono text-[11px] text-white font-bold px-4 break-all tracking-widest">{referralCode}</span>
                                <button onClick={() => {
                                   if (navigator.clipboard) navigator.clipboard.writeText(referralCode).then(() => triggerToast("Copied!"));
@@ -1845,7 +1799,7 @@
               )}
 
               {profileSubTab === 'history' && (
-                  <div className="glass-effect rounded-3xl p-6 sm:p-8 min-h-[600px] animate-swoosh-in border border-white/10">
+                  <div className="glass-effect rounded-3xl p-6 sm:p-8 min-h-[600px] animate-fade-in-up border border-white/10">
                     <h2 className="text-xl font-bold tracking-widest uppercase text-white mb-8 pb-4 border-b border-white/10 flex items-center gap-3"><History className="w-5 h-5"/> Transaction History</h2>
                     
                     {unifiedHistory.length === 0 ? (
@@ -1859,7 +1813,7 @@
                             if (!item) return null;
                             const isDeposit = item.type === 'Funds Added';
                             return (
-                                <div key={idx} className="bg-black/40 border border-white/5 hover:border-white/20 p-4 sm:p-5 rounded-2xl flex flex-col sm:flex-row sm:items-center justify-between gap-4 transition-colors group animate-slide-in-right" style={{animationDelay: `${idx * 0.05}s`, opacity: 0, animationFillMode: 'forwards'}}>
+                                <div key={idx} className="bg-black/40 border border-white/5 hover:border-white/20 p-4 sm:p-5 rounded-2xl flex flex-col sm:flex-row sm:items-center justify-between gap-4 transition-colors group animate-fade-in-up" style={{animationDelay: `${idx * 0.05}s`}}>
                                     <div className="flex items-center gap-4">
                                         <div className={`w-12 h-12 rounded-xl flex items-center justify-center shrink-0 border ${isDeposit ? 'bg-white text-black border-white/50' : 'bg-[#111] text-white border-[#333]'}`}>
                                             {isDeposit ? <Wallet className="w-5 h-5"/> : <ShoppingCart className="w-5 h-5"/>}
@@ -1886,7 +1840,7 @@
               )}
 
               {profileSubTab === 'support' && (
-                  <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 sm:gap-8 w-full animate-swoosh-in">
+                  <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 sm:gap-8 w-full animate-fade-in-up">
                       <div className="space-y-6 sm:space-y-8 w-full">
                           <div className="glass-effect rounded-3xl p-6 sm:p-8 h-fit border border-white/10">
                             <h2 className="text-lg font-bold tracking-widest text-white mb-2 flex items-center gap-2 pb-4 border-b border-white/10 uppercase"><Headset className="w-4 h-4"/> Contact Admin</h2>
@@ -2300,7 +2254,7 @@
           return (
             <>
               {editUserModal.show && (
-                <div className="fixed inset-0 z-[150] flex items-center justify-center p-4 bg-[#000]/90 animate-bouncy-pop">
+                <div className="fixed inset-0 z-[150] flex items-center justify-center p-4 bg-[#000]/90 animate-fade-in-up">
                   <div className="glass-effect w-full max-w-md p-8 rounded-3xl border border-white/20">
                      <div className="flex justify-between items-center mb-6 pb-4 border-b border-white/10">
                          <h3 className="text-sm font-bold uppercase tracking-[0.2em] text-white flex items-center gap-2"><Edit className="w-4 h-4 text-white"/> Edit User</h3>
@@ -2333,7 +2287,7 @@
 
               {/* 🟢 NEW PRODUCT MODAL 🟢 */}
               {newProductModal && (
-                  <div className="fixed inset-0 z-[150] flex items-center justify-center p-4 bg-[#000]/90 animate-bouncy-pop">
+                  <div className="fixed inset-0 z-[150] flex items-center justify-center p-4 bg-[#000]/90 animate-fade-in-up">
                     <div className="glass-effect w-full max-w-md p-8 rounded-3xl border border-white/20">
                        <div className="flex justify-between items-center mb-6 pb-4 border-b border-white/10">
                            <h3 className="text-sm font-bold uppercase tracking-[0.2em] text-white flex items-center gap-2"><Plus className="w-4 h-4"/> Create New Card</h3>
@@ -2365,7 +2319,7 @@
                   </div>
               )}
 
-              <div className="flex-grow w-full min-w-0 mt-2 sm:mt-4 animate-3d-flip">
+              <div className="flex-grow w-full min-w-0 mt-2 sm:mt-4 animate-matrix-in">
                 {activeTab === 'inventory' && (
                   <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 sm:gap-8 w-full">
                     <div className="glass-effect p-6 sm:p-8 rounded-3xl h-fit lg:col-span-1 border border-white/10">
