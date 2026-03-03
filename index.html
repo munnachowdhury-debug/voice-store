@@ -21,42 +21,53 @@
                 primary: '#06b6d4', 
                 primaryHover: '#0891b2', 
                 darkBg: '#030712', 
-                border: 'rgba(255, 255, 255, 0.1)' 
+                border: 'rgba(255, 255, 255, 0.15)' 
               }
             },
             backgroundImage: {
               'gold-gradient': 'linear-gradient(to right, #06b6d4, #3b82f6, #6366f1)',
-              'glass-gradient': 'linear-gradient(145deg, rgba(30,41,59,1) 0%, rgba(15,23,42,1) 100%)'
+              'glass-gradient': 'linear-gradient(145deg, rgba(255,255,255,0.05) 0%, rgba(255,255,255,0.01) 100%)'
             },
             animation: {
-              'matrix-in': 'matrixIn 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.1) forwards',
-              'spring-card': 'springCard 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards',
-              'swoosh-in': 'swooshIn 0.5s cubic-bezier(0.25, 1, 0.5, 1) forwards',
-              'pulse-slow': 'pulseSlow 4s ease-in-out infinite',
+              'matrix-in': 'matrixIn 0.8s cubic-bezier(0.25, 1, 0.5, 1) forwards',
+              'spring-card': 'springCard 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) forwards',
+              'swoosh-in': 'swooshIn 0.6s cubic-bezier(0.25, 1, 0.5, 1) forwards',
+              'bouncy-pop': 'bouncyPop 0.7s cubic-bezier(0.34, 1.56, 0.64, 1) forwards',
+              'fade-in-up': 'fadeInUp 0.4s ease-out forwards',
               'pop-in': 'popIn 0.3s ease-out forwards',
+              'pulse-slow': 'pulseSlow 4s ease-in-out infinite',
             },
             keyframes: {
-              /* 🟢 HIGH-LEVEL INTENSE 3D ANIMATIONS (ZERO CPU HEATING - NO BLUR) 🟢 */
+              /* 🟢 HIGH-LEVEL 3D ANIMATIONS (ZERO CPU HEATING - NO BLUR) 🟢 */
               matrixIn: {
-                '0%': { transform: 'perspective(1500px) rotateX(15deg) rotateY(-5deg) translateZ(-100px) translateY(40px)', opacity: '0' },
-                '100%': { transform: 'perspective(1500px) rotateX(0deg) rotateY(0deg) translateZ(0) translateY(0)', opacity: '1' }
+                '0%': { transform: 'perspective(2000px) rotateX(10deg) rotateY(-5deg) translateZ(-50px) translateY(30px)', opacity: '0' },
+                '100%': { transform: 'perspective(2000px) rotateX(0deg) rotateY(0deg) translateZ(0) translateY(0)', opacity: '1' }
               },
               springCard: {
-                '0%': { transform: 'scale(0.8) translateY(40px)', opacity: '0' },
-                '60%': { transform: 'scale(1.05) translateY(-10px)', opacity: '1' },
+                '0%': { transform: 'scale(0.85) translateY(40px)', opacity: '0' },
+                '50%': { transform: 'scale(1.02) translateY(-5px)', opacity: '1' },
                 '100%': { transform: 'scale(1) translateY(0)', opacity: '1' }
               },
               swooshIn: {
-                '0%': { transform: 'translate3d(50px, 0, 0) skewX(-10deg)', opacity: '0' },
+                '0%': { transform: 'translate3d(40px, 0, 0) skewX(-5deg)', opacity: '0' },
                 '100%': { transform: 'translate3d(0, 0, 0) skewX(0deg)', opacity: '1' }
+              },
+              bouncyPop: {
+                '0%': { transform: 'scale(0.8) translate3d(0, 30px, 0)', opacity: '0' },
+                '50%': { transform: 'scale(1.03) translate3d(0, -5px, 0)', opacity: '1' },
+                '100%': { transform: 'scale(1) translate3d(0, 0, 0)', opacity: '1' }
+              },
+              fadeInUp: {
+                '0%': { opacity: '0', transform: 'translateY(15px)' },
+                '100%': { opacity: '1', transform: 'translateY(0)' }
               },
               popIn: {
                 '0%': { opacity: '0', transform: 'scale(0.95)' },
                 '100%': { opacity: '1', transform: 'scale(1)' }
               },
               pulseSlow: {
-                '0%, 100%': { transform: 'scale(1)' },
-                '50%': { transform: 'scale(1.05)' }
+                '0%, 100%': { opacity: '1' },
+                '50%': { opacity: '0.7' }
               }
             }
           }
@@ -90,8 +101,12 @@
         .scrollbar-hide { -ms-overflow-style: none; scrollbar-width: none; }
         
         body {
-            /* 🌟 DEEP MODERN BACKGROUND 🌟 */
+            /* 🌟 STATIC DEEP PREMIUM BACKGROUND 🌟 */
             background-color: #030712;
+            background-image: 
+                radial-gradient(circle at 15% 50%, rgba(6, 182, 212, 0.15) 0px, transparent 40%),
+                radial-gradient(circle at 85% 30%, rgba(139, 92, 246, 0.15) 0px, transparent 40%);
+            background-attachment: fixed;
             color: #ffffff;
             font-family: 'Plus Jakarta Sans', sans-serif;
             overflow-x: hidden;
@@ -103,43 +118,50 @@
         }
         pre { -webkit-user-select: auto; user-select: auto; }
 
-        /* 🌟 BUTTON ANIMATIONS (NO CSS TRANSFORMS TO PREVENT Z-INDEX BUGS) 🌟 */
+        /* 🌟 CRAZY ELASTIC BUTTON ANIMATIONS (HARDWARE ACCELERATED) 🌟 */
         .btn-animate {
-            transition: transform 0.15s ease-out, box-shadow 0.15s ease-out;
+            transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.3s ease, background-color 0.3s ease;
+            position: relative;
+            transform-origin: center center;
+            transform: translateZ(0); 
+            will-change: transform;
         }
         .btn-animate:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 10px 20px -5px rgba(6, 182, 212, 0.4);
+            transform: scale(1.05) translate3d(0, -3px, 0);
+            box-shadow: 0 15px 25px -5px rgba(6, 182, 212, 0.4);
         }
         .btn-animate:active {
-            transform: translateY(2px);
-            box-shadow: 0 2px 5px rgba(6, 182, 212, 0.2);
+            transform: scale(0.9) translate3d(0, 4px, 0) !important;
+            box-shadow: 0 2px 5px rgba(6, 182, 212, 0.2) !important;
+            transition: transform 0.1s cubic-bezier(0.4, 0, 0.2, 1) !important;
         }
         
         .custom-scrollbar::-webkit-scrollbar { width: 5px; height: 5px; }
         .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
         .custom-scrollbar::-webkit-scrollbar-thumb { background-color: rgba(255, 255, 255, 0.15); border-radius: 10px; }
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover { background-color: rgba(255, 255, 255, 0.4); }
 
-        /* 🌟 1% BLUR & 100% TRANSPARENT GLASS (FIXED Z-INDEX ISSUE) 🌟 */
+        /* 🌟 ULTRA CLEAR GLASS EFFECT (0% HEATING, NO BLUR) 🌟 */
         .glass-effect {
-            background: rgba(15, 23, 42, 0.3); /* Super sheer background */
-            backdrop-filter: blur(2px); /* 1% Blur */
-            -webkit-backdrop-filter: blur(2px);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.3);
-            /* Removed translateZ to fix Modal overlapping issues! */
+            background: rgba(255, 255, 255, 0.03); /* Super transparent */
+            border: 1px solid rgba(255, 255, 255, 0.15); /* Distinct border */
+            box-shadow: inset 0 1px 1px rgba(255,255,255,0.1), 0 10px 40px -10px rgba(0, 0, 0, 0.5);
+            transition: border-color 0.3s ease, background 0.3s ease;
+            transform: translateZ(0);
         }
         .glass-effect:hover {
-            border-color: rgba(6, 182, 212, 0.3);
-            background: rgba(15, 23, 42, 0.4);
+            border-color: rgba(6, 182, 212, 0.4);
+            background: rgba(255, 255, 255, 0.05);
         }
 
         .glass-panel {
-            background: rgba(255, 255, 255, 0.03); /* Transparent */
+            background: rgba(255, 255, 255, 0.02);
             border: 1px solid rgba(255, 255, 255, 0.08);
             backdrop-filter: blur(2px); /* 1% Blur */
             -webkit-backdrop-filter: blur(2px);
             border-radius: 16px;
+            box-shadow: inset 0 1px 0 rgba(255,255,255,0.05);
+            transform: translateZ(0);
         }
 
         .glass-input {
@@ -150,37 +172,48 @@
             padding: 14px 18px;
             font-size: 13px;
             color: #fff;
-            transition: border-color 0.2s ease;
+            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
             outline: none;
+            transform: translateZ(0);
         }
         .glass-input:focus {
             border-color: #06b6d4;
             background: rgba(0, 0, 0, 0.6);
+            box-shadow: 0 0 15px rgba(6, 182, 212, 0.3);
+            transform: scale(1.02) translateZ(0);
         }
 
-        .tab-transition-enter { animation: fadeInUp 0.4s ease-out forwards; }
+        .tab-transition-enter { animation: matrixIn 0.6s cubic-bezier(0.25, 1, 0.5, 1) forwards; }
 
-        /* 🌟 EXTREMELY OPTIMIZED FLOATING ANIMATIONS (PURE GPU, ZERO CPU LOAD) 🌟 */
+        @keyframes slideInNotify {
+            0% { transform: translate3d(0,-100%,0) scale(0.8); opacity: 0; }
+            10% { transform: translate3d(0,0,0) scale(1); opacity: 1; }
+            90% { transform: translate3d(0,0,0) scale(1); opacity: 1; }
+            100% { transform: translate3d(0,-100%,0) scale(0.8); opacity: 0; }
+        }
+        .msg-alert-anim {
+            animation: slideInNotify 5s cubic-bezier(0.68, -0.55, 0.265, 1.55) forwards;
+        }
+
+        /* 🌟 EXTREMELY OPTIMIZED FLOATING ANIMATIONS (GPU ONLY) 🌟 */
         .hardware-accelerated {
             transform-style: preserve-3d;
             backface-visibility: hidden;
             pointer-events: none;
             will-change: transform;
-            position: absolute;
         }
 
-        /* Using extremely slow animations and translate3d to guarantee zero CPU usage */
         @keyframes fly1 {
-            from { transform: translate3d(-20vw, 110vh, 0) rotate(0deg); }
-            to { transform: translate3d(120vw, -10vh, 0) rotate(360deg); }
+            0% { transform: translate3d(-10vw, 110vh, 0) scale(0.8); }
+            100% { transform: translate3d(110vw, -10vh, 0) scale(1.1); }
         }
         @keyframes fly2 {
-            from { transform: translate3d(120vw, 90vh, 0) rotate(0deg); }
-            to { transform: translate3d(-20vw, -10vh, 0) rotate(-360deg); }
+            0% { transform: translate3d(110vw, 90vh, 0) scale(1); }
+            100% { transform: translate3d(-10vw, -10vh, 0) scale(0.7); }
         }
         @keyframes fly3 {
-            from { transform: translate3d(-20vw, -10vh, 0) rotate(0deg); }
-            to { transform: translate3d(120vw, 110vh, 0) rotate(180deg); }
+            0% { transform: translate3d(30vw, 110vh, 0) scale(0.9); }
+            100% { transform: translate3d(-10vw, -30vh, 0) scale(1.2); }
         }
     </style>
 </head>
@@ -321,9 +354,9 @@
                     {renderedLogos}
                 </div>
             );
-        }
+        };
 
-        function SplashScreen() {
+        const SplashScreen = () => {
           return (
             <div className="fixed inset-0 z-[999] flex flex-col items-center justify-center overflow-hidden transition-opacity duration-1000 w-full h-full bg-[#030712]">
                <PremiumBackground />
@@ -338,9 +371,9 @@
                </div>
             </div>
           );
-        }
+        };
 
-        function MessageNotification({ msg, onClose }) {
+        const MessageNotification = ({ msg, onClose }) => {
             const [show, setShow] = useState(false);
 
             useEffect(() => {
@@ -372,7 +405,7 @@
                     </div>
                 </div>
             );
-        }
+        };
 
         class ErrorBoundary extends React.Component {
             constructor(props) {
@@ -452,7 +485,7 @@
             if (!acc) return null;
 
             return (
-                <div className="glass-panel p-6 flex flex-col animate-fade-in-up" style={{animationDelay: `${idx * 0.05}s`, animationFillMode: 'both'}}>
+                <div className="glass-panel border border-white/10 hover:border-white/30 transition-all duration-300 rounded-3xl p-6 flex flex-col animate-spring-card hover:shadow-[0_10px_30px_rgba(255,255,255,0.05)]" style={{animationDelay: `${idx * 0.05}s`, animationFillMode: 'both'}}>
                     <div className="flex justify-between items-start mb-5 pb-4 border-b border-white/10">
                         <span className="text-xs font-bold text-white uppercase tracking-wider flex items-center gap-2">
                             <Package className="w-4 h-4 text-brand-primary"/> {String(acc.type || 'Account')}
@@ -1135,7 +1168,7 @@
           if(!smsSettings?.active) return <div className="glass-effect rounded-3xl w-full text-center py-32 text-gray-500 font-mono text-sm uppercase tracking-widest"><Smartphone className="w-12 h-12 mx-auto mb-4 opacity-30" strokeWidth={1.5}/> Service Offline.</div>;
 
           return (
-            <div className="w-full max-w-3xl mx-auto space-y-6 sm:space-y-8 relative">
+            <div className="w-full max-w-3xl mx-auto space-y-6 sm:space-y-8 relative animate-matrix-in">
                 
                 {confirmAction.show && (
                     <div className="fixed inset-0 z-[600] flex items-center justify-center p-4 bg-[#000]/80">
@@ -1247,10 +1280,12 @@
                        </div>
                     </div>
 
-                    {/* 🟢 GLOSSY GET NUMBER BUTTON 🟢 */}
-                    <button onClick={buySmsNumber} disabled={isSmsLoading || !currentService || activeOrders.length > 0 || (!priceTiers || priceTiers.length === 0)} className="btn-animate w-full glass-effect hover:bg-white text-white hover:text-black font-bold py-4 rounded-2xl text-xs tracking-widest uppercase shadow-[0_5px_20px_rgba(255,255,255,0.1)] h-14 mt-4 relative z-10 max-w-md mx-auto flex items-center justify-center gap-2">
-                        {activeOrders.length > 0 ? <span className="flex items-center gap-2"><StopCircle className="w-4 h-4"/> Finish Order First</span> : isSmsLoading ? <span className="flex items-center gap-2"><RefreshCw className="w-4 h-4 animate-spin"/> Processing...</span> : 'Get Number'}
-                    </button>
+                    {/* 🟢 HIDDEN BUTTON UNTIL APP SELECTED 🟢 */}
+                    {selectedSmsService && (
+                        <button onClick={buySmsNumber} disabled={isSmsLoading || activeOrders.length > 0 || (!priceTiers || priceTiers.length === 0)} className="btn-animate w-full glass-effect hover:bg-white text-white hover:text-black font-bold py-4 rounded-2xl text-xs tracking-widest uppercase shadow-[0_5px_20px_rgba(255,255,255,0.1)] h-14 mt-4 relative z-10 max-w-md mx-auto flex items-center justify-center gap-2 animate-fade-in-up">
+                            {activeOrders.length > 0 ? <span className="flex items-center gap-2"><StopCircle className="w-4 h-4"/> Finish Order First</span> : isSmsLoading ? <span className="flex items-center gap-2"><RefreshCw className="w-4 h-4 animate-spin"/> Processing...</span> : 'Get Number'}
+                        </button>
+                    )}
                 </div>
 
                 {activeOrders.map((order, index) => {
@@ -1289,17 +1324,16 @@
                             ) : (
                                 <div className="w-full max-w-md space-y-5 relative z-10 animate-swoosh-in">
                                     <p className="text-[11px] text-green-400 font-bold uppercase tracking-[0.3em] text-center mb-5">SMS Received</p>
-                                    {/* 🟢 FIXED: REMOVED EXTRACT CODE AND REPLACED WITH FULL TEXT COPY 🟢 */}
-                                    {order.codes.map((c, i) => (
-                                        <div key={i} className="flex flex-col gap-4 bg-[rgba(255,255,255,0.05)] border border-brand-primary/30 p-5 rounded-2xl animate-fade-in-up" style={{animationDelay: `${i * 0.1}s`, animationFillMode: 'both'}}>
-                                            <div className="flex items-center justify-between gap-4">
-                                                <p className="text-sm text-white font-mono leading-relaxed text-left break-words drop-shadow-md">{c}</p>
-                                                <button onClick={() => copyText(c)} className="btn-animate p-4 bg-brand-primary text-black hover:bg-white rounded-xl flex items-center justify-center transition-colors shadow-[0_0_15px_rgba(6,182,212,0.3)] shrink-0">
-                                                    <Copy className="w-6 h-6"/>
+                                    {order.codes.map((c, i) => {
+                                        return (
+                                            <div key={i} className="flex flex-col gap-4 bg-[#0f172a] border border-white/10 p-6 rounded-2xl shadow-xl animate-fade-in-up" style={{animationDelay: `${i * 0.1}s`, animationFillMode: 'both'}}>
+                                                <p className="text-sm text-white font-medium leading-relaxed text-left break-words">{c}</p>
+                                                <button onClick={() => copyText(c)} className="btn-animate w-full py-3.5 bg-brand-primary text-black hover:bg-white rounded-xl flex items-center justify-center gap-2 text-[10px] uppercase tracking-widest font-bold shadow-[0_0_15px_rgba(6,182,212,0.3)] shrink-0">
+                                                    <Copy className="w-4 h-4"/> Copy Full Message
                                                 </button>
                                             </div>
-                                        </div>
-                                    ))}
+                                        );
+                                    })}
                                     <button onClick={() => setActiveOrders([])} className="btn-animate w-full glass-panel hover:bg-white/20 text-white font-bold py-4 px-6 rounded-2xl transition-all flex items-center justify-center gap-2 uppercase tracking-widest mt-8 !text-xs">Close Order</button>
                                 </div>
                             )}
@@ -1863,7 +1897,7 @@
               )}
 
               {profileSubTab === 'history' && (
-                  <div className="glass-effect rounded-3xl p-6 sm:p-8 min-h-[600px] animate-fade-in-up border border-white/10">
+                  <div className="glass-effect rounded-3xl p-6 sm:p-8 min-h-[600px] animate-swoosh-in border border-white/10">
                     <h2 className="text-xl font-bold tracking-widest uppercase text-white mb-8 pb-4 border-b border-white/10 flex items-center gap-3"><History className="w-5 h-5"/> Transaction History</h2>
                     
                     {unifiedHistory.length === 0 ? (
@@ -1904,7 +1938,7 @@
               )}
 
               {profileSubTab === 'support' && (
-                  <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 sm:gap-8 w-full animate-fade-in-up">
+                  <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 sm:gap-8 w-full animate-swoosh-in">
                       <div className="space-y-6 sm:space-y-8 w-full">
                           <div className="glass-effect rounded-3xl p-6 sm:p-8 h-fit border border-white/10">
                             <h2 className="text-lg font-bold tracking-widest text-white mb-2 flex items-center gap-2 pb-4 border-b border-white/10 uppercase"><Headset className="w-4 h-4"/> Contact Admin</h2>
@@ -2433,7 +2467,7 @@
                 )}
 
                 {manageStockModal.show && (
-                  <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-[#000]/90 animate-fade-in-up">
+                  <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-[#000]/90 animate-bouncy-pop">
                     <div className="glass-effect w-full max-w-3xl p-6 sm:p-8 flex flex-col max-h-[85vh] rounded-3xl border border-white/20">
                        <div className="flex justify-between items-center mb-6 pb-4 border-b border-white/10 shrink-0">
                          <h3 className="text-sm font-bold tracking-[0.2em] uppercase text-white flex items-center gap-2"><Package className="w-4 h-4"/> View Stock</h3>
