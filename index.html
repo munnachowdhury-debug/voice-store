@@ -3,8 +3,27 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>VerifyHub Elite</title>
     
+    <!-- 🟢 SEO META TAGS START 🟢 -->
+    <title>VerifyHub Elite - Buy Virtual Numbers & Premium Accounts</title>
+    <meta name="description" content="Welcome to VerifyHub Elite. Buy reliable virtual numbers for SMS verification and premium verified accounts instantly. High quality service with crypto and manual payment support.">
+    <meta name="keywords" content="virtual number, buy sms, sms verification, premium accounts, buy google voice, textplus accounts, phone verification, verifyhub elite">
+    <meta name="author" content="VerifyHub Elite">
+    <meta name="robots" content="index, follow">
+    <link rel="canonical" href="https://verify-hub-psi.vercel.app"> 
+    
+    <!-- Open Graph (Facebook/WhatsApp Preview) -->
+    <meta property="og:title" content="VerifyHub Elite - Virtual Numbers & Accounts">
+    <meta property="og:description" content="Instant SMS verification numbers and premium accounts. Secure payments accepted.">
+    <meta property="og:url" content="https://verify-hub-psi.vercel.app">
+    <meta property="og:type" content="website">
+    <!-- 🟢 SEO META TAGS END 🟢 -->
+
+    <!-- 🟢 GOLDEN SHIELD FAVICON START 🟢 -->
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Cdefs%3E%3ClinearGradient id='g' x1='0%25' y1='0%25' x2='100%25' y2='100%25'%3E%3Cstop offset='0%25' stop-color='%23bf953f'/%3E%3Cstop offset='50%25' stop-color='%23fcf6ba'/%3E%3Cstop offset='100%25' stop-color='%23b38728'/%3E%3C/linearGradient%3E%3ClinearGradient id='d' x1='0%25' y1='0%25' x2='0%25' y2='100%25'%3E%3Cstop offset='0%25' stop-color='%231e293b'/%3E%3Cstop offset='100%25' stop-color='%23020617'/%3E%3C/linearGradient%3E%3C/defs%3E%3Cpath d='M50 5 L90 20 L90 50 C90 75 50 95 50 95 C50 95 10 75 10 50 L10 20 Z' fill='url(%23d)' stroke='url(%23g)' stroke-width='4'/%3E%3Cpath d='M30 50 L45 65 L75 30 L65 30 L45 55 L35 45 Z' fill='url(%23g)'/%3E%3C/svg%3E">
+    <link rel="apple-touch-icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Cdefs%3E%3ClinearGradient id='g' x1='0%25' y1='0%25' x2='100%25' y2='100%25'%3E%3Cstop offset='0%25' stop-color='%23bf953f'/%3E%3Cstop offset='50%25' stop-color='%23fcf6ba'/%3E%3Cstop offset='100%25' stop-color='%23b38728'/%3E%3C/linearGradient%3E%3ClinearGradient id='d' x1='0%25' y1='0%25' x2='0%25' y2='100%25'%3E%3Cstop offset='0%25' stop-color='%231e293b'/%3E%3Cstop offset='100%25' stop-color='%23020617'/%3E%3C/linearGradient%3E%3C/defs%3E%3Cpath d='M50 5 L90 20 L90 50 C90 75 50 95 50 95 C50 95 10 75 10 50 L10 20 Z' fill='url(%23d)' stroke='url(%23g)' stroke-width='4'/%3E%3Cpath d='M30 50 L45 65 L75 30 L65 30 L45 55 L35 45 Z' fill='url(%23g)'/%3E%3C/svg%3E">
+    <!-- 🟢 FAVICON END 🟢 -->
+
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
@@ -20,23 +39,50 @@
               brand: {
                 primary: '#06b6d4', 
                 primaryHover: '#0891b2', 
-                darkBg: '#030712'
+                darkBg: '#030712', 
+                border: 'rgba(255, 255, 255, 0.15)',
+                gold: '#bf953f'
               }
             },
+            backgroundImage: {
+              'gold-gradient': 'linear-gradient(to right, #bf953f, #fcf6ba, #b38728)',
+              'glass-gradient': 'linear-gradient(145deg, rgba(255,255,255,0.05) 0%, rgba(255,255,255,0.01) 100%)'
+            },
             animation: {
+              'matrix-in': 'matrixIn 0.8s cubic-bezier(0.25, 1, 0.5, 1) forwards',
+              'spring-card': 'springCard 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) forwards',
+              'swoosh-in': 'swooshIn 0.6s cubic-bezier(0.25, 1, 0.5, 1) forwards',
+              'bouncy-pop': 'bouncyPop 0.7s cubic-bezier(0.34, 1.56, 0.64, 1) forwards',
               'fade-in-up': 'fadeInUp 0.4s ease-out forwards',
               'pop-in': 'popIn 0.3s ease-out forwards',
               'pulse-slow': 'pulseSlow 4s ease-in-out infinite',
             },
             keyframes: {
-              /* 🟢 LIGHTWEIGHT ANIMATIONS (NO HEATING) 🟢 */
+              matrixIn: {
+                '0%': { transform: 'perspective(2000px) rotateX(10deg) rotateY(-5deg) translateY(30px)', opacity: '0' },
+                '100%': { transform: 'none', opacity: '1' }
+              },
+              springCard: {
+                '0%': { transform: 'scale(0.85) translateY(40px)', opacity: '0' },
+                '50%': { transform: 'scale(1.02) translateY(-5px)', opacity: '1' },
+                '100%': { transform: 'none', opacity: '1' }
+              },
+              swooshIn: {
+                '0%': { transform: 'translate3d(40px, 0, 0) skewX(-5deg)', opacity: '0' },
+                '100%': { transform: 'none', opacity: '1' }
+              },
+              bouncyPop: {
+                '0%': { transform: 'scale(0.8) translate3d(0, 30px, 0)', opacity: '0' },
+                '50%': { transform: 'scale(1.03) translate3d(0, -5px, 0)', opacity: '1' },
+                '100%': { transform: 'none', opacity: '1' }
+              },
               fadeInUp: {
                 '0%': { opacity: '0', transform: 'translateY(15px)' },
-                '100%': { opacity: '1', transform: 'translateY(0)' }
+                '100%': { opacity: '1', transform: 'none' }
               },
               popIn: {
                 '0%': { opacity: '0', transform: 'scale(0.95)' },
-                '100%': { opacity: '1', transform: 'scale(1)' }
+                '100%': { opacity: '1', transform: 'none' }
               },
               pulseSlow: {
                 '0%, 100%': { opacity: '1' },
@@ -70,25 +116,48 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/otpauth/9.2.2/otpauth.umd.min.js"></script>
     <script src="https://checkout.flutterwave.com/v3.js"></script>
 
-    <!-- 🟢 ANTI-HACKING & ANTI-DEBUGGING SCRIPT 🟢 -->
+    <!-- 🟢 ADVANCED ANTI-HACKING & ANTI-DEVTOOLS SCRIPT 🟢 -->
     <script>
-        // Disable Right Click
-        document.addEventListener('contextmenu', event => event.preventDefault());
+        // 1. Disable React DevTools globally before React loads
+        if (typeof window.__REACT_DEVTOOLS_GLOBAL_HOOK__ === 'object') {
+            for (let [key, value] of Object.entries(window.__REACT_DEVTOOLS_GLOBAL_HOOK__)) {
+                window.__REACT_DEVTOOLS_GLOBAL_HOOK__[key] = typeof value === 'function' ? () => {} : null;
+            }
+        }
 
-        // Disable F12, Ctrl+Shift+I, Ctrl+Shift+J, Ctrl+U
+        // 2. Prevent Frame Busting / Clickjacking - Modified to prevent SecurityError in iframes
+        try {
+            if (window.top !== window.self) {
+                // Ignore frame busting to avoid cross-origin errors in environments like Canvas
+            }
+        } catch (e) {
+            // Ignore errors
+        }
+
+        // 3. Disable Right Click & Developer Shortcuts completely
+        document.addEventListener('contextmenu', event => event.preventDefault());
         document.onkeydown = function(e) {
+            // F12, Ctrl+Shift+I, Ctrl+Shift+J, Ctrl+Shift+C, Ctrl+U
             if (e.keyCode === 123 || 
-               (e.ctrlKey && e.shiftKey && (e.keyCode === 'I'.charCodeAt(0) || e.keyCode === 'J'.charCodeAt(0))) || 
-               (e.ctrlKey && e.keyCode === 'U'.charCodeAt(0))) {
+               (e.ctrlKey && e.shiftKey && (e.keyCode === 73 || e.keyCode === 74 || e.keyCode === 67)) || 
+               (e.ctrlKey && e.keyCode === 85)) {
                 e.preventDefault();
                 return false;
             }
         };
 
-        // Continuous Debugger Trap (Freezes console if opened)
+        // 4. Aggressive Debugger Trap (Freezes browser if DevTools is forced open)
         setInterval(function() {
-            debugger;
-        }, 100);
+            (function() {
+                return false;
+            }["constructor"]("debugger")());
+        }, 50);
+
+        // 5. Clear Console aggressively
+        setInterval(function() {
+            console.clear();
+            console.log("%cSTOP! This is a restricted area.", "color: red; font-size: 20px; font-weight: bold;");
+        }, 1000);
     </script>
 
     <style>
@@ -120,7 +189,7 @@
 
         /* 🌟 CRAZY ELASTIC BUTTON ANIMATIONS (HARDWARE ACCELERATED) 🌟 */
         .btn-animate {
-            transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.2s ease, background-color 0.2s ease;
+            transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.3s ease, background-color 0.3s ease;
             will-change: transform;
         }
         .btn-animate:hover {
@@ -140,24 +209,25 @@
 
         /* 🌟 1% BLUR & 100% TRANSPARENT GLASS (0% HEATING) 🌟 */
         .glass-effect {
-            background: rgba(15, 23, 42, 0.3); /* Super sheer background */
-            backdrop-filter: blur(2px); /* 1% Blur */
-            -webkit-backdrop-filter: blur(2px);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.3);
+            background: rgba(255, 255, 255, 0.03); /* Super transparent */
+            border: 1px solid rgba(255, 255, 255, 0.15); /* Distinct border */
+            box-shadow: inset 0 1px 1px rgba(255,255,255,0.1), 0 10px 40px -10px rgba(0, 0, 0, 0.5);
             transition: border-color 0.3s ease, background 0.3s ease;
+            transform: translateZ(0);
         }
         .glass-effect:hover {
-            border-color: rgba(6, 182, 212, 0.3);
-            background: rgba(15, 23, 42, 0.4);
+            border-color: rgba(6, 182, 212, 0.4);
+            background: rgba(255, 255, 255, 0.05);
         }
 
         .glass-panel {
-            background: rgba(255, 255, 255, 0.03); /* Transparent */
+            background: rgba(255, 255, 255, 0.02);
             border: 1px solid rgba(255, 255, 255, 0.08);
             backdrop-filter: blur(2px); /* 1% Blur */
             -webkit-backdrop-filter: blur(2px);
             border-radius: 16px;
+            box-shadow: inset 0 1px 0 rgba(255,255,255,0.05);
+            transform: translateZ(0);
         }
 
         .glass-input {
@@ -168,15 +238,28 @@
             padding: 14px 18px;
             font-size: 13px;
             color: #fff;
-            transition: border-color 0.2s ease;
+            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
             outline: none;
+            transform: translateZ(0);
         }
         .glass-input:focus {
             border-color: #06b6d4;
             background: rgba(0, 0, 0, 0.6);
+            box-shadow: 0 0 15px rgba(6, 182, 212, 0.3);
+            transform: scale(1.02) translateZ(0);
         }
 
-        .tab-transition-enter { animation: fadeInUp 0.4s ease-out forwards; }
+        .tab-transition-enter { animation: matrixIn 0.6s cubic-bezier(0.25, 1, 0.5, 1) forwards; }
+
+        @keyframes slideInNotify {
+            0% { transform: translate3d(0,-100%,0) scale(0.8); opacity: 0; }
+            10% { transform: translate3d(0,0,0) scale(1); opacity: 1; }
+            90% { transform: translate3d(0,0,0) scale(1); opacity: 1; }
+            100% { transform: translate3d(0,-100%,0) scale(0.8); opacity: 0; }
+        }
+        .msg-alert-anim {
+            animation: slideInNotify 5s cubic-bezier(0.68, -0.55, 0.265, 1.55) forwards;
+        }
 
         /* 🌟 EXTREMELY OPTIMIZED FLOATING ANIMATIONS (GPU ONLY) 🌟 */
         .hardware-accelerated {
@@ -184,20 +267,19 @@
             backface-visibility: hidden;
             pointer-events: none;
             will-change: transform;
-            position: absolute;
         }
 
         @keyframes fly1 {
-            from { transform: translate3d(-20vw, 110vh, 0) rotate(0deg); }
-            to { transform: translate3d(120vw, -10vh, 0) rotate(360deg); }
+            0% { transform: translate3d(-10vw, 110vh, 0) scale(0.8); }
+            100% { transform: translate3d(110vw, -10vh, 0) scale(1.1); }
         }
         @keyframes fly2 {
-            from { transform: translate3d(120vw, 90vh, 0) rotate(0deg); }
-            to { transform: translate3d(-20vw, -10vh, 0) rotate(-360deg); }
+            0% { transform: translate3d(110vw, 90vh, 0) scale(1); }
+            100% { transform: translate3d(-10vw, -10vh, 0) scale(0.7); }
         }
         @keyframes fly3 {
-            from { transform: translate3d(-20vw, -10vh, 0) rotate(0deg); }
-            to { transform: translate3d(120vw, 110vh, 0) rotate(180deg); }
+            0% { transform: translate3d(30vw, 110vh, 0) scale(0.9); }
+            100% { transform: translate3d(-10vw, -30vh, 0) scale(1.2); }
         }
     </style>
 </head>
@@ -239,6 +321,43 @@
             if (auth.currentUser) return await auth.currentUser.getIdToken(true);
             return null;
         };
+
+        // 🟢 ELITE CUSTOM LOGO COMPONENT 🟢
+        const EliteLogo = ({ className }) => (
+            <svg className={className} viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+                <defs>
+                    <linearGradient id="goldGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                        <stop offset="0%" stopColor="#bf953f" />
+                        <stop offset="25%" stopColor="#fcf6ba" />
+                        <stop offset="50%" stopColor="#b38728" />
+                        <stop offset="75%" stopColor="#fbf5b7" />
+                        <stop offset="100%" stopColor="#aa771c" />
+                    </linearGradient>
+                    <linearGradient id="shieldBg" x1="0%" y1="0%" x2="0%" y2="100%">
+                        <stop offset="0%" stopColor="#1e293b" />
+                        <stop offset="100%" stopColor="#020617" />
+                    </linearGradient>
+                    <filter id="glow">
+                        <feGaussianBlur stdDeviation="1.5" result="coloredBlur"/>
+                        <feMerge>
+                            <feMergeNode in="coloredBlur"/>
+                            <feMergeNode in="SourceGraphic"/>
+                        </feMerge>
+                    </filter>
+                </defs>
+                {/* Shield Outline & BG */}
+                <path d="M50 5 L90 20 L90 50 C90 75 50 95 50 95 C50 95 10 75 10 50 L10 20 Z" fill="url(#shieldBg)" stroke="url(#goldGrad)" strokeWidth="4" filter="url(#glow)"/>
+                <path d="M50 12 L82 24 L82 50 C82 70 50 86 50 86 C50 86 18 70 18 50 L18 24 Z" fill="none" stroke="url(#goldGrad)" strokeWidth="1.5" opacity="0.7"/>
+                
+                {/* Big Checkmark */}
+                <path d="M30 50 L45 65 L75 30 L65 30 L45 55 L35 45 Z" fill="url(#goldGrad)" filter="url(#glow)"/>
+                
+                {/* 3 Stars */}
+                <polygon points="50,18 51.5,22 56,22 53,25 54,29 50,27 46,29 47,25 44,22 48.5,22" fill="url(#goldGrad)"/>
+                <polygon points="38,22 39,25 42,25 40,27 41,30 38,28 35,30 36,27 34,25 37,25" fill="url(#goldGrad)"/>
+                <polygon points="62,22 63,25 66,25 64,27 65,30 62,28 59,30 60,27 58,25 61,25" fill="url(#goldGrad)"/>
+            </svg>
+        );
 
         const DEFAULT_CATEGORIES = [
           { id: 'new', name: 'New Google Voice', description: 'Fresh account with recovery email.', price: 5.00 },
@@ -294,7 +413,6 @@
             return 'Invalid Date';
         };
 
-        // 🟢 HELPER FUNCTION TO EXTRACT ONLY THE OTP CODE FROM SMS 🟢
         const extractSmsCode = (fullText) => {
             if (!fullText) return null;
             const textStr = String(fullText);
@@ -302,11 +420,10 @@
             return match ? match[0] : null;
         };
 
-        // 🟢 PREMIUM STATIC BACKGROUND 🟢
         const PremiumBackground = () => (
           <div className="fixed inset-0 z-[-1] pointer-events-none overflow-hidden flex items-center justify-center bg-transparent">
-             <div className="absolute top-[-15%] right-[-10%] w-[60vw] h-[60vw] min-w-[600px] min-h-[600px] rounded-full pointer-events-none" style={{background: 'radial-gradient(circle, rgba(6,182,212,0.12) 0%, rgba(0,0,0,0) 70%)'}}></div>
-             <div className="absolute bottom-[-15%] left-[-10%] w-[50vw] h-[50vw] min-w-[500px] min-h-[500px] rounded-full pointer-events-none" style={{background: 'radial-gradient(circle, rgba(168,85,247,0.1) 0%, rgba(0,0,0,0) 70%)'}}></div>
+             <div className="absolute top-[-15%] right-[-10%] w-[60vw] h-[60vw] min-w-[600px] min-h-[600px] rounded-full pointer-events-none" style={{background: 'radial-gradient(circle, rgba(191,149,63,0.1) 0%, rgba(0,0,0,0) 70%)'}}></div>
+             <div className="absolute bottom-[-15%] left-[-10%] w-[50vw] h-[50vw] min-w-[500px] min-h-[500px] rounded-full pointer-events-none" style={{background: 'radial-gradient(circle, rgba(6,182,212,0.1) 0%, rgba(0,0,0,0) 70%)'}}></div>
           </div>
         );
 
@@ -355,9 +472,13 @@
                <PremiumBackground />
                <FloatingLogos />
                <div className="relative z-10 flex flex-col items-center justify-center px-4 w-full h-full animate-pop-in text-center">
-                  <h1 className="text-4xl sm:text-6xl font-bold tracking-[0.2em] mb-4 text-white uppercase text-center w-full drop-shadow-lg">
+                  <EliteLogo className="w-32 h-32 mb-6 drop-shadow-[0_0_30px_rgba(191,149,63,0.6)]" />
+                  <h1 className="text-4xl sm:text-6xl font-bold tracking-[0.2em] mb-2 text-white uppercase text-center w-full drop-shadow-lg">
                       Verify<span className="text-brand-primary font-light">Hub</span>
                   </h1>
+                  <div className="text-xl sm:text-2xl font-bold tracking-[0.6em] text-transparent bg-clip-text bg-gradient-to-r from-[#bf953f] via-[#fcf6ba] to-[#b38728] mt-2">
+                      ELITE
+                  </div>
                </div>
             </div>
           );
@@ -763,7 +884,9 @@
                 <FloatingLogos />
                 <div className="w-full max-w-[400px] animate-matrix-in z-10">
                   <div className="flex flex-col items-center mb-8">
+                    <EliteLogo className="w-20 h-20 mb-4 drop-shadow-[0_0_15px_rgba(191,149,63,0.5)]" />
                     <h2 className="text-4xl sm:text-5xl font-bold tracking-[0.2em] text-white uppercase text-center drop-shadow-md">Verify<span className="font-light text-brand-primary">Hub</span></h2>
+                    <div className="text-sm tracking-[0.5em] text-yellow-500 font-bold mt-2">ELITE</div>
                   </div>
                   
                   <div className="glass-effect rounded-3xl p-8 shadow-[0_20px_50px_rgba(0,0,0,0.8)]">
@@ -823,9 +946,9 @@
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 h-20 flex items-center justify-between">
                   <div className="flex items-center gap-3 sm:gap-4">
                       <div className="w-10 h-10 rounded-xl glass-panel flex items-center justify-center border border-white/20">
-                        <ShieldCheck className="w-5 h-5 text-brand-primary" strokeWidth={1.5} />
+                        <EliteLogo className="w-7 h-7" />
                       </div>
-                      <span className="text-xl font-light tracking-[0.25em] text-white hidden sm:block uppercase">Verify<span className="font-bold text-brand-primary">Hub</span></span>
+                      <span className="text-xl font-light tracking-[0.25em] text-white hidden sm:block uppercase">Verify<span className="font-bold text-brand-primary">Hub</span> <span className="text-[10px] text-yellow-500 font-bold ml-1 tracking-[0.3em]">ELITE</span></span>
                   </div>
                   <div className="flex items-center gap-3 sm:gap-4">
                     {user.role === 'customer' && (
@@ -973,7 +1096,7 @@
                                 ) : (
                                     chatMessages.map((msg, i) => (
                                         <div key={msg.id} className={`flex flex-col animate-swoosh-in ${msg.sender === 'user' ? 'items-end' : 'items-start'}`} style={{animationDelay: `${i * 0.03}s`}}>
-                                            <div className={`px-4 py-3 rounded-2xl max-w-[85%] text-[12px] font-medium leading-relaxed shadow-lg ${msg.sender === 'user' ? 'bg-white text-black rounded-tr-sm' : 'glass-panel text-white rounded-tl-sm'}`}>
+                                            <div className={`px-4 py-3 rounded-2xl max-w-[85%] text-[12px] font-medium leading-relaxed shadow-lg allow-select ${msg.sender === 'user' ? 'bg-white text-black rounded-tr-sm' : 'glass-panel text-white rounded-tl-sm'}`}>
                                                 {msg.text}
                                             </div>
                                             <span className="text-[8px] text-gray-500 mt-1.5 font-mono tracking-wider">
@@ -1547,7 +1670,7 @@
                   window.FlutterwaveCheckout({
                       public_key: bankSettings.flutterwaveKey, tx_ref: 'FLW-' + Math.floor((Math.random() * 1000000000) + 1), amount: nairaAmount, currency: "NGN",
                       payment_options: "card, banktransfer, ussd", customer: { email: user.email },
-                      customizations: { title: "VerifyHub Deposit", description: "Account Deposit ($" + usdAmt + ")" },
+                      customizations: { title: "VerifyHub Elite Deposit", description: "Account Deposit ($" + usdAmt + ")" },
                       callback: async function (data) {
                           if(data.status === "successful" || data.status === "completed") {
                               try {
@@ -1990,9 +2113,9 @@
                                  <span className={`text-[8px] px-2 py-1 rounded border uppercase tracking-[0.2em] font-bold ${t.status === 'Open' ? 'bg-red-900/20 text-red-400 border-red-900/50' : 'bg-green-900/20 text-green-400 border-green-900/50'}`}>{t.status}</span>
                                </div>
                                <div className="bg-[#050505] p-3 rounded-lg mb-3 shadow-inner ml-3">
-                                 <p className="text-[11px] text-gray-400 font-light leading-relaxed break-words allow-select">{t.message}</p>
+                                 <p className="text-xs text-gray-300 font-light leading-relaxed break-words allow-select">{t.message}</p>
                                </div>
-                               <p className="text-[8px] text-gray-500 font-mono flex items-center gap-1.5 uppercase tracking-widest ml-3"><Clock className="w-2.5 h-2.5"/> {safeFormatDate(t.date)}</p>
+                               <p className="text-[8px] text-gray-500 font-mono flex items-center gap-1.5 uppercase tracking-widest ml-3"><Clock className="w-3 h-3"/> {safeFormatDate(t.date)}</p>
                              </div>
                            ))}
                          </div>
