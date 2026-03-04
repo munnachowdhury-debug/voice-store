@@ -863,7 +863,7 @@
                             });
                         });
                     }
-                }, 15000);
+                }, 8000);
                 unsubs.push(() => clearInterval(poll));
             }
 
@@ -1192,15 +1192,22 @@
           useEffect(() => {
               if (smsSettings?.active) {
                   setIsFetchingServices(true);
-                  fetch(`https://voicestore-backend.onrender.com/api/grizzly/getPrices?country=${smsCountry}`)
+                  const controller = new AbortController();
+                  const timeoutId = setTimeout(() => controller.abort(), 15000); // 15 seconds limit to prevent infinite loading
+
+                  fetch(`https://voicestore-backend.onrender.com/api/grizzly/getPrices?country=${smsCountry}`, { signal: controller.signal })
                   .then(r => r.json()).then(json => { 
+                      clearTimeout(timeoutId);
                       const srvs = json?.success && Array.isArray(json.data) ? json.data : [];
                       setAvailableServices(srvs); 
                       setIsFetchingServices(false); 
                   }).catch(() => { 
+                      clearTimeout(timeoutId);
                       setIsFetchingServices(false); 
                       setAvailableServices([]); 
                   });
+
+                  return () => { clearTimeout(timeoutId); controller.abort(); };
               }
           }, [smsSettings, smsCountry]);
 
@@ -1673,9 +1680,37 @@
         // FUNDS MODULE
         // ==========================================
         function CustomerDashboardFunds({ user, db, appId, triggerToast, addNotification, bankSettings, cryptoSettings, customPayments, deposits }) {
-          const [hiddenInvoices, setHiddenInvoices] = useState([]); // 🟢 GLITCH FIX: Local hide state
+          const [hiddenInvoices, setHiddenInvoices] = useState(() => {
+              try {
+                  const stored = localStorage.getItem(`hiddenInvoices_${user?.email}`);
+                  return stored ? JSON.parse(stored) : [];
+              } catch(e) { return []; }
+          }); // 🟢 GLITCH FIX: Local hide state preserved
+          
           const [isGenerating, setIsGenerating] = useState(false);  // 🟢 GLITCH FIX: Prevent double clicks
           const [isVerifyingClick, setIsVerifyingClick] = useState(false); // 🟢 NEW: Manual Check State
+
+          // 🟢 NEW: LIVE CRYPTO PRICES 🟢
+          const [liveRates, setLiveRates] = useState({});
+          useEffect(() => {
+              fetch('https://api.coingecko.com/api/v3/simple/price?ids=bitcoin,tron,tether,ethereum,litecoin&vs_currencies=usd')
+              .then(r=>r.json())
+              .then(d => {
+                  setLiveRates({
+                      BTC: d.bitcoin?.usd || 0,
+                      TRX: d.tron?.usd || 0,
+                      USDT: d.tether?.usd || 1,
+                      ETH: d.ethereum?.usd || 0,
+                      LTC: d.litecoin?.usd || 0
+                  });
+              }).catch(e=>{});
+          }, []);
+
+          useEffect(() => {
+              if(user?.email) {
+                  localStorage.setItem(`hiddenInvoices_${user.email}`, JSON.stringify(hiddenInvoices));
+              }
+          }, [hiddenInvoices, user]);
 
           // 🟢 GLITCH FIX: Ignores invoices hidden locally OR older than 1 hour to prevent permanent lockouts
           const pendingCrypto = (deposits || []).find(d => {
@@ -1720,14 +1755,18 @@
                   const rem = calcTimeLeft();
                   if (rem <= 0) {
                       clearInterval(timer);
-                      setHiddenInvoices(prev => [...prev, pendingCrypto.id]); // 🟢 GLITCH FIX: Hide locally on expire
+                      setHiddenInvoices(prev => {
+                          const newArr = [...prev, pendingCrypto.id];
+                          localStorage.setItem(`hiddenInvoices_${user?.email}`, JSON.stringify(newArr));
+                          return newArr;
+                      });
                       triggerToast('Payment session expired.');
                   } else {
                       setTimeLeft(rem);
                   }
               }, 1000);
 
-              // Server Polling Timer
+              // Server Polling Timer - 🟢 SUPER FAST: 5 SECONDS 🟢
               const poll = setInterval(async () => {
                   try {
                       const token = await getAuthToken();
@@ -1741,10 +1780,10 @@
                           addNotification('Deposit Successful', `$${pendingCrypto.amount} added to balance.`);
                       }
                   } catch (err) {}
-              }, 15000);
+              }, 5000);
 
               return () => { clearInterval(timer); clearInterval(poll); };
-          }, [pendingCrypto?.id]); 
+          }, [pendingCrypto?.id, user]); 
 
           const startAutoDeposit = async (e) => {
               e.preventDefault();
@@ -1759,14 +1798,35 @@
               
               const newInvoiceId = 'DEP-' + Date.now();
               let cryptoAmount = finalAmount;
-              if (String(cryptoMethod).toUpperCase().includes('BTC')) {
-                 try {
-                     const btcRes = await fetch('https://api.coingecko.com/api/v3/simple/price?ids=bitcoin&vs_currencies=usd');
-                     const btcData = await btcRes.json();
-                     cryptoAmount = parseFloat((finalAmount / btcData.bitcoin.usd).toFixed(8));
-                 } catch(e) { triggerToast("Failed to fetch BTC price."); setIsGenerating(false); return; }
-              }
+              const cmName = String(cryptoMethod).toUpperCase();
+              
               try {
+                  // 🟢 LIVE CONVERSION LOGIC BEFORE DB SAVE 🟢
+                  if (!cmName.includes('USDT')) {
+                      try {
+                          let cid = 'bitcoin';
+                          if (cmName.includes('TRX')) cid = 'tron';
+                          if (cmName.includes('ETH')) cid = 'ethereum';
+                          if (cmName.includes('LTC')) cid = 'litecoin';
+                          
+                          const res = await fetch(`https://api.coingecko.com/api/v3/simple/price?ids=${cid}&vs_currencies=usd`);
+                          const data = await res.json();
+                          const rate = data[cid]?.usd;
+                          if (rate) {
+                               if (cmName.includes('BTC')) cryptoAmount = parseFloat((finalAmount / rate).toFixed(8));
+                               else if (cmName.includes('ETH')) cryptoAmount = parseFloat((finalAmount / rate).toFixed(6));
+                               else if (cmName.includes('LTC')) cryptoAmount = parseFloat((finalAmount / rate).toFixed(5));
+                               else cryptoAmount = parseFloat((finalAmount / rate).toFixed(2));
+                          } else { throw new Error('no rate'); }
+                      } catch(e) {
+                           // Fallback to state
+                           if (cmName.includes('BTC') && liveRates.BTC) cryptoAmount = parseFloat((finalAmount / liveRates.BTC).toFixed(8));
+                           else if (cmName.includes('TRX') && liveRates.TRX) cryptoAmount = parseFloat((finalAmount / liveRates.TRX).toFixed(2));
+                           else if (cmName.includes('ETH') && liveRates.ETH) cryptoAmount = parseFloat((finalAmount / liveRates.ETH).toFixed(6));
+                           else if (cmName.includes('LTC') && liveRates.LTC) cryptoAmount = parseFloat((finalAmount / liveRates.LTC).toFixed(5));
+                      }
+                  }
+
                   await setDoc(doc(db, 'artifacts', appId, 'public', 'data', 'Store_Deposits', newInvoiceId), { 
                       email: user.email, amount: finalAmount, cryptoAmount: cryptoAmount,
                       method: `${cryptoMethod} (Auto)`, status: 'Awaiting Payment', date: new Date().toISOString(), txId: 'Pending'
@@ -1778,8 +1838,12 @@
 
           const cancelAutoPay = () => {
               if (pendingCrypto) {
-                  setHiddenInvoices(prev => [...prev, pendingCrypto.id]); // 🟢 GLITCH FIX: Bypass firestore rules lock
-                  triggerToast('Invoice cancelled successfully.');
+                  setHiddenInvoices(prev => {
+                      const newArr = [...prev, pendingCrypto.id];
+                      localStorage.setItem(`hiddenInvoices_${user?.email}`, JSON.stringify(newArr));
+                      return newArr;
+                  }); 
+                  triggerToast('Invoice hidden. Balance will be added if paid.');
               }
           };
 
@@ -1798,7 +1862,13 @@
                       triggerToast(`Payment Verified! $${pendingCrypto.amount} added.`);
                       addNotification('Deposit Successful', `$${pendingCrypto.amount} added to balance.`);
                   } else {
-                      triggerToast(result.message || 'Payment not found yet. Please wait a bit more.');
+                      // HIDE IT SO THEY DON'T GET STUCK, WILL CHECK IN BACKGROUND
+                      setHiddenInvoices(prev => {
+                          const newArr = [...prev, pendingCrypto.id];
+                          localStorage.setItem(`hiddenInvoices_${user?.email}`, JSON.stringify(newArr));
+                          return newArr;
+                      });
+                      triggerToast('Processing... Check History tab for updates.');
                   }
               } catch (err) {
                   triggerToast('Network error while checking.');
@@ -1807,7 +1877,7 @@
               }
           };
 
-          // 🟢 NEW MANUAL DEPOSIT SUBMISSION 🟢
+          // 🟢 MANUAL DEPOSIT SUBMISSION 🟢
           const submitManualDeposit = async (e) => {
               e.preventDefault();
               const amt = parseFloat(manualAmount);
@@ -1885,6 +1955,26 @@
                                <DollarSign className="w-4 h-4 text-white absolute left-4 top-3.5" />
                                <input type="number" step="1" min="1" name="amount" value={cryptoAmountInput} onChange={e => setCryptoAmountInput(e.target.value)} required placeholder="10" className="glass-input allow-select pl-11 text-sm font-mono" />
                             </div>
+                            
+                            {/* 🟢 NEW: LIVE PREVIEW AMOUNT 🟢 */}
+                            {cryptoAmountInput && !isNaN(parseFloat(cryptoAmountInput)) && (
+                                <div className="mt-3 bg-brand-primary/10 border border-brand-primary/20 rounded-xl p-3 flex justify-between items-center shadow-inner animate-fade-in-up">
+                                    <span className="text-[10px] text-gray-400 font-mono uppercase tracking-widest">Est. Crypto:</span>
+                                    <span className="text-xs font-mono font-bold text-white">
+                                        {(() => {
+                                            const amt = parseFloat(cryptoAmountInput);
+                                            const cmName = String(cryptoMethod).toUpperCase();
+                                            if (cmName.includes('USDT')) return amt.toFixed(2);
+                                            if (cmName.includes('BTC') && liveRates.BTC) return (amt / liveRates.BTC).toFixed(8);
+                                            if (cmName.includes('TRX') && liveRates.TRX) return (amt / liveRates.TRX).toFixed(2);
+                                            if (cmName.includes('ETH') && liveRates.ETH) return (amt / liveRates.ETH).toFixed(6);
+                                            if (cmName.includes('LTC') && liveRates.LTC) return (amt / liveRates.LTC).toFixed(5);
+                                            return 'Loading Rate...';
+                                        })()} {String(cryptoMethod).split(' ')[0]}
+                                    </span>
+                                </div>
+                            )}
+
                           </div>
                           <div>
                               <label className="block text-[10px] font-bold text-gray-500 mb-2 uppercase tracking-[0.2em]">Select Crypto</label>
@@ -1938,7 +2028,7 @@
                                   <p className="text-[10px] font-mono text-gray-400 flex items-center gap-1.5">
                                       <Clock className="w-3 h-3"/> {Math.floor(timeLeft / 60)}:{(timeLeft % 60).toString().padStart(2, '0')}
                                   </p>
-                                  <button onClick={cancelAutoPay} className="btn-animate text-[9px] text-gray-500 hover:text-white font-bold uppercase tracking-widest transition-colors">Cancel Invoice</button>
+                                  <button onClick={cancelAutoPay} className="btn-animate text-[9px] text-gray-500 hover:text-white font-bold uppercase tracking-widest transition-colors">Cancel</button>
                               </div>
                               <button onClick={handleManualVerifyCheck} disabled={isVerifyingClick} className="btn-animate w-full bg-brand-primary hover:bg-white text-black font-bold py-3.5 px-6 rounded-2xl flex items-center justify-center gap-2 uppercase tracking-widest text-[11px] disabled:opacity-50 shadow-[0_0_15px_rgba(6,182,212,0.3)]">
                                   {isVerifyingClick ? <RefreshCw className="w-4 h-4 animate-spin"/> : <CheckCircle className="w-4 h-4"/>}
@@ -3195,6 +3285,28 @@
                                       </div>
                                   ))
                               )}
+                          </div>
+                        </div>
+
+                        {/* 🟢 NEW PRODUCT MANAGEMENT SECTION 🟢 */}
+                        <div className="glass-effect rounded-3xl p-6 sm:p-8 w-full border border-white/10 h-fit animate-fade-in-up" style={{animationDelay: '0.2s'}}>
+                          <div className="flex justify-between items-center mb-6 border-b border-white/10 pb-4">
+                             <h2 className="text-sm font-bold tracking-[0.2em] uppercase text-white">Manage Accounts Cards</h2>
+                             <button onClick={() => setNewProductModal(true)} className="btn-animate bg-white text-black px-4 py-2 rounded-lg text-[10px] uppercase tracking-widest font-bold flex items-center gap-1"><Plus className="w-3 h-3"/> New</button>
+                          </div>
+                          
+                          <div className="space-y-4">
+                              {categories.map((cat, idx) => (
+                                  <div key={idx} className="bg-[rgba(0,0,0,0.5)] border border-white/5 p-4 rounded-2xl flex justify-between items-center animate-fade-in-up" style={{animationDelay: `${idx * 0.1}s`}}>
+                                      <div>
+                                          <p className="text-xs font-bold text-white uppercase tracking-wider">{cat.name}</p>
+                                          <p className="text-[10px] font-mono text-gray-400 mt-1">${Number(cat.price).toFixed(2)}</p>
+                                      </div>
+                                      <button onClick={() => handleRemoveProduct(cat.id)} className="btn-animate p-2.5 bg-red-900/20 text-red-500 hover:bg-red-900/40 border border-red-900/30 rounded-lg transition-colors">
+                                          <Trash2 className="w-4 h-4"/>
+                                      </button>
+                                  </div>
+                              ))}
                           </div>
                         </div>
                     </div>
