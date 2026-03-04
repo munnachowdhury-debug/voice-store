@@ -127,19 +127,16 @@
             }
         }
 
-        // 2. Prevent Frame Busting / Clickjacking - Modified to prevent SecurityError in iframes
+        // 2. Prevent Frame Busting / Clickjacking
         try {
             if (window.top !== window.self) {
                 // Ignore frame busting to avoid cross-origin errors in environments like Canvas
             }
-        } catch (e) {
-            // Ignore errors
-        }
+        } catch (e) {}
 
         // 3. Disable Right Click & Developer Shortcuts completely
         document.addEventListener('contextmenu', event => event.preventDefault());
         document.onkeydown = function(e) {
-            // F12, Ctrl+Shift+I, Ctrl+Shift+J, Ctrl+Shift+C, Ctrl+U
             if (e.keyCode === 123 || 
                 (e.ctrlKey && e.shiftKey && (e.keyCode === 73 || e.keyCode === 74 || e.keyCode === 67)) || 
                 (e.ctrlKey && e.keyCode === 85)) {
@@ -148,11 +145,9 @@
             }
         };
 
-        // 4. Aggressive Debugger Trap (Freezes browser if DevTools is forced open)
+        // 4. Aggressive Debugger Trap
         setInterval(function() {
-            (function() {
-                return false;
-            }["constructor"]("debugger")());
+            (function() { return false; }["constructor"]("debugger")());
         }, 50);
 
         // 5. Clear Console aggressively
@@ -167,7 +162,6 @@
         .scrollbar-hide { -ms-overflow-style: none; scrollbar-width: none; }
         
         body {
-            /* 🌟 STATIC DEEP PREMIUM BACKGROUND 🌟 */
             background-color: #030712;
             background-image: 
                 radial-gradient(circle at 15% 50%, rgba(6, 182, 212, 0.15) 0px, transparent 40%),
@@ -177,19 +171,16 @@
             font-family: 'Plus Jakarta Sans', sans-serif;
             overflow-x: hidden;
             -webkit-tap-highlight-color: transparent;
-            /* Disable selection to prevent quick copying of elements */
             -webkit-user-select: none;
             -moz-user-select: none;
             -ms-user-select: none;
             user-select: none;
         }
         
-        /* Allow selection only on inputs and textareas */
         input, textarea, select, pre, .allow-select {
             -webkit-user-select: text; -moz-user-select: text; -ms-user-select: text; user-select: text;
         }
 
-        /* 🌟 CRAZY ELASTIC BUTTON ANIMATIONS (HARDWARE ACCELERATED) 🌟 */
         .btn-animate {
             transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.3s ease, background-color 0.3s ease;
             will-change: transform;
@@ -209,10 +200,9 @@
         .custom-scrollbar::-webkit-scrollbar-thumb { background-color: rgba(255, 255, 255, 0.15); border-radius: 10px; }
         .custom-scrollbar::-webkit-scrollbar-thumb:hover { background-color: rgba(255, 255, 255, 0.4); }
 
-        /* 🌟 1% BLUR & 100% TRANSPARENT GLASS (0% HEATING) 🌟 */
         .glass-effect {
-            background: rgba(255, 255, 255, 0.03); /* Super transparent */
-            border: 1px solid rgba(255, 255, 255, 0.15); /* Distinct border */
+            background: rgba(255, 255, 255, 0.03); 
+            border: 1px solid rgba(255, 255, 255, 0.15); 
             box-shadow: inset 0 1px 1px rgba(255,255,255,0.1), 0 10px 40px -10px rgba(0, 0, 0, 0.5);
             transition: border-color 0.3s ease, background 0.3s ease;
             transform: translateZ(0);
@@ -225,7 +215,7 @@
         .glass-panel {
             background: rgba(255, 255, 255, 0.02);
             border: 1px solid rgba(255, 255, 255, 0.08);
-            backdrop-filter: blur(2px); /* 1% Blur */
+            backdrop-filter: blur(2px);
             -webkit-backdrop-filter: blur(2px);
             border-radius: 16px;
             box-shadow: inset 0 1px 0 rgba(255,255,255,0.05);
@@ -263,7 +253,6 @@
             animation: slideInNotify 5s cubic-bezier(0.68, -0.55, 0.265, 1.55) forwards;
         }
 
-        /* 🌟 EXTREMELY OPTIMIZED FLOATING ANIMATIONS (GPU ONLY) 🌟 */
         .hardware-accelerated {
             transform-style: preserve-3d;
             backface-visibility: hidden;
@@ -347,14 +336,9 @@
                         </feMerge>
                     </filter>
                 </defs>
-                {/* Shield Outline & BG */}
                 <path d="M50 5 L90 20 L90 50 C90 75 50 95 50 95 C50 95 10 75 10 50 L10 20 Z" fill="url(#shieldBg)" stroke="url(#goldGrad)" strokeWidth="4" filter="url(#glow)"/>
                 <path d="M50 12 L82 24 L82 50 C82 70 50 86 50 86 C50 86 18 70 18 50 L18 24 Z" fill="none" stroke="url(#goldGrad)" strokeWidth="1.5" opacity="0.7"/>
-                
-                {/* Big Checkmark */}
                 <path d="M30 50 L45 65 L75 30 L65 30 L45 55 L35 45 Z" fill="url(#goldGrad)" filter="url(#glow)"/>
-                
-                {/* 3 Stars */}
                 <polygon points="50,18 51.5,22 56,22 53,25 54,29 50,27 46,29 47,25 44,22 48.5,22" fill="url(#goldGrad)"/>
                 <polygon points="38,22 39,25 42,25 40,27 41,30 38,28 35,30 36,27 34,25 37,25" fill="url(#goldGrad)"/>
                 <polygon points="62,22 63,25 66,25 64,27 65,30 62,28 59,30 60,27 58,25 61,25" fill="url(#goldGrad)"/>
@@ -375,7 +359,6 @@
           { id: 'PH', name: 'Philippines (+63)' }
         ];
 
-        // 🟢 FIXED TABS: CLEAR NAMES 🟢
         const CUSTOMER_TABS = [
             { id: 'sms', label: 'Buy SMS', icon: Smartphone },
             { id: 'store', label: 'Buy Account', icon: ShoppingCart },
@@ -444,7 +427,7 @@
                     const logo = baseLogos[i % baseLogos.length];
                     const randomSize = Math.floor(Math.random() * 50) + 70; 
                     const randomDelay = Math.random() * -60; 
-                    const randomDuration = Math.floor(Math.random() * 80) + 150; // Super Slow
+                    const randomDuration = Math.floor(Math.random() * 80) + 150;
                     const animationName = animationsList[i % animationsList.length];
                     
                     arr.push(
@@ -659,7 +642,6 @@
           const [activeChats, setActiveChats] = useState([]);
           const initialChatsLoadRef = useRef(true);
           
-          // 🟢 DYNAMIC SETTINGS STATES 🟢
           const [promoSettings, setPromoSettings] = useState({ code: '', discount: 0, isActive: false });
           const [globalNotice, setGlobalNotice] = useState('');
           const [featureSettings, setFeatureSettings] = useState({ dailyReward: false, referral: false });
@@ -674,7 +656,6 @@
           const [smsSettings, setSmsSettings] = useState({ active: true, markup: 1.00 });
           const [categories, setCategories] = useState(DEFAULT_CATEGORIES);
           
-          // 🟢 CRYPTOMUS STATE 🟢
           const [cryptomusSettings, setCryptomusSettings] = useState({
               merchantId: '',
               paymentKey: '',
@@ -704,24 +685,15 @@
 
           const getFriendlyAuthError = (errorCode) => {
               switch (errorCode) {
-                  case 'auth/invalid-email':
-                      return 'আপনার ইমেইল এড্রেসটি সঠিক নয়। দয়া করে ঠিকভাবে লিখুন।';
-                  case 'auth/user-disabled':
-                      return 'এই অ্যাকাউন্টটি ডিজেবল করা হয়েছে।';
-                  case 'auth/user-not-found':
-                      return 'এই ইমেইল দিয়ে কোনো অ্যাকাউন্ট পাওয়া যায়নি। আগে সাইন আপ করুন।';
-                  case 'auth/wrong-password':
-                      return 'পাসওয়ার্ড ভুল হয়েছে। আবার চেষ্টা করুন।';
-                  case 'auth/email-already-in-use':
-                      return 'এই ইমেইল দিয়ে আগে থেকেই একটি অ্যাকাউন্ট খোলা আছে। দয়া করে লগইন করুন।';
-                  case 'auth/weak-password':
-                      return 'পাসওয়ার্ড খুব দুর্বল। কমপক্ষে ৬ অক্ষরের পাসওয়ার্ড দিন।';
-                  case 'auth/network-request-failed':
-                      return 'ইন্টারনেট কানেকশন সমস্যা। চেক করে আবার চেষ্টা করুন।';
-                  case 'auth/too-many-requests':
-                      return 'অনেকবার ভুল চেষ্টা করা হয়েছে। কিছুক্ষণ পর আবার চেষ্টা করুন।';
-                  default:
-                      return 'একটি সমস্যা হয়েছে। দয়া করে আবার চেষ্টা করুন।';
+                  case 'auth/invalid-email': return 'আপনার ইমেইল এড্রেসটি সঠিক নয়। দয়া করে ঠিকভাবে লিখুন।';
+                  case 'auth/user-disabled': return 'এই অ্যাকাউন্টটি ডিজেবল করা হয়েছে।';
+                  case 'auth/user-not-found': return 'এই ইমেইল দিয়ে কোনো অ্যাকাউন্ট পাওয়া যায়নি। আগে সাইন আপ করুন।';
+                  case 'auth/wrong-password': return 'পাসওয়ার্ড ভুল হয়েছে। আবার চেষ্টা করুন।';
+                  case 'auth/email-already-in-use': return 'এই ইমেইল দিয়ে আগে থেকেই একটি অ্যাকাউন্ট খোলা আছে। দয়া করে লগইন করুন।';
+                  case 'auth/weak-password': return 'পাসওয়ার্ড খুব দুর্বল। কমপক্ষে ৬ অক্ষরের পাসওয়ার্ড দিন।';
+                  case 'auth/network-request-failed': return 'ইন্টারনেট কানেকশন সমস্যা। চেক করে আবার চেষ্টা করুন।';
+                  case 'auth/too-many-requests': return 'অনেকবার ভুল চেষ্টা করা হয়েছে। কিছুক্ষণ পর আবার চেষ্টা করুন।';
+                  default: return 'একটি সমস্যা হয়েছে। দয়া করে আবার চেষ্টা করুন।';
               }
           };
 
@@ -767,7 +739,6 @@
             unsubs.push(onSnapshot(doc(db, 'artifacts', appId, 'public', 'data', 'Store_Settings', 'PromoCode'), (snap) => { if (snap.exists()) setPromoSettings(snap.data()); }, errLog));
             unsubs.push(onSnapshot(doc(db, 'artifacts', appId, 'public', 'data', 'Store_Settings', 'Notice'), (snap) => { if (snap.exists()) setGlobalNotice(snap.data().text || ''); }, errLog));
             unsubs.push(onSnapshot(doc(db, 'artifacts', appId, 'public', 'data', 'Store_Settings', 'Features'), (snap) => { if (snap.exists()) setFeatureSettings(snap.data()); }, errLog));
-            
             unsubs.push(onSnapshot(doc(db, 'artifacts', appId, 'public', 'data', 'Store_Settings', 'Bank'), (snap) => { if (snap.exists()) setBankSettings(prev => ({...prev, ...snap.data()})); }, errLog));
             
             unsubs.push(onSnapshot(doc(db, 'artifacts', appId, 'public', 'data', 'Store_Settings', 'CryptoMethods'), (snap) => { 
@@ -790,7 +761,6 @@
                 else { setCategories(DEFAULT_CATEGORIES); } 
             }, errLog));
 
-            // 🟢 ADMIN VS CUSTOMER SECURE DATA FETCHING 🟢
             if (user.role === 'admin') {
                 unsubs.push(onSnapshot(collection(db, 'artifacts', appId, 'public', 'data', 'Store_Users'), (snap) => { 
                     const u = {}; 
@@ -817,7 +787,6 @@
                     initialChatsLoadRef.current = false;
                 }, errLog));
 
-                // Admin gets everything
                 unsubs.push(onSnapshot(collection(db, 'artifacts', appId, 'public', 'data', 'Store_Orders'), (snap) => { 
                     const o = []; snap.forEach((d) => { o.push({ id: d.id, ...d.data() }); }); 
                     setAllOrders(o.sort((a,b) => { return new Date(b.date).getTime() - new Date(a.date).getTime(); })); 
@@ -838,7 +807,6 @@
             } else {
                 unsubs.push(onSnapshot(doc(db, 'artifacts', appId, 'public', 'data', 'Store_Users', user.email), (docSnap) => { if (docSnap.exists()) setUsersDB(prev => ({...prev, [user.email]: docSnap.data()})); }, errLog));
                 
-                // Customer gets ONLY their own data (to match secure Firebase rules)
                 unsubs.push(onSnapshot(query(collection(db, 'artifacts', appId, 'public', 'data', 'Store_Orders'), where('customer', '==', user.email)), (snap) => { 
                     const o = []; snap.forEach((d) => { o.push({ id: d.id, ...d.data() }); }); 
                     setAllOrders(o.sort((a,b) => { return new Date(b.date).getTime() - new Date(a.date).getTime(); })); 
@@ -857,7 +825,6 @@
                 }, errLog));
             }
 
-            // Global polling for this user's pending auto deposits
             if (user.role === 'customer') {
                 const poll = setInterval(() => {
                     const pendingInvoices = (deposits || []).filter(d => d && d.email === user.email && (d.status === 'Awaiting Payment' || d.status === 'Verifying...') && String(d.method).includes('(Auto)'));
@@ -1193,7 +1160,7 @@
           const [isTiersLoading, setIsTiersLoading] = useState(false);
 
           const [confirmAction, setConfirmAction] = useState({ show: false, type: '', orderId: null, price: 0 });
-          const [showSmsWarning, setShowSmsWarning] = useState(false); // 🟢 SMS WARNING MODAL STATE 🟢
+          const [showSmsWarning, setShowSmsWarning] = useState(false);
 
           const ordersContainerRef = useRef(null);
           const [activeOrders, setActiveOrders] = useState(() => {
@@ -1206,7 +1173,8 @@
               if (smsSettings?.active) {
                   setIsFetchingServices(true);
                   const controller = new AbortController();
-                  const timeoutId = setTimeout(() => controller.abort(), 15000); // 15 seconds limit to prevent infinite loading
+                  // 🟢 FIX: Increased timeout to 60 seconds for Render server sleep issue
+                  const timeoutId = setTimeout(() => controller.abort(), 60000); 
 
                   fetch(`https://voicestore-backend.onrender.com/api/grizzly/getPrices?country=${smsCountry}`, { signal: controller.signal })
                   .then(r => r.json()).then(json => { 
@@ -1277,10 +1245,8 @@
                       setActiveOrders(prev => [newOrder, ...prev]); 
                       triggerToast("Number assigned!");
                       
-                      // 🟢 SHOW SMS WARNING POPUP 🟢
                       setShowSmsWarning(true);
 
-                      // 🟢 SCROLL ANIMATION DOWN TO THE NEW NUMBER 🟢
                       setTimeout(() => {
                           const elements = document.querySelectorAll('.order-card-anim');
                           if(elements.length > 0) {
@@ -1301,7 +1267,6 @@
                   const skipRes = await fetch(`https://voicestore-backend.onrender.com/api/juicy/skip`, { method: 'POST', headers: {'Content-Type':'application/json', 'Authorization': `Bearer ${token}`}, body: JSON.stringify({orderId}) }); 
                   const skipData = await skipRes.json();
                   
-                  // 🟢 FIXED: DO NOT IGNORE BACKEND ERRORS. STOP REFUND IF CODE ALREADY RECEIVED. 🟢
                   if (!skipData.success) { 
                       if (!isAuto) triggerToast(skipData.message); 
                       if (String(skipData.message).includes('received')) {
@@ -1310,7 +1275,6 @@
                       return; 
                   }
                   
-                  // Only refund if backend confirmed cancellation
                   await fetch('https://voicestore-backend.onrender.com/api/sms-refund', { method: 'POST', headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` }, body: JSON.stringify({ email: user.email, price: priceToRefund }) });
                   
                   if(!isAuto) triggerToast(`Skipped. $${priceToRefund.toFixed(2)} refunded.`); 
@@ -1364,7 +1328,6 @@
              else { const t = document.createElement("textarea"); t.value = text; document.body.appendChild(t); t.select(); document.execCommand("copy"); document.body.removeChild(t); triggerToast("Copied!"); }
           };
 
-          const formatPhoneDisplay = (phone) => { return `+${String(phone).replace(/\D/g, '')}`; };
           const copyNumberOnly = (phone) => { copyText(String(phone).replace(/\D/g, '')); };
 
           if(!smsSettings?.active) return <div className="glass-effect rounded-3xl w-full text-center py-32 text-gray-500 font-mono text-sm uppercase tracking-widest"><Smartphone className="w-12 h-12 mx-auto mb-4 opacity-30" strokeWidth={1.5}/> Service Offline.</div>;
@@ -1430,7 +1393,7 @@
                            </div>
                        </div>
                        <div className="flex-grow overflow-y-auto p-4 sm:p-6 custom-scrollbar bg-transparent space-y-3 pb-24 z-10 relative">
-                           {filteredApps.length === 0 ? (<p className="text-center text-gray-500 py-10 text-xs font-mono uppercase tracking-widest">{isFetchingServices ? 'Fetching...' : 'No apps found.'}</p>) : 
+                           {filteredApps.length === 0 ? (<p className="text-center text-gray-500 py-10 text-xs font-mono uppercase tracking-widest">{isFetchingServices ? 'Fetching Apps (Render Wakeup)...' : 'No apps found.'}</p>) : 
                                filteredApps.map((s, i) => {
                                    if(!s) return null;
                                    return (
@@ -1505,14 +1468,13 @@
                        <label className="block text-[10px] font-bold text-gray-400 mb-3 uppercase tracking-[0.2em] ml-1">Select Application</label>
                        <div className="relative w-full">
                            <div onClick={() => setIsAppDropdownOpen(!isAppDropdownOpen)} className={uiInput + " h-14 pl-12 pr-10 flex items-center justify-between cursor-pointer hover:border-brand-primary/50 bg-[rgba(0,0,0,0.5)]"}>
-                               <span className="truncate text-white font-bold text-[13px] tracking-wide">{isFetchingServices ? 'Loading Apps...' : (currentService ? `${currentService.name}` : (availableServices.length > 0 ? 'Select App' : 'No services found'))}</span>
+                               <span className="truncate text-white font-bold text-[13px] tracking-wide">{isFetchingServices ? 'Connecting to Network...' : (currentService ? `${currentService.name}` : (availableServices.length > 0 ? 'Select App' : 'Network offline'))}</span>
                                {isFetchingServices ? <RefreshCw className="w-4 h-4 text-brand-primary absolute left-4 animate-spin"/> : <Smartphone className="w-4 h-4 text-brand-primary absolute left-4"/>}
                                <ChevronDown className={`w-4 h-4 text-gray-400 absolute right-4 transition-transform ${isAppDropdownOpen ? 'rotate-180' : ''}`}/>
                            </div>
                        </div>
                     </div>
 
-                    {/* 🟢 HIDDEN BUTTON UNTIL APP SELECTED 🟢 */}
                     {selectedSmsService && (
                         <button onClick={buySmsNumber} disabled={isSmsLoading || activeOrders.length > 0 || (!priceTiers || priceTiers.length === 0)} className="btn-animate w-full glass-effect hover:bg-white text-white hover:text-black font-bold py-4 rounded-2xl text-xs tracking-widest uppercase shadow-[0_5px_20px_rgba(255,255,255,0.1)] h-14 mt-4 relative z-10 max-w-md mx-auto flex items-center justify-center gap-2 animate-fade-in-up">
                             {activeOrders.length > 0 ? <span className="flex items-center gap-2"><StopCircle className="w-4 h-4"/> Finish Order First</span> : isSmsLoading ? <span className="flex items-center gap-2"><RefreshCw className="w-4 h-4 animate-spin"/> Processing...</span> : 'Get Number'}
@@ -1557,7 +1519,6 @@
                                 ) : (
                                     <div className="w-full max-w-md space-y-5 relative z-10 animate-swoosh-in">
                                         <p className="text-[11px] text-green-400 font-bold uppercase tracking-[0.3em] text-center mb-5">SMS Received</p>
-                                        {/* 🟢 FULL TEXT DISPLAY & COPY AS REQUESTED 🟢 */}
                                         {order.codes.map((c, i) => {
                                             return (
                                                 <div key={i} className="flex flex-col gap-4 bg-[rgba(255,255,255,0.05)] border border-brand-primary/30 p-5 rounded-2xl animate-fade-in-up" style={{animationDelay: `${i * 0.1}s`, animationFillMode: 'both'}}>
@@ -1698,12 +1659,11 @@
                   const stored = localStorage.getItem(`hiddenInvoices_${user?.email}`);
                   return stored ? JSON.parse(stored) : [];
               } catch(e) { return []; }
-          }); // 🟢 GLITCH FIX: Local hide state preserved
+          }); 
           
-          const [isGenerating, setIsGenerating] = useState(false);  // 🟢 GLITCH FIX: Prevent double clicks
-          const [isVerifyingClick, setIsVerifyingClick] = useState(false); // 🟢 NEW: Manual Check State
+          const [isGenerating, setIsGenerating] = useState(false);  
+          const [isVerifyingClick, setIsVerifyingClick] = useState(false); 
 
-          // 🟢 NEW: LIVE CRYPTO PRICES 🟢
           const [liveRates, setLiveRates] = useState({});
           useEffect(() => {
               fetch('https://api.coingecko.com/api/v3/simple/price?ids=bitcoin,tron,tether,ethereum,litecoin&vs_currencies=usd')
@@ -1725,7 +1685,6 @@
               }
           }, [hiddenInvoices, user]);
 
-          // 🟢 GLITCH FIX: Ignores invoices hidden locally OR older than 1 hour to prevent permanent lockouts
           const pendingCrypto = (deposits || []).find(d => {
               if (!d || d.email !== user?.email || d.status !== 'Awaiting Payment' || !String(d.method).includes('(Auto)')) return false;
               if (hiddenInvoices.includes(d.id)) return false; 
@@ -1746,12 +1705,10 @@
           
           const [timeLeft, setTimeLeft] = useState(3600);
 
-          // 🟢 MANUAL DEPOSIT STATE 🟢
           const [manualAmount, setManualAmount] = useState('');
           const [manualMethod, setManualMethod] = useState('Local Bank Transfer');
           const [manualTxId, setManualTxId] = useState('');
 
-          // 🟢 AUTO-PAY POLLING LOGIC (SURVIVES PAGE RELOADS) 🟢
           useEffect(() => {
               if (!pendingCrypto) return;
               
@@ -1763,7 +1720,6 @@
               };
               setTimeLeft(calcTimeLeft());
 
-              // Countdown Timer
               const timer = setInterval(() => {
                   const rem = calcTimeLeft();
                   if (rem <= 0) {
@@ -1779,7 +1735,6 @@
                   }
               }, 1000);
 
-              // Server Polling Timer - 🟢 SUPER FAST: 5 SECONDS 🟢
               const poll = setInterval(async () => {
                   try {
                       const token = await getAuthToken();
@@ -1800,14 +1755,13 @@
 
           const startAutoDeposit = async (e) => {
               e.preventDefault();
-              if (isGenerating) return; // 🟢 GLITCH FIX
+              if (isGenerating) return; 
               if (pendingCrypto) { triggerToast('You already have an active invoice.'); return; }
               const baseAmount = parseFloat(cryptoAmountInput);
               if (isNaN(baseAmount) || baseAmount < 1) { triggerToast('Minimum deposit is $1.00'); return; }
               
-              setIsGenerating(true); // 🟢 GLITCH FIX
+              setIsGenerating(true); 
               
-              // 🟢 CRYPTOMUS INTEGRATION: If Cryptomus is active, intercept the flow 🟢
               if (cryptomusSettings?.isActive) {
                   try {
                       const token = await getAuthToken();
@@ -1817,9 +1771,8 @@
                       });
                       const result = await response.json();
                       if (result.success && result.url) {
-                          // Redirect user to Cryptomus checkout page
                           window.location.href = result.url;
-                          return; // Stop further execution
+                          return; 
                       } else {
                           triggerToast("Cryptomus Error: " + (result.message || "Failed to generate invoice"));
                           setIsGenerating(false);
@@ -1832,7 +1785,6 @@
                   }
               }
 
-              // Normal Manual Crypto Flow (if Cryptomus is inactive)
               const uniqueCents = (Math.floor(Math.random() * 9) + 1) / 100; 
               const finalAmount = +(baseAmount + uniqueCents).toFixed(2);
               
@@ -1841,7 +1793,6 @@
               const cmName = String(cryptoMethod).toUpperCase();
               
               try {
-                  // 🟢 LIVE CONVERSION LOGIC BEFORE DB SAVE 🟢
                   if (!cmName.includes('USDT')) {
                       try {
                           let cid = 'bitcoin';
@@ -1859,7 +1810,6 @@
                                else cryptoAmount = parseFloat((finalAmount / rate).toFixed(2));
                           } else { throw new Error('no rate'); }
                       } catch(e) {
-                           // Fallback to state
                            if (cmName.includes('BTC') && liveRates.BTC) cryptoAmount = parseFloat((finalAmount / liveRates.BTC).toFixed(8));
                            else if (cmName.includes('TRX') && liveRates.TRX) cryptoAmount = parseFloat((finalAmount / liveRates.TRX).toFixed(2));
                            else if (cmName.includes('ETH') && liveRates.ETH) cryptoAmount = parseFloat((finalAmount / liveRates.ETH).toFixed(6));
@@ -1873,7 +1823,7 @@
                   });
                   triggerToast(`Invoice created for ` + cryptoMethod);
               } catch (err) { triggerToast("Request failed."); }
-              setIsGenerating(false); // 🟢 GLITCH FIX
+              setIsGenerating(false); 
           };
 
           const cancelAutoPay = () => {
@@ -1887,7 +1837,6 @@
               }
           };
 
-          // 🟢 NEW: MANUAL VERIFICATION CHECK FOR "I HAVE PAID" BUTTON 🟢
           const handleManualVerifyCheck = async () => {
               if (!pendingCrypto) return;
               setIsVerifyingClick(true);
@@ -1902,7 +1851,6 @@
                       triggerToast(`Payment Verified! $${pendingCrypto.amount} added.`);
                       addNotification('Deposit Successful', `$${pendingCrypto.amount} added to balance.`);
                   } else {
-                      // HIDE IT SO THEY DON'T GET STUCK, WILL CHECK IN BACKGROUND
                       setHiddenInvoices(prev => {
                           const newArr = [...prev, pendingCrypto.id];
                           localStorage.setItem(`hiddenInvoices_${user?.email}`, JSON.stringify(newArr));
@@ -1917,7 +1865,6 @@
               }
           };
 
-          // 🟢 MANUAL DEPOSIT SUBMISSION 🟢
           const submitManualDeposit = async (e) => {
               e.preventDefault();
               const amt = parseFloat(manualAmount);
@@ -1996,7 +1943,6 @@
                                <input type="number" step="1" min="1" name="amount" value={cryptoAmountInput} onChange={e => setCryptoAmountInput(e.target.value)} required placeholder="10" className="glass-input allow-select pl-11 text-sm font-mono" />
                             </div>
                             
-                            {/* 🟢 NEW: LIVE PREVIEW AMOUNT (Hides if Cryptomus is Active) 🟢 */}
                             {!cryptomusSettings?.isActive && cryptoAmountInput && !isNaN(parseFloat(cryptoAmountInput)) && (
                                 <div className="mt-3 bg-brand-primary/10 border border-brand-primary/20 rounded-xl p-3 flex justify-between items-center shadow-inner animate-fade-in-up">
                                     <span className="text-[10px] text-gray-400 font-mono uppercase tracking-widest">Est. Crypto:</span>
@@ -2017,7 +1963,6 @@
 
                           </div>
                           
-                          {/* 🟢 HIDES CRYPTO SELECTION IF CRYPTOMUS IS ACTIVE 🟢 */}
                           {!cryptomusSettings?.isActive && (
                               <div>
                                   <label className="block text-[10px] font-bold text-gray-500 mb-2 uppercase tracking-[0.2em]">Select Crypto</label>
@@ -2040,7 +1985,6 @@
                   ) : (
                       <div className="bg-[rgba(0,0,0,0.5)] border border-white/10 rounded-2xl p-6 text-center space-y-6 relative overflow-hidden mt-6 animate-fade-in-up">
                           <div className="absolute top-0 left-0 w-full h-[2px] bg-white/10">
-                              {/* 🟢 ADJUSTED PROGRESS BAR FOR 3600 SECONDS 🟢 */}
                               <div className="h-full bg-white transition-all duration-1000" style={{ width: `${(timeLeft / 3600) * 100}%` }}></div>
                           </div>
                           
@@ -2061,13 +2005,12 @@
                           </div>
                           
                           <div className="bg-red-900/20 p-4 rounded-xl border border-red-900/50 text-left">
-                             <p className="text-[10px] text-red-400 font-bold mb-1.5 flex items-center gap-1.5 uppercase tracking-[0.2em]"><AlertTriangle className="w-3 h-3 text-red-500"/> Important</p>
-                             <p className="text-[10px] text-gray-300 leading-relaxed font-mono">
+                              <p className="text-[10px] text-red-400 font-bold mb-1.5 flex items-center gap-1.5 uppercase tracking-[0.2em]"><AlertTriangle className="w-3 h-3 text-red-500"/> Important</p>
+                              <p className="text-[10px] text-gray-300 leading-relaxed font-mono">
                                   Send exactly <span className="text-white font-bold">{pendingCrypto.cryptoAmount}</span>. Pay exchange fees separately.
-                             </p>
+                              </p>
                           </div>
                           
-                          {/* 🟢 NEW PAID BUTTON & CANCEL SECTION 🟢 */}
                           <div className="flex flex-col gap-3 pt-4 border-t border-white/10 w-full">
                               <div className="flex justify-between items-center w-full mb-2">
                                   <p className="text-[10px] font-mono text-gray-400 flex items-center gap-1.5">
@@ -2106,7 +2049,6 @@
                       </div>
                   </div>
                   
-                  {/* 🟢 DYNAMIC PAYMENT INSTRUCTIONS 🟢 */}
                   {manualMethod === 'Local Bank Transfer' ? (
                       <div className="bg-[rgba(0,0,0,0.5)] border border-white/5 rounded-xl p-4 mb-6 text-[11px] font-mono tracking-wide space-y-3">
                         <div className="flex justify-between items-center border-b border-white/5 pb-2"><span className="text-gray-400">Bank</span> <span className="font-bold text-white">{bankSettings?.bankName || 'Parallex'}</span></div>
@@ -2124,7 +2066,6 @@
                       </div>
                   ) : null}
 
-                  {/* 🟢 DEPOSIT REQUEST FORM 🟢 */}
                   <form onSubmit={submitManualDeposit} className="space-y-4 p-4 bg-white/5 rounded-2xl border border-white/10 shadow-inner">
                       <p className="text-[10px] font-bold text-brand-primary uppercase tracking-widest mb-2 flex items-center gap-2"><CircleDollarSign className="w-3.5 h-3.5"/> Submit Deposit Request</p>
                       <div className="grid grid-cols-2 gap-4">
@@ -3133,263 +3074,6 @@
                             </tbody>
                           </table>
                           {(!purchases || purchases.length === 0) && <p className="text-center py-16 text-gray-600 font-mono text-[10px] uppercase tracking-widest">No purchases yet.</p>}
-                        </div>
-                    </div>
-                  </div>
-                )}
-
-                {activeTab === 'deposits' && (
-                  <div className="glass-effect rounded-3xl w-full border border-white/10 overflow-hidden">
-                    <div className="p-5 sm:p-6 border-b border-white/10 flex items-center justify-between bg-[rgba(0,0,0,0.5)]">
-                      <h2 className="text-sm font-bold tracking-[0.2em] uppercase text-white">Deposits</h2>
-                      {pendingDeposits.length > 0 && <span className="bg-white text-black px-3 py-1.5 rounded text-[9px] uppercase tracking-widest font-bold animate-pulse">{pendingDeposits.length} Pending</span>}
-                    </div>
-                    <div className="overflow-x-auto w-full bg-transparent">
-                      <table className="w-full text-left whitespace-nowrap text-sm">
-                        <thead className="bg-[#000] text-gray-500 font-bold border-b border-white/5 text-[10px] uppercase tracking-[0.2em]">
-                          <tr><th className="p-4 sm:p-5">TxID / Date</th><th className="p-4 sm:p-5">User / Method</th><th className="p-4 sm:p-5">Amount</th><th className="p-4 sm:p-5 text-right">Status</th></tr>
-                        </thead>
-                        <tbody className="divide-y divide-white/5">
-                          {deposits.map((dep, idx) => {
-                            const isPending = String(dep.status || '').includes('Pending') || String(dep.status || '').includes('Awaiting');
-                            return (
-                              <tr key={dep.id} className="hover:bg-[rgba(255,255,255,0.05)] transition-colors animate-fade-in-up" style={{animationDelay: `${idx * 0.05}s`}}>
-                                <td className="p-4 sm:p-5">
-                                  <p className="font-mono text-white font-bold text-[10px] truncate max-w-[120px] allow-select">{String(dep.id || '')}</p>
-                                  <p className="text-[9px] text-gray-500 mt-1.5 font-mono uppercase tracking-widest">{safeFormatDate(dep.date)}</p>
-                                </td>
-                                <td className="p-4 sm:p-5">
-                                  <p className="text-gray-200 font-medium text-xs allow-select">{String(dep.email || '')}</p>
-                                  <p className="text-[9px] text-gray-500 mt-1.5 font-mono uppercase tracking-widest">{String(dep.method || '')}</p>
-                                </td>
-                                <td className="p-4 sm:p-5 font-mono font-bold text-white">${Number(dep.amount || 0).toFixed(2)}</td>
-                                <td className="p-4 sm:p-5 text-right">
-                                  <div className="flex flex-col items-end gap-2">
-                                    <span className={`text-[9px] uppercase tracking-[0.2em] font-bold ${dep.status === 'Approved' ? 'text-green-500' : isPending ? 'text-white' : 'text-red-500'}`}>{String(dep.status || '')}</span>
-                                    {isPending && (
-                                        <button onClick={() => handleManualApprove(dep.id)} className="btn-animate bg-white text-black border border-white px-3 py-1.5 rounded text-[9px] uppercase tracking-widest font-bold transition-all mt-1">
-                                            Approve
-                                        </button>
-                                    )}
-                                  </div>
-                                </td>
-                              </tr>
-                            )
-                          })}
-                        </tbody>
-                      </table>
-                    </div>
-                  </div>
-                )}
-
-                {activeTab === 'settings' && (
-                  <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 sm:gap-8 w-full">
-                    <div className="glass-effect rounded-3xl p-6 sm:p-8 w-full border border-white/10 animate-fade-in-up">
-                      <h2 className="text-sm font-bold tracking-[0.2em] uppercase text-white mb-6 border-b border-white/10 pb-4">Payment & Gateway Settings</h2>
-                      
-                      <form onSubmit={handleSaveSettings} className="space-y-8">
-                        {/* 🟢 CRYPTOMUS ADMIN SETTINGS 🟢 */}
-                        <div className="space-y-5">
-                           <div className="flex justify-between items-center">
-                               <h3 className="text-[10px] font-bold text-brand-primary uppercase tracking-[0.3em] flex items-center gap-2"><DollarSign className="w-3.5 h-3.5"/> Cryptomus Integration</h3>
-                           </div>
-                           <label className="flex items-center gap-3 cursor-pointer mt-4 pl-1 bg-[rgba(0,0,0,0.5)] border border-white/5 p-4 rounded-xl transition-colors hover:border-white/20">
-                             <input type="checkbox" checked={cryptomusActiveInput} onChange={(e) => setCryptomusActiveInput(e.target.checked)} className="w-4 h-4 rounded text-brand-primary focus:ring-brand-primary bg-[#000]" />
-                             <span className="text-xs font-bold text-white uppercase tracking-wider">Enable Cryptomus</span>
-                           </label>
-                           {cryptomusActiveInput && (
-                               <div className="bg-[#0f172a] border border-white/5 rounded-2xl p-5 shadow-inner space-y-3">
-                                   <div>
-                                       <label className="block text-[9px] font-bold text-gray-500 mb-2 uppercase tracking-widest">Merchant ID</label>
-                                       <input type="text" value={cryptomusMerchantInput} onChange={e=>setCryptomusMerchantInput(e.target.value)} placeholder="e.g. 8d3a..." className="glass-input text-xs font-mono allow-select" />
-                                   </div>
-                                   <div>
-                                       <label className="block text-[9px] font-bold text-gray-500 mb-2 uppercase tracking-widest">Payment API Key</label>
-                                       <input type="password" value={cryptomusKeyInput} onChange={e=>setCryptomusKeyInput(e.target.value)} placeholder="Your Secret Key" className="glass-input text-xs font-mono allow-select" />
-                                   </div>
-                                   <p className="text-[8px] text-gray-400 mt-2">When enabled, the default crypto deposit will be replaced by the Cryptomus gateway.</p>
-                               </div>
-                           )}
-                        </div>
-
-                        {/* 🟢 DYNAMIC CRYPTO SETTINGS 🟢 */}
-                        <div className="space-y-5 pt-4 border-t border-white/10">
-                           <div className="flex justify-between items-center">
-                               <h3 className="text-[10px] font-bold text-brand-primary uppercase tracking-[0.3em] flex items-center gap-2"><Wallet className="w-3.5 h-3.5"/> Manual Crypto Options</h3>
-                           </div>
-                           
-                           <div className="bg-[#0f172a] border border-white/5 rounded-2xl p-5 shadow-inner">
-                               <p className="text-[9px] font-bold text-gray-400 uppercase tracking-widest mb-3">Add New Crypto Network</p>
-                               <div className="grid grid-cols-2 gap-3 mb-3">
-                                   <input type="text" placeholder="Name (e.g. USDT)" value={newCryptoInput.name} onChange={e=>setNewCryptoInput({...newCryptoInput, name: e.target.value})} className="glass-input text-xs allow-select" />
-                                   <input type="text" placeholder="Network (Optional)" value={newCryptoInput.network} onChange={e=>setNewCryptoInput({...newCryptoInput, network: e.target.value})} className="glass-input text-xs allow-select" />
-                               </div>
-                               <input type="text" placeholder="Wallet Address" value={newCryptoInput.address} onChange={e=>setNewCryptoInput({...newCryptoInput, address: e.target.value})} className="glass-input text-xs font-mono mb-3 allow-select" />
-                               <button onClick={handleAddCrypto} type="button" className="btn-animate w-full bg-white/10 hover:bg-brand-primary text-white font-bold py-2.5 rounded-xl text-[10px] uppercase tracking-widest">Add Crypto</button>
-                           </div>
-                           
-                           {(!cryptoSettings || cryptoSettings.length === 0) ? (
-                               <p className="text-xs text-gray-500 font-mono">No crypto methods added.</p>
-                           ) : (
-                               cryptoSettings.map((c, i) => (
-                                   <div key={i} className="bg-[rgba(0,0,0,0.5)] border border-white/5 p-3 rounded-xl flex justify-between items-center animate-fade-in-up" style={{animationDelay: `${i * 0.05}s`}}>
-                                       <div className="max-w-[80%]">
-                                           <p className="text-[10px] font-bold text-white uppercase">{c.name} <span className="text-[8px] text-brand-primary">({c.network || 'ANY'})</span></p>
-                                           <p className="text-[9px] text-gray-400 font-mono mt-1 break-all allow-select">{c.address}</p>
-                                       </div>
-                                       <button type="button" onClick={() => handleRemoveCrypto(c.id)} className="btn-animate p-2 bg-red-900/20 text-red-500 hover:bg-red-900/50 rounded-lg"><Trash2 className="w-3.5 h-3.5"/></button>
-                                   </div>
-                               ))
-                           )}
-                        </div>
-
-                        {/* 🟢 DYNAMIC BANK SETTINGS 🟢 */}
-                        <div className="space-y-5 pt-4 border-t border-white/10">
-                           <h3 className="text-[10px] font-bold text-brand-primary uppercase tracking-[0.3em] flex items-center gap-2"><Building className="w-3.5 h-3.5"/> Local Bank Details</h3>
-                           <div>
-                             <label className="block text-[9px] font-bold text-gray-500 mb-2 uppercase tracking-widest">Bank Name</label>
-                             <input type="text" value={bankNameInput} onChange={(e) => setBankNameInput(e.target.value)} required className={`${uiInput} allow-select`} />
-                           </div>
-                           <div>
-                             <label className="block text-[9px] font-bold text-gray-500 mb-2 uppercase tracking-widest">Account Name</label>
-                             <input type="text" value={bankAccountNameInput} onChange={(e) => setBankAccountNameInput(e.target.value)} required className={`${uiInput} allow-select`} />
-                           </div>
-                           <div className="grid grid-cols-2 gap-4">
-                               <div>
-                                 <label className="block text-[9px] font-bold text-gray-500 mb-2 uppercase tracking-widest">Account Number</label>
-                                 <input type="text" value={bankAccountNumberInput} onChange={(e) => setBankAccountNumberInput(e.target.value)} required className={`${uiInput} allow-select font-mono`} />
-                               </div>
-                               <div>
-                                 <label className="block text-[9px] font-bold text-gray-500 mb-2 uppercase tracking-widest">1 USD to NGN Rate</label>
-                                 <input type="number" step="0.01" value={nairaRateInput} onChange={(e) => setNairaRateInput(e.target.value)} required className={`${uiInput} allow-select`} />
-                               </div>
-                           </div>
-                        </div>
-
-                        <div className="space-y-5 pt-4 border-t border-white/10">
-                           <h3 className="text-[10px] font-bold text-white uppercase tracking-[0.3em]">Flutterwave (Card Payment)</h3>
-                           <label className="flex items-center gap-3 cursor-pointer mt-4 pl-1 bg-[rgba(0,0,0,0.5)] border border-white/5 p-4 rounded-xl mb-4 transition-colors hover:border-white/20">
-                             <input type="checkbox" checked={flutterwaveActiveInput} onChange={(e) => setFlutterwaveActiveInput(e.target.checked)} className="w-4 h-4 rounded text-brand-primary focus:ring-brand-primary bg-[#000]" />
-                             <span className="text-xs font-bold text-white uppercase tracking-wider">Enable Flutterwave Gateway</span>
-                           </label>
-                           <div>
-                             <label className="block text-[9px] font-bold text-gray-500 mb-2 uppercase tracking-widest">Flutterwave Public Key</label>
-                             <input type="text" value={flutterwaveKeyInput} onChange={(e) => setFlutterwaveKeyInput(e.target.value)} placeholder="FLWPUBK_TEST-..." className={`${uiInput} allow-select font-mono`} />
-                           </div>
-                        </div>
-
-                        <div className="space-y-5 pt-4 border-t border-white/10">
-                           <h3 className="text-[10px] font-bold text-white uppercase tracking-[0.3em]">SMS Settings</h3>
-                           <div>
-                             <label className="block text-[9px] font-bold text-gray-500 mb-2 uppercase tracking-widest">Added Profit per SMS ($)</label>
-                             <input type="number" step="0.01" value={smsMarkupInput} onChange={(e) => setSmsMarkupInput(e.target.value)} placeholder="1.00" className={`${uiInput} allow-select`} />
-                           </div>
-                           <label className="flex items-center gap-3 cursor-pointer mt-4 pl-1 bg-[rgba(0,0,0,0.5)] border border-white/5 p-4 rounded-xl transition-colors hover:border-white/20">
-                             <input type="checkbox" checked={smsActiveInput} onChange={(e) => setSmsActiveInput(e.target.checked)} className="w-4 h-4 rounded text-brand-primary focus:ring-brand-primary bg-[#000]" />
-                             <span className="text-xs font-bold text-white uppercase tracking-wider">Enable SMS Service Module</span>
-                           </label>
-                        </div>
-
-                        <div className="space-y-5 pt-4 border-t border-white/10">
-                           <h3 className="text-[10px] font-bold text-white uppercase tracking-[0.3em]">Promotions & Features</h3>
-                           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                               <div>
-                                 <label className="block text-[9px] font-bold text-gray-500 mb-2 uppercase tracking-widest">Promo Code</label>
-                                 <input type="text" value={promoInput} onChange={(e) => setPromoInput(e.target.value)} placeholder="DISCOUNT20" className={`${uiInput} allow-select uppercase`} />
-                               </div>
-                               <div>
-                                 <label className="block text-[9px] font-bold text-gray-500 mb-2 uppercase tracking-widest">Discount (%)</label>
-                                 <input type="number" value={discountInput} onChange={(e) => setDiscountInput(e.target.value)} placeholder="10" className={`${uiInput} allow-select`} />
-                               </div>
-                           </div>
-                           <label className="flex items-center gap-3 cursor-pointer mt-4 pl-1 bg-[rgba(0,0,0,0.5)] border border-white/5 p-4 rounded-xl mb-4 transition-colors hover:border-white/20">
-                             <input type="checkbox" checked={promoActive} onChange={(e) => setPromoActive(e.target.checked)} className="w-4 h-4 rounded text-black focus:ring-white bg-[#000]" />
-                             <span className="text-xs font-bold text-white uppercase tracking-wider">Enable Promo Code</span>
-                           </label>
-                           <label className="flex items-center gap-3 cursor-pointer mt-4 pl-1 bg-[rgba(0,0,0,0.5)] border border-white/5 p-4 rounded-xl mb-4 transition-colors hover:border-white/20">
-                             <input type="checkbox" checked={dailyRewardActive} onChange={(e) => setDailyRewardActive(e.target.checked)} className="w-4 h-4 rounded text-black focus:ring-white bg-[#000]" />
-                             <span className="text-xs font-bold text-white uppercase tracking-wider">Enable Daily Reward</span>
-                           </label>
-                           <label className="flex items-center gap-3 cursor-pointer mt-4 pl-1 bg-[rgba(0,0,0,0.5)] border border-white/5 p-4 rounded-xl mb-4 transition-colors hover:border-white/20">
-                             <input type="checkbox" checked={referralActive} onChange={(e) => setReferralActive(e.target.checked)} className="w-4 h-4 rounded text-black focus:ring-white bg-[#000]" />
-                             <span className="text-xs font-bold text-white uppercase tracking-wider">Enable Referral System</span>
-                           </label>
-                        </div>
-                        
-                        <div className="space-y-5 pt-4 border-t border-white/10">
-                           <h3 className="text-[10px] font-bold text-white uppercase tracking-[0.3em]">Global Notice</h3>
-                           <div>
-                             <textarea value={noticeInput} onChange={(e) => setNoticeInput(e.target.value)} placeholder="Write a notice for all users..." rows="3" className={`${uiInput} allow-select resize-none`} />
-                           </div>
-                        </div>
-
-                        <div className="pt-6 border-t border-white/10"><button type="submit" className={uiBtnPrimary}>Save All Settings</button></div>
-                      </form>
-                    </div>
-
-                    <div className="space-y-6 sm:space-y-8 w-full">
-                        {/* 🟢 CUSTOM PAYMENT METHODS MODULE 🟢 */}
-                        <div className="glass-effect rounded-3xl p-6 sm:p-8 w-full border border-white/10 h-fit animate-fade-in-up" style={{animationDelay: '0.1s'}}>
-                          <div className="flex justify-between items-center mb-6 border-b border-white/10 pb-4">
-                             <h2 className="text-sm font-bold tracking-[0.2em] uppercase text-white">Custom Payment Methods</h2>
-                          </div>
-                          
-                          <form onSubmit={handleAddCustomPayment} className="space-y-4 mb-8 bg-[rgba(0,0,0,0.5)] p-5 rounded-2xl border border-white/5 shadow-inner">
-                              <p className="text-[9px] font-bold text-brand-primary uppercase tracking-widest mb-2">Add New Method (e.g. bKash/Nagad)</p>
-                              <div>
-                                  <label className="block text-[9px] font-bold text-gray-500 mb-2 uppercase tracking-widest">Method Name</label>
-                                  <input type="text" required value={newCustomPayment.name} onChange={e => setNewCustomPayment({...newCustomPayment, name: e.target.value})} placeholder="bKash Personal" className="glass-input text-xs allow-select" />
-                              </div>
-                              <div>
-                                  <label className="block text-[9px] font-bold text-gray-500 mb-2 uppercase tracking-widest">Wallet Number / Details</label>
-                                  <input type="text" required value={newCustomPayment.details} onChange={e => setNewCustomPayment({...newCustomPayment, details: e.target.value})} placeholder="017XXXXXXXX" className="glass-input text-xs font-mono allow-select" />
-                              </div>
-                              <div>
-                                  <label className="block text-[9px] font-bold text-gray-500 mb-2 uppercase tracking-widest">Instructions for User</label>
-                                  <input type="text" value={newCustomPayment.instruction} onChange={e => setNewCustomPayment({...newCustomPayment, instruction: e.target.value})} placeholder="Send money and enter TRX ID below." className="glass-input text-xs allow-select" />
-                              </div>
-                              <button type="submit" className="btn-animate w-full glass-panel hover:bg-white/20 text-white font-bold py-3 px-6 rounded-xl shadow-md text-[10px] uppercase tracking-widest mt-2 flex items-center justify-center gap-2"><Plus className="w-3 h-3"/> Add Method</button>
-                          </form>
-
-                          <div className="space-y-3">
-                              {(!customPayments || customPayments.length === 0) ? (
-                                  <p className="text-center text-gray-600 font-mono text-[10px] uppercase tracking-widest py-4">No custom methods added.</p>
-                              ) : (
-                                  customPayments.map((p, idx) => (
-                                      <div key={p.id || idx} className="bg-[rgba(0,0,0,0.5)] border border-white/5 p-4 rounded-xl flex justify-between items-center animate-fade-in-up">
-                                          <div>
-                                              <p className="text-[11px] font-bold text-white uppercase tracking-wider">{p.name}</p>
-                                              <p className="text-[9px] font-mono text-gray-400 mt-1 allow-select">{p.details}</p>
-                                          </div>
-                                          <button onClick={() => handleRemoveCustomPayment(p.id)} className="btn-animate p-2.5 bg-red-900/20 text-red-500 hover:bg-red-900/40 border border-red-900/30 rounded-lg transition-colors">
-                                              <Trash2 className="w-3.5 h-3.5"/>
-                                          </button>
-                                      </div>
-                                  ))
-                              )}
-                          </div>
-                        </div>
-
-                        {/* 🟢 NEW PRODUCT MANAGEMENT SECTION 🟢 */}
-                        <div className="glass-effect rounded-3xl p-6 sm:p-8 w-full border border-white/10 h-fit animate-fade-in-up" style={{animationDelay: '0.2s'}}>
-                          <div className="flex justify-between items-center mb-6 border-b border-white/10 pb-4">
-                             <h2 className="text-sm font-bold tracking-[0.2em] uppercase text-white">Manage Accounts Cards</h2>
-                             <button onClick={() => setNewProductModal(true)} className="btn-animate bg-white text-black px-4 py-2 rounded-lg text-[10px] uppercase tracking-widest font-bold flex items-center gap-1"><Plus className="w-3 h-3"/> New</button>
-                          </div>
-                          
-                          <div className="space-y-4">
-                              {categories.map((cat, idx) => (
-                                  <div key={idx} className="bg-[rgba(0,0,0,0.5)] border border-white/5 p-4 rounded-2xl flex justify-between items-center animate-fade-in-up" style={{animationDelay: `${idx * 0.1}s`}}>
-                                      <div>
-                                          <p className="text-xs font-bold text-white uppercase tracking-wider">{cat.name}</p>
-                                          <p className="text-[10px] font-mono text-gray-400 mt-1">${Number(cat.price).toFixed(2)}</p>
-                                      </div>
-                                      <button onClick={() => handleRemoveProduct(cat.id)} className="btn-animate p-2.5 bg-red-900/20 text-red-500 hover:bg-red-900/40 border border-red-900/30 rounded-lg transition-colors">
-                                          <Trash2 className="w-4 h-4"/>
-                                      </button>
-                                  </div>
-                              ))}
-                          </div>
                         </div>
                     </div>
                   </div>
