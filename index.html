@@ -702,7 +702,7 @@
                   case 'auth/user-not-found':
                       return 'এই ইমেইল দিয়ে কোনো অ্যাকাউন্ট পাওয়া যায়নি। আগে সাইন আপ করুন।';
                   case 'auth/wrong-password':
-                      return 'পাসওয়ার্ড ভুল হয়েছে। আবার চেষ্টা করুন।';
+                      return 'পাসওয়ার্ড ভুল হয়েছে। activist চেষ্টা করুন।';
                   case 'auth/email-already-in-use':
                       return 'এই ইমেইল দিয়ে আগে থেকেই একটি অ্যাকাউন্ট খোলা আছে। দয়া করে লগইন করুন।';
                   case 'auth/weak-password':
@@ -749,6 +749,7 @@
           }, []);
 
           // Data Fetching 
+          // 🟢 FIX 1: Removed 'deposits' from dependency array to prevent infinite re-render loop 🟢
           useEffect(() => {
             if (!user) return;
             const errLog = (e) => { if (e.code !== 'permission-denied') console.error(e); };
@@ -844,30 +845,31 @@
                 }, errLog));
             }
 
-            // Global polling for this user's pending auto deposits
-            if (user.role === 'customer') {
-                const poll = setInterval(() => {
-                    const pendingInvoices = (deposits || []).filter(d => d && d.email === user.email && (d.status === 'Awaiting Payment' || d.status === 'Verifying...') && String(d.method).includes('(Auto)'));
-                    if (pendingInvoices.length > 0) {
-                        getAuthToken().then(token => {
-                            pendingInvoices.forEach(inv => {
-                                fetch('https://voicestore-backend.onrender.com/api/verify-deposit', {
-                                    method: 'POST', headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
-                                    body: JSON.stringify({ invoiceId: inv.id, amount: inv.amount, method: inv.method, cryptoAmount: inv.cryptoAmount })
-                                }).then(r => r.json()).then(result => {
-                                    if (result.success) {
-                                        triggerToast(`Payment Verified! $${inv.amount} added.`);
-                                        addNotification('Deposit Successful', `$${inv.amount} added to balance.`);
-                                    }
-                                }).catch(e => {});
-                            });
-                        });
-                    }
-                }, 8000);
-                unsubs.push(() => clearInterval(poll));
-            }
-
             return () => unsubs.forEach(unsub => { if(typeof unsub === 'function') unsub(); });
+          }, [user]); // 🟢 FIX 1: END 🟢
+
+          // 🟢 FIX 1: Moved polling to a separate useEffect 🟢
+          useEffect(() => {
+              if (!user || user.role !== 'customer') return;
+              const poll = setInterval(() => {
+                  const pendingInvoices = (deposits || []).filter(d => d && d.email === user.email && (d.status === 'Awaiting Payment' || d.status === 'Verifying...') && String(d.method).includes('(Auto)'));
+                  if (pendingInvoices.length > 0) {
+                      getAuthToken().then(token => {
+                          pendingInvoices.forEach(inv => {
+                              fetch('https://voicestore-backend.onrender.com/api/verify-deposit', {
+                                  method: 'POST', headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+                                  body: JSON.stringify({ invoiceId: inv.id, amount: inv.amount, method: inv.method, cryptoAmount: inv.cryptoAmount })
+                              }).then(r => r.json()).then(result => {
+                                  if (result.success) {
+                                      triggerToast(`Payment Verified! $${inv.amount} added.`);
+                                      addNotification('Deposit Successful', `$${inv.amount} added to balance.`);
+                                  }
+                              }).catch(e => {});
+                          });
+                      });
+                  }
+              }, 8000);
+              return () => clearInterval(poll);
           }, [user, deposits]);
 
           const handleAuthSubmit = async (e) => {
@@ -1189,8 +1191,10 @@
 
           useEffect(() => { if (user?.email) localStorage.setItem(`smsOrders_${user.email}`, JSON.stringify(activeOrders)); }, [activeOrders, user]);
 
+          // 🟢 FIX 2: Depend on primitive value `smsSettings?.active` to prevent fetch loops 🟢
+          const smsActive = smsSettings?.active;
           useEffect(() => {
-              if (smsSettings?.active) {
+              if (smsActive) {
                   setIsFetchingServices(true);
                   const controller = new AbortController();
                   const timeoutId = setTimeout(() => controller.abort(), 15000); // 15 seconds limit to prevent infinite loading
@@ -1209,7 +1213,7 @@
 
                   return () => { clearTimeout(timeoutId); controller.abort(); };
               }
-          }, [smsSettings, smsCountry]);
+          }, [smsActive, smsCountry]); // 🟢 FIX 2: END 🟢
 
           useEffect(() => {
               if (selectedSmsService && smsCountry) {
